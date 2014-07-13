@@ -18,8 +18,8 @@ permissions:
    hotels.*:
      description: Gives access to all Hotels commands
      children:
+       hotels.createmode: true
        hotels.create: true
-	   hotels.createmode: true
        hotels.check: true
        hotels.check.others: true
    hotels.createmode:
@@ -32,5 +32,5 @@ permissions:
      description: Allows you to see stats about your rented rooms
      default: true
    hotels.check.others:
-     description: Allows you to see stats about other players rented rooms
+     description: Allows you to see stats about other player's rented rooms
      default: op

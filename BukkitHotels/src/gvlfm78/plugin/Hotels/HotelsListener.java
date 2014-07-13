@@ -93,7 +93,7 @@ public class HotelsListener implements Listener {
 	public static void avoidPickup(PlayerPickupItemEvent e) {
 		Player p = e.getPlayer();
 		UUID playerUUID = p.getUniqueId();
-		File file = new File("plugins//Hotels//Inventories//"+playerUUID+".yml");
+		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
 		
 		if(file.exists()){
 			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
