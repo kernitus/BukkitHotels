@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Vault-1.4.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Server/PLUGIN TEST/plugins/WorldEdit.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/worldguard-5.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/BarAPI.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

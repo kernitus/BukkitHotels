@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import me.confuser.barapi.BarAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -216,5 +218,4 @@ public class HotelsCreationMode {
 		sign.setItemMeta(sim);
 		pi.setItem(2, sign);
 	}
-	
 }

@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels;
 
 import kernitus.plugin.Hotels.HotelsMain;
+import me.confuser.barapi.BarAPI;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -91,12 +92,18 @@ public class HotelsCommandHandler implements CommandExecutor {
 					HotelsCreationMode.saveInventory(sender);
 					HotelsCreationMode.saveArmour(sender);
 					HotelsCreationMode.giveItems(sender);
+					if(plugin.getConfig().getBoolean("HCM.bossBar")==true)
+					BarAPI.setMessage((Player) sender, "§2Hotel Creation Mode");
 					HotelsCreationMode.getSelection(sender);
 				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("exit"))&&(sender instanceof Player)){
 					sender.sendMessage(ChatColor.GREEN+"You have exited hotel creation mode.");
 					HotelsCreationMode.loadInventory(sender);
 					HotelsCreationMode.loadArmour(sender);
+					
+					if(plugin.getConfig().getBoolean("HCM.bossBar")==true){
+						BarAPI.removeBar((Player) sender);
+					}
 				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("reset"))&&(sender instanceof Player)){
 					HotelsCreationMode.resetInventoryFiles(sender);
