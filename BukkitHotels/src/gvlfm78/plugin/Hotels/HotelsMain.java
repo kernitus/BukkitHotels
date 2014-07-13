@@ -9,13 +9,9 @@ import java.io.IOException;
 
 import net.milkbowl.vault.economy.Economy;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class HotelsMain extends JavaPlugin{
 
@@ -54,13 +50,6 @@ public class HotelsMain extends JavaPlugin{
 	        PluginDescriptionFile pdfFile = this.getDescription();//Logging to console the disabling of IL
 	        getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has been disabled");
 	        }
-
-	 public WorldEditPlugin getWorldEdit(){
-		 Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
-		 
-		 if (p instanceof WorldEditPlugin) return (WorldEditPlugin) p;
-		 else return null;
-	 }
 	 
 	 private boolean setupEconomy() {//Setting up the economy
 		 if (getServer().getPluginManager().getPlugin("Vault") == null) {

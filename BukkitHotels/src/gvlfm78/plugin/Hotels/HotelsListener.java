@@ -1,18 +1,24 @@
 package kernitus.plugin.Hotels;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 
 public class HotelsListener implements Listener {
 	public final HashMap<Player, ArrayList<Block>> hashmapPlayerName = new HashMap<Player, ArrayList<Block>>();
@@ -68,4 +74,30 @@ public class HotelsListener implements Listener {
 			}
 		}
 	}	
+	
+	//When a player tries to drop an item/block
+	@EventHandler
+	public static void avoidDrop(PlayerDropItemEvent e) {
+		Player p = e.getPlayer();
+		UUID playerUUID = p.getUniqueId();
+		File file = new File("plugins//Hotels//Inventories//"+playerUUID+".yml");
+		
+		if(file.exists()){
+			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
+		e.setCancelled(true);
+	}
+	}
+	
+	//When a player tries to drop an item/block
+	@EventHandler
+	public static void avoidPickup(PlayerPickupItemEvent e) {
+		Player p = e.getPlayer();
+		UUID playerUUID = p.getUniqueId();
+		File file = new File("plugins//Hotels//Inventories//"+playerUUID+".yml");
+		
+		if(file.exists()){
+			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
+		e.setCancelled(true);
+	}
 		}
+}
