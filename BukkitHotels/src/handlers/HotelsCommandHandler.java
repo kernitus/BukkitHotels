@@ -17,14 +17,14 @@ import org.bukkit.entity.Player;
 public class HotelsCommandHandler implements CommandExecutor {
 	private HotelsMain plugin;
 	public HotelsCommandHandler(HotelsMain hCH)
-	  {
-	    this.plugin = hCH;
-	  }
+	{
+		this.plugin = hCH;
+	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,String[] args) {
 		if(cmd.getName().equalsIgnoreCase("Hotels")){
 			if(sender.hasPermission("hotels.admin")||sender.isOp()){
-				
+
 				if(args.length == 0){
 					sender.sendMessage("§4==========Hotels==========");
 					sender.sendMessage("§2"+plugin.getDescription().getName()+" plugin by kernitus");
@@ -50,7 +50,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(ChatColor.YELLOW+"Then explode in mid-air");
 					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/hotels help 3§r§4 to get to page 3");
 					sender.sendMessage("§4==========================");
-			}
+				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("3")))){
 					sender.sendMessage("§4==========================");
 					sender.sendMessage("§2--Hotels plugin help page--");
@@ -60,7 +60,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(ChatColor.YELLOW+"Type §3§o/hotels room <hotel> <roomnum>");
 					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/hotels help 4§r§4 to get to page 4");
 					sender.sendMessage("§4==========================");
-			}
+				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("4")))){
 					sender.sendMessage("§4==========================");
 					sender.sendMessage("§2--Hotels plugin help page--");
@@ -73,7 +73,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(ChatColor.YELLOW+"<cost:time>");
 					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/hotels help 5§r§4 to get to page 5");
 					sender.sendMessage("§4==========================");
-		}
+				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("5")))){
 					sender.sendMessage("§4==========================");
 					sender.sendMessage("§2--Hotels plugin help page--");
@@ -85,7 +85,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(ChatColor.YELLOW+"200:3d");
 					sender.sendMessage(ChatColor.DARK_RED+"Last page. Type §3§o/hotels help§r§4 to get to page 1");
 					sender.sendMessage("§4==========================");
-		}
+				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("enter"))&&(sender instanceof Player)){
 					sender.sendMessage(ChatColor.GREEN+"You have entered hotel creation mode.");
 					HotelsCreationMode.checkFolder();
@@ -93,13 +93,13 @@ public class HotelsCommandHandler implements CommandExecutor {
 					HotelsCreationMode.saveArmour(sender);
 					HotelsCreationMode.giveItems(sender);
 					if(plugin.getConfig().getBoolean("HCM.bossBar")==true)
-					BarAPI.setMessage((Player) sender, "§2Hotel Creation Mode");
+						BarAPI.setMessage((Player) sender, "§2Hotel Creation Mode");
 				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("exit"))&&(sender instanceof Player)){
 					sender.sendMessage(ChatColor.GREEN+"You have exited hotel creation mode.");
 					HotelsCreationMode.loadInventory(sender);
 					HotelsCreationMode.loadArmour(sender);
-					
+
 					if(plugin.getConfig().getBoolean("HCM.bossBar")==true){
 						BarAPI.removeBar((Player) sender);
 					}
@@ -133,7 +133,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode"))&&!(sender instanceof Player)){
 					sender.sendMessage("§4The console can't use hotel creation mode!");
 				}
-				}
+			}
 		}
 		return false;
 	}

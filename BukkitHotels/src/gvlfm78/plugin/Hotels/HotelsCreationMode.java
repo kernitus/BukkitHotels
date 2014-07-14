@@ -27,21 +27,21 @@ import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 
 public class HotelsCreationMode {	
-	
+
 	public static void checkFolder(){
 		File file = new File("plugins//Hotels//Inventories");
 		if(!file.exists()){
 			file.mkdir();
 		}
 	}
-	
+
 	public static void checkHotelsFolder(){
 		File file = new File("plugins//Hotels//Hotels");
 		if(!file.exists()){
 			file.mkdir();
 		}
 	}
-	
+
 	public static void saveHotelFile(String hotelName, CommandSender s){
 		File hotelFolder = new File("plugins//Hotels//Hotels//"+hotelName+"");
 		File hotelFile = new File("plugins//Hotels//Hotels//"+hotelName+"//"+hotelName+".yml");
@@ -59,26 +59,26 @@ public class HotelsCreationMode {
 				p.sendMessage("§4Could not create Hotel file");
 			}
 			if (selection != null) {
-			World world = selection.getWorld();
-			Location min = selection.getMinimumPoint();
-			Location max = selection.getMaximumPoint();
-			YamlConfiguration hF = YamlConfiguration.loadConfiguration(hotelFile);
-			try {
-				hF.set("Hotel.name", hotelName);
-				hF.set("Hotel.world", world);
-				hF.set("Hotel.minpoint", min);
-				hF.set("Hotel.maxpoint", max);
-				hF.save(hotelFile);
-			} catch (IOException e) {
-				p.sendMessage("§4Could not save Hotel file");
-			}
-			
+				World world = selection.getWorld();
+				Location min = selection.getMinimumPoint();
+				Location max = selection.getMaximumPoint();
+				YamlConfiguration hF = YamlConfiguration.loadConfiguration(hotelFile);
+				try {
+					hF.set("Hotel.name", hotelName);
+					hF.set("Hotel.world", world);
+					hF.set("Hotel.minpoint", min);
+					hF.set("Hotel.maxpoint", max);
+					hF.save(hotelFile);
+				} catch (IOException e) {
+					p.sendMessage("§4Could not save Hotel file");
+				}
+
 			} else {
-			// No selection available
+				// No selection available
 			}
 		}
 	}
-	
+
 	public static void worldGuardSetup(String hotelName, CommandSender s){
 		Player p = (Player) s;
 		File hotelFile = new File("plugins//Hotels//Hotels//"+hotelName+"//"+hotelName+".yml");
@@ -87,20 +87,22 @@ public class HotelsCreationMode {
 			p.sendMessage("§4Could not create Hotel region, hotel already exists");
 			return;}
 		else if(!(sel==null)){
-		ProtectedCuboidRegion r = new ProtectedCuboidRegion(
-				hotelName, 
-				new BlockVector(sel.getNativeMinimumPoint()), 
-				new BlockVector(sel.getNativeMaximumPoint())
-		);
-		WorldGuardManager.addOwner(p, r);
-		WorldGuardManager.addRegion(p, r);
-		WorldGuardManager.saveRegions(p.getWorld());
-		p.sendMessage("§2You have successfully created the "+r.getId()+" hotel");
-	}
+			ProtectedCuboidRegion r = new ProtectedCuboidRegion(
+					hotelName, 
+					new BlockVector(sel.getNativeMinimumPoint()), 
+					new BlockVector(sel.getNativeMaximumPoint())
+					);
+			WorldGuardManager.addOwner(p, r);
+			WorldGuardManager.addRegion(p, r);
+			WorldGuardManager.saveRegions(p.getWorld());
+			WorldGuardManager.loadFlags(r);
+			
+			p.sendMessage("§2You have successfully created the "+r.getId()+" hotel");
+		}
 		else
 			p.sendMessage("§4Please select a region using the WE wand");
-		}
-	
+	}
+
 	public static void resetInventoryFiles(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
@@ -115,16 +117,16 @@ public class HotelsCreationMode {
 		}
 		else return;
 	}
-	
+
 	public static void saveInventory(CommandSender s){
 		Player p = ((Player) s);
 		ArrayList<ItemStack> list = new ArrayList<>();
 		UUID playerUUID = p.getUniqueId();
 		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
-		
+
 		if(!file.exists()){
 			try {
-			file.createNewFile();
+				file.createNewFile();
 			} catch (IOException e){
 				p.sendMessage(ChatColor.DARK_RED + "Could not store your inventory");
 			}
@@ -138,7 +140,7 @@ public class HotelsCreationMode {
 			}
 			inv.set("Inventory", list);
 			try {
-			inv.save(file);
+				inv.save(file);
 			} catch (IOException e) {
 				p.sendMessage(ChatColor.DARK_RED + "Could not store your inventory");
 			}
@@ -148,16 +150,16 @@ public class HotelsCreationMode {
 			p.sendMessage(ChatColor.DARK_RED + "Could not store your inventory");
 		}
 	}
-	
+
 	public static void saveArmour(CommandSender s){
 		Player p = ((Player) s);
 		ArrayList<ItemStack> list = new ArrayList<>();
 		UUID playerUUID = p.getUniqueId();
 		File file = new File("plugins//Hotels//Inventories//"+"Armour-"+playerUUID+".yml");
-		
+
 		if(!file.exists()){
 			try {
-			file.createNewFile();
+				file.createNewFile();
 			} catch (IOException e){
 				p.sendMessage(ChatColor.DARK_RED + "Could not store your armour");
 			}
@@ -171,7 +173,7 @@ public class HotelsCreationMode {
 			}
 			inv.set("Armour", list);
 			try {
-			inv.save(file);
+				inv.save(file);
 			} catch (IOException e) {
 				p.sendMessage(ChatColor.DARK_RED + "Could not store your armour");
 			}
@@ -181,70 +183,70 @@ public class HotelsCreationMode {
 			p.sendMessage(ChatColor.DARK_RED + "Could not store your armour");
 		}
 	}
-	
+
 	public static void loadArmour(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
 		File file = new File("plugins//Hotels//Inventories//"+"Armour-"+playerUUID+".yml");
-		
+
 		if(file.exists()){
 			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
 			p.getInventory().setArmorContents(null);
 			ItemStack[] contents = p.getInventory().getArmorContents();
 			List<?> list = inv.getList("Armour");
-			
+
 			for(int i = 0; i < list.size(); i++){
 				contents[i] = (ItemStack) list.get(i);
 			}
 			p.getInventory().setArmorContents(contents);
 			p.sendMessage(ChatColor.GREEN + "Your armour has been restored");
 			file.delete();
-			
+
 		}else{
 			p.sendMessage(ChatColor.DARK_RED + "Your armour could not be found!");
 		}
 	}
-	
+
 	public static void loadInventory(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
 		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
-		
+
 		if(file.exists()){
 			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
 			p.getInventory().clear();
 			ItemStack[] contents = p.getInventory().getContents();
 			List<?> list = inv.getList("Inventory");
-			
+
 			for(int i = 0; i < list.size(); i++){
 				contents[i] = (ItemStack) list.get(i);
 			}
 			p.getInventory().setContents(contents);
 			p.sendMessage(ChatColor.GREEN + "Your inventory has been restored");
 			file.delete();
-			
+
 		}else{
 			p.sendMessage(ChatColor.DARK_RED + "Your inventory could not be found!");
 		}
 	}
-	
-	 public static WorldEditPlugin getWorldEdit(){
-		 Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
-		 
-		 if (p instanceof WorldEditPlugin) return (WorldEditPlugin) p;
-		 else return null;
-	 }
-	
+
+	public static WorldEditPlugin getWorldEdit(){
+		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
+
+		if (p instanceof WorldEditPlugin) return (WorldEditPlugin) p;
+		else return null;
+	}
+
 	public static Selection getSelection(CommandSender s){
 		Player p = ((Player) s);
 		return getWorldEdit().getSelection(p);
 	}
-	
+
 	public static void giveItems(CommandSender s){
 		Player p = ((Player) s);
 		File file = new File("plugins//Worldedit//config.yml");
 		PlayerInventory pi = p.getInventory();
-		
+
 		if(file.exists()){
 			YamlConfiguration weconfig = YamlConfiguration.loadConfiguration(file);
 			if(!(weconfig == null)&&(weconfig.contains("wand-item"))&&!(weconfig.get("wand-item") == null)){
@@ -259,7 +261,7 @@ public class HotelsCreationMode {
 				im.setLore(loreList);
 				wand.setItemMeta(im);
 				pi.setItem(1, wand);
-				
+
 			}
 		}
 		ItemStack compass = new ItemStack(Material.COMPASS, 1);

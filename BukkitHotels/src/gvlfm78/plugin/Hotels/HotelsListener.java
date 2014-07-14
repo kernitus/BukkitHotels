@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import me.confuser.barapi.BarAPI;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,83 +18,104 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 public class HotelsListener implements Listener {
 	public final HashMap<Player, ArrayList<Block>> hashmapPlayerName = new HashMap<Player, ArrayList<Block>>();
-	
+
+	public HotelsMain plugin;
+
+	public HotelsListener(HotelsMain plugin){
+		this.plugin = plugin;
+	}
+
 	@EventHandler
 	public void onSignChange(SignChangeEvent e) {
-        Player p = e.getPlayer();
-        if(e.getLine(0).contains("[Hotels]")) {
-        	String Line2 = e.getLine(1);
-  			String Line3 = e.getLine(2);
-  			String Line4 = e.getLine(3);
-        		if (!(Line2.isEmpty())) {
-        			if(Integer.valueOf(Line3).equals(Line3)) {
-        				if(Line4.contains(":")) {
-        					//Successful Sign
-        					e.setLine(0, Line2);
-        					e.setLine(1, "§2Room " + Line2);
-        					
-        					//TODO Need to split Line 4 and Set line 3 as the first half of Line 4.
-        					e.setLine(2,"");
-        					p.sendMessage(ChatColor.DARK_GREEN + "Hotel sign has been successfully crated!");
-        					
-        					//TODO Add to config
-        					
-        			} else {
-        				p.sendMessage(ChatColor.DARK_RED + "Line 4 must contain a separator");    				
-        				e.setLine(0, "§4[Hotels]");
-        			}
-        		} else {
-        			p.sendMessage(ChatColor.DARK_RED + "Line 3 must be an integer!");        			
-    				e.setLine(0, "§4[Hotels]");
-        		}
-        	} else {
-        		p.sendMessage(ChatColor.DARK_RED + "Line 2 is empty!");        		
+		Player p = e.getPlayer();
+		if(e.getLine(0).contains("[Hotels]")) {
+			String Line2 = e.getLine(1);
+			String Line3 = e.getLine(2);
+			String Line4 = e.getLine(3);
+			if (!(Line2.isEmpty())) {
+				if(Integer.valueOf(Line3).equals(Line3)) {
+					if(Line4.contains(":")) {
+						//Successful Sign
+						e.setLine(0, Line2);
+						e.setLine(1, "§2Room " + Line2);
+
+						//TODO Need to split Line 4 and Set line 3 as the first half of Line 4.
+						e.setLine(2,"");
+						p.sendMessage(ChatColor.DARK_GREEN + "Hotel sign has been successfully crated!");
+
+						//TODO Add to config
+
+					} else {
+						p.sendMessage(ChatColor.DARK_RED + "Line 4 must contain a separator");    				
+						e.setLine(0, "§4[Hotels]");
+					}
+				} else {
+					p.sendMessage(ChatColor.DARK_RED + "Line 3 must be an integer!");        			
+					e.setLine(0, "§4[Hotels]");
+				}
+			} else {
+				p.sendMessage(ChatColor.DARK_RED + "Line 2 is empty!");        		
 				e.setLine(0, "§4[Hotels]");
-        	}
-        }
-    }
-	
+			}
+		}
+	}
+
 	@EventHandler
 	public void onSignUse(PlayerInteractEvent e) {
-		
-	if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK) {
-		if (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN) {
-			Sign s = (Sign) e.getClickedBlock().getState();
-			
-			//TODO We need to get from a YAML File. So on creating one lets make a Hashmap or list and add into Config!
-			if (s.getLine(0).equalsIgnoreCase("") && s.getLine(1).equalsIgnoreCase("")) {
-				@SuppressWarnings("unused")
-				Player p = e.getPlayer();
-				
-				//TODO get player name and add his name to config under the room?
+
+		if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK) {
+			if (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN) {
+				Sign s = (Sign) e.getClickedBlock().getState();
+
+				//TODO We need to get from a YAML File. So on creating one lets make a Hashmap or list and add into Config!
+				if (s.getLine(0).equalsIgnoreCase("") && s.getLine(1).equalsIgnoreCase("")) {
+					@SuppressWarnings("unused")
+					Player p = e.getPlayer();
+
+					//TODO get player name and add his name to config under the room?
 				}	
 			}
 		}
 	}	
-	
+
 	//When a player tries to drop an item/block
 	@EventHandler
-	public static void avoidDrop(PlayerDropItemEvent e) {
-		Player p = e.getPlayer();
-		UUID playerUUID = p.getUniqueId();
-		File file = new File("plugins//Hotels//Inventories//"+playerUUID+".yml");
-		
-		if(file.exists())
-		e.setCancelled(true);
-	}
-	
-	//When a player tries to drop an item/block
-	@EventHandler
-	public static void avoidPickup(PlayerPickupItemEvent e) {
+	public void avoidDrop(PlayerDropItemEvent e) {
 		Player p = e.getPlayer();
 		UUID playerUUID = p.getUniqueId();
 		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
-		
+
 		if(file.exists())
-		e.setCancelled(true);
+			e.setCancelled(true);
+	}
+
+	//When a player tries to pickup an item/block
+	@EventHandler
+	public void avoidPickup(PlayerPickupItemEvent e) {
+		Player p = e.getPlayer();
+		UUID playerUUID = p.getUniqueId();
+		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
+
+		if(file.exists())
+			e.setCancelled(true);
+	}
+
+	//Upon login check if player was in HCM mode, if yes, display boss bar
+	@EventHandler
+	public void bossBarCheck(PlayerJoinEvent e){
+		Player p = e.getPlayer();
+		if(plugin.getConfig().getBoolean("HCM.bossBar")==true){
+			UUID playerUUID = p.getUniqueId();
+			File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
+			if(file.exists()){
+				BarAPI.setMessage(p, "§2Hotel Creation Mode");
+			}
 		}
+
+	}
 }
