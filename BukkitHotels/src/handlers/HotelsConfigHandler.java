@@ -1,6 +1,6 @@
-package kernitus.plugin.Hotels;
+package handlers;
 
-import kernitus.plugin.Hotels.HotelsConfigHandler;
+import handlers.HotelsConfigHandler;
 
 import org.bukkit.plugin.Plugin;
 

@@ -1,8 +1,9 @@
 package kernitus.plugin.Hotels;
 
-import kernitus.plugin.Hotels.HotelsCommandHandler;
 import kernitus.plugin.Hotels.HotelsListener;
 import kernitus.plugin.Hotels.Metrics;
+import handlers.HotelsCommandHandler;
+import handlers.HotelsConfigHandler;
 
 import java.io.File;
 import java.io.IOException;

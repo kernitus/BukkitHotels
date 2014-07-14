@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import me.confuser.barapi.BarAPI;
+import managers.WorldGuardManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -19,9 +21,10 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 
 public class HotelsCreationMode {	
 	
@@ -31,6 +34,72 @@ public class HotelsCreationMode {
 			file.mkdir();
 		}
 	}
+	
+	public static void checkHotelsFolder(){
+		File file = new File("plugins//Hotels//Hotels");
+		if(!file.exists()){
+			file.mkdir();
+		}
+	}
+	
+	public static void saveHotelFile(String hotelName, CommandSender s){
+		File hotelFolder = new File("plugins//Hotels//Hotels//"+hotelName+"");
+		File hotelFile = new File("plugins//Hotels//Hotels//"+hotelName+"//"+hotelName+".yml");
+		Player p = (Player) s;
+		if(!hotelFolder.exists()){
+			hotelFolder.mkdir();}
+		if(hotelFile.exists()){
+			p.sendMessage("§4A hotel with this name already exists!");
+		}
+		else if(!hotelFile.exists()){
+			Selection selection = getWorldEdit().getSelection(p);
+			try {
+				hotelFile.createNewFile();
+			} catch (IOException e) {
+				p.sendMessage("§4Could not create Hotel file");
+			}
+			if (selection != null) {
+			World world = selection.getWorld();
+			Location min = selection.getMinimumPoint();
+			Location max = selection.getMaximumPoint();
+			YamlConfiguration hF = YamlConfiguration.loadConfiguration(hotelFile);
+			try {
+				hF.set("Hotel.name", hotelName);
+				hF.set("Hotel.world", world);
+				hF.set("Hotel.minpoint", min);
+				hF.set("Hotel.maxpoint", max);
+				hF.save(hotelFile);
+			} catch (IOException e) {
+				p.sendMessage("§4Could not save Hotel file");
+			}
+			
+			} else {
+			// No selection available
+			}
+		}
+	}
+	
+	public static void worldGuardSetup(String hotelName, CommandSender s){
+		Player p = (Player) s;
+		File hotelFile = new File("plugins//Hotels//Hotels//"+hotelName+"//"+hotelName+".yml");
+		Selection sel = getWorldEdit().getSelection(p);
+		if(hotelFile.exists()){
+			p.sendMessage("§4Could not create Hotel region, hotel already exists");
+			return;}
+		else if(!(sel==null)){
+		ProtectedCuboidRegion r = new ProtectedCuboidRegion(
+				hotelName, 
+				new BlockVector(sel.getNativeMinimumPoint()), 
+				new BlockVector(sel.getNativeMaximumPoint())
+		);
+		WorldGuardManager.addOwner(p, r);
+		WorldGuardManager.addRegion(p, r);
+		WorldGuardManager.saveRegions(p.getWorld());
+		p.sendMessage("§2You have successfully created the "+r.getId()+" hotel");
+	}
+		else
+			p.sendMessage("§4Please select a region using the WE wand");
+		}
 	
 	public static void resetInventoryFiles(CommandSender s){
 		Player p = ((Player) s);
@@ -165,17 +234,10 @@ public class HotelsCreationMode {
 		 if (p instanceof WorldEditPlugin) return (WorldEditPlugin) p;
 		 else return null;
 	 }
-	 
-	 public static WorldGuardPlugin getWorldGuard(){
-		 Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-		 
-		 if (p instanceof WorldGuardPlugin) return (WorldGuardPlugin) p;
-		 else return null;
-	 }
 	
-	public static void getSelection(CommandSender s){
+	public static Selection getSelection(CommandSender s){
 		Player p = ((Player) s);
-		Selection sel = getWorldEdit().getSelection(p);
+		return getWorldEdit().getSelection(p);
 	}
 	
 	public static void giveItems(CommandSender s){
@@ -187,6 +249,7 @@ public class HotelsCreationMode {
 			YamlConfiguration weconfig = YamlConfiguration.loadConfiguration(file);
 			if(!(weconfig == null)&&(weconfig.contains("wand-item"))&&!(weconfig.get("wand-item") == null)){
 				int wanditem = (int) weconfig.get("wand-item");
+				@SuppressWarnings("deprecation")
 				ItemStack wand = new ItemStack(wanditem, 1);
 				ItemMeta im = wand.getItemMeta();
 				im.setDisplayName("§bWorldEdit Wand");

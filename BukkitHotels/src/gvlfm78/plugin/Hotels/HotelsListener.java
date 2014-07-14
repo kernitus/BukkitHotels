@@ -9,8 +9,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -67,6 +65,7 @@ public class HotelsListener implements Listener {
 			
 			//TODO We need to get from a YAML File. So on creating one lets make a Hashmap or list and add into Config!
 			if (s.getLine(0).equalsIgnoreCase("") && s.getLine(1).equalsIgnoreCase("")) {
+				@SuppressWarnings("unused")
 				Player p = e.getPlayer();
 				
 				//TODO get player name and add his name to config under the room?
@@ -82,10 +81,8 @@ public class HotelsListener implements Listener {
 		UUID playerUUID = p.getUniqueId();
 		File file = new File("plugins//Hotels//Inventories//"+playerUUID+".yml");
 		
-		if(file.exists()){
-			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
+		if(file.exists())
 		e.setCancelled(true);
-	}
 	}
 	
 	//When a player tries to drop an item/block
@@ -95,9 +92,7 @@ public class HotelsListener implements Listener {
 		UUID playerUUID = p.getUniqueId();
 		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
 		
-		if(file.exists()){
-			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
+		if(file.exists())
 		e.setCancelled(true);
-	}
 		}
 }

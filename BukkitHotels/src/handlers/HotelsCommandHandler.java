@@ -1,6 +1,11 @@
-package kernitus.plugin.Hotels;
+package handlers;
 
+import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
+
+import java.io.File;
+import java.util.UUID;
+
 import me.confuser.barapi.BarAPI;
 
 import org.bukkit.ChatColor;
@@ -19,11 +24,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,String[] args) {
 		if(cmd.getName().equalsIgnoreCase("Hotels")){
 			if(sender.hasPermission("hotels.admin")||sender.isOp()){
-				if(sender instanceof Player){
-					Player player = (Player) sender;
-				}
-				else{
-				}
 				
 				if(args.length == 0){
 					sender.sendMessage("§4==========Hotels==========");
@@ -31,11 +31,11 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage("§2"+plugin.getDescription().getName()+" version "+plugin.getDescription().getVersion());
 					sender.sendMessage("§4Type §3/hotels help §4for help with the hotels");
 				}
-				else if((args.length == 1)&&(args[0].equalsIgnoreCase("help")||(args.length == 2)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("1"))))){
+				else if((args.length == 2)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("1"))||(args.length == 1)&&(args[0].equalsIgnoreCase("help")))){
 					sender.sendMessage("§4==========================");
 					sender.sendMessage("§2--Hotels plugin help page--");
 					sender.sendMessage(ChatColor.DARK_RED+"-Page 1- §9Selection of hotel cuboid");
-					sender.sendMessage(ChatColor.YELLOW+"Type §3§o/hotels create enter");
+					sender.sendMessage(ChatColor.YELLOW+"Type §3§o/hotels cm enter");
 					sender.sendMessage(ChatColor.YELLOW+"Take your WorldEdit wand in hand");
 					sender.sendMessage(ChatColor.YELLOW+"Left click and right click the opposite corners of your hotel");
 					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/hotels help 2§r§4 to get to page 2");
@@ -45,7 +45,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage("§4==========================");
 					sender.sendMessage("§2--Hotels plugin help page--");
 					sender.sendMessage(ChatColor.DARK_RED+"-Page 2- §9Creation of the hotel");
-					sender.sendMessage(ChatColor.YELLOW+"Type §3/hotels create nameofhotel");
+					sender.sendMessage(ChatColor.YELLOW+"Type §3§o/hotels create nameofhotel");
 					sender.sendMessage(ChatColor.YELLOW+"Go die in a hole");
 					sender.sendMessage(ChatColor.YELLOW+"Then explode in mid-air");
 					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/hotels help 3§r§4 to get to page 3");
@@ -94,7 +94,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 					HotelsCreationMode.giveItems(sender);
 					if(plugin.getConfig().getBoolean("HCM.bossBar")==true)
 					BarAPI.setMessage((Player) sender, "§2Hotel Creation Mode");
-					HotelsCreationMode.getSelection(sender);
 				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("exit"))&&(sender instanceof Player)){
 					sender.sendMessage(ChatColor.GREEN+"You have exited hotel creation mode.");
@@ -111,6 +110,18 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode")||(args.length == 1)&&(args[0].equalsIgnoreCase("cm")))){
 					sender.sendMessage(ChatColor.DARK_RED+"Please specify "+ChatColor.YELLOW+"enter"+ChatColor.DARK_RED+" or "+ChatColor.YELLOW+"exit "+ChatColor.DARK_RED+"mode");
+				}
+				else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player)){
+					Player p = (Player) sender;
+					UUID playerUUID = p.getUniqueId();
+					File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
+					if(file.exists()){
+						HotelsCreationMode.checkHotelsFolder();
+						HotelsCreationMode.worldGuardSetup(args[1], sender);
+						HotelsCreationMode.saveHotelFile(args[1], sender);
+					}
+					else
+						sender.sendMessage("§4Could not create hotel. Did you enter Hotel Creation Mode? (§3§o/hotels cm enter§r§4)");
 				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))||(args.length == 1)&&(args[0].equalsIgnoreCase("create")||(args.length == 1)&&(args[0].equalsIgnoreCase("c"))&&!(sender instanceof Player))){
 					sender.sendMessage("§4The console can't create a hotel!");
