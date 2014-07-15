@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import managers.WorldGuardManager;
 import me.confuser.barapi.BarAPI;
 
 import org.bukkit.ChatColor;
@@ -33,29 +34,38 @@ public class HotelsListener implements Listener {
 	@EventHandler
 	public void onSignChange(SignChangeEvent e) {
 		Player p = e.getPlayer();
-		if(e.getLine(0).contains("[Hotels]")) {
+		if(e.getLine(0).contains("[Hotels]")||e.getLine(0).contains("[hotels]")) {
 			String Line2 = e.getLine(1);
 			String Line3 = e.getLine(2);
 			String Line4 = e.getLine(3);
-			if (!(Line2.isEmpty())) {
-				if(Integer.valueOf(Line3).equals(Line3)) {
+			if ((!(Line2.isEmpty()))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(), e.getBlock().getY(), e.getBlock().getZ()))) {
+				if((Integer.valueOf(Line3).equals(Integer.valueOf(Line3)))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2+"-"+Line3))) {
 					if(Line4.contains(":")) {
 						//Successful Sign
-						e.setLine(0, Line2);
-						e.setLine(1, "§2Room " + Line2);
+						e.setLine(0, "§1"+Line2); //Hotel Name
+						e.setLine(1, "§2Room " + Line3); //Room Number
 
-						//TODO Need to split Line 4 and Set line 3 as the first half of Line 4.
-						e.setLine(2,"");
-						p.sendMessage(ChatColor.DARK_GREEN + "Hotel sign has been successfully crated!");
+						String[] parts = Line4.split(":");
+						String cost = parts[0]; //Cost
+						String time = parts[1]; //Time
+						
+						e.setLine(2,cost+"$");  //Cost
+						
+						time = time.replace("d", "d ");
+						time = time.replace("h", "h ");
+						time = time.replace("m", "m ");
+						
+						e.setLine(3,"§f"+time);      //Time
+						p.sendMessage(ChatColor.DARK_GREEN + "Hotel sign has been successfully created!");
 
 						//TODO Add to config
 
 					} else {
-						p.sendMessage(ChatColor.DARK_RED + "Line 4 must contain a separator");    				
+						p.sendMessage(ChatColor.DARK_RED + "Line 4 must contain the separator §3:");    				
 						e.setLine(0, "§4[Hotels]");
 					}
 				} else {
-					p.sendMessage(ChatColor.DARK_RED + "Line 3 must be an integer!");        			
+					p.sendMessage(ChatColor.DARK_RED + "Line 3 must be the number of a room!");        			
 					e.setLine(0, "§4[Hotels]");
 				}
 			} else {

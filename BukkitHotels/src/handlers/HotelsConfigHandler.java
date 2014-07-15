@@ -1,13 +1,7 @@
 package handlers;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import handlers.HotelsConfigHandler;
 
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 public class HotelsConfigHandler {
@@ -53,7 +47,7 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info("[Hotels] Language strings generated");
 	}
 
-	public void setupFlagsFile(Plugin plugin){
+	/*public void setupFlagsFile(Plugin plugin){
 		Map<String, String> flags = new HashMap<String, String>(66);
 
 		File configFile = new File("plugins//Hotels//flags.yml");
@@ -144,5 +138,5 @@ public class HotelsConfigHandler {
 			e.printStackTrace();
 			plugin.getLogger().severe("§4Could not save Flags file");
 		}
-	}
+	}*/
 }

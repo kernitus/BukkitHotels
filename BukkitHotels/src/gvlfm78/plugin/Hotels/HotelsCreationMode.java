@@ -10,7 +10,6 @@ import managers.WorldGuardManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -25,6 +24,7 @@ import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HotelsCreationMode {	
 
@@ -42,65 +42,57 @@ public class HotelsCreationMode {
 		}
 	}
 
-	public static void saveHotelFile(String hotelName, CommandSender s){
-		File hotelFolder = new File("plugins//Hotels//Hotels//"+hotelName+"");
-		File hotelFile = new File("plugins//Hotels//Hotels//"+hotelName+"//"+hotelName+".yml");
+	public static void hotelSetup(String hotelName, CommandSender s){
 		Player p = (Player) s;
-		if(!hotelFolder.exists()){
-			hotelFolder.mkdir();}
-		if(hotelFile.exists()){
-			p.sendMessage("§4A hotel with this name already exists!");
-		}
-		else if(!hotelFile.exists()){
-			Selection selection = getWorldEdit().getSelection(p);
-			try {
-				hotelFile.createNewFile();
-			} catch (IOException e) {
-				p.sendMessage("§4Could not create Hotel file");
-			}
-			if (selection != null) {
-				World world = selection.getWorld();
-				Location min = selection.getMinimumPoint();
-				Location max = selection.getMaximumPoint();
-				YamlConfiguration hF = YamlConfiguration.loadConfiguration(hotelFile);
-				try {
-					hF.set("Hotel.name", hotelName);
-					hF.set("Hotel.world", world);
-					hF.set("Hotel.minpoint", min);
-					hF.set("Hotel.maxpoint", max);
-					hF.save(hotelFile);
-				} catch (IOException e) {
-					p.sendMessage("§4Could not save Hotel file");
-				}
-
-			} else {
-				// No selection available
-			}
-		}
-	}
-
-	public static void worldGuardSetup(String hotelName, CommandSender s){
-		Player p = (Player) s;
-		File hotelFile = new File("plugins//Hotels//Hotels//"+hotelName+"//"+hotelName+".yml");
 		Selection sel = getWorldEdit().getSelection(p);
-		if(hotelFile.exists()){
-			p.sendMessage("§4Could not create Hotel region, hotel already exists");
+		if((WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName))){
+			p.sendMessage("§4Could not create Hotel, hotel already exists");
 			return;}
 		else if(!(sel==null)){
 			ProtectedCuboidRegion r = new ProtectedCuboidRegion(
-					hotelName, 
+					"Hotel-"+hotelName, 
 					new BlockVector(sel.getNativeMinimumPoint()), 
 					new BlockVector(sel.getNativeMaximumPoint())
 					);
 			WorldGuardManager.addOwner(p, r);
 			WorldGuardManager.addRegion(p, r);
+			WorldGuardManager.hotelFlags(r,hotelName);
 			WorldGuardManager.saveRegions(p.getWorld());
-			WorldGuardManager.loadFlags(r);
 			
 			p.sendMessage("§2You have successfully created the "+r.getId()+" hotel");
 		}
 		else
 			p.sendMessage("§4Please select a region using the WE wand");
+	}
+	
+	public static void roomSetup(String hotelName,int roomNum,CommandSender s){
+		Player p = (Player) s;
+		
+		Selection sel = getWorldEdit().getSelection(p);
+		World world = p.getWorld();
+		ProtectedRegion pr = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegionExact("Hotel-"+hotelName);
+		if(!(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName))){
+			p.sendMessage("§4Could not create room, hotel does not exist");
+			return;}
+		else if(!(sel==null)&&
+				(pr.contains(sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(), sel.getMinimumPoint().getBlockZ()))){
+			ProtectedCuboidRegion r = new ProtectedCuboidRegion(
+					"Hotel-"+hotelName+"-"+roomNum, 
+					new BlockVector(sel.getNativeMinimumPoint()), 
+					new BlockVector(sel.getNativeMaximumPoint())
+					);
+			WorldGuardManager.addOwner(p, r);
+			WorldGuardManager.addRegion(p, r);
+			WorldGuardManager.roomFlags(r,hotelName, p, roomNum);
+			r.setPriority(1);
+			WorldGuardManager.saveRegions(p.getWorld());
+		}
+		else if(!(sel==null)&&
+				(!(pr.contains(sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(), sel.getMinimumPoint().getBlockZ())))){
+			p.sendMessage("§4The room is not in the specified hotel!");
+		}
+		else if(sel==null)
+			p.sendMessage("§4Select the hotel area using the worldedit wand");
 	}
 
 	public static void resetInventoryFiles(CommandSender s){

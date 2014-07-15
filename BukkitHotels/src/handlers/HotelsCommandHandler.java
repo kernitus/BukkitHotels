@@ -6,6 +6,7 @@ import kernitus.plugin.Hotels.HotelsMain;
 import java.io.File;
 import java.util.UUID;
 
+import managers.WorldGuardManager;
 import me.confuser.barapi.BarAPI;
 
 import org.bukkit.ChatColor;
@@ -116,9 +117,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					UUID playerUUID = p.getUniqueId();
 					File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
 					if(file.exists()){
-						HotelsCreationMode.checkHotelsFolder();
-						HotelsCreationMode.worldGuardSetup(args[1], sender);
-						HotelsCreationMode.saveHotelFile(args[1], sender);
+						HotelsCreationMode.hotelSetup(args[1], sender);
 					}
 					else
 						sender.sendMessage("§4Could not create hotel. Did you enter Hotel Creation Mode? (§3§o/hotels cm enter§r§4)");
@@ -132,6 +131,24 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode"))&&!(sender instanceof Player)){
 					sender.sendMessage("§4The console can't use hotel creation mode!");
+				}
+				else if((args.length == 3)&&(args[0].equalsIgnoreCase("room"))&&(sender instanceof Player)){
+					String hotelName = args[1];
+					Player p = (Player) sender;
+					
+					if(!(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)))
+						sender.sendMessage("§4The specified hotel does not exist");
+					else{
+						try{
+						int roomNum = Integer.parseInt(args[2]);
+						HotelsCreationMode.roomSetup(hotelName, roomNum, sender);
+						} catch(NumberFormatException e){
+							sender.sendMessage("§4The room number is not an integer!");
+						}
+					}	
+				}
+				else if(((args.length ==1)||(args.length ==2))&&(args[0].equalsIgnoreCase("room"))){
+					sender.sendMessage("§4Correct Usage: §o/hotels room hotelname roomnum");
 				}
 			}
 		}

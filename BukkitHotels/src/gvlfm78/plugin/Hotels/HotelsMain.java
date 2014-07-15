@@ -35,7 +35,7 @@ public class HotelsMain extends JavaPlugin{
 
 			getLogger().info(this.getDescription().getName() + " " + getDescription().getVersion() + " has been enabled");
 			
-			hconfigh.setupFlagsFile(this);
+			//hconfigh.setupFlagsFile(this);
 			getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has setup the flags correctly correctly");
 			
 			try {
