@@ -69,7 +69,7 @@ public class HotelsListener implements Listener {
 					e.setLine(0, "§4[Hotels]");
 				}
 			} else {
-				p.sendMessage(ChatColor.DARK_RED + "Line 2 is empty!");        		
+				p.sendMessage(ChatColor.DARK_RED + "Sign was not placed within hotel borders");        		
 				e.setLine(0, "§4[Hotels]");
 			}
 		}
