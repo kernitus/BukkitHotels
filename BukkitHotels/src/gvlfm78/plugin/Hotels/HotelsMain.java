@@ -7,6 +7,7 @@ import handlers.HotelsConfigHandler;
 import java.io.File;
 import java.io.IOException;
 
+import managers.GameLoop;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -17,8 +18,10 @@ public class HotelsMain extends JavaPlugin{
 
 	public static Economy econ = null; //Creating economy variable
 	HotelsConfigHandler hconfigh = HotelsConfigHandler.getInstance();
-
-
+	
+	public static int GameLoop = 0;
+	public static int timeInSeconds;
+	
 	@Override
 	public void onEnable(){
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -32,12 +35,13 @@ public class HotelsMain extends JavaPlugin{
 		if (!setupEconomy() && getConfig().getBoolean("useEconomy")) {//If economy is turned on
 			//But no vault is found it will warn the user
 			getLogger().severe(String.format("[%s] - No Vault dependency found!", getDescription().getName()));}
-
-			getLogger().info(this.getDescription().getName() + " " + getDescription().getVersion() + " has been enabled");
 			
 			//hconfigh.setupFlagsFile(this);
-			getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has setup the flags correctly correctly");
+			//getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has setup the flags correctly correctly");
 			
+		timeInSeconds = 120;
+		GameLoop = getServer().getScheduler().scheduleSyncRepeatingTask(this, new GameLoop(), 1200l, 1200l);
+		
 			try {
 				Metrics metrics = new Metrics(this);
 				metrics.start();
@@ -52,6 +56,8 @@ public class HotelsMain extends JavaPlugin{
 
 		reloadConfig();
 		saveConfig();
+		
+		getServer().getScheduler().cancelTask(GameLoop);
 
 		PluginDescriptionFile pdfFile = this.getDescription();//Logging to console the disabling of Hotels
 		getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has been disabled");

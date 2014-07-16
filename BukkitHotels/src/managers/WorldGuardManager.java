@@ -38,6 +38,12 @@ public class WorldGuardManager {
 		members.addPlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
 		r.setMembers(members);
 	}
+	
+	public static void removeMember(Player p, ProtectedCuboidRegion r){
+		DefaultDomain members = new DefaultDomain();
+		members.removePlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
+		r.setMembers(members);
+	}
 
 	public static void addRegion(Player p, ProtectedCuboidRegion r){
 		getWorldGuard().getRegionManager(p.getWorld()).addRegion(r);
