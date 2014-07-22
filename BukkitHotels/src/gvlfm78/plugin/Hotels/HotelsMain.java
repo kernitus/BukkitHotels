@@ -7,6 +7,8 @@ import handlers.HotelsConfigHandler;
 import java.io.File;
 import java.io.IOException;
 
+import managers.CustomConfig;
+import managers.CustomConfigManager;
 import managers.GameLoop;
 import net.milkbowl.vault.economy.Economy;
 
@@ -16,63 +18,71 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class HotelsMain extends JavaPlugin{
 
-	public static Economy econ = null; //Creating economy variable
+	public static Economy economy = null; //Creating economy variable
 	HotelsConfigHandler hconfigh = HotelsConfigHandler.getInstance();
-	
-	public static int GameLoop = 0;
-	public static int timeInSeconds;
-	
+	GameLoop gameloop;
+	CustomConfigManager manager;
+	CustomConfig signConfig;
+
 	@Override
 	public void onEnable(){
+		//Config file stuff
 		PluginDescriptionFile pdfFile = this.getDescription();
 		if (!new File(getDataFolder(), "config.yml").exists()) { //Checking if config file exists
 			hconfigh.setupConfig(this);//Creates config file
 			hconfigh.setupLanguageEnglish(this);//Adds language strings
 		}
+		//Listeners and stuff
 		getServer().getPluginManager().registerEvents((new HotelsListener(this)), this);//Firing event listener
 		getCommand("Hotels").setExecutor(new HotelsCommandHandler(this));//Firing commands listener
-		setupEconomy();//Setting up the economy
-		if (!setupEconomy() && getConfig().getBoolean("useEconomy")) {//If economy is turned on
-			//But no vault is found it will warn the user
+		setupEconomy();
+
+		//Economy and stuff
+		if (!setupEconomy()) {
+			//If economy is turned on
+			//but no vault is found it will warn the user
 			getLogger().severe(String.format("[%s] - No Vault dependency found!", getDescription().getName()));}
-			
-			//hconfigh.setupFlagsFile(this);
-			//getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has setup the flags correctly correctly");
-			
-		timeInSeconds = 120;
-		GameLoop = getServer().getScheduler().scheduleSyncRepeatingTask(this, new GameLoop(), 1200l, 1200l);
-		
-			try {
-				Metrics metrics = new Metrics(this);
-				metrics.start();
-			} catch (IOException e) {
-				// Failed to submit the stats :-(
-			}
-			//Logging to console the correct enabling of Hotels
-			getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has been enabled correctly");
+
+		//hconfigh.setupFlagsFile(this);
+		//getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has setup the flags correctly correctly");
+
+		manager = new CustomConfigManager(this);
+
+		//GameLoop stuff
+		//gameloop = new GameLoop(this);
+		gameloop = new GameLoop(this);
+		gameloop.runTaskTimer(this, 200, 2*60*20);
+
+		//Metrics stuff
+		try {
+			Metrics metrics = new Metrics(this);
+			metrics.start();
+		} catch (IOException e) {
+			// Failed to submit the stats :-(
+		}
+		//Logging to console the correct enabling of Hotels
+		getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has been enabled correctly");
 	}
 	@Override
 	public void onDisable(){
 
 		reloadConfig();
 		saveConfig();
-		
-		getServer().getScheduler().cancelTask(GameLoop);
+
+		gameloop.cancel();
 
 		PluginDescriptionFile pdfFile = this.getDescription();//Logging to console the disabling of Hotels
 		getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has been disabled");
 	}
 
-	private boolean setupEconomy() {//Setting up the economy
-		if (getServer().getPluginManager().getPlugin("Vault") == null) {
-			return false;
+	//Setting up the economy
+	private boolean setupEconomy()
+	{
+		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+		if (economyProvider != null) {
+			economy = economyProvider.getProvider();
 		}
-		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-		if (rsp == null) {
-			return false;
-		}
-		econ = rsp.getProvider();
-		return econ != null;
 
+		return (economy != null);
 	}
 }

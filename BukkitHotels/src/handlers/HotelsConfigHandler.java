@@ -11,6 +11,7 @@ public class HotelsConfigHandler {
 	public static HotelsConfigHandler getInstance() {
 		return instance;
 	}
+	
 	public void setupConfig(Plugin plugin){
 		plugin.getLogger().info("[Hotels] Generating config file...");
 		plugin.getConfig().options().header("Hotels Plugin by kernitus");
@@ -29,7 +30,7 @@ public class HotelsConfigHandler {
 		plugin.getConfig().addDefault("onCommand.messageReloadConfig", String.valueOf("Configuration file reloaded"));
 		plugin.getConfig().addDefault("onCommand.messageVersion", String.valueOf("version"));
 		plugin.getConfig().addDefault("onCommand.messageNoPermission", String.valueOf("You are not allowed to use that command"));
-
+		
 		plugin.getConfig().options().copyDefaults(true);
 		plugin.saveConfig();
 		plugin.getLogger().info("[Hotels] Language strings generated");

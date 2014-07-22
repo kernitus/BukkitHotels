@@ -19,12 +19,13 @@ public class HotelsFileFinder {
 	    //create a FilenameFilter and override its accept-method
 	    FilenameFilter filefilter = new FilenameFilter() {
 	 
+	    	@Override
 	      public boolean accept(File dir, String name) {
 	        //if the file extension is .yml return true, else false
 	        return name.endsWith(".yml");
 	      }
 	    };
-	 
+	    
 	    String[] filenames = directory.list(filefilter);
 	 
 	    ArrayList<String> nameslist = new ArrayList<>();

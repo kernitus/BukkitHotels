@@ -4,16 +4,25 @@ import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
+import managers.HotelsFileFinder;
 import managers.WorldGuardManager;
 import me.confuser.barapi.BarAPI;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
+import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HotelsCommandHandler implements CommandExecutor {
 	private HotelsMain plugin;
@@ -122,36 +131,90 @@ public class HotelsCommandHandler implements CommandExecutor {
 					else
 						sender.sendMessage("§4Could not create hotel. Did you enter Hotel Creation Mode? (§3§o/hotels cm enter§r§4)");
 				}
-				else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))||(args.length == 1)&&(args[0].equalsIgnoreCase("create")||(args.length == 1)&&(args[0].equalsIgnoreCase("c"))&&!(sender instanceof Player))){
-					sender.sendMessage("§4The console can't create a hotel!");
+				else if((args.length == 2)||(args.length == 3)&&(args[0].equalsIgnoreCase("delete")||(args[0].equalsIgnoreCase("del")))){
+					if(sender instanceof Player){
+						Player p = (Player) sender;
+						World world = p.getWorld();
+						removeRegions(args[1],world,sender);
+					}
+					else if((sender instanceof Player)&&(args.length == 3)){
+						World world = Bukkit.getWorld(args[2]);
+						removeRegions(args[1],world,sender);
+					}
+					else{}
 				}
-				else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player)){
-					sender.sendMessage(ChatColor.GREEN+"You have exited hotel creation mode.");
-					HotelsCreationMode.loadInventory(sender);
-				}
-				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode"))&&!(sender instanceof Player)){
-					sender.sendMessage("§4The console can't use hotel creation mode!");
-				}
-				else if((args.length == 3)&&(args[0].equalsIgnoreCase("room"))&&(sender instanceof Player)){
-					String hotelName = args[1];
-					Player p = (Player) sender;
-					
-					if(!(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)))
-						sender.sendMessage("§4The specified hotel does not exist");
-					else{
-						try{
-						int roomNum = Integer.parseInt(args[2]);
-						HotelsCreationMode.roomSetup(hotelName, roomNum, sender);
-						} catch(NumberFormatException e){
-							sender.sendMessage("§4The room number is not an integer!");
-						}
-					}	
-				}
-				else if(((args.length ==1)||(args.length ==2))&&(args[0].equalsIgnoreCase("room"))){
-					sender.sendMessage("§4Correct Usage: §o/hotels room hotelname roomnum");
-				}
+				//ArrayList<String> regionlist = HotelsFileFinder.listFiles("plugins//Hotels//Signs");
 			}
 		}
+		else if((args.length == 1)&&(args[0].equalsIgnoreCase("delete")||(args[0].equalsIgnoreCase("del")))){
+			sender.sendMessage("§cPlease specify the hotel name");
+		}
+		else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))||(args.length == 1)&&(args[0].equalsIgnoreCase("create")||(args.length == 1)&&(args[0].equalsIgnoreCase("c"))&&!(sender instanceof Player))){
+			sender.sendMessage("§4The console can't create a hotel!");
+		}
+		else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player)){
+			sender.sendMessage(ChatColor.GREEN+"You have exited hotel creation mode.");
+			HotelsCreationMode.loadInventory(sender);
+		}
+		else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode"))&&!(sender instanceof Player)){
+			sender.sendMessage("§4The console can't use hotel creation mode!");
+		}
+		else if((args.length == 3)&&(args[0].equalsIgnoreCase("room"))&&(sender instanceof Player)){
+			String hotelName = args[1];
+			Player p = (Player) sender;
+
+			if(!(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)))
+				sender.sendMessage("§4The specified hotel does not exist");
+			else{
+				try{
+					int roomNum = Integer.parseInt(args[2]);
+					HotelsCreationMode.roomSetup(hotelName, roomNum, sender);
+				} catch(NumberFormatException e){
+					sender.sendMessage("§4The room number is not an integer!");
+				}
+			}	
+		}
+		else if(((args.length ==1)||(args.length ==2))&&(args[0].equalsIgnoreCase("room"))){
+			sender.sendMessage("§4Correct Usage: §o/hotels room hotelname roomnum");
+		}
 		return false;
+	}
+	private void removeRegions(String hotelName,World world,CommandSender sender){
+		if(WorldGuardManager.getWorldGuard().getRegionManager(world).hasRegion("Hotel-"+hotelName)){
+			WorldGuardManager.getWorldGuard().getRegionManager(world).removeRegion("Hotel-"+hotelName);
+
+			Map<String, ProtectedRegion> regionlist = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegions();
+			int Counter = regionlist.size();
+			plugin.getLogger().info(String.valueOf(Counter));
+			while(Counter>0){
+				if(WorldGuardManager.getWorldGuard().getRegionManager(world).hasRegion("Hotel-"+hotelName+"-"+Counter)){
+					ProtectedRegion goodregion = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegion("Hotel-"+hotelName+"-"+Counter);
+					WorldGuardManager.getWorldGuard().getRegionManager(world).removeRegion(goodregion.getId());
+					Counter--;
+				}
+				else
+					Counter--;
+			}
+			try {
+				WorldGuardManager.getWorldGuard().getRegionManager(world).save();
+				sender.sendMessage("§aSuccesfully deleted hotel regions");
+			} catch (ProtectionDatabaseException e) {
+				sender.sendMessage("§4Could not delete hotel regions");
+				e.printStackTrace();
+			}
+
+		}
+	}
+	private void removeSigns(String hotelName,World world,CommandSender sender){
+		if(WorldGuardManager.getWorldGuard().getRegionManager(world).hasRegion("Hotel-"+hotelName)){
+			WorldGuardManager.getWorldGuard().getRegionManager(world).removeRegion("Hotel-"+hotelName);
+			ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins//Hotels//Signs");
+
+			for(String x: fileslist){
+				File file = new File("plugins//Hotels//Signs//"+x);
+
+				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+			}
+		}
 	}
 }

@@ -57,6 +57,7 @@ public class HotelsCreationMode {
 			WorldGuardManager.addOwner(p, r);
 			WorldGuardManager.addRegion(p, r);
 			WorldGuardManager.hotelFlags(r,hotelName);
+			r.setPriority(0);
 			WorldGuardManager.saveRegions(p.getWorld());
 			
 			p.sendMessage("§2You have successfully created the "+r.getId()+" hotel");

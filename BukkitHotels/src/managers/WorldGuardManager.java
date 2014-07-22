@@ -132,9 +132,9 @@ public class WorldGuardManager {
 		flags.put(DefaultFlag.POTION_SPLASH, State.DENY);
 		//flags.put(DefaultFlag.BLOCKED_CMDS, SetFlag<T>);
 		//flags.put(DefaultFlag.ALLOWED_CMDS, State.DENY);
-		/*Double price = 15.0;
-		flags.put(DefaultFlag.PRICE, price);
-		flags.put(DefaultFlag.BUYABLE, Boolean.TRUE);*/
+		//Double price = 0.0;
+		//flags.put(DefaultFlag.PRICE, price);
+		flags.put(DefaultFlag.BUYABLE, Boolean.FALSE);
 		
 		r.setFlags(flags);
 }
@@ -204,9 +204,9 @@ public class WorldGuardManager {
 		flags.put(DefaultFlag.POTION_SPLASH, State.DENY);
 		//flags.put(DefaultFlag.BLOCKED_CMDS, State.DENY);
 		//flags.put(DefaultFlag.ALLOWED_CMDS, State.DENY);
-		Double price = 15.0;
-		flags.put(DefaultFlag.PRICE, price);
-		flags.put(DefaultFlag.BUYABLE, Boolean.TRUE);
+		//Double price = 0.0;
+		//flags.put(DefaultFlag.PRICE, price);
+		flags.put(DefaultFlag.BUYABLE, Boolean.FALSE);
 		
 		r.setFlags(flags);
 }
