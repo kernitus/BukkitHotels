@@ -32,13 +32,13 @@ public class WorldGuardManager {
 		owners.addPlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
 		r.setOwners(owners);
 	}
-	
+
 	public static void addMember(Player p, ProtectedCuboidRegion r){
 		DefaultDomain members = new DefaultDomain();
 		members.addPlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
 		r.setMembers(members);
 	}
-	
+
 	public static void removeMember(Player p, ProtectedCuboidRegion r){
 		DefaultDomain members = new DefaultDomain();
 		members.removePlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
@@ -64,11 +64,11 @@ public class WorldGuardManager {
 
 		File configFile = new File("plugins//Hotels//flags.yml");
 		YamlConfiguration cf = YamlConfiguration.loadConfiguration(configFile);
-		
+
 		flags.putAll("com.sk89q.worldguard.protection.flags.StateFlag {}"+flagsOld+"com.sk89q.worldguard.protection.flags.StateFlag$State");
 		flags.putAll(map);
-		*/
-		
+		 */
+
 		flags.put(DefaultFlag.PASSTHROUGH, State.ALLOW);
 		flags.put(DefaultFlag.BUILD, State.DENY);
 		//flags.put(DefaultFlag.CONSTRUCT, State.DENY);
@@ -135,9 +135,9 @@ public class WorldGuardManager {
 		//Double price = 0.0;
 		//flags.put(DefaultFlag.PRICE, price);
 		flags.put(DefaultFlag.BUYABLE, Boolean.FALSE);
-		
+
 		r.setFlags(flags);
-}
+	}
 	public static void roomFlags(ProtectedCuboidRegion r,String hotelName,Player p,int roomNum){
 
 		Map<Flag<?>, Object> flags = new HashMap<Flag<?>, Object>(66);
@@ -207,7 +207,7 @@ public class WorldGuardManager {
 		//Double price = 0.0;
 		//flags.put(DefaultFlag.PRICE, price);
 		flags.put(DefaultFlag.BUYABLE, Boolean.FALSE);
-		
+
 		r.setFlags(flags);
-}
+	}
 }

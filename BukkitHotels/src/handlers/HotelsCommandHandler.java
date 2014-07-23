@@ -14,7 +14,9 @@ import me.confuser.barapi.BarAPI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -135,47 +137,53 @@ public class HotelsCommandHandler implements CommandExecutor {
 					if(sender instanceof Player){
 						Player p = (Player) sender;
 						World world = p.getWorld();
+						removeSigns(args[1],world,sender);
 						removeRegions(args[1],world,sender);
 					}
 					else if((sender instanceof Player)&&(args.length == 3)){
 						World world = Bukkit.getWorld(args[2]);
+						removeSigns(args[1],world,sender);
 						removeRegions(args[1],world,sender);
 					}
 					else{}
 				}
 				//ArrayList<String> regionlist = HotelsFileFinder.listFiles("plugins//Hotels//Signs");
-			}
-		}
-		else if((args.length == 1)&&(args[0].equalsIgnoreCase("delete")||(args[0].equalsIgnoreCase("del")))){
-			sender.sendMessage("§cPlease specify the hotel name");
-		}
-		else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))||(args.length == 1)&&(args[0].equalsIgnoreCase("create")||(args.length == 1)&&(args[0].equalsIgnoreCase("c"))&&!(sender instanceof Player))){
-			sender.sendMessage("§4The console can't create a hotel!");
-		}
-		else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player)){
-			sender.sendMessage(ChatColor.GREEN+"You have exited hotel creation mode.");
-			HotelsCreationMode.loadInventory(sender);
-		}
-		else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode"))&&!(sender instanceof Player)){
-			sender.sendMessage("§4The console can't use hotel creation mode!");
-		}
-		else if((args.length == 3)&&(args[0].equalsIgnoreCase("room"))&&(sender instanceof Player)){
-			String hotelName = args[1];
-			Player p = (Player) sender;
-
-			if(!(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)))
-				sender.sendMessage("§4The specified hotel does not exist");
-			else{
-				try{
-					int roomNum = Integer.parseInt(args[2]);
-					HotelsCreationMode.roomSetup(hotelName, roomNum, sender);
-				} catch(NumberFormatException e){
-					sender.sendMessage("§4The room number is not an integer!");
+				else if((args.length == 1)&&(args[0].equalsIgnoreCase("delete")||(args[0].equalsIgnoreCase("del")))){
+					sender.sendMessage("§cPlease specify the hotel name");
 				}
-			}	
-		}
-		else if(((args.length ==1)||(args.length ==2))&&(args[0].equalsIgnoreCase("room"))){
-			sender.sendMessage("§4Correct Usage: §o/hotels room hotelname roomnum");
+				else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))||(args.length == 1)&&(args[0].equalsIgnoreCase("create")||(args.length == 1)&&(args[0].equalsIgnoreCase("c"))&&!(sender instanceof Player))){
+					sender.sendMessage("§4The console can't create a hotel!");
+				}
+				else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player)){
+					sender.sendMessage(ChatColor.GREEN+"You have exited hotel creation mode.");
+					HotelsCreationMode.loadInventory(sender);
+				}
+				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode"))&&!(sender instanceof Player)){
+					sender.sendMessage("§4The console can't use hotel creation mode!");
+				}
+				else if((args.length == 3)&&(args[0].equalsIgnoreCase("room"))&&(sender instanceof Player)){
+					String hotelName = args[1];
+					Player p = (Player) sender;
+
+					if(!(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)))
+						sender.sendMessage("§4The specified hotel does not exist");
+					else{
+						try{
+							int roomNum = Integer.parseInt(args[2]);
+							HotelsCreationMode.roomSetup(hotelName, roomNum, sender);
+							sender.sendMessage("§aYou created room "+roomNum+" of the "+hotelName+" hotel");
+						} catch(NumberFormatException e){
+							sender.sendMessage("§4The room number is not an integer!");
+						}
+					}	
+				}
+				else if(((args.length ==1)||(args.length ==2))&&(args[0].equalsIgnoreCase("room"))){
+					sender.sendMessage("§4Correct Usage: §o/hotels room hotelname roomnum");
+				}
+				else {
+					sender.sendMessage("§4Unknown argument. Try §3§o/hotels");
+				}
+			}
 		}
 		return false;
 	}
@@ -185,7 +193,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 			Map<String, ProtectedRegion> regionlist = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegions();
 			int Counter = regionlist.size();
-			plugin.getLogger().info(String.valueOf(Counter));
 			while(Counter>0){
 				if(WorldGuardManager.getWorldGuard().getRegionManager(world).hasRegion("Hotel-"+hotelName+"-"+Counter)){
 					ProtectedRegion goodregion = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegion("Hotel-"+hotelName+"-"+Counter);
@@ -207,14 +214,25 @@ public class HotelsCommandHandler implements CommandExecutor {
 	}
 	private void removeSigns(String hotelName,World world,CommandSender sender){
 		if(WorldGuardManager.getWorldGuard().getRegionManager(world).hasRegion("Hotel-"+hotelName)){
-			WorldGuardManager.getWorldGuard().getRegionManager(world).removeRegion("Hotel-"+hotelName);
 			ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins//Hotels//Signs");
 
 			for(String x: fileslist){
 				File file = new File("plugins//Hotels//Signs//"+x);
-
-				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+				String[] parts = x.split("-");
+				String chotelName = parts[0];
+				if(chotelName.equalsIgnoreCase(hotelName)){
+					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+					int locx = config.getInt("Sign.location.coords.x");
+					int locy = config.getInt("Sign.location.coords.y");
+					int locz = config.getInt("Sign.location.coords.z");
+					Block signblock = world.getBlockAt(locx, locy, locz);
+					signblock.setType(Material.AIR);
+					signblock.breakNaturally();
+					file.delete();
+					sender.sendMessage("§aSuccessfully destroyed sign "+x);
+				}
 			}
+			sender.sendMessage("§aSuccessfully destroyed all signs");
 		}
 	}
 }

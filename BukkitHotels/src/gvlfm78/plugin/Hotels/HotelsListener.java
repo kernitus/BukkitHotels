@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
@@ -149,9 +150,9 @@ public class HotelsListener implements Listener {
 												if(account>=price){
 													HotelsMain.economy.withdrawPlayer(p, price);
 
-											signConfig.set("Sign.renter", p.getUniqueId().toString());
-											signConfig.set("Sign.timeRentedAt", System.currentTimeMillis()/1000/60);
-											/*int days = signConfig.getInt("Sign.time.days");
+													signConfig.set("Sign.renter", p.getUniqueId().toString());
+													signConfig.set("Sign.timeRentedAt", System.currentTimeMillis()/1000/60);
+													/*int days = signConfig.getInt("Sign.time.days");
 						int hours = signConfig.getInt("Sign.time.hours");
 						int mins = signConfig.getInt("Sign.time.mins");
 
@@ -161,41 +162,41 @@ public class HotelsListener implements Listener {
 
 						long expirydate = System.currentTimeMillis()+daysinmillis+hoursinmillis+minsinmillis;*/
 
-											int minutes = signConfig.getInt("Sign.time");
-											int millistoexpire = minutes;
-											long expirydate = System.currentTimeMillis()/1000/60+millistoexpire;
+													int minutes = signConfig.getInt("Sign.time");
+													int millistoexpire = minutes;
+													long expirydate = System.currentTimeMillis()/1000/60+millistoexpire;
 
 
-											signConfig.set("Sign.expiryDate", expirydate);
+													signConfig.set("Sign.expiryDate", expirydate);
 
-											try {
-												signConfig.save(signFile);
-											} catch (IOException e1) {
-												e1.printStackTrace();
-											}
-											ProtectedRegion r = WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+cHotelName+"-"+cRoomNum);
-											WorldGuardManager.addMember(p, (ProtectedCuboidRegion) r);
-											try {
-												WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).save();
-											} catch (ProtectionDatabaseException e1) {
-												e1.printStackTrace();
-											}
-											s.setLine(3, "§c"+p.getName());
-											s.update();
+													try {
+														signConfig.save(signFile);
+													} catch (IOException e1) {
+														e1.printStackTrace();
+													}
+													ProtectedRegion r = WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+cHotelName+"-"+cRoomNum);
+													WorldGuardManager.addMember(p, (ProtectedCuboidRegion) r);
+													try {
+														WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).save();
+													} catch (ProtectionDatabaseException e1) {
+														e1.printStackTrace();
+													}
+													s.setLine(3, "§c"+p.getName());
+													s.update();
+													r.setFlag(DefaultFlag.GREET_MESSAGE, ("&cWelcome to room "+roomNum+" , "+p.getName()));
 													p.sendMessage("§aYou have rented room "+roomNum+" of the "+hotelName+" hotel for "+price);
 												}
-											else{
-												double topay = price-account;
-												p.sendMessage("§4You do not have enough money! You need another "+topay);
-											}
+												else{
+													double topay = price-account;
+													p.sendMessage("§4You do not have enough money! You need another "+topay);
+												}
 											}
 										}
 										else
 											p.sendMessage("§4This room has already been rented");
-										}
-										else
-											p.sendMessage("§4You cannot rent this room");
 									}
+									else
+										p.sendMessage("§4You cannot rent this room");
 								}
 							}
 						}
@@ -203,6 +204,7 @@ public class HotelsListener implements Listener {
 				}
 			}
 		}
+	}
 
 	//When a player tries to drop an item/block
 	@EventHandler
