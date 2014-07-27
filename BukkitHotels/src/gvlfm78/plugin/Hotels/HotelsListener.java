@@ -5,6 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
 
 import managers.WorldGuardManager;
 import me.confuser.barapi.BarAPI;
@@ -41,167 +46,173 @@ public class HotelsListener implements Listener {
 	@EventHandler
 	public void onSignChange(SignChangeEvent e) {
 		Player p = e.getPlayer();
-		if(e.getLine(0).contains("[Hotels]")||e.getLine(0).contains("[hotels]")) {
-			String Line2 = e.getLine(1);
-			String Line3 = e.getLine(2);
-			String Line4 = e.getLine(3);
+		if(e.getLine(0).toLowerCase().contains("[hotels]")) {
+			if(p.hasPermission("hotels.sign.create")){
+				String Line2 = e.getLine(1);
+				String Line3 = e.getLine(2);
+				String Line4 = e.getLine(3);
 
-			File directory = new File("plugins//Hotels//Signs");
-			if(directory.exists()){}
-			else
-				directory.mkdir();
+				File directory = new File("plugins//Hotels//Signs");
+				if(directory.exists()){}
+				else
+					directory.mkdir();
 
-			File signFile = new File("plugins//Hotels//Signs//"+Line2+"-"+Line3+".yml");
-			if(!signFile.exists()){
-				if ((!(Line2.isEmpty()))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(), e.getBlock().getY(), e.getBlock().getZ()))) {
-					if((Integer.valueOf(Line3).equals(Integer.valueOf(Line3)))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2+"-"+Line3))) {
-						if(Line4.contains(":")) {
-							//Successful Sign
-							if(!signFile.exists()){
-								try {
-									signFile.createNewFile();
-								} catch (IOException e2){
-									p.sendMessage(ChatColor.DARK_RED + "Could not save sign");
+				if(Line3.contains(":")){
+					String[] Line3parts = Line3.split(":");
+					String cost = Line3parts[1]; //Cost
+					int roomnum = Integer.valueOf(Line3parts[0]); //Room Number
+					File signFile = new File("plugins//Hotels//Signs//"+Line2+"-"+roomnum+".yml");
+					if(!signFile.exists()){
+						if ((!(Line2.isEmpty()))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(), e.getBlock().getY(), e.getBlock().getZ()))) {
+
+							if((WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2+"-"+roomnum))) {
+								//Successful Sign
+								if(!signFile.exists()){
+									try {
+										signFile.createNewFile();
+									} catch (IOException e2){
+										p.sendMessage(ChatColor.DARK_RED + "Could not save sign");
+									}
 								}
+
+								YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
+
+								String immutedtime = Line4.trim(); //Time								
+								long timeinminutes = Stuffer(immutedtime);
+								signConfig.set("Sign.time", Long.valueOf(timeinminutes));
+
+								signConfig.set("Sign.hotel", Line2.toLowerCase());
+								signConfig.set("Sign.room", roomnum);
+								signConfig.set("Sign.cost", Double.valueOf(cost));
+
+								signConfig.set("Sign.region", WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2+"-"+roomnum).getId().toString());
+								signConfig.set("Sign.location.world", String.valueOf(e.getBlock().getWorld().getName()));
+								signConfig.set("Sign.location.coords.x", Integer.valueOf(e.getBlock().getLocation().getBlockX()));
+								signConfig.set("Sign.location.coords.y", Integer.valueOf(e.getBlock().getLocation().getBlockY()));
+								signConfig.set("Sign.location.coords.z", Integer.valueOf(e.getBlock().getLocation().getBlockZ()));
+								try {
+									signConfig.save(signFile);
+								} catch (IOException e1) {
+									p.sendMessage("§4Could not save sign file");
+									e1.printStackTrace();
+								}
+								Line2 = Line2.toLowerCase();
+								String output = Line2.substring(0, 1).toUpperCase() + Line2.substring(1);
+								e.setLine(0, "§1"+output); //Hotel Name
+								e.setLine(1, "§2Room " + roomnum+" - "+cost+"$"); //Room Number + Cost
+								e.setLine(2,immutedtime);  //Time
+								e.setLine(3,"§aVacant"); //Renter
+								p.sendMessage(ChatColor.DARK_GREEN + "Hotel sign has been successfully created!");
+
+							} else {
+								p.sendMessage("§cThe specified hotel does not exist!");  
+								//Specified hotel does not exist
 							}
-
-							YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
-							String[] parts = Line4.split(":");
-							String cost = parts[0]; //Cost
-							String time = parts[1]; //Time
-
-							signConfig.set("Sign.hotel", Line2);
-							signConfig.set("Sign.room", Integer.valueOf(Line3));
-							signConfig.set("Sign.cost", Double.valueOf(cost));
-							signConfig.set("Sign.time", Integer.valueOf(time));
-							signConfig.set("Sign.region", WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2+"-"+Line3).getId().toString());
-							signConfig.set("Sign.location.world", String.valueOf(e.getBlock().getWorld().getName()));
-							signConfig.set("Sign.location.coords.x", Integer.valueOf(e.getBlock().getLocation().getBlockX()));
-							signConfig.set("Sign.location.coords.y", Integer.valueOf(e.getBlock().getLocation().getBlockY()));
-							signConfig.set("Sign.location.coords.z", Integer.valueOf(e.getBlock().getLocation().getBlockZ()));
-							try {
-								signConfig.save(signFile);
-							} catch (IOException e1) {
-								p.sendMessage("§4Could not save sign file");
-								e1.printStackTrace();
-							}
-							String output = Line2.substring(0, 1).toUpperCase() + Line2.substring(1);
-							e.setLine(0, "§1"+output); //Hotel Name
-							e.setLine(1, "§2Room " + Line3+" - "+cost+"$"); //Room Number + Cost
-							e.setLine(2,time+" mins");  //Time
-							e.setLine(3,"§aVacant"); //Renter
-							p.sendMessage(ChatColor.DARK_GREEN + "Hotel sign has been successfully created!");
-
 						} else {
-							p.sendMessage(ChatColor.DARK_RED + "Line 4 must contain the separator §3:");    				
+							p.sendMessage("§cSign was not placed within hotel borders!");        		
 							e.setLine(0, "§4[Hotels]");
+							//Sign not in hotel borders
 						}
-					} else {
-						p.sendMessage(ChatColor.DARK_RED + "Line 3 must be the number of a room!");        			
+					}else {
+						p.sendMessage("§cSign for this hotel room already exists!");
 						e.setLine(0, "§4[Hotels]");
+						//sign for specified room already exists
 					}
-				} else {
-					p.sendMessage(ChatColor.DARK_RED + "Sign was not placed within hotel borders");        		
+				}else{
+					p.sendMessage(ChatColor.DARK_RED + "Line 3 must contain the separator §3:");    				
 					e.setLine(0, "§4[Hotels]");
+					//Line 3 does not contain separator
 				}
 			}
 			else{
-				p.sendMessage("§4Sign for this hotel room already exists!");
+				p.sendMessage("§4You don't have permission!");
 				e.setLine(0, "§4[Hotels]");
-				//Sign file already exists
 			}
 		}
 	}
 
 	@EventHandler
 	public void onSignUse(PlayerInteractEvent e) {
-
-		if (e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK) {
+		if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN) {
+				Player p = e.getPlayer();
+				if(p.hasPermission("hotels.sign.use")){
+					Sign s = (Sign) e.getClickedBlock().getState();
+					String Line1 = s.getLine(0);
+					String Line2 = s.getLine(1);
+					String hotelName = Line1.replaceAll("[§][\\w]", "");
+					if(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)){
+						int x = e.getClickedBlock().getX();
+						int y = e.getClickedBlock().getY();
+						int z = e.getClickedBlock().getZ();
+						if(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+hotelName).contains(x, y, z)){
 
-				Sign s = (Sign) e.getClickedBlock().getState();
-				String Line1 = s.getLine(0);
-				String Line2 = s.getLine(1);
-				String hotelName = Line1.replace("§1", "");
-				if(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+hotelName)){
-					int x = e.getClickedBlock().getX();
-					int y = e.getClickedBlock().getY();
-					int z = e.getClickedBlock().getZ();
-					if(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+hotelName).contains(x, y, z)){
+							String[] Line2parts = Line2.split("\\s");
+							int roomNum = Integer.valueOf(Line2parts[1].trim()); //Room Number
+							File signFile = new File("plugins//Hotels//Signs//"+hotelName+"-"+roomNum+".yml");
 
-						String[] Line2parts = Line2.split("\\s");
-						int roomNum = Integer.valueOf(Line2parts[1].trim()); //Room Number
-						File signFile = new File("plugins//Hotels//Signs//"+hotelName+"-"+roomNum+".yml");
+							if(signFile.exists()){
+								YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
+								String cHotelName = signConfig.getString("Sign.hotel");
+								int cRoomNum = signConfig.getInt("Sign.room");
+								if(hotelName.equalsIgnoreCase(cHotelName)){
+									if(roomNum==cRoomNum){
+										if(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion(signConfig.getString("Sign.region"))){
 
-						if(signFile.exists()){
-							YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
-							String cHotelName = signConfig.getString("Sign.hotel");
-							int cRoomNum = signConfig.getInt("Sign.room");
-							Player p = e.getPlayer();
-							if(hotelName.equalsIgnoreCase(cHotelName)){
-								if(roomNum==cRoomNum){
-									if(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion(signConfig.getString("Sign.region"))){
+											String cRenter = signConfig.getString("Sign.renter");
+											if(cRenter==null){
+												if(HotelsMain.economy.hasAccount(p)){
+													double account = HotelsMain.economy.getBalance(p);
+													double price = signConfig.getDouble("Sign.cost");
+													if(account>=price){
+														HotelsMain.economy.withdrawPlayer(p, price);
 
-										String cRenter = signConfig.getString("Sign.renter");
-										if(cRenter==null){
-											if(HotelsMain.economy.hasAccount(p)){
-												double account = HotelsMain.economy.getBalance(p);
-												double price = signConfig.getDouble("Sign.cost");
-												if(account>=price){
-													HotelsMain.economy.withdrawPlayer(p, price);
+														signConfig.set("Sign.renter", p.getUniqueId().toString());
+														long currentmins = System.currentTimeMillis()/1000/60;
+														signConfig.set("Sign.timeRentedAt", currentmins);
 
-													signConfig.set("Sign.renter", p.getUniqueId().toString());
-													signConfig.set("Sign.timeRentedAt", System.currentTimeMillis()/1000/60);
-													/*int days = signConfig.getInt("Sign.time.days");
-						int hours = signConfig.getInt("Sign.time.hours");
-						int mins = signConfig.getInt("Sign.time.mins");
-
-						int daysinmillis = days*24*60*60*1000;
-						int hoursinmillis = hours*60*60*1000;
-						int minsinmillis = mins*60*1000;
-
-						long expirydate = System.currentTimeMillis()+daysinmillis+hoursinmillis+minsinmillis;*/
-
-													int minutes = signConfig.getInt("Sign.time");
-													int millistoexpire = minutes;
-													long expirydate = System.currentTimeMillis()/1000/60+millistoexpire;
+														long minstoexpire = signConfig.getLong("Sign.time");
+														long expirydate = currentmins+minstoexpire;
 
 
-													signConfig.set("Sign.expiryDate", expirydate);
+														signConfig.set("Sign.expiryDate", expirydate);
 
-													try {
-														signConfig.save(signFile);
-													} catch (IOException e1) {
-														e1.printStackTrace();
+														try {
+															signConfig.save(signFile);
+														} catch (IOException e1) {
+															e1.printStackTrace();
+														}
+														ProtectedRegion r = WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+cHotelName+"-"+cRoomNum);
+														WorldGuardManager.addOwner(p, (ProtectedCuboidRegion) r);
+														try {
+															WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).save();
+														} catch (ProtectionDatabaseException e1) {
+															e1.printStackTrace();
+														}
+														s.setLine(3, "§c"+p.getName());
+														s.update();
+														r.setFlag(DefaultFlag.GREET_MESSAGE, ("&cWelcome to room "+roomNum+" , "+p.getName()));
+														p.sendMessage("§aYou have rented room "+roomNum+" of the "+hotelName+" hotel for "+price);
 													}
-													ProtectedRegion r = WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+cHotelName+"-"+cRoomNum);
-													WorldGuardManager.addMember(p, (ProtectedCuboidRegion) r);
-													try {
-														WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).save();
-													} catch (ProtectionDatabaseException e1) {
-														e1.printStackTrace();
+													else{
+														double topay = price-account;
+														p.sendMessage("§4You do not have enough money! You need another "+topay);
 													}
-													s.setLine(3, "§c"+p.getName());
-													s.update();
-													r.setFlag(DefaultFlag.GREET_MESSAGE, ("&cWelcome to room "+roomNum+" , "+p.getName()));
-													p.sendMessage("§aYou have rented room "+roomNum+" of the "+hotelName+" hotel for "+price);
-												}
-												else{
-													double topay = price-account;
-													p.sendMessage("§4You do not have enough money! You need another "+topay);
 												}
 											}
+											else
+												p.sendMessage("§4This room has already been rented");
 										}
 										else
-											p.sendMessage("§4This room has already been rented");
+											p.sendMessage("§4You cannot rent this room");
 									}
-									else
-										p.sendMessage("§4You cannot rent this room");
 								}
 							}
 						}
 					}
 				}
+				else
+					p.sendMessage("§4You don't have permission!");
 			}
 		}
 	}
@@ -240,5 +251,30 @@ public class HotelsListener implements Listener {
 			}
 		}
 
+	}
+	public static long Stuffer(String immutedtime)
+	{
+		final Pattern p = Pattern.compile("(\\d+)([hmd])");
+		final Matcher m = p.matcher(immutedtime);
+		long totalMins = 0;
+		while (m.find())
+		{
+			final int duration = Integer.parseInt(m.group(1));
+			final TimeUnit interval = toTimeUnit(m.group(2));
+			final long l = interval.toMinutes(duration);
+			totalMins = totalMins + l;
+		}
+		return totalMins;
+	}
+
+	public static TimeUnit toTimeUnit(@Nonnull final String c)
+	{
+		switch (c)
+		{
+		case "m": return TimeUnit.MINUTES;
+		case "h": return TimeUnit.HOURS;
+		case "d": return TimeUnit.DAYS;
+		default: throw new IllegalArgumentException(String.format("%s is not a valid code [smhd]", c));
+		}
 	}
 }

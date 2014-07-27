@@ -25,6 +25,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion.CircularInheritanceException;
 
 public class HotelsCreationMode {	
 
@@ -54,13 +55,13 @@ public class HotelsCreationMode {
 					new BlockVector(sel.getNativeMinimumPoint()), 
 					new BlockVector(sel.getNativeMaximumPoint())
 					);
-			WorldGuardManager.addOwner(p, r);
 			WorldGuardManager.addRegion(p, r);
 			WorldGuardManager.hotelFlags(r,hotelName);
-			r.setPriority(0);
 			WorldGuardManager.saveRegions(p.getWorld());
-
-			p.sendMessage("§2You have successfully created the "+hotelName+" hotel");
+			String idHotelName =r.getId();
+			String[] partsofhotelName = idHotelName.split("-");
+			String fromIdhotelName = partsofhotelName[1];
+			p.sendMessage("§2You have successfully created the "+fromIdhotelName+" hotel");
 		}
 		else
 			p.sendMessage("§4Please select a region using the WE wand");
@@ -80,9 +81,13 @@ public class HotelsCreationMode {
 						new BlockVector(sel.getNativeMinimumPoint()), 
 						new BlockVector(sel.getNativeMaximumPoint())
 						);
-				WorldGuardManager.addOwner(p, r);
 				WorldGuardManager.addRegion(p, r);
 				WorldGuardManager.roomFlags(r,hotelName, p, roomNum);
+				try {
+					r.setParent(pr);
+				} catch (CircularInheritanceException e) {
+					e.printStackTrace();
+				}
 				r.setPriority(1);
 				WorldGuardManager.saveRegions(p.getWorld());
 			}

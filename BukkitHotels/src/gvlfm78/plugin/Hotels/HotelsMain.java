@@ -7,8 +7,6 @@ import handlers.HotelsConfigHandler;
 import java.io.File;
 import java.io.IOException;
 
-import managers.CustomConfig;
-import managers.CustomConfigManager;
 import managers.GameLoop;
 import net.milkbowl.vault.economy.Economy;
 
@@ -21,8 +19,6 @@ public class HotelsMain extends JavaPlugin{
 	public static Economy economy = null; //Creating economy variable
 	HotelsConfigHandler hconfigh = HotelsConfigHandler.getInstance();
 	GameLoop gameloop;
-	CustomConfigManager manager;
-	CustomConfig signConfig;
 
 	@Override
 	public void onEnable(){
@@ -45,8 +41,6 @@ public class HotelsMain extends JavaPlugin{
 
 		//hconfigh.setupFlagsFile(this);
 		//getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has setup the flags correctly correctly");
-
-		manager = new CustomConfigManager(this);
 
 		//GameLoop stuff
 		//gameloop = new GameLoop(this);

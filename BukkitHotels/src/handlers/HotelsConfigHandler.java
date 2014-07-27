@@ -22,14 +22,10 @@ public class HotelsConfigHandler {
 	}
 
 	public void setupLanguageEnglish(Plugin plugin){
-		plugin.getConfig().addDefault("settingsChat.firstLine", String.valueOf("Hotels"));
+		plugin.getConfig().addDefault("settingsChat.firstLine", String.valueOf("hotels"));
 		plugin.getConfig().addDefault("settingsChat.prefix", String.valueOf("[Hotels]"));
 
 		plugin.getConfig().addDefault("HCM.bossBar", Boolean.valueOf(false));
-
-		plugin.getConfig().addDefault("onCommand.messageReloadConfig", String.valueOf("Configuration file reloaded"));
-		plugin.getConfig().addDefault("onCommand.messageVersion", String.valueOf("version"));
-		plugin.getConfig().addDefault("onCommand.messageNoPermission", String.valueOf("You are not allowed to use that command"));
 
 		plugin.getConfig().options().copyDefaults(true);
 		plugin.saveConfig();

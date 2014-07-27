@@ -35,7 +35,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,String[] args) {
 		if(cmd.getName().equalsIgnoreCase("Hotels")){
-			if(sender.hasPermission("hotels.admin")||sender.isOp()){
+			if(sender.hasPermission("hotels.commands")||sender.isOp()){
 
 				if(args.length == 0){
 					sender.sendMessage("§4==========Hotels==========");
@@ -43,7 +43,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage("§2"+plugin.getDescription().getName()+" version "+plugin.getDescription().getVersion());
 					sender.sendMessage("§4Type §3/hotels help §4for help with the hotels");
 				}
-				else if((args.length == 2)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("1"))||(args.length == 1)&&(args[0].equalsIgnoreCase("help")))){
+				else if((args.length == 1)&&(args[0].equalsIgnoreCase("help"))||(args.length == 2)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("1")))){
 					sender.sendMessage("§4==========================");
 					sender.sendMessage("§2--Hotels plugin help page--");
 					sender.sendMessage(ChatColor.DARK_RED+"-Page 1- §9Selection of hotel cuboid");
