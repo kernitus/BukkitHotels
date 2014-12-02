@@ -16,6 +16,8 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info("[Hotels] Generating config file...");
 		plugin.getConfig().options().header("Hotels Plugin by kernitus");
 		plugin.getConfig().addDefault("settings.language", String.valueOf("en"));
+		plugin.getConfig().addDefault("settings.use-permissions", Boolean.valueOf(true));
+
 		plugin.getConfig().options().copyDefaults(true);
 		plugin.saveConfig();
 		plugin.getLogger().info("[Hotels] Config file generated");

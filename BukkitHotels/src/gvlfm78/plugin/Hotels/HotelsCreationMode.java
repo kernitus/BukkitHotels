@@ -28,6 +28,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion.CircularInheritanceException;
 
 public class HotelsCreationMode {	
+	private static HotelsMain plugin;
 
 	public static void checkFolder(){
 		File file = new File("plugins//Hotels//Inventories");
@@ -45,26 +46,30 @@ public class HotelsCreationMode {
 
 	public static void hotelSetup(String hotelName, CommandSender s){
 		Player p = (Player) s;
-		Selection sel = getWorldEdit().getSelection(p);
-		if((WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName))){
-			p.sendMessage("§4Could not create Hotel, hotel already exists");
-			return;}
-		else if(!(sel==null)){
-			ProtectedCuboidRegion r = new ProtectedCuboidRegion(
-					"Hotel-"+hotelName, 
-					new BlockVector(sel.getNativeMinimumPoint()), 
-					new BlockVector(sel.getNativeMaximumPoint())
-					);
-			WorldGuardManager.addRegion(p, r);
-			WorldGuardManager.hotelFlags(r,hotelName);
-			WorldGuardManager.saveRegions(p.getWorld());
-			String idHotelName =r.getId();
-			String[] partsofhotelName = idHotelName.split("-");
-			String fromIdhotelName = partsofhotelName[1];
-			p.sendMessage("§2You have successfully created the "+fromIdhotelName+" hotel");
+		if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.commands")||p.hasPermission("hotels.*")))){
+			Selection sel = getWorldEdit().getSelection(p);
+			if((WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName))){
+				p.sendMessage("§4Could not create Hotel, hotel already exists");
+				return;}
+			else if(!(sel==null)){
+				ProtectedCuboidRegion r = new ProtectedCuboidRegion(
+						"Hotel-"+hotelName, 
+						new BlockVector(sel.getNativeMinimumPoint()), 
+						new BlockVector(sel.getNativeMaximumPoint())
+						);
+				WorldGuardManager.addRegion(p, r);
+				WorldGuardManager.hotelFlags(r,hotelName);
+				WorldGuardManager.saveRegions(p.getWorld());
+				String idHotelName =r.getId();
+				String[] partsofhotelName = idHotelName.split("-");
+				String fromIdhotelName = partsofhotelName[1];
+				p.sendMessage("§2You have successfully created the "+fromIdhotelName+" hotel");
+			}
+			else
+				p.sendMessage("§4Please select a region using the WE wand");
 		}
 		else
-			p.sendMessage("§4Please select a region using the WE wand");
+			p.sendMessage("§4You do not have permission!");
 	}
 
 	public static void roomSetup(String hotelName,int roomNum,CommandSender s){
@@ -74,7 +79,7 @@ public class HotelsCreationMode {
 		World world = p.getWorld();
 		if(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)){
 			ProtectedRegion pr = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegion("Hotel-"+hotelName);
-			if(!(sel==null)&&
+			if((sel!=null)&&
 					(pr.contains(sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(), sel.getMinimumPoint().getBlockZ()))){
 				ProtectedCuboidRegion r = new ProtectedCuboidRegion(
 						"Hotel-"+hotelName+"-"+roomNum, 
@@ -91,8 +96,7 @@ public class HotelsCreationMode {
 				r.setPriority(1);
 				WorldGuardManager.saveRegions(p.getWorld());
 			}
-			//p.sendMessage("§4Could not create room, hotel does not exist");
-			else if(!(sel==null)&&
+			else if((sel!=null)&&
 					(!(pr.contains(sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(), sel.getMinimumPoint().getBlockZ())))){
 				p.sendMessage("§4The room is not in the specified hotel!");
 			}

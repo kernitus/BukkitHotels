@@ -29,8 +29,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
-import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
@@ -47,20 +47,19 @@ public class HotelsListener implements Listener {
 	public void onSignChange(SignChangeEvent e) {
 		Player p = e.getPlayer();
 		if(e.getLine(0).toLowerCase().contains("[hotels]")) {
-			if(p.hasPermission("hotels.sign.create")){
-				String Line2 = e.getLine(1);
-				String Line3 = e.getLine(2);
-				String Line4 = e.getLine(3);
+			if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.create")||p.hasPermission("hotels.*")))){
+				String Line2 = ChatColor.stripColor(e.getLine(1)).trim();
+				String Line3 = ChatColor.stripColor(e.getLine(2)).trim();
+				String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
 
 				File directory = new File("plugins//Hotels//Signs");
 				if(directory.exists()){}
 				else
 					directory.mkdir();
-
 				if(Line3.contains(":")){
 					String[] Line3parts = Line3.split(":");
+					int roomnum = Integer.parseInt(Line3parts[0]); //Room Number
 					String cost = Line3parts[1]; //Cost
-					int roomnum = Integer.valueOf(Line3parts[0]); //Room Number
 					File signFile = new File("plugins//Hotels//Signs//"+Line2+"-"+roomnum+".yml");
 					if(!signFile.exists()){
 						if ((!(Line2.isEmpty()))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(), e.getBlock().getY(), e.getBlock().getZ()))) {
@@ -98,23 +97,23 @@ public class HotelsListener implements Listener {
 								}
 								Line2 = Line2.toLowerCase();
 								String output = Line2.substring(0, 1).toUpperCase() + Line2.substring(1);
-								e.setLine(0, "§1"+output); //Hotel Name
-								e.setLine(1, "§2Room " + roomnum+" - "+cost+"$"); //Room Number + Cost
+								e.setLine(0, ChatColor.DARK_BLUE+output); //Hotel Name
+								e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost+"$"); //Room Number + Cost
 								e.setLine(2,immutedtime);  //Time
-								e.setLine(3,"§aVacant"); //Renter
+								e.setLine(3,ChatColor.GREEN+"Vacant"); //Renter
 								p.sendMessage(ChatColor.DARK_GREEN + "Hotel sign has been successfully created!");
 
 							} else {
-								p.sendMessage("§cThe specified hotel does not exist!");  
+								p.sendMessage("§4The specified hotel or room does not exist!");  
 								//Specified hotel does not exist
 							}
 						} else {
-							p.sendMessage("§cSign was not placed within hotel borders!");        		
+							p.sendMessage("§4Sign was not placed within hotel borders!");        		
 							e.setLine(0, "§4[Hotels]");
 							//Sign not in hotel borders
 						}
 					}else {
-						p.sendMessage("§cSign for this hotel room already exists!");
+						p.sendMessage("§4Sign for this hotel room already exists!");
 						e.setLine(0, "§4[Hotels]");
 						//sign for specified room already exists
 					}
@@ -136,10 +135,10 @@ public class HotelsListener implements Listener {
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN) {
 				Player p = e.getPlayer();
-				if(p.hasPermission("hotels.sign.use")){
+				if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.use")||p.hasPermission("hotels.*")))){
 					Sign s = (Sign) e.getClickedBlock().getState();
-					String Line1 = s.getLine(0);
-					String Line2 = s.getLine(1);
+					String Line1 = ChatColor.stripColor(s.getLine(0));
+					String Line2 = ChatColor.stripColor(s.getLine(1));
 					String hotelName = Line1.replaceAll("[§][\\w]", "");
 					if(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)){
 						int x = e.getClickedBlock().getX();
@@ -186,7 +185,7 @@ public class HotelsListener implements Listener {
 														WorldGuardManager.addOwner(p, (ProtectedCuboidRegion) r);
 														try {
 															WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).save();
-														} catch (ProtectionDatabaseException e1) {
+														} catch (StorageException e1) {
 															e1.printStackTrace();
 														}
 														s.setLine(3, "§c"+p.getName());
@@ -199,17 +198,29 @@ public class HotelsListener implements Listener {
 														p.sendMessage("§4You do not have enough money! You need another "+topay);
 													}
 												}
+												else
+													p.sendMessage("§4You do not have an economy account!");
 											}
 											else
 												p.sendMessage("§4This room has already been rented");
 										}
 										else
-											p.sendMessage("§4You cannot rent this room");
+											p.sendMessage("§4This room does not exist!");
 									}
+									else
+										p.sendMessage("§4Room numbers don't match!");
 								}
+								else
+									p.sendMessage("§4Hotel names don't match!");
 							}
+							else
+								p.sendMessage("§4Sign file doesn't exist!");
 						}
+						else
+							p.sendMessage("§4Sign is not inside specified hotel region!");
 					}
+					else
+						p.sendMessage("§4Hotel region doesn't exist!");
 				}
 				else
 					p.sendMessage("§4You don't have permission!");

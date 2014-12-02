@@ -1,11 +1,9 @@
 package kernitus.plugin.Hotels;
 
-import kernitus.plugin.Hotels.Metrics;
 import handlers.HotelsCommandHandler;
 import handlers.HotelsConfigHandler;
 
 import java.io.File;
-import java.io.IOException;
 
 import managers.GameLoop;
 import net.milkbowl.vault.economy.Economy;
@@ -40,20 +38,13 @@ public class HotelsMain extends JavaPlugin{
 			getLogger().severe(String.format("[%s] - No Vault dependency found!", getDescription().getName()));}
 
 		//hconfigh.setupFlagsFile(this);
-		//getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has setup the flags correctly correctly");
+		//getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has setup the flags correctly ");
 
 		//GameLoop stuff
 		//gameloop = new GameLoop(this);
 		gameloop = new GameLoop(this);
 		gameloop.runTaskTimer(this, 200, 2*60*20);
 
-		//Metrics stuff
-		try {
-			Metrics metrics = new Metrics(this);
-			metrics.start();
-		} catch (IOException e) {
-			// Failed to submit the stats :-(
-		}
 		//Logging to console the correct enabling of Hotels
 		getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has been enabled correctly");
 	}

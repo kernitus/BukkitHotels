@@ -3,9 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre7"/>
 	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Dependencies/BarAPI.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Dependencies/bukkit-1.7.10-R0.1-20140710.000649-3.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Dependencies/Vault-1.4.1.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Dependencies/WorldEdit.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Dependencies/worldguard-5.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Dependencies/spigot-1.8-R0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Dependencies/worldguard-6.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

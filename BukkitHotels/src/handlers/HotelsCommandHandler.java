@@ -23,7 +23,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
+import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HotelsCommandHandler implements CommandExecutor {
@@ -35,7 +35,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,String[] args) {
 		if(cmd.getName().equalsIgnoreCase("Hotels")){
-			if(sender.hasPermission("hotels.commands")||sender.isOp()){
+			if(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.commands")||sender.hasPermission("hotels.*")))){
 
 				if(args.length == 0){
 					sender.sendMessage("§4==========Hotels==========");
@@ -98,7 +98,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(ChatColor.DARK_RED+"Last page. Type §3§o/hotels help§r§4 to get to page 1");
 					sender.sendMessage("§4==========================");
 				}
-				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("enter"))&&(sender instanceof Player)){
+				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("enter"))&&(sender instanceof Player))
+						&& (sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
 					sender.sendMessage(ChatColor.GREEN+"You have entered hotel creation mode.");
 					HotelsCreationMode.checkFolder();
 					HotelsCreationMode.saveInventory(sender);
@@ -107,7 +108,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 					if(plugin.getConfig().getBoolean("HCM.bossBar")==true)
 						BarAPI.setMessage((Player) sender, "§2Hotel Creation Mode");
 				}
-				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("exit"))&&(sender instanceof Player)){
+				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("exit"))&&(sender instanceof Player))
+						&&(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
 					sender.sendMessage(ChatColor.GREEN+"You have exited hotel creation mode.");
 					HotelsCreationMode.loadInventory(sender);
 					HotelsCreationMode.loadArmour(sender);
@@ -116,14 +118,18 @@ public class HotelsCommandHandler implements CommandExecutor {
 						BarAPI.removeBar((Player) sender);
 					}
 				}
-				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("reset"))&&(sender instanceof Player)){
+				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("reset"))&&(sender instanceof Player))
+						&&(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
 					HotelsCreationMode.resetInventoryFiles(sender);
 					sender.sendMessage("§2The inventory files have been reset");
 				}
-				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode")||(args.length == 1)&&(args[0].equalsIgnoreCase("cm")))){
+				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode")||(args.length == 1)&&(args[0].equalsIgnoreCase("cm"))))&&
+						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
+
 					sender.sendMessage(ChatColor.DARK_RED+"Please specify "+ChatColor.YELLOW+"enter"+ChatColor.DARK_RED+" or "+ChatColor.YELLOW+"exit "+ChatColor.DARK_RED+"mode");
 				}
-				else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player)){
+				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player))&&
+						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
 					Player p = (Player) sender;
 					UUID playerUUID = p.getUniqueId();
 					File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
@@ -133,7 +139,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 					else
 						sender.sendMessage("§4Could not create hotel. Did you enter Hotel Creation Mode? (§3§o/hotels cm enter§r§4)");
 				}
-				else if((args.length == 2)||(args.length == 3)&&(args[0].equalsIgnoreCase("delete")||(args[0].equalsIgnoreCase("del")))){
+				else if(((args.length == 2)||(args.length == 3)&&(args[0].equalsIgnoreCase("delete")||(args[0].equalsIgnoreCase("del"))))&&
+						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
 					if(sender instanceof Player){
 						Player p = (Player) sender;
 						World world = p.getWorld();
@@ -148,20 +155,22 @@ public class HotelsCommandHandler implements CommandExecutor {
 					else{}
 				}
 				//ArrayList<String> regionlist = HotelsFileFinder.listFiles("plugins//Hotels//Signs");
-				else if((args.length == 1)&&(args[0].equalsIgnoreCase("delete")||(args[0].equalsIgnoreCase("del")))){
+				else if(((args.length == 1)&&(args[0].equalsIgnoreCase("delete")||(args[0].equalsIgnoreCase("del"))))&&
+						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
 					sender.sendMessage("§cPlease specify the hotel name");
 				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))||(args.length == 1)&&(args[0].equalsIgnoreCase("create")||(args.length == 1)&&(args[0].equalsIgnoreCase("c"))&&!(sender instanceof Player))){
 					sender.sendMessage("§4The console can't create a hotel!");
 				}
-				else if((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player)){
-					sender.sendMessage(ChatColor.GREEN+"You have exited hotel creation mode.");
-					HotelsCreationMode.loadInventory(sender);
+				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player))&&
+						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.create")||sender.hasPermission("hotels.*"))))){
+					sender.sendMessage(ChatColor.DARK_RED+"Give a name to your hotel!");
 				}
 				else if((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode"))&&!(sender instanceof Player)){
 					sender.sendMessage("§4The console can't use hotel creation mode!");
 				}
-				else if((args.length == 3)&&(args[0].equalsIgnoreCase("room"))&&(sender instanceof Player)){
+				else if(((args.length == 3)&&(args[0].equalsIgnoreCase("room"))&&(sender instanceof Player))&&
+						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.sign.create")||sender.hasPermission("hotels.*"))))){
 					String hotelName = args[1];
 					Player p = (Player) sender;
 
@@ -205,7 +214,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 			try {
 				WorldGuardManager.getWorldGuard().getRegionManager(world).save();
 				sender.sendMessage("§aSuccesfully deleted hotel regions");
-			} catch (ProtectionDatabaseException e) {
+			} catch (StorageException e) {
 				sender.sendMessage("§4Could not delete hotel regions");
 				e.printStackTrace();
 			}

@@ -7,10 +7,12 @@ import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.RegionGroup;
+import com.sk89q.worldguard.protection.flags.RegionGroupFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 
 public class WorldGuardManager {
@@ -40,7 +42,7 @@ public class WorldGuardManager {
 		owners.removePlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
 		r.setOwners(owners);
 	}
-	
+
 	public static void removeMember(Player p, ProtectedCuboidRegion r){
 		DefaultDomain members = new DefaultDomain();
 		members.removePlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
@@ -53,9 +55,10 @@ public class WorldGuardManager {
 
 	public static void saveRegions(World world){
 		RegionManager regionManager = getWorldGuard().getRegionManager(world);
+
 		try {
 			regionManager.save();
-		} catch (ProtectionDatabaseException e) {
+		} catch (StorageException e) {
 			e.printStackTrace();
 		}
 	}
@@ -63,14 +66,14 @@ public class WorldGuardManager {
 		r.setFlag(DefaultFlag.PASSTHROUGH, State.ALLOW);
 		r.setFlag(DefaultFlag.BUILD, State.DENY);
 		r.setFlag(DefaultFlag.PVP, State.DENY);
-		r.setFlag(DefaultFlag.CHEST_ACCESS, State.DENY);
+		//r.setFlag(DefaultFlag.CHEST_ACCESS, State.DENY);
 		r.setFlag(DefaultFlag.PISTONS, State.DENY);
 		r.setFlag(DefaultFlag.TNT, State.DENY);
 		r.setFlag(DefaultFlag.LIGHTER, State.DENY);
-		r.setFlag(DefaultFlag.USE, State.DENY);
+		//r.setFlag(DefaultFlag.USE, State.DENY);
 		r.setFlag(DefaultFlag.PLACE_VEHICLE, State.DENY);
 		r.setFlag(DefaultFlag.DESTROY_VEHICLE, State.DENY);
-		r.setFlag(DefaultFlag.SLEEP, State.DENY);
+		//r.setFlag(DefaultFlag.SLEEP, State.DENY);
 		r.setFlag(DefaultFlag.MOB_DAMAGE, State.DENY);
 		r.setFlag(DefaultFlag.MOB_SPAWNING, State.DENY);
 		//r.setFlag(DefaultFlag.DENY_SPAWN, State.DENY);
@@ -119,7 +122,7 @@ public class WorldGuardManager {
 		r.setFlag(DefaultFlag.WATER_FLOW, State.DENY);
 		//r.setFlag(DefaultFlag.TELE_LOC, State.DENY);
 		//r.setFlag(DefaultFlag.SPAWN_LOC, State.DENY);
-		r.setFlag(DefaultFlag.POTION_SPLASH, State.DENY);
+		//r.setFlag(DefaultFlag.POTION_SPLASH, State.DENY);
 		//r.setFlag(DefaultFlag.BLOCKED_CMDS, SetFlag<T>);
 		//r.setFlag(DefaultFlag.ALLOWED_CMDS, State.DENY);
 		//Double price = 0.0;
@@ -131,19 +134,20 @@ public class WorldGuardManager {
 		r.setFlag(DefaultFlag.PASSTHROUGH, State.DENY);
 		r.setFlag(DefaultFlag.BUILD, State.DENY);
 		r.setFlag(DefaultFlag.PVP, State.DENY);
-		//r.setFlag(DefaultFlag.CHEST_ACCESS, State.ALLOW);
+		r.setFlag(DefaultFlag.CHEST_ACCESS, State.DENY);
+		r.setFlag(DefaultFlag.CHEST_ACCESS, RegionGroupFlag);
 		r.setFlag(DefaultFlag.PISTONS, State.DENY);
 		r.setFlag(DefaultFlag.TNT, State.DENY);
 		r.setFlag(DefaultFlag.LIGHTER, State.DENY);
-		//r.setFlag(DefaultFlag.USE, State.ALLOW);
+		r.setFlag(DefaultFlag.USE, State.ALLOW);
 		//r.setFlag(DefaultFlag.PLACE_VEHICLE, State.DENY);
 		//r.setFlag(DefaultFlag.DESTROY_VEHICLE, State.DENY);
-		//r.setFlag(DefaultFlag.SLEEP, State.ALLOW);
+		r.setFlag(DefaultFlag.SLEEP, State.ALLOW);
 		//r.setFlag(DefaultFlag.MOB_DAMAGE, State.DENY);
 		r.setFlag(DefaultFlag.MOB_SPAWNING, State.DENY);
 		//r.setFlag(DefaultFlag.DENY_SPAWN, State.DENY);
 		//r.setFlag(DefaultFlag.INVINCIBILITY, State.DENY);
-		//r.setFlag(DefaultFlag.EXP_DROPS, State.ALLOW);
+		r.setFlag(DefaultFlag.EXP_DROPS, State.ALLOW);
 		r.setFlag(DefaultFlag.CREEPER_EXPLOSION, State.DENY);
 		r.setFlag(DefaultFlag.OTHER_EXPLOSION, State.DENY);
 		r.setFlag(DefaultFlag.ENDERDRAGON_BLOCK_DAMAGE, State.DENY);
@@ -156,11 +160,11 @@ public class WorldGuardManager {
 		//r.setFlag(DefaultFlag.EXIT, State.ALLOW);
 		//r.setFlag(DefaultFlag.ENTRY, State.ALLOW);
 		r.setFlag(DefaultFlag.LIGHTNING, State.DENY);
-		/*r.setFlag(DefaultFlag.ENTITY_PAINTING_DESTROY, State.DENY);
-		r.setFlag(DefaultFlag.ENDERPEARL, State.DENY);
-		r.setFlag(DefaultFlag.ENTITY_ITEM_FRAME_DESTROY, State.DENY);
+		//r.setFlag(DefaultFlag.ENTITY_PAINTING_DESTROY, State.DENY);
+		//r.setFlag(DefaultFlag.ENDERPEARL, State.DENY);
+		//r.setFlag(DefaultFlag.ENTITY_ITEM_FRAME_DESTROY, State.DENY);
 		r.setFlag(DefaultFlag.ITEM_DROP, State.ALLOW);
-		r.setFlag(DefaultFlag.HEAL_AMOUNT, State.DENY);
+		/*r.setFlag(DefaultFlag.HEAL_AMOUNT, State.DENY);
 		r.setFlag(DefaultFlag.HEAL_DELAY, State.DENY);
 		r.setFlag(DefaultFlag.MIN_HEAL, State.DENY);
 		r.setFlag(DefaultFlag.MAX_HEAL, State.DENY);
