@@ -62,7 +62,7 @@ public class GameLoop extends BukkitRunnable {
 							ProtectedCuboidRegion region = (ProtectedCuboidRegion) WorldGuardManager.getWorldGuard().getRegionManager(world).getRegion(r);
 							if(config.getString("Sign.renter")!=null){
 								Player p = Bukkit.getPlayer(UUID.fromString(config.getString("Sign.renter")));
-								WorldGuardManager.removeOwner(p, region);
+								WorldGuardManager.removeMember(p, region);
 								config.set("Sign.renter", null);
 								config.set("Sign.timeRentedAt", null);
 								config.set("Sign.expiryDate", null);

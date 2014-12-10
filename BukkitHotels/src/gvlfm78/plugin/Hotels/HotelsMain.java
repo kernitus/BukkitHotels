@@ -60,6 +60,22 @@ public class HotelsMain extends JavaPlugin{
 		getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has been disabled");
 	}
 
+	@Override
+	public void onLoad(){
+		//Config file stuff
+		if (!new File(getDataFolder(), "config.yml").exists()) { //Checking if config file exists
+			hconfigh.setupConfig(this);//Creates config file
+			hconfigh.setupLanguageEnglish(this);//Adds language strings
+		}
+		setupEconomy();
+
+		//Economy and stuff
+		if (!setupEconomy()) {
+			//If economy is turned on
+			//but no vault is found it will warn the user
+			getLogger().severe(String.format("[%s] - No Vault dependency found!", getDescription().getName()));}
+	}
+
 	//Setting up the economy
 	private boolean setupEconomy()
 	{

@@ -44,7 +44,7 @@ public class HotelsListener implements Listener {
 	}
 
 	@EventHandler
-	public void onSignChange(SignChangeEvent e) {
+	public void onSignPlace(SignChangeEvent e) {
 		Player p = e.getPlayer();
 		if(e.getLine(0).toLowerCase().contains("[hotels]")) {
 			if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.create")||p.hasPermission("hotels.*")))){
@@ -182,7 +182,7 @@ public class HotelsListener implements Listener {
 															e1.printStackTrace();
 														}
 														ProtectedRegion r = WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+cHotelName+"-"+cRoomNum);
-														WorldGuardManager.addOwner(p, (ProtectedCuboidRegion) r);
+														WorldGuardManager.addMember(p, (ProtectedCuboidRegion) r);
 														try {
 															WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).save();
 														} catch (StorageException e1) {

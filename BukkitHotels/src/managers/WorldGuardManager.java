@@ -8,6 +8,7 @@ import org.bukkit.plugin.Plugin;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.InvalidFlagFormat;
 import com.sk89q.worldguard.protection.flags.RegionGroup;
 import com.sk89q.worldguard.protection.flags.RegionGroupFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
@@ -131,18 +132,55 @@ public class WorldGuardManager {
 	}
 	public static void roomFlags(ProtectedCuboidRegion r,String hotelName,Player p,int roomNum){
 
+		
+		//TODO Optimise this messy code here
 		r.setFlag(DefaultFlag.PASSTHROUGH, State.DENY);
 		r.setFlag(DefaultFlag.BUILD, State.DENY);
 		r.setFlag(DefaultFlag.PVP, State.DENY);
+		
 		r.setFlag(DefaultFlag.CHEST_ACCESS, State.DENY);
-		//r.setFlag(DefaultFlag.CHEST_ACCESS, RegionGroupFlag);
+		r.setFlag(DefaultFlag.USE, State.DENY);
+		r.setFlag(DefaultFlag.SLEEP, State.DENY);
+		r.setFlag(DefaultFlag.POTION_SPLASH, State.DENY);
+		
+		RegionGroupFlag groupFlag1 = DefaultFlag.CHEST_ACCESS.getRegionGroupFlag();
+		RegionGroupFlag groupFlag2 = DefaultFlag.USE.getRegionGroupFlag();
+		RegionGroupFlag groupFlag3 = DefaultFlag.SLEEP.getRegionGroupFlag();
+		RegionGroupFlag groupFlag4 = DefaultFlag.POTION_SPLASH.getRegionGroupFlag();
+		
+		try {
+			RegionGroup groupValue = groupFlag1.parseInput(WorldGuardManager.getWorldGuard(), null, "non_members");
+			r.setFlag(groupFlag1, groupValue);
+		} catch (InvalidFlagFormat e) {
+			e.printStackTrace();
+		}
+		try {
+			RegionGroup groupValue = groupFlag2.parseInput(WorldGuardManager.getWorldGuard(), null, "non_members");
+			r.setFlag(groupFlag2, groupValue);
+		} catch (InvalidFlagFormat e) {
+			e.printStackTrace();
+		}
+		try {
+			RegionGroup groupValue = groupFlag3.parseInput(WorldGuardManager.getWorldGuard(), null, "non_members");
+			r.setFlag(groupFlag3, groupValue);
+		} catch (InvalidFlagFormat e) {
+			e.printStackTrace();
+		}
+		try {
+			RegionGroup groupValue = groupFlag4.parseInput(WorldGuardManager.getWorldGuard(), null, "non_members");
+			r.setFlag(groupFlag4, groupValue);
+		} catch (InvalidFlagFormat e) {
+			e.printStackTrace();
+		}
+		
+		
 		r.setFlag(DefaultFlag.PISTONS, State.DENY);
 		r.setFlag(DefaultFlag.TNT, State.DENY);
 		r.setFlag(DefaultFlag.LIGHTER, State.DENY);
-		r.setFlag(DefaultFlag.USE, State.ALLOW);
+		
 		//r.setFlag(DefaultFlag.PLACE_VEHICLE, State.DENY);
 		//r.setFlag(DefaultFlag.DESTROY_VEHICLE, State.DENY);
-		r.setFlag(DefaultFlag.SLEEP, State.ALLOW);
+		
 		//r.setFlag(DefaultFlag.MOB_DAMAGE, State.DENY);
 		r.setFlag(DefaultFlag.MOB_SPAWNING, State.DENY);
 		//r.setFlag(DefaultFlag.DENY_SPAWN, State.DENY);
@@ -191,7 +229,6 @@ public class WorldGuardManager {
 		r.setFlag(DefaultFlag.WATER_FLOW, State.DENY);*/
 		//r.setFlag(DefaultFlag.TELE_LOC, com.sk89q.worldedit.Location);
 		//r.setFlag(DefaultFlag.SPAWN_LOC, State.DENY);
-		r.setFlag(DefaultFlag.POTION_SPLASH, State.ALLOW);
 		//r.setFlag(DefaultFlag.BLOCKED_CMDS, State.DENY);
 		//r.setFlag(DefaultFlag.ALLOWED_CMDS, State.DENY);
 		//Double price = 0.0;
