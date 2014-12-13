@@ -25,7 +25,6 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion.CircularInheritanceException;
 
 public class HotelsCreationMode {	
 	private static HotelsMain plugin;
@@ -62,7 +61,7 @@ public class HotelsCreationMode {
 				WorldGuardManager.saveRegions(p.getWorld());
 				String idHotelName =r.getId();
 				String[] partsofhotelName = idHotelName.split("-");
-				String fromIdhotelName = partsofhotelName[1];
+				String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1);
 				p.sendMessage("§2You have successfully created the "+fromIdhotelName+" hotel");
 			}
 			else
@@ -88,12 +87,7 @@ public class HotelsCreationMode {
 						);
 				WorldGuardManager.addRegion(p, r);
 				WorldGuardManager.roomFlags(r,hotelName, p, roomNum);
-				try {
-					r.setParent(pr);
-				} catch (CircularInheritanceException e) {
-					e.printStackTrace();
-				}
-				r.setPriority(1);
+				r.setPriority(10);
 				WorldGuardManager.saveRegions(p.getWorld());
 			}
 			else if((sel!=null)&&

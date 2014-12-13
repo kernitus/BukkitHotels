@@ -180,6 +180,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 						try{
 							int roomNum = Integer.parseInt(args[2]);
 							HotelsCreationMode.roomSetup(hotelName, roomNum, sender);
+							hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
+							String roomNums = String.valueOf(roomNum);
+							roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1);
 							sender.sendMessage("§aYou created room "+roomNum+" of the "+hotelName+" hotel");
 						} catch(NumberFormatException e){
 							sender.sendMessage("§4The room number is not an integer!");
@@ -187,7 +190,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					}	
 				}
 				else if(((args.length ==1)||(args.length ==2))&&(args[0].equalsIgnoreCase("room"))){
-					sender.sendMessage("§4Correct Usage: §o/hotels room hotelname roomnum");
+					sender.sendMessage("§4Correct Usage: §6§o/hotels room hotelname roomnum");
 				}
 				else {
 					sender.sendMessage("§4Unknown argument. Try §3§o/hotels");
@@ -196,6 +199,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 		}
 		return false;
 	}
+	//TODO removeRoom
 	private void removeRegions(String hotelName,World world,CommandSender sender){
 		if(WorldGuardManager.getWorldGuard().getRegionManager(world).hasRegion("Hotel-"+hotelName)){
 			WorldGuardManager.getWorldGuard().getRegionManager(world).removeRegion("Hotel-"+hotelName);
@@ -213,7 +217,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 			try {
 				WorldGuardManager.getWorldGuard().getRegionManager(world).save();
-				sender.sendMessage("§aSuccesfully deleted hotel regions");
+				sender.sendMessage("§aSuccessfully deleted hotel regions");
 			} catch (StorageException e) {
 				sender.sendMessage("§4Could not delete hotel regions");
 				e.printStackTrace();
