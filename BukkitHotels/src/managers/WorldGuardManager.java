@@ -140,7 +140,7 @@ public class WorldGuardManager {
 		groupFlags(r,DefaultFlag.POTION_SPLASH);
 		groupFlags(r,DefaultFlag.ITEM_DROP);
 		groupFlags(r,DefaultFlag.EXP_DROPS);
-		
+
 		r.setFlag(DefaultFlag.BUILD, State.DENY);
 		r.setFlag(DefaultFlag.PVP, State.DENY);
 		r.setFlag(DefaultFlag.PISTONS, State.DENY);

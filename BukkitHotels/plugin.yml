@@ -27,7 +27,7 @@ permissions:
        hotels.sign.create: true
        hotels.sign.use: true
    hotels.createmode:
-     description: Allows you to ender hotel creation mode
+     description: Allows you to enter hotel creation mode
      default: op
    hotels.create:
      description: Allows you to create a hotel
@@ -39,11 +39,11 @@ permissions:
      description: Allows you to see stats about other player's rented rooms
      default: op
    hotels.sign.create:
-     description: Allows you to see create hotel room signs
+     description: Allows you to create hotel room signs
      default: op
    hotels.sign.use:
      description: Allows you to use hotel room signs
      default: op
-   hotel.delete:
+   hotels.delete:
      description: Allows you to delete hotels and connected signs
      default: op

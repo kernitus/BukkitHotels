@@ -20,12 +20,8 @@ public class HotelsMain extends JavaPlugin{
 
 	@Override
 	public void onEnable(){
-		//Config file stuff
+		setupConfig();
 		PluginDescriptionFile pdfFile = this.getDescription();
-		if (!new File(getDataFolder(), "config.yml").exists()) { //Checking if config file exists
-			hconfigh.setupConfig(this);//Creates config file
-			hconfigh.setupLanguageEnglish(this);//Adds language strings
-		}
 		//Listeners and stuff
 		getServer().getPluginManager().registerEvents((new HotelsListener(this)), this);//Firing event listener
 		getCommand("Hotels").setExecutor(new HotelsCommandHandler(this));//Firing commands listener
@@ -37,11 +33,7 @@ public class HotelsMain extends JavaPlugin{
 			//but no vault is found it will warn the user
 			getLogger().severe(String.format("[%s] - No Vault dependency found!", getDescription().getName()));}
 
-		//hconfigh.setupFlagsFile(this);
-		//getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has setup the flags correctly ");
-
 		//GameLoop stuff
-		//gameloop = new GameLoop(this);
 		gameloop = new GameLoop(this);
 		gameloop.runTaskTimer(this, 200, 2*60*20);
 
@@ -62,11 +54,7 @@ public class HotelsMain extends JavaPlugin{
 
 	@Override
 	public void onLoad(){
-		//Config file stuff
-		if (!new File(getDataFolder(), "config.yml").exists()) { //Checking if config file exists
-			hconfigh.setupConfig(this);//Creates config file
-			hconfigh.setupLanguageEnglish(this);//Adds language strings
-		}
+		setupConfig();
 		setupEconomy();
 
 		//Economy and stuff
@@ -76,14 +64,20 @@ public class HotelsMain extends JavaPlugin{
 			getLogger().severe(String.format("[%s] - No Vault dependency found!", getDescription().getName()));}
 	}
 
+	//Setting up config files
+	private void setupConfig(){
+		if (!new File(getDataFolder(), "config.yml").exists()) { //Checking if config file exists
+			hconfigh.setupConfig(this);//Creates config file
+			hconfigh.setupLanguageEnglish(this);//Adds language strings
+		}
+	}
+	
 	//Setting up the economy
 	private boolean setupEconomy()
-	{
-		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+	{RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
 		if (economyProvider != null) {
 			economy = economyProvider.getProvider();
 		}
-
 		return (economy != null);
 	}
 }
