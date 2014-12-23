@@ -141,7 +141,8 @@ public class WorldGuardManager {
 		groupFlags(r,DefaultFlag.ITEM_DROP);
 		groupFlags(r,DefaultFlag.EXP_DROPS);
 
-		r.setFlag(DefaultFlag.BUILD, State.DENY);
+		r.setFlag(DefaultFlag.BLOCK_BREAK, State.DENY);
+		r.setFlag(DefaultFlag.BLOCK_PLACE, State.DENY);
 		r.setFlag(DefaultFlag.PVP, State.DENY);
 		r.setFlag(DefaultFlag.PISTONS, State.DENY);
 		r.setFlag(DefaultFlag.TNT, State.DENY);

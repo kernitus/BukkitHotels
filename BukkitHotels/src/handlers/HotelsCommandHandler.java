@@ -5,6 +5,7 @@ import kernitus.plugin.Hotels.HotelsMain;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -128,6 +129,23 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 					sender.sendMessage(ChatColor.DARK_RED+"Please specify "+ChatColor.YELLOW+"enter"+ChatColor.DARK_RED+" or "+ChatColor.YELLOW+"exit "+ChatColor.DARK_RED+"mode");
 				}
+				/*else if((((args.length==2)||(args.length==1))&&(args[0].equalsIgnoreCase("list"))&&
+						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.list")||sender.hasPermission("hotels.*")))))){
+					if(sender instanceof Player){
+						Player p = (Player) sender;
+						World w = p.getWorld();
+						listHotels(w,sender);
+					}
+					else if(!(sender instanceof Player)){
+						if(!args[1].isEmpty()){
+							World w = Bukkit.getWorld(args[1]);
+							listHotels(w,sender);
+						}
+						else{
+							sender.sendMessage("Please specify world");
+						}
+					}
+				}*/
 				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
 					Player p = (Player) sender;
@@ -225,6 +243,28 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 		}
 	}
+	/*private void listHotels(World w, CommandSender sender){
+		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
+		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
+		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
+		int i;
+		for(i=0; i<rlist.length; i++){
+			ProtectedRegion r = rlist[i];
+			if(r.getId().startsWith("hotel-")){
+				if(r.getId().startsWith("hotel-.*")){
+						//&&(!r.getId().startsWith("hotel-+.+[-]+."))){
+					System.out.println("Shish "+r.getId());
+					String hotelName = (r.getId().replaceFirst("Hotel-", "")).toLowerCase();
+					hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
+					sender.sendMessage("Hotel: "+hotelName);
+				}
+				else
+					System.out.println("Shish "+"nein");
+			}
+			else
+				System.out.println("Shish "+"niet");
+		}
+	}*/
 	private void removeSigns(String hotelName,World world,CommandSender sender){
 		if(WorldGuardManager.getWorldGuard().getRegionManager(world).hasRegion("Hotel-"+hotelName)){
 			ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins//Hotels//Signs");
