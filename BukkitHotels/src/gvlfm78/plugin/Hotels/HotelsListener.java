@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -15,7 +16,9 @@ import managers.WorldGuardManager;
 import me.confuser.barapi.BarAPI;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -50,6 +53,60 @@ public class HotelsListener implements Listener {
 				String Line2 = ChatColor.stripColor(e.getLine(1)).trim();
 				String Line3 = ChatColor.stripColor(e.getLine(2)).trim();
 				String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
+				if(Line3.isEmpty()&&Line4.isEmpty()){
+					//Reception sign?
+					if(!Line2.isEmpty()){
+						if ((!(Line2.isEmpty()))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))){ //Hotel region exists
+							if(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ())){
+								//Sign is within hotel region
+								int tot = totalRooms(Line2,p.getWorld());
+								int free = freeRooms(Line2,p.getWorld());
+								String hotelName = Line2.substring(0, 1).toUpperCase() + Line2.substring(1);
+								e.setLine(0, "§aReception");
+								e.setLine(1, "§1"+hotelName+" Hotel");
+								e.setLine(2, "§1"+tot+" §0Total Rooms");
+								e.setLine(3, "§a"+free+" §0Free Rooms");
+								int count = 1;
+								File signFile = new File("plugins//Hotels//Signs//Reception-"+Line2+"-"+count+".yml");
+								if(!signFile.exists()){
+									try {
+										signFile.createNewFile();
+									} catch (IOException e1) {
+										p.sendMessage(ChatColor.DARK_RED + "Could not save sign file");
+										e1.printStackTrace();
+									}
+									new YamlConfiguration();
+									YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
+									config.addDefault("Reception.hotel", hotelName);
+									config.addDefault("Reception.location.world", e.getBlock().getWorld().getName());
+									config.addDefault("Reception.location.x", e.getBlock().getX());
+									config.addDefault("Reception.location.y", e.getBlock().getY());
+									config.addDefault("Reception.location.z", e.getBlock().getZ());
+									config.options().copyDefaults(true);
+									try {
+										config.save(signFile);
+									} catch (IOException e1) {
+										p.sendMessage(ChatColor.DARK_RED + "Could not save sign file");
+										e1.printStackTrace();
+									}
+								}
+							}
+							else{
+								e.setLine(0, "§4[Hotels]");
+								p.sendMessage("§4Sign is not within hotel region!");
+							}
+						}
+						else{
+							e.setLine(0, "§4[Hotels]");
+							p.sendMessage("§4Hotel doesn't exist!");
+						}
+					}
+					else{
+						e.setLine(0, "§4[Hotels]");
+						p.sendMessage("§4Empty sign!");
+					}
+					return;
+				}
 
 				File directory = new File("plugins//Hotels//Signs");
 				if(!directory.exists()){
@@ -230,13 +287,84 @@ public class HotelsListener implements Listener {
 						else
 							p.sendMessage("§4Sign is not inside specified hotel region!");
 					}
-					else
+					/*else
 						p.sendMessage("§4Hotel region doesn't exist!");
+						If this is enabled any non-hotel sign in a hotel would display this error message
+					 */
 				}
 				else
 					p.sendMessage("§4You don't have permission!");
 			}
 		}
+	}
+
+	public static int totalRooms(String hotelName,World w){
+		int tot = 0;
+		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
+		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
+		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
+		int i;
+		for(i=0; i<rlist.length; i++){
+			ProtectedRegion r = rlist[i];
+			if(r.getId().startsWith("hotel-"+hotelName)){
+				if(r.getId().matches("^hotel-"+hotelName+"-.+")){
+					tot++;
+				}
+			}
+		}
+		return tot;
+	}
+
+	public static int freeRooms(String hotelName,World w){
+		int free = 0;
+		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
+		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
+		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
+		int i;
+		for(i=0; i<rlist.length; i++){
+			ProtectedRegion r = rlist[i];
+			if(r.getId().startsWith("hotel-"+hotelName)){
+				if(r.getId().matches("^hotel-"+hotelName+"-.+")){
+					int roomNum = Integer.parseInt(r.getId().replaceAll("^hotel-.+-", ""));
+					File signFile = new File("plugins//Hotels//Signs//"+hotelName+"-"+roomNum+".yml");
+					if(signFile.exists()){
+						new YamlConfiguration();
+						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
+						if(config.get("Sign.renter")==null){
+							free++;
+						}
+					}
+				}
+			}
+		}
+		return free;
+	}
+
+	public static boolean updateReceptionSign(Location l){
+		Block b = l.getBlock();
+		if(b.getType().equals(Material.WALL_SIGN)||b.getType().equals(Material.SIGN)||l.getBlock().getType().equals(Material.SIGN_POST)){
+			Sign s = (Sign) b.getState();
+			String Line1 = ChatColor.stripColor(s.getLine(0));
+			String Line2 = ChatColor.stripColor(s.getLine(1));
+			if(Line1.equals("Reception")){ //First line is "Reception"
+				if(Line2!=null){
+					String[] Line2split = Line2.split(" ");
+					String hotelname = Line2split[0].toLowerCase();
+					if(WorldGuardManager.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
+						int tot = totalRooms(hotelname,b.getWorld());
+						int free = freeRooms(hotelname,b.getWorld());
+						s.setLine(2, "§1 "+tot+" §0Total Rooms");
+						s.setLine(3, "§a "+free+" §0Free Rooms");
+						s.update();
+						return false;
+					}
+					return true;
+				}
+				return true;
+			}
+			return true;
+		}
+		return true;
 	}
 
 	//When a player tries to drop an item/block
