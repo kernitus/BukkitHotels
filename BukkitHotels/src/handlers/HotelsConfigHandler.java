@@ -27,21 +27,7 @@ public class HotelsConfigHandler {
 		plugin.getConfig().addDefault("settingsChat.firstLine", String.valueOf("hotels"));
 		plugin.getConfig().addDefault("settingsChat.prefix", String.valueOf("[Hotels]"));
 
-		plugin.getConfig().addDefault("HCM.bossBar", Boolean.valueOf(false));
-
 		plugin.getConfig().options().copyDefaults(true);
-		plugin.saveConfig();
-		plugin.getLogger().info("[Hotels] Language strings generated");
-	}
-
-	public void setLanguageEnglish(Plugin plugin){
-		plugin.getConfig().set("settingsChat.firstLine", String.valueOf("Private"));
-		plugin.getConfig().set("settingsChat.prefix", String.valueOf("[Hotels]"));
-
-		plugin.getConfig().set("onCommand.messageReloadConfig", String.valueOf("Configuration file reloaded"));
-		plugin.getConfig().set("onCommand.messageVersion", String.valueOf("version"));
-		plugin.getConfig().set("onCommand.messageNoPermission", String.valueOf("You are not allowed to use that command"));
-
 		plugin.saveConfig();
 		plugin.getLogger().info("[Hotels] Language strings generated");
 	}

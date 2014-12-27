@@ -7,7 +7,6 @@ website: http://www.spigotmc.org/resources/hotels.2047/
 load: POSTWORLD
 
 depend: [Vault, WorldEdit, WorldGuard]
-softdepend: [BarAPI]
 
 commands:
   Hotels:
@@ -22,17 +21,32 @@ permissions:
        hotels.createmode: true
        hotels.create: true
        hotels.delete: true
+       hotels.delete.rooms: true
+       hotels.rename: true
+       hotels.renumber: true
        hotels.check: true
        hotels.check.others: true
        hotels.sign.create: true
        hotels.sign.use: true
-       hotels.listhotels: true
-       hotels.listrooms: true
+       hotels.list.hotels: true
+       hotels.list.rooms: true
    hotels.createmode:
      description: Allows you to enter hotel creation mode
      default: op
    hotels.create:
      description: Allows you to create a hotel
+     default: op
+   hotels.delete:
+     description: Allows you to delete hotels and connected rooms and signs
+     default: op
+   hotels.delete.rooms:
+     description: Allows you to delete hotel rooms and connected signs
+     default: op
+   hotels.rename:
+     description: Allows you to rename hotels and connected rooms and signs
+     default: op
+   hotels.renumber:
+     description: Allows you to renumber rooms and connected signs
      default: op
    hotels.check:
      description: Allows you to see stats about your rented rooms
@@ -46,12 +60,9 @@ permissions:
    hotels.sign.use:
      description: Allows you to use hotel room signs
      default: op
-   hotels.delete:
-     description: Allows you to delete hotels and connected signs
-     default: op
-   hotels.listhotels:
+   hotels.list.hotels:
      description: Allows you to see a list of all hotels
      default: op
-   hotels.listhotels:
+   hotels.list.rooms:
      description: Allows you to see a list of all rooms within a hotel
      default: op

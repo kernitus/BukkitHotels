@@ -47,7 +47,7 @@ public class HotelsCreationMode {
 		Player p = (Player) s;
 		if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.commands")||p.hasPermission("hotels.*")))){
 			Selection sel = getWorldEdit().getSelection(p);
-			if((WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName))){
+			if(WorldGuardManager.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
 				p.sendMessage("§4Could not create Hotel, hotel already exists");
 				return;}
 			else if(!(sel==null)){
@@ -56,7 +56,7 @@ public class HotelsCreationMode {
 						new BlockVector(sel.getNativeMinimumPoint()), 
 						new BlockVector(sel.getNativeMaximumPoint())
 						);
-				WorldGuardManager.addRegion(p, r);
+				WorldGuardManager.addRegion(p.getWorld(), r);
 				WorldGuardManager.hotelFlags(r,hotelName);
 				WorldGuardManager.saveRegions(p.getWorld());
 				String idHotelName =r.getId();
@@ -85,7 +85,7 @@ public class HotelsCreationMode {
 						new BlockVector(sel.getNativeMinimumPoint()), 
 						new BlockVector(sel.getNativeMaximumPoint())
 						);
-				WorldGuardManager.addRegion(p, r);
+				WorldGuardManager.addRegion(p.getWorld(), r);
 				WorldGuardManager.roomFlags(r,hotelName, p, roomNum);
 				r.setPriority(10);
 				WorldGuardManager.saveRegions(p.getWorld());

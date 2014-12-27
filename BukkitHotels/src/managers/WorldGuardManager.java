@@ -1,13 +1,17 @@
 package managers;
 
+import java.util.Map;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.InvalidFlagFormat;
 import com.sk89q.worldguard.protection.flags.RegionGroup;
 import com.sk89q.worldguard.protection.flags.RegionGroupFlag;
@@ -16,6 +20,7 @@ import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class WorldGuardManager {
 
@@ -25,6 +30,10 @@ public class WorldGuardManager {
 
 		if (p instanceof WorldGuardPlugin) return (WorldGuardPlugin) p;
 		else return null;
+	}
+
+	public static ProtectedRegion getRegion(World world, String string) {
+		return getWorldGuard().getRegionManager(world).getRegion(string);
 	}
 
 	public static void addOwner(Player p, ProtectedCuboidRegion r){
@@ -51,17 +60,41 @@ public class WorldGuardManager {
 		r.setMembers(members);
 	}
 
-	public static void addRegion(Player p, ProtectedCuboidRegion r){
-		getWorldGuard().getRegionManager(p.getWorld()).addRegion(r);
+	public static void addRegion(World w, ProtectedCuboidRegion r){
+		getWorldGuard().getRegionManager(w).addRegion(r);
+	}
+	public static void removeRegion(World w, String r){
+		getWorldGuard().getRegionManager(w).removeRegion(r);
+	}
+	public static boolean hasRegion(World w, String r){
+		if(getWorldGuard().getRegionManager(w).hasRegion(r))
+			return true;
+		else
+			return false;
 	}
 
 	public static void saveRegions(World world){
 		RegionManager regionManager = getWorldGuard().getRegionManager(world);
-
 		try {
 			regionManager.save();
 		} catch (StorageException e) {
 			e.printStackTrace();
+		}
+	}
+	public static void renameRegion(String oldname, String newname,World world){
+		if(WorldGuardManager.hasRegion(world, oldname)){//If old hotel exists
+			ProtectedRegion oldr = WorldGuardManager.getRegion(world, oldname);//Get old region
+			ProtectedCuboidRegion newr2 = new ProtectedCuboidRegion(
+					newname, 
+					new BlockVector(oldr.getMinimumPoint()), 
+					new BlockVector(oldr.getMaximumPoint())
+					);
+			WorldGuardManager.addRegion(world, newr2);
+			ProtectedRegion newr = WorldGuardManager.getRegion(world, newname);
+			Map<Flag<?>, Object> flags = oldr.getFlags();
+			newr.setFlags(flags);
+			WorldGuardManager.removeRegion(world, oldr.getId());
+			WorldGuardManager.saveRegions(world);
 		}
 	}
 	public static void hotelFlags(ProtectedCuboidRegion r,String hotelName){

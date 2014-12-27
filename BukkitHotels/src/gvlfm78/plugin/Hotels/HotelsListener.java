@@ -13,8 +13,8 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
 import managers.WorldGuardManager;
-import me.confuser.barapi.BarAPI;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,10 +26,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
@@ -46,13 +46,14 @@ public class HotelsListener implements Listener {
 	}
 
 	@EventHandler
-	public void onSignPlace(SignChangeEvent e) {
+	public void onSignPlace(SignChangeEvent e){
 		Player p = e.getPlayer();
 		if(e.getLine(0).toLowerCase().contains("[hotels]")) {
 			if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.create")||p.hasPermission("hotels.*")))){
 				String Line2 = ChatColor.stripColor(e.getLine(1)).trim();
 				String Line3 = ChatColor.stripColor(e.getLine(2)).trim();
 				String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
+
 				if(Line3.isEmpty()&&Line4.isEmpty()){
 					//Reception sign?
 					if(!Line2.isEmpty()){
@@ -68,6 +69,10 @@ public class HotelsListener implements Listener {
 								e.setLine(3, "§a"+free+" §0Free Rooms");
 								int count = 1;
 								File signFile = new File("plugins//Hotels//Signs//Reception-"+Line2+"-"+count+".yml");
+								while(signFile.exists()){
+									count++;
+									signFile = new File("plugins//Hotels//Signs//Reception-"+Line2+"-"+count+".yml");
+								}
 								if(!signFile.exists()){
 									try {
 										signFile.createNewFile();
@@ -89,7 +94,7 @@ public class HotelsListener implements Listener {
 										p.sendMessage(ChatColor.DARK_RED + "Could not save sign file");
 										e1.printStackTrace();
 									}
-								}
+								}		
 							}
 							else{
 								e.setLine(0, "§4[Hotels]");
@@ -107,72 +112,80 @@ public class HotelsListener implements Listener {
 					}
 					return;
 				}
-
+				//Room sign?
 				File directory = new File("plugins//Hotels//Signs");
 				if(!directory.exists()){
 					directory.mkdir();}
 				if(Line3.contains(":")){
 					String[] Line3parts = Line3.split(":");
 					int roomnum = Integer.parseInt(Line3parts[0]); //Room Number
+					String roomnumb = String.valueOf(roomnum);
 					String cost = Line3parts[1]; //Cost
-					File signFile = new File("plugins//Hotels//Signs//"+Line2+"-"+roomnum+".yml");
-					if(!signFile.exists()){ //Sign for room doesn't already exist
-						if ((!(Line2.isEmpty()))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&& //Hotel region exists
-								(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ()))){
-							//Sign is within hotel region
-							if((WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2+"-"+roomnum))){ //Room region exists
-								//Successful Sign
-								if(!signFile.exists()){
-									try {
-										signFile.createNewFile();
-									} catch (IOException e2){
-										p.sendMessage(ChatColor.DARK_RED + "Could not save sign");
+					if((roomnumb.length()+cost.length()+9)<22){
+						File signFile = new File("plugins//Hotels//Signs//"+Line2+"-"+roomnum+".yml");
+						if(!signFile.exists()){ //Sign for room doesn't already exist
+							if ((!(Line2.isEmpty()))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&& //Hotel region exists
+									(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ()))){
+								//Sign is within hotel region
+								if((WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2+"-"+roomnum))){ //Room region exists
+									//Successful Sign
+									if(!signFile.exists()){
+										try {
+											signFile.createNewFile();
+										} catch (IOException e2){
+											p.sendMessage(ChatColor.DARK_RED + "Could not save sign");
+										}
 									}
+
+									//Creating sign config file:
+									YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
+
+									String immutedtime = Line4.trim(); //Time								
+									long timeinminutes = TimeConverter(immutedtime);
+									signConfig.set("Sign.time", Long.valueOf(timeinminutes));
+
+									signConfig.set("Sign.hotel", Line2.toLowerCase());
+									signConfig.set("Sign.room", roomnum);
+									signConfig.set("Sign.cost", Double.valueOf(cost));
+
+									signConfig.set("Sign.region", WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2+"-"+roomnum).getId().toString());
+									signConfig.set("Sign.location.world", String.valueOf(e.getBlock().getWorld().getName()));
+									signConfig.set("Sign.location.coords.x", Integer.valueOf(e.getBlock().getLocation().getBlockX()));
+									signConfig.set("Sign.location.coords.y", Integer.valueOf(e.getBlock().getLocation().getBlockY()));
+									signConfig.set("Sign.location.coords.z", Integer.valueOf(e.getBlock().getLocation().getBlockZ()));
+									try {
+										signConfig.save(signFile);
+									} catch (IOException e1) {
+										p.sendMessage("§4Could not save sign file");
+										e1.printStackTrace();}
+
+									Line2 = Line2.toLowerCase();
+									String output = Line2.substring(0, 1).toUpperCase() + Line2.substring(1);
+									e.setLine(0, ChatColor.DARK_BLUE+output); //Hotel Name
+									e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost+"$"); //Room Number + Cost
+									e.setLine(2,immutedtime);  //Time
+									e.setLine(3,ChatColor.GREEN+"Vacant"); //Renter
+									p.sendMessage(ChatColor.DARK_GREEN + "Hotel sign has been successfully created!");
+
+								} else {
+									p.sendMessage("§4The specified hotel or room does not exist!");  
+									//Specified hotel does not exist
 								}
-
-								//Creating sign config file:
-								YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
-
-								String immutedtime = Line4.trim(); //Time								
-								long timeinminutes = TimeConverter(immutedtime);
-								signConfig.set("Sign.time", Long.valueOf(timeinminutes));
-
-								signConfig.set("Sign.hotel", Line2.toLowerCase());
-								signConfig.set("Sign.room", roomnum);
-								signConfig.set("Sign.cost", Double.valueOf(cost));
-
-								signConfig.set("Sign.region", WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2+"-"+roomnum).getId().toString());
-								signConfig.set("Sign.location.world", String.valueOf(e.getBlock().getWorld().getName()));
-								signConfig.set("Sign.location.coords.x", Integer.valueOf(e.getBlock().getLocation().getBlockX()));
-								signConfig.set("Sign.location.coords.y", Integer.valueOf(e.getBlock().getLocation().getBlockY()));
-								signConfig.set("Sign.location.coords.z", Integer.valueOf(e.getBlock().getLocation().getBlockZ()));
-								try {
-									signConfig.save(signFile);
-								} catch (IOException e1) {
-									p.sendMessage("§4Could not save sign file");
-									e1.printStackTrace();}
-
-								Line2 = Line2.toLowerCase();
-								String output = Line2.substring(0, 1).toUpperCase() + Line2.substring(1);
-								e.setLine(0, ChatColor.DARK_BLUE+output); //Hotel Name
-								e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost+"$"); //Room Number + Cost
-								e.setLine(2,immutedtime);  //Time
-								e.setLine(3,ChatColor.GREEN+"Vacant"); //Renter
-								p.sendMessage(ChatColor.DARK_GREEN + "Hotel sign has been successfully created!");
-
 							} else {
-								p.sendMessage("§4The specified hotel or room does not exist!");  
-								//Specified hotel does not exist
+								p.sendMessage("§4Sign was not placed within hotel borders!");        		
+								e.setLine(0, "§4[Hotels]");
+								//Sign not in hotel borders
 							}
-						} else {
-							p.sendMessage("§4Sign was not placed within hotel borders!");        		
+						}else {
+							p.sendMessage("§4Sign for this hotel room already exists!");
 							e.setLine(0, "§4[Hotels]");
-							//Sign not in hotel borders
+							//Sign for specified room already exists
 						}
-					}else {
-						p.sendMessage("§4Sign for this hotel room already exists!");
+					}
+					else{
+						p.sendMessage(ChatColor.DARK_RED + "§4The room number or the price is too big!"); 				
 						e.setLine(0, "§4[Hotels]");
-						//Sign for specified room already exists
+						//Room num too big
 					}
 				}else{
 					p.sendMessage(ChatColor.DARK_RED + "Line 3 must contain the separator §3:");    				
@@ -298,6 +311,46 @@ public class HotelsListener implements Listener {
 		}
 	}
 
+	@EventHandler
+	public void onSignBreak(BlockBreakEvent e) {
+		Block b = e.getBlock();
+		if(b.getType().equals(Material.SIGN)||b.getType().equals(Material.SIGN_POST)||b.getType().equals(Material.WALL_SIGN)){
+			Sign s = (Sign) b.getState();
+			String Line1 = ChatColor.stripColor(s.getLine(0));
+			World w = b.getWorld();
+			if(WorldGuardManager.hasRegion(w, "Hotel-"+Line1)){
+				//Room sign has been broken?
+				if(WorldGuardManager.getRegion(w, "Hotel-"+Line1).contains(b.getX(), b.getY(), b.getZ())){
+					String Line2 = ChatColor.stripColor(s.getLine(1));
+					String[] Line2split = Line2.split(" ");
+					int roomnum = Integer.parseInt(Line2split[1]);
+					if(WorldGuardManager.hasRegion(w, "Hotel-"+Line1+"-"+roomnum)){
+						File signFile = new File("plugins//Hotels//Signs//"+Line1+"-"+roomnum+".yml");
+						if(signFile.exists()){
+							YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
+							if(config.getString("Sign.hotel").equalsIgnoreCase(Line1)){
+								if(config.getInt("Sign.room")==roomnum){
+									World locw = Bukkit.getWorld(config.getString("Sign.location.world"));
+									if(locw!=null){
+										int locx = config.getInt("Sign.location.coords.x");
+										int locy = config.getInt("Sign.location.coords.y");
+										int locz = config.getInt("Sign.location.coords.z");
+										int bx = b.getX();
+										int by = b.getY();
+										int bz = b.getZ();
+										if(locx==bx&&locy==by&&locz==bz){
+											signFile.delete();
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	public static int totalRooms(String hotelName,World w){
 		int tot = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
@@ -387,20 +440,6 @@ public class HotelsListener implements Listener {
 
 		if(file.exists())
 			e.setCancelled(true);
-	}
-
-	//Upon login check if player was in HCM mode, if yes, display boss bar
-	@EventHandler
-	public void bossBarCheck(PlayerJoinEvent e){
-		Player p = e.getPlayer();
-		if(plugin.getConfig().getBoolean("HCM.bossBar")==true){
-			UUID playerUUID = p.getUniqueId();
-			File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
-			if(file.exists()){
-				BarAPI.setMessage(p, "§2Hotel Creation Mode");
-			}
-		}
-
 	}
 	public static long TimeConverter(String immutedtime)
 	{
