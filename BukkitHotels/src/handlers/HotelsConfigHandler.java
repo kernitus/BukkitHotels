@@ -1,7 +1,12 @@
 package handlers;
 
+import java.io.File;
+import java.io.IOException;
+
 import handlers.HotelsConfigHandler;
 
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 public class HotelsConfigHandler {
@@ -12,23 +17,133 @@ public class HotelsConfigHandler {
 		return instance;
 	}
 
+	public void setupConfigs(Plugin plugin){
+		if (!new File(plugin.getDataFolder(), "config.yml").exists()) { //Checking if config file exists
+		setupConfig(plugin);
+		}
+		String lang = plugin.getConfig().getString("settings.language"); //From config.yml
+		File locale = new File("plugins//Hotels//locale.yml");
+		if(locale.exists()){
+			YamlConfiguration config = YamlConfiguration.loadConfiguration(locale);
+			String loclang = config.getString("language"); //From already-generated locale.yml
+			if(!lang.equalsIgnoreCase(loclang)){
+				
+			}
+		}
+		else{
+			if(lang.equalsIgnoreCase("en")){
+			setupLanguageEnglish(plugin);
+			}
+		}
+	}
+	
 	public void setupConfig(Plugin plugin){
+		FileConfiguration config = plugin.getConfig();
 		plugin.getLogger().info("[Hotels] Generating config file...");
-		plugin.getConfig().options().header("Hotels Plugin by kernitus");
-		plugin.getConfig().addDefault("settings.language", String.valueOf("en"));
-		plugin.getConfig().addDefault("settings.use-permissions", Boolean.valueOf(true));
+		config.options().header("Hotels Plugin by kernitus");
+		config.addDefault("settings.language", String.valueOf("en"));
+		config.addDefault("settings.use-permissions", Boolean.valueOf(true));
 
-		plugin.getConfig().options().copyDefaults(true);
+		config.options().copyDefaults(true);
 		plugin.saveConfig();
 		plugin.getLogger().info("[Hotels] Config file generated");
 	}
 
+	public void localeLanguageSelector(Plugin plugin){
+		String lang = plugin.getConfig().getString("settings.language");
+		if(lang.equalsIgnoreCase("en"))
+			setupLanguageEnglish(plugin);
+		else if(lang.equalsIgnoreCase("it"))
+		setupLanguageItalian(plugin);
+		else if(lang.equalsIgnoreCase("custom")){}
+		else
+			setupLanguageEnglish(plugin);
+			
+	}
+	
 	public void setupLanguageEnglish(Plugin plugin){
-		plugin.getConfig().addDefault("settingsChat.firstLine", String.valueOf("hotels"));
-		plugin.getConfig().addDefault("settingsChat.prefix", String.valueOf("[Hotels]"));
+		File file = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		config.addDefault("language", String.valueOf("en"));
+		config.addDefault("main.enable.noVault", String.valueOf("No Vault dependency found!"));
+		config.addDefault("main.enable.success", String.valueOf("%pluginname% v%version% has been enabled correctly"));
+		config.addDefault("main.disable.success", String.valueOf("%pluginname% v%version% has been disabled"));
+		
+		config.addDefault("chat.firstLine", String.valueOf("hotels"));
+		config.addDefault("chat.prefix", String.valueOf("[Hotels]"));
+		config.addDefault("chat.noPermission", String.valueOf("&4You do not have permission!"));
+		
+		config.addDefault("chat.sign.place.fileFail", String.valueOf("&4Could not save sign file"));
+		config.addDefault("chat.sign.place.outOfRegion", String.valueOf("&4Sign is not within hotel region!"));
+		config.addDefault("chat.sign.place.noHotel", String.valueOf("&4Hotel does not exist"));
+		config.addDefault("chat.sign.place.emptySign", String.valueOf("&4Empty sign"));
+		config.addDefault("chat.sign.place.success", String.valueOf("&2Hotel sign has been successfully created!"));
+		config.addDefault("chat.sign.place.noRegion", String.valueOf("&4The specified hotel or room does not exist!"));
+		config.addDefault("chat.sign.place.alreadyExists", String.valueOf("&4Sign for this hotel room already exists!"));
+		config.addDefault("chat.sign.place.tooLong", String.valueOf("&4The room number or the price is too big!"));
+		config.addDefault("chat.sign.place.noSeparator", String.valueOf("&4Line 3 must contain the separator &3:"));
+		config.addDefault("chat.sign.use.success", String.valueOf("&aYou have rented room %roomnum% of the %hotelname% hotel for %price%"));
+		config.addDefault("chat.sign.use.notEnoughMoney", String.valueOf("&4You do not have enough money! You need another %missingmoney%"));
+		config.addDefault("chat.sign.use.noAccount", String.valueOf("&4You do not have an economy account!"));
+		config.addDefault("chat.sign.use.taken", String.valueOf("&4This room has already been rented"));
+		config.addDefault("chat.sign.use.nonExistantRoom", String.valueOf("&4This room does not exist!"));
+		config.addDefault("chat.sign.use.differentRoomNums", String.valueOf("&4Room numbers don't match!"));
+		config.addDefault("chat.sign.use.differentHotelNames", String.valueOf("&4Hotel names don't match!"));
+		config.addDefault("chat.sign.use.fileNonExistant", String.valueOf("&4Sign file does not exist!"));
+		config.addDefault("chat.sign.use.signOutOfRegion", String.valueOf("&4Sign is not inside specified hotel region"));
+		config.addDefault("chat.sign.reception.total", String.valueOf("&1 %tot% &0Total Rooms"));
+		config.addDefault("chat.sign.reception.free", String.valueOf("&a %free% &0Free Rooms"));
+		config.addDefault("chat.sign.use.differentRoomNums", String.valueOf("&4Room numbers don't match!"));
 
-		plugin.getConfig().options().copyDefaults(true);
-		plugin.saveConfig();
+		
+		config.addDefault("chat.creationMode.hotelCreationFailed", String.valueOf("&4Could not create Hotel, hotel already exists"));
+		config.addDefault("chat.creationMode.hotelCreationSuccessful", String.valueOf("&2You have successfully created the %hotel% hotel"));
+		config.addDefault("chat.creationMode.noSelection", String.valueOf("&4Please select an area using the WE wand"));
+		config.addDefault("chat.creationMode.rooms.notInHotel", String.valueOf("&4The room is not in the specified hotel!"));
+		config.addDefault("chat.creationMode.rooms.notInHotel", String.valueOf("&4Could not create room!"));
+		config.addDefault("chat.creationMode.inventory.storeFail", String.valueOf("&4Could not store your inventory"));
+		config.addDefault("chat.creationMode.inventory.storeSuccess", String.valueOf("&aSuccessfully stored your inventory"));
+		config.addDefault("chat.creationMode.inventory.restoreFail", String.valueOf("&4Failed to find your stored inventory"));
+		config.addDefault("chat.creationMode.inventory.restoreSuccess", String.valueOf("&aSuccessfully restored your inventory"));
+		config.addDefault("chat.creationMode.armour.storeFail", String.valueOf("&4Could not store your armour"));
+		config.addDefault("chat.creationMode.armour.storeSuccess", String.valueOf("&aSuccessfully stored your armour"));
+		config.addDefault("chat.creationMode.armour.restoreFail", String.valueOf("&4Failed to find your stored armour"));
+		config.addDefault("chat.creationMode.armour.restoreSuccess", String.valueOf("&aSuccessfully stored your armour"));
+		config.addDefault("chat.creationMode.items.wand.name", String.valueOf("&bWorldEdit Wand"));
+		config.addDefault("chat.creationMode.items.wand.lore1", String.valueOf("L-click one corner"));
+		config.addDefault("chat.creationMode.items.wand.lore2", String.valueOf("R-click opposite corner"));
+		config.addDefault("chat.creationMode.items.compass.name", String.valueOf("&bWorldEdit Compass"));
+		config.addDefault("chat.creationMode.items.compass.lore1", String.valueOf("L-click to tp to"));
+		config.addDefault("chat.creationMode.items.compass.lore2", String.valueOf("R-click to pass through"));
+		config.addDefault("chat.creationMode.items.sign.name", String.valueOf("&bEpic Sign"));
+		config.addDefault("chat.creationMode.items.sign.lore1", String.valueOf("R-click to place"));
+		config.addDefault("chat.creationMode.items.sign.lore2", String.valueOf("First Line: %firstline%"));
+
+		config.options().copyDefaults(true);
+		try {
+			config.save(file);
+		} catch (IOException e) {
+			System.out.println("Could not save locale config");
+			e.printStackTrace();
+		}
+		plugin.getLogger().info("[Hotels] Language strings generated");
+	}
+	
+	public void setupLanguageItalian(Plugin plugin){
+		File file = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		config.addDefault("language", String.valueOf("en"));
+		config.addDefault("settings.chat.firstLine", String.valueOf("hotels"));
+		config.addDefault("settings.chat.prefix", String.valueOf("[Hotels]"));
+		config.addDefault("settings.chat.creationMode.hotelCreationFailed", String.valueOf("ï¿½4Could not create Hotel, hotel already exists"));
+
+		config.options().copyDefaults(true);
+		try {
+			config.save(file);
+		} catch (IOException e) {
+			System.out.println("Could not save locale config");
+			e.printStackTrace();
+		}
 		plugin.getLogger().info("[Hotels] Language strings generated");
 	}
 
@@ -118,10 +233,10 @@ public class HotelsConfigHandler {
 
 		try {
 			cf.save(configFile);
-			plugin.getLogger().info("§2Flags file has been created");
+			plugin.getLogger().info("ï¿½2Flags file has been created");
 		} catch (IOException e) {
 			e.printStackTrace();
-			plugin.getLogger().severe("§4Could not save Flags file");
+			plugin.getLogger().severe("ï¿½4Could not save Flags file");
 		}
 	}*/
 }

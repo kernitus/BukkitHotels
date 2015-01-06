@@ -9,7 +9,6 @@ import java.util.UUID;
 import managers.WorldGuardManager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -41,14 +40,17 @@ public class HotelsCreationMode {
 		if(!file.exists()){
 			file.mkdir();
 		}
-	}
+	}	
 
 	public static void hotelSetup(String hotelName, CommandSender s){
 		Player p = (Player) s;
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+
 		if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.commands")||p.hasPermission("hotels.*")))){
 			Selection sel = getWorldEdit().getSelection(p);
 			if(WorldGuardManager.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
-				p.sendMessage("§4Could not create Hotel, hotel already exists");
+				p.sendMessage(locale.getString("chat.creationMode.hotelCreationFailed").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 				return;}
 			else if(!(sel==null)){
 				ProtectedCuboidRegion r = new ProtectedCuboidRegion(
@@ -62,18 +64,19 @@ public class HotelsCreationMode {
 				String idHotelName =r.getId();
 				String[] partsofhotelName = idHotelName.split("-");
 				String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1);
-				p.sendMessage("§2You have successfully created the "+fromIdhotelName+" hotel");
+				p.sendMessage(locale.getString("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", fromIdhotelName).replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 			}
 			else
-				p.sendMessage("§4Please select a region using the WE wand");
+				p.sendMessage(locale.getString("chat.creationMode.noSelection").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		}
 		else
-			p.sendMessage("§4You do not have permission!");
+			p.sendMessage(locale.getString("chat.noPermission").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 	}
 
 	public static void roomSetup(String hotelName,int roomNum,CommandSender s){
 		Player p = (Player) s;
-
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
 		if(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)){
@@ -92,13 +95,13 @@ public class HotelsCreationMode {
 			}
 			else if((sel!=null)&&
 					(!(pr.contains(sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(), sel.getMinimumPoint().getBlockZ())))){
-				p.sendMessage("§4The room is not in the specified hotel!");
+				p.sendMessage(locale.getString("chat.creationMode.rooms.notInHotel").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 			}
 			else if(sel==null)
-				p.sendMessage("§4Select the hotel area using the worldedit wand");
+				p.sendMessage(locale.getString("chat.creationMode.noSelection").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		}
 		else
-			p.sendMessage("§4Could not create room!");
+			p.sendMessage(locale.getString("chat.creationMode.rooms.fail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 	}
 
 	public static void resetInventoryFiles(CommandSender s){
@@ -117,6 +120,8 @@ public class HotelsCreationMode {
 	}
 
 	public static void saveInventory(CommandSender s){
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		Player p = ((Player) s);
 		ArrayList<ItemStack> list = new ArrayList<>();
 		UUID playerUUID = p.getUniqueId();
@@ -126,7 +131,7 @@ public class HotelsCreationMode {
 			try {
 				file.createNewFile();
 			} catch (IOException e){
-				p.sendMessage(ChatColor.DARK_RED + "Could not store your inventory");
+				p.sendMessage(locale.getString("chat.creationMode.inventory.storeFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 			}
 			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
 			ItemStack[] contents = p.getInventory().getContents();
@@ -140,16 +145,18 @@ public class HotelsCreationMode {
 			try {
 				inv.save(file);
 			} catch (IOException e) {
-				p.sendMessage(ChatColor.DARK_RED + "Could not store your inventory");
+				p.sendMessage(locale.getString("chat.creationMode.inventory.storeFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 			}
 			p.getInventory().clear();
-			p.sendMessage(ChatColor.GREEN+"Your inventory has been stored");
+			p.sendMessage(locale.getString("chat.creationMode.inventory.storeSuccess").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		}else{
-			p.sendMessage(ChatColor.DARK_RED + "Could not store your inventory");
+			p.sendMessage(locale.getString("chat.creationMode.inventory.storeFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		}
 	}
 
 	public static void saveArmour(CommandSender s){
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		Player p = ((Player) s);
 		ArrayList<ItemStack> list = new ArrayList<>();
 		UUID playerUUID = p.getUniqueId();
@@ -159,7 +166,7 @@ public class HotelsCreationMode {
 			try {
 				file.createNewFile();
 			} catch (IOException e){
-				p.sendMessage(ChatColor.DARK_RED + "Could not store your armour");
+				p.sendMessage(locale.getString("chat.creationMode.armour.storeFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 			}
 			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
 			ItemStack[] contents = p.getInventory().getArmorContents();
@@ -173,16 +180,18 @@ public class HotelsCreationMode {
 			try {
 				inv.save(file);
 			} catch (IOException e) {
-				p.sendMessage(ChatColor.DARK_RED + "Could not store your armour");
+				p.sendMessage(locale.getString("chat.creationMode.armour.storeFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 			}
 			p.getInventory().setArmorContents(null);;
-			p.sendMessage(ChatColor.GREEN+"Your armour has been stored");
+			p.sendMessage(locale.getString("chat.creationMode.armour.storeSuccess").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		}else{
-			p.sendMessage(ChatColor.DARK_RED + "Could not store your armour");
+			p.sendMessage(locale.getString("chat.creationMode.armour.storeFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		}
 	}
 
 	public static void loadArmour(CommandSender s){
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
 		File file = new File("plugins//Hotels//Inventories//"+"Armour-"+playerUUID+".yml");
@@ -197,15 +206,17 @@ public class HotelsCreationMode {
 				contents[i] = (ItemStack) list.get(i);
 			}
 			p.getInventory().setArmorContents(contents);
-			p.sendMessage(ChatColor.GREEN + "Your armour has been restored");
+			p.sendMessage(locale.getString("chat.creationMode.armour.restoreSuccess").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 			file.delete();
 
 		}else{
-			p.sendMessage(ChatColor.DARK_RED + "Your armour could not be found!");
+			p.sendMessage(locale.getString("chat.creationMode.armour.restoreFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		}
 	}
 
 	public static void loadInventory(CommandSender s){
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
 		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
@@ -220,11 +231,11 @@ public class HotelsCreationMode {
 				contents[i] = (ItemStack) list.get(i);
 			}
 			p.getInventory().setContents(contents);
-			p.sendMessage(ChatColor.GREEN + "Your inventory has been restored");
+			p.sendMessage(locale.getString("chat.creationMode.inventory.restoreSuccess").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 			file.delete();
 
 		}else{
-			p.sendMessage(ChatColor.DARK_RED + "Your inventory could not be found!");
+			p.sendMessage(locale.getString("chat.creationMode.inventory.restoreFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		}
 	}
 
@@ -241,6 +252,8 @@ public class HotelsCreationMode {
 	}
 
 	public static void giveItems(CommandSender s){
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		Player p = ((Player) s);
 		File file = new File("plugins//Worldedit//config.yml");
 		PlayerInventory pi = p.getInventory();
@@ -252,10 +265,10 @@ public class HotelsCreationMode {
 				@SuppressWarnings("deprecation")
 				ItemStack wand = new ItemStack(wanditem, 1);
 				ItemMeta im = wand.getItemMeta();
-				im.setDisplayName("§bWorldEdit Wand");
+				im.setDisplayName(locale.getString("chat.creationMode.items.wand.name").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 				List<String> loreList = new ArrayList<String>();
-				loreList.add("L-click one corner");//This is the first line of lore
-				loreList.add("R-click opposite corner");//This is the second line of lore
+				loreList.add(locale.getString("chat.creationMode.items.wand.lore1").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+				loreList.add(locale.getString("chat.creationMode.items.wand.lore2").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 				im.setLore(loreList);
 				wand.setItemMeta(im);
 				pi.setItem(1, wand);
@@ -264,19 +277,20 @@ public class HotelsCreationMode {
 		}
 		ItemStack compass = new ItemStack(Material.COMPASS, 1);
 		ItemMeta cim = compass.getItemMeta();
-		cim.setDisplayName("§bWorldEdit Compass");
+		cim.setDisplayName(locale.getString("chat.creationMode.items.compass.name").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		List<String> compassLoreList = new ArrayList<String>();
-		compassLoreList.add("L-click to tp to");//This is the first line of lore
-		compassLoreList.add("R-click to pass through");//This is the second line of lore
+		compassLoreList.add(locale.getString("chat.creationMode.items.compass.lore1").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+		compassLoreList.add(locale.getString("chat.creationMode.items.compass.lore2").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		cim.setLore(compassLoreList);
 		compass.setItemMeta(cim);
 		pi.setItem(0, compass);
 		ItemStack sign = new ItemStack(Material.SIGN, 1);
 		ItemMeta sim = sign.getItemMeta();
-		sim.setDisplayName("§bEpic Sign");
+		sim.setDisplayName(locale.getString("chat.creationMode.items.sign.name").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		List<String> signLoreList = new ArrayList<String>();
-		signLoreList.add("R-click to place");//This is the first line of lore
-		signLoreList.add("First Line: [Hotels]");//This is the second line of lore
+		String firstline = locale.getString("chat.firstLine");
+		signLoreList.add(locale.getString("chat.creationMode.items.sign.lore1").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+		signLoreList.add(locale.getString("chat.creationMode.items.sign.lore2").replaceAll("%firstline%",firstline).replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 		sim.setLore(signLoreList);
 		sign.setItemMeta(sim);
 		pi.setItem(2, sign);

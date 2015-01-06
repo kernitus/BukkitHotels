@@ -47,6 +47,8 @@ public class HotelsListener implements Listener {
 
 	@EventHandler
 	public void onSignPlace(SignChangeEvent e){
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		Player p = e.getPlayer();
 		if(e.getLine(0).toLowerCase().contains("[hotels]")) {
 			if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.create")||p.hasPermission("hotels.*")))){
@@ -76,8 +78,8 @@ public class HotelsListener implements Listener {
 								if(!signFile.exists()){
 									try {
 										signFile.createNewFile();
-									} catch (IOException e1) {
-										p.sendMessage(ChatColor.DARK_RED + "Could not save sign file");
+									} catch (IOException e1){
+										p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 										e1.printStackTrace();
 									}
 									new YamlConfiguration();
@@ -91,24 +93,24 @@ public class HotelsListener implements Listener {
 									try {
 										config.save(signFile);
 									} catch (IOException e1) {
-										p.sendMessage(ChatColor.DARK_RED + "Could not save sign file");
+										p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 										e1.printStackTrace();
 									}
 								}		
 							}
 							else{
 								e.setLine(0, "§4[Hotels]");
-								p.sendMessage("§4Sign is not within hotel region!");
+								p.sendMessage(locale.getString("chat.sign.place.outOfRegion").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 							}
 						}
 						else{
 							e.setLine(0, "§4[Hotels]");
-							p.sendMessage("§4Hotel doesn't exist!");
+							p.sendMessage(locale.getString("chat.sign.place.noHotel").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 						}
 					}
 					else{
 						e.setLine(0, "§4[Hotels]");
-						p.sendMessage("§4Empty sign!");
+						p.sendMessage(locale.getString("chat.sign.place.emptySign").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 					}
 					return;
 				}
@@ -133,7 +135,7 @@ public class HotelsListener implements Listener {
 										try {
 											signFile.createNewFile();
 										} catch (IOException e2){
-											p.sendMessage(ChatColor.DARK_RED + "Could not save sign");
+											p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 										}
 									}
 
@@ -156,7 +158,7 @@ public class HotelsListener implements Listener {
 									try {
 										signConfig.save(signFile);
 									} catch (IOException e1) {
-										p.sendMessage("§4Could not save sign file");
+										p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 										e1.printStackTrace();}
 
 									Line2 = Line2.toLowerCase();
@@ -165,36 +167,36 @@ public class HotelsListener implements Listener {
 									e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost+"$"); //Room Number + Cost
 									e.setLine(2,immutedtime);  //Time
 									e.setLine(3,ChatColor.GREEN+"Vacant"); //Renter
-									p.sendMessage(ChatColor.DARK_GREEN + "Hotel sign has been successfully created!");
+									p.sendMessage(locale.getString("chat.sign.place.success").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 
-								} else {
-									p.sendMessage("§4The specified hotel or room does not exist!");  
+								} else{
+									p.sendMessage(locale.getString("chat.sign.place.noRegion").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 									//Specified hotel does not exist
 								}
-							} else {
-								p.sendMessage("§4Sign was not placed within hotel borders!");        		
+							} else{
+								p.sendMessage(locale.getString("chat.sign.place.outOfRegion").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));       		
 								e.setLine(0, "§4[Hotels]");
 								//Sign not in hotel borders
 							}
-						}else {
-							p.sendMessage("§4Sign for this hotel room already exists!");
+						}else{
+							p.sendMessage(locale.getString("chat.sign.place.alreadyExists").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 							e.setLine(0, "§4[Hotels]");
 							//Sign for specified room already exists
 						}
 					}
 					else{
-						p.sendMessage(ChatColor.DARK_RED + "§4The room number or the price is too big!"); 				
+						p.sendMessage(locale.getString("chat.sign.place.tooLong").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));				
 						e.setLine(0, "§4[Hotels]");
-						//Room num too big
+						//Room num of price too big
 					}
 				}else{
-					p.sendMessage(ChatColor.DARK_RED + "Line 3 must contain the separator §3:");    				
+					p.sendMessage(locale.getString("chat.sign.place.noSeparator").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));  				
 					e.setLine(0, "§4[Hotels]");
 					//Line 3 does not contain separator
 				}
 			}
 			else{
-				p.sendMessage("§4You don't have permission!");
+				p.sendMessage(locale.getString("chat.noPermission").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 				e.setLine(0, "§4[Hotels]");
 				//No permissions
 			}
@@ -206,6 +208,8 @@ public class HotelsListener implements Listener {
 		if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN){//If block is sign
 				Player p = e.getPlayer();
+				File lfile = new File("plugins//Hotels//locale.yml");
+				YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 
 				//Permission check
 				if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.use")||p.hasPermission("hotels.*")))){
@@ -271,34 +275,35 @@ public class HotelsListener implements Listener {
 
 														s.setLine(3, "§c"+p.getName());//Writing renter name on sign
 														s.update();
-														p.sendMessage("§aYou have rented room "+roomNum+" of the "+hotelName+" hotel for "+price);
+														p.sendMessage(locale.getString("chat.sign.use.success").replaceAll("%roomnum%", String.valueOf(roomNum)).replaceAll("%hotelname%", hotelName)
+																.replaceAll("price", String.valueOf(price)).replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 														//Successfully rented room
 													}
 													else{
 														double topay = price-account;
-														p.sendMessage("§4You do not have enough money! You need another "+topay);
+														p.sendMessage(locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 													}
 												}
 												else
-													p.sendMessage("§4You do not have an economy account!");
+													p.sendMessage(locale.getString("chat.sign.use.noAccount").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 											}
 											else
-												p.sendMessage("§4This room has already been rented");
+												p.sendMessage(locale.getString("chat.sign.use.taken").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 										}
 										else
-											p.sendMessage("§4This room does not exist!");
+											p.sendMessage(locale.getString("chat.sign.use.nonExistantRoom").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 									}
 									else
-										p.sendMessage("§4Room numbers don't match!");
+										p.sendMessage(locale.getString("chat.sign.use.differentRoomNums").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 								}
 								else
-									p.sendMessage("§4Hotel names don't match!");
+									p.sendMessage(locale.getString("chat.sign.use.differentHotelNames").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 							}
 							else
-								p.sendMessage("§4Sign file doesn't exist!");
+								p.sendMessage(locale.getString("chat.sign.use.fileNonExistant").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 						}
 						else
-							p.sendMessage("§4Sign is not inside specified hotel region!");
+							p.sendMessage(locale.getString("chat.sign.use.signOutOfRegion").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 					}
 					/*else
 						p.sendMessage("§4Hotel region doesn't exist!");
@@ -306,7 +311,7 @@ public class HotelsListener implements Listener {
 					 */
 				}
 				else
-					p.sendMessage("§4You don't have permission!");
+					p.sendMessage(locale.getString("chat.noPermission").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
 			}
 		}
 	}
@@ -399,6 +404,8 @@ public class HotelsListener implements Listener {
 			Sign s = (Sign) b.getState();
 			String Line1 = ChatColor.stripColor(s.getLine(0));
 			String Line2 = ChatColor.stripColor(s.getLine(1));
+			File lfile = new File("plugins//Hotels//locale.yml");
+			YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 			if(Line1.equals("Reception")){ //First line is "Reception"
 				if(Line2!=null){
 					String[] Line2split = Line2.split(" ");
@@ -406,8 +413,8 @@ public class HotelsListener implements Listener {
 					if(WorldGuardManager.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
 						int tot = totalRooms(hotelname,b.getWorld());
 						int free = freeRooms(hotelname,b.getWorld());
-						s.setLine(2, "§1 "+tot+" §0Total Rooms");
-						s.setLine(3, "§a "+free+" §0Free Rooms");
+						s.setLine(2, locale.getString("chat.sign.reception.total").replaceAll("%tot%", String.valueOf(tot)).replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+						s.setLine(3, locale.getString("chat.sign.reception.free").replaceAll("%tot%", String.valueOf(free)).replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
 						s.update();
 						return false;
 					}
@@ -463,7 +470,7 @@ public class HotelsListener implements Listener {
 		case "m": return TimeUnit.MINUTES;
 		case "h": return TimeUnit.HOURS;
 		case "d": return TimeUnit.DAYS;
-		default: throw new IllegalArgumentException(String.format("%s is not a valid code [smhd]", c));
+		default: throw new IllegalArgumentException(String.format("%s is not a valid time code [smhd]", c));
 		}
 	}
 }

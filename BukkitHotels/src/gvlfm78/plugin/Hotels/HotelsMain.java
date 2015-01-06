@@ -1,13 +1,13 @@
 package kernitus.plugin.Hotels;
 
-import handlers.HotelsCommandHandler;
-import handlers.HotelsConfigHandler;
-
 import java.io.File;
 
+import handlers.HotelsCommandHandler;
+import handlers.HotelsConfigHandler;
 import managers.GameLoop;
 import net.milkbowl.vault.economy.Economy;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,19 +26,31 @@ public class HotelsMain extends JavaPlugin{
 		getServer().getPluginManager().registerEvents((new HotelsListener(this)), this);//Firing event listener
 		getCommand("Hotels").setExecutor(new HotelsCommandHandler(this));//Firing commands listener
 		setupEconomy();
-
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		//Economy and stuff
-		if (!setupEconomy()) {
+		if (!setupEconomy()){
 			//If economy is turned on
 			//but no vault is found it will warn the user
-			getLogger().severe(String.format("[%s] - No Vault dependency found!", getDescription().getName()));}
+			String message = locale.getString("main.enable.noVault");
+			if(message!=null){
+				getLogger().severe(message);
+			}
+			else
+				getLogger().severe("No Vault dependency found!");
+		}
 
 		//GameLoop stuff
 		gameloop = new GameLoop(this);
 		gameloop.runTaskTimer(this, 200, 2*60*20);
 
 		//Logging to console the correct enabling of Hotels
-		getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has been enabled correctly");
+		String message = locale.getString("main.enable.success");
+		if(message!=null){
+			getLogger().info(locale.getString("main.enable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
+		}
+		else
+			getLogger().info(pdfFile.getName()+" v"+pdfFile.getVersion()+ " has been enabled correctly");
 	}
 	@Override
 	public void onDisable(){
@@ -48,28 +60,41 @@ public class HotelsMain extends JavaPlugin{
 
 		gameloop.cancel();
 
-		PluginDescriptionFile pdfFile = this.getDescription();//Logging to console the disabling of Hotels
-		getLogger().info(pdfFile.getName() + " " + pdfFile.getVersion() + " has been disabled");
+		PluginDescriptionFile pdfFile = this.getDescription();
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+		//Logging to console the disabling of Hotels
+		String message = locale.getString("main.disable.success");
+		if(message!=null){
+			getLogger().info(locale.getString("main.disable.success").replaceAll("%version%", pdfFile.getVersion()));
+		}
+		else
+			getLogger().info(pdfFile.getName() + " v" + pdfFile.getVersion() + " has been disabled");
 	}
 
 	@Override
 	public void onLoad(){
 		setupConfig();
 		setupEconomy();
-
+		PluginDescriptionFile pdfFile = this.getDescription();
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		//Economy and stuff
-		if (!setupEconomy()) {
+		if (!setupEconomy()){
 			//If economy is turned on
 			//but no vault is found it will warn the user
-			getLogger().severe(String.format("[%s] - No Vault dependency found!", getDescription().getName()));}
+			String message = locale.getString("main.enable.noVault");
+			if(message!=null){
+				getLogger().severe(message.replaceAll("%pluginname%", pdfFile.getName()));
+			}
+			else
+				getLogger().severe(pdfFile.getName() + " No Vault dependency found!");
+		}
 	}
 
 	//Setting up config files
 	private void setupConfig(){
-		if (!new File(getDataFolder(), "config.yml").exists()) { //Checking if config file exists
-			hconfigh.setupConfig(this);//Creates config file
-			hconfigh.setupLanguageEnglish(this);//Adds language strings
-		}
+		hconfigh.setupConfigs(this);//Creates config file
 	}
 
 	//Setting up the economy
