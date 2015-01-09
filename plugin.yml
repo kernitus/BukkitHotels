@@ -12,7 +12,7 @@ commands:
   Hotels:
    description: Hotels's main command
    permission: hotels.*
-   permission-message: You do not have permission
+   permission-message: You do not have permission!
 
 permissions:
    hotels.*:
