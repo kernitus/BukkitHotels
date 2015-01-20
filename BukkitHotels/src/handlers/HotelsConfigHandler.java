@@ -69,7 +69,18 @@ public class HotelsConfigHandler {
 		config.addDefault("main.enable.success", String.valueOf("%pluginname% v%version% has been enabled correctly"));
 		config.addDefault("main.disable.success", String.valueOf("%pluginname% v%version% has been disabled"));
 		
-		config.addDefault("chat.firstLine", String.valueOf("hotels"));
+		config.addDefault("sign.room", String.valueOf("&aRoom"));
+		config.addDefault("sign.room.free", String.valueOf("Free Rooms"));
+		config.addDefault("sign.room.total", String.valueOf("Total Rooms"));
+		config.addDefault("sign.reception", String.valueOf("Reception"));
+		config.addDefault("sign.vacant", String.valueOf("Vacant"));
+		config.addDefault("sign.rentExpiredConsole", String.valueOf("%player%'s rent of room %roomnum% of the %hotelname% hotel has expired"));
+		config.addDefault("sign.rentExpiredPlayer", String.valueOf("&9Your rent of room %roomNum% of the %hotelName% hotel has expired"));
+		config.addDefault("sign.delete.reception", String.valueOf("Reception file %filename% did not match in-game characteristics and has been deleted"));
+		config.addDefault("sign.delete.roomNum", String.valueOf("Sign file %filename% did not match in-game roomNum and has been deleted"));
+		config.addDefault("sign.delete.hotelName", String.valueOf("Sign file %filename% did not match in-game hotelname and has been deleted"));
+		config.addDefault("sign.delete.location", String.valueOf("Sign file %filename% did not match in-game location and has been deleted"));
+		
 		config.addDefault("chat.prefix", String.valueOf("[Hotels]"));
 		config.addDefault("chat.noPermission", String.valueOf("&4You do not have permission!"));
 		
@@ -91,8 +102,6 @@ public class HotelsConfigHandler {
 		config.addDefault("chat.sign.use.differentHotelNames", String.valueOf("&4Hotel names don't match!"));
 		config.addDefault("chat.sign.use.fileNonExistant", String.valueOf("&4Sign file does not exist!"));
 		config.addDefault("chat.sign.use.signOutOfRegion", String.valueOf("&4Sign is not inside specified hotel region"));
-		config.addDefault("chat.sign.reception.total", String.valueOf("&1 %tot% &0Total Rooms"));
-		config.addDefault("chat.sign.reception.free", String.valueOf("&a %free% &0Free Rooms"));
 		config.addDefault("chat.sign.use.differentRoomNums", String.valueOf("&4Room numbers don't match!"));
 
 		
@@ -118,6 +127,46 @@ public class HotelsConfigHandler {
 		config.addDefault("chat.creationMode.items.sign.name", String.valueOf("&bEpic Sign"));
 		config.addDefault("chat.creationMode.items.sign.lore1", String.valueOf("R-click to place"));
 		config.addDefault("chat.creationMode.items.sign.lore2", String.valueOf("First Line: %firstline%"));
+		
+		config.addDefault("chat.commands.unknownArg", String.valueOf("&4Unknown argument. Try &3&o/hotels"));
+		config.addDefault("chat.commands.noWorld", String.valueOf("&cPlease specify world"));
+		config.addDefault("chat.commands.noHotel", String.valueOf("&cPlease specify hotel"));
+		config.addDefault("chat.commands.noPlayer", String.valueOf("&cPlease specify player"));
+		config.addDefault("chat.commands.userNonExistant", String.valueOf("&4Specified user does not exist"));
+		config.addDefault("chat.commands.roomNonExistant", String.valueOf("&4Specified room does not exist"));
+		config.addDefault("chat.commands.hotelNonExistant", String.valueOf("&4Specified hotel does not exist"));
+		config.addDefault("chat.commands.worldNonExistant", String.valueOf("&4Specified world does not exist"));
+		config.addDefault("chat.commands.creationMode.enter", String.valueOf("&aYou have entered hotel creation mode."));
+		config.addDefault("chat.commands.creationMode.exit", String.valueOf("&aYou have exited hotel creation mode."));
+		config.addDefault("chat.commands.creationMode.reset", String.valueOf("&2The inventory files have been reset."));
+		config.addDefault("chat.commands.creationMode.noarg", String.valueOf("&4Please specify &6&oenter &4or &6&oexit &4mode"));
+		config.addDefault("chat.commands.creationMode.consoleRejected", String.valueOf("The console can't use hotel creation mode!"));
+		config.addDefault("chat.commands.create.fail", String.valueOf("&4Could not create hotel. Did you enter Hotel Creation Mode? (&3&o/hotels cm enter&r&4)"));
+		config.addDefault("chat.commands.create.consoleRejected", String.valueOf("The console can't create a hotel!"));
+		config.addDefault("chat.commands.create.noName", String.valueOf("&4Give a name to your hotel!"));
+		config.addDefault("chat.commands.room.success", String.valueOf("&aYou have created room &roomnum% of the %hotelname% hotel"));
+		config.addDefault("chat.commands.room.roomNumInvalid", String.valueOf("&4The room number is not a valid integer!"));
+		config.addDefault("chat.commands.room.usage", String.valueOf("&4Correct Usage: &6&o/hotels room hotelname roomnum"));
+		config.addDefault("chat.commands.deleteRoom.usage", String.valueOf("&4Correct usage: /hotels delr [hotelName] [roomNum] <world>"));
+		config.addDefault("chat.commands.renumber.usage", String.valueOf("&4Correct usage: /hotels renum [hotelName] [oldNum] [newNum] <world>"));
+		config.addDefault("chat.commands.rename.usage", String.valueOf("&4Correct usage: /hotels ren [oldName] [newName] <world>"));
+		config.addDefault("chat.commands.renumber.success", String.valueOf("&2You have successfully changed room %oldnum% to room %newnum% of the %hotelname% hotel"));
+		config.addDefault("chat.commands.renumber.fail", String.valueOf("&4Could not renumber room %oldnum%"));
+		config.addDefault("chat.commands.renumber.newNumTooBig", String.valueOf("&4New number is too big!"));
+		config.addDefault("chat.commands.rename.success", String.valueOf("&2You have successfully renamed the %hotelname% hotel"));
+		config.addDefault("chat.commands.rename.failRooms", String.valueOf("&4Could not rename rooms"));
+		config.addDefault("chat.commands.removeRoom.success", String.valueOf("&aSuccessfully deleted room"));
+		config.addDefault("chat.commands.removeRoom.fail", String.valueOf("&4Could not delete room"));
+		config.addDefault("chat.commands.removeRegions.success", String.valueOf("&aSuccessfully deleted hotel regions"));
+		config.addDefault("chat.commands.removeRegions.fail", String.valueOf("&4Could not delete hotel regionsn"));
+		config.addDefault("chat.commands.check.heading", String.valueOf("&a==Rented rooms list for %player%=="));
+		config.addDefault("chat.commands.check.line", String.valueOf("&6Hotel: &c%hotelname%    &6Room: &c%roomnum%    &6Expires in: %expirydate% minutes"));
+		config.addDefault("chat.commands.listHotels.heading", String.valueOf("&a==Hotel list=="));
+		config.addDefault("chat.commands.listHotels.line", String.valueOf("&6Hotel: &c%hotelname%"));
+		config.addDefault("chat.commands.listRooms.heading", String.valueOf("&a==Room list for %hotelname% hotel=="));
+		config.addDefault("chat.commands.listRooms.line", String.valueOf("&6Room n: &c%roomnum%"));
+		config.addDefault("chat.commands.listRooms.noRooms", String.valueOf("&cThere are no rooms in that hotel"));
+		config.addDefault("chat.commands.removeSigns.success", String.valueOf("&aSuccessfully removed all signs"));
 
 		config.options().copyDefaults(true);
 		try {

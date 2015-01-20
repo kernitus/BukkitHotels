@@ -2,7 +2,6 @@ package kernitus.plugin.Hotels;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -37,7 +36,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HotelsListener implements Listener {
-	public final HashMap<Player, ArrayList<Block>> hashmapPlayerName = new HashMap<Player, ArrayList<Block>>();
 
 	public HotelsMain plugin;
 
@@ -65,21 +63,19 @@ public class HotelsListener implements Listener {
 								int tot = totalRooms(Line2,p.getWorld());
 								int free = freeRooms(Line2,p.getWorld());
 								String hotelName = Line2.substring(0, 1).toUpperCase() + Line2.substring(1);
-								e.setLine(0, "§aReception");
+								e.setLine(0, "§a"+locale.getString("sign.reception"));
 								e.setLine(1, "§1"+hotelName+" Hotel");
-								e.setLine(2, "§1"+tot+" §0Total Rooms");
-								e.setLine(3, "§a"+free+" §0Free Rooms");
-								int count = 1;
-								File signFile = new File("plugins//Hotels//Signs//Reception-"+Line2+"-"+count+".yml");
-								while(signFile.exists()){
-									count++;
-									signFile = new File("plugins//Hotels//Signs//Reception-"+Line2+"-"+count+".yml");
+								e.setLine(2, "§1"+tot+" §0"+locale.getString("sign.total"));
+								e.setLine(2, "§a"+free+" §0"+locale.getString("sign.free"));
+								File signFile = new File("plugins//Hotels//Signs//Reception-"+Line2+"-1.yml");
+								for(int i = 1; signFile.exists(); i++){
+									signFile = new File("plugins//Hotels//Signs//Reception-"+Line2+"-"+i+".yml");
 								}
 								if(!signFile.exists()){
 									try {
 										signFile.createNewFile();
 									} catch (IOException e1){
-										p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+										p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 										e1.printStackTrace();
 									}
 									new YamlConfiguration();
@@ -93,24 +89,24 @@ public class HotelsListener implements Listener {
 									try {
 										config.save(signFile);
 									} catch (IOException e1) {
-										p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+										p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 										e1.printStackTrace();
 									}
 								}		
 							}
 							else{
 								e.setLine(0, "§4[Hotels]");
-								p.sendMessage(locale.getString("chat.sign.place.outOfRegion").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+								p.sendMessage(locale.getString("chat.sign.place.outOfRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 							}
 						}
 						else{
 							e.setLine(0, "§4[Hotels]");
-							p.sendMessage(locale.getString("chat.sign.place.noHotel").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+							p.sendMessage(locale.getString("chat.sign.place.noHotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						}
 					}
 					else{
 						e.setLine(0, "§4[Hotels]");
-						p.sendMessage(locale.getString("chat.sign.place.emptySign").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+						p.sendMessage(locale.getString("chat.sign.place.emptySign").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 					}
 					return;
 				}
@@ -135,7 +131,7 @@ public class HotelsListener implements Listener {
 										try {
 											signFile.createNewFile();
 										} catch (IOException e2){
-											p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+											p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 										}
 									}
 
@@ -158,7 +154,7 @@ public class HotelsListener implements Listener {
 									try {
 										signConfig.save(signFile);
 									} catch (IOException e1) {
-										p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+										p.sendMessage(locale.getString("chat.sign.place.fileFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 										e1.printStackTrace();}
 
 									Line2 = Line2.toLowerCase();
@@ -167,36 +163,36 @@ public class HotelsListener implements Listener {
 									e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost+"$"); //Room Number + Cost
 									e.setLine(2,immutedtime);  //Time
 									e.setLine(3,ChatColor.GREEN+"Vacant"); //Renter
-									p.sendMessage(locale.getString("chat.sign.place.success").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+									p.sendMessage(locale.getString("chat.sign.place.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 
 								} else{
-									p.sendMessage(locale.getString("chat.sign.place.noRegion").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+									p.sendMessage(locale.getString("chat.sign.place.noRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 									//Specified hotel does not exist
 								}
 							} else{
-								p.sendMessage(locale.getString("chat.sign.place.outOfRegion").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));       		
+								p.sendMessage(locale.getString("chat.sign.place.outOfRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));       		
 								e.setLine(0, "§4[Hotels]");
 								//Sign not in hotel borders
 							}
 						}else{
-							p.sendMessage(locale.getString("chat.sign.place.alreadyExists").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+							p.sendMessage(locale.getString("chat.sign.place.alreadyExists").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 							e.setLine(0, "§4[Hotels]");
 							//Sign for specified room already exists
 						}
 					}
 					else{
-						p.sendMessage(locale.getString("chat.sign.place.tooLong").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));				
+						p.sendMessage(locale.getString("chat.sign.place.tooLong").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));				
 						e.setLine(0, "§4[Hotels]");
 						//Room num of price too big
 					}
 				}else{
-					p.sendMessage(locale.getString("chat.sign.place.noSeparator").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));  				
+					p.sendMessage(locale.getString("chat.sign.place.noSeparator").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));  				
 					e.setLine(0, "§4[Hotels]");
 					//Line 3 does not contain separator
 				}
 			}
 			else{
-				p.sendMessage(locale.getString("chat.noPermission").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+				p.sendMessage(locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 				e.setLine(0, "§4[Hotels]");
 				//No permissions
 			}
@@ -276,34 +272,34 @@ public class HotelsListener implements Listener {
 														s.setLine(3, "§c"+p.getName());//Writing renter name on sign
 														s.update();
 														p.sendMessage(locale.getString("chat.sign.use.success").replaceAll("%roomnum%", String.valueOf(roomNum)).replaceAll("%hotelname%", hotelName)
-																.replaceAll("price", String.valueOf(price)).replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+																.replaceAll("price", String.valueOf(price)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 														//Successfully rented room
 													}
 													else{
 														double topay = price-account;
-														p.sendMessage(locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+														p.sendMessage(locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 													}
 												}
 												else
-													p.sendMessage(locale.getString("chat.sign.use.noAccount").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+													p.sendMessage(locale.getString("chat.sign.use.noAccount").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 											}
 											else
-												p.sendMessage(locale.getString("chat.sign.use.taken").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+												p.sendMessage(locale.getString("chat.sign.use.taken").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 										}
 										else
-											p.sendMessage(locale.getString("chat.sign.use.nonExistantRoom").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+											p.sendMessage(locale.getString("chat.sign.use.nonExistantRoom").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 									}
 									else
-										p.sendMessage(locale.getString("chat.sign.use.differentRoomNums").replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+										p.sendMessage(locale.getString("chat.sign.use.differentRoomNums").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 								}
 								else
-									p.sendMessage(locale.getString("chat.sign.use.differentHotelNames").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+									p.sendMessage(locale.getString("chat.sign.use.differentHotelNames").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 							}
 							else
-								p.sendMessage(locale.getString("chat.sign.use.fileNonExistant").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+								p.sendMessage(locale.getString("chat.sign.use.fileNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 						}
 						else
-							p.sendMessage(locale.getString("chat.sign.use.signOutOfRegion").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+							p.sendMessage(locale.getString("chat.sign.use.signOutOfRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 					}
 					/*else
 						p.sendMessage("§4Hotel region doesn't exist!");
@@ -311,7 +307,7 @@ public class HotelsListener implements Listener {
 					 */
 				}
 				else
-					p.sendMessage(locale.getString("chat.noPermission").replaceAll("(?i)&([a-k0-9])", "\u00A7$1")); 
+					p.sendMessage(locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 			}
 		}
 	}
@@ -413,8 +409,8 @@ public class HotelsListener implements Listener {
 					if(WorldGuardManager.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
 						int tot = totalRooms(hotelname,b.getWorld());
 						int free = freeRooms(hotelname,b.getWorld());
-						s.setLine(2, locale.getString("chat.sign.reception.total").replaceAll("%tot%", String.valueOf(tot)).replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
-						s.setLine(3, locale.getString("chat.sign.reception.free").replaceAll("%tot%", String.valueOf(free)).replaceAll("(?i)&([a-k0-9])", "\u00A7$1"));
+						s.setLine(2, locale.getString("chat.sign.reception.total").replaceAll("%tot%", String.valueOf(tot)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.setLine(3, locale.getString("chat.sign.reception.free").replaceAll("%tot%", String.valueOf(free)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						s.update();
 						return false;
 					}

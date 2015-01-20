@@ -27,6 +27,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
@@ -40,7 +41,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel,String[] args) {
 		if(cmd.getName().equalsIgnoreCase("Hotels")){
 			if(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.commands")||sender.hasPermission("hotels.*")))){
-
+				File lfile = new File("plugins//Hotels//locale.yml");
+				YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 				if(args.length == 0){
 					sender.sendMessage("§4==========Hotels==========");
 					sender.sendMessage("§2"+plugin.getDescription().getName()+" plugin by kernitus");
@@ -120,7 +122,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("enter"))&&(sender instanceof Player))
 						&& (sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
-					sender.sendMessage(ChatColor.GREEN+"You have entered hotel creation mode.");
+					sender.sendMessage(locale.getString("chat.commands.creationMode.enter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 					HotelsCreationMode.checkFolder();
 					HotelsCreationMode.saveInventory(sender);
 					HotelsCreationMode.saveArmour(sender);
@@ -128,20 +130,20 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("exit"))&&(sender instanceof Player))
 						&&(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
-					sender.sendMessage(ChatColor.GREEN+"You have exited hotel creation mode.");
+					sender.sendMessage(locale.getString("chat.commands.creationMode.exit").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 					HotelsCreationMode.loadInventory(sender);
 					HotelsCreationMode.loadArmour(sender);
 				}
 				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))&&(args[1].equalsIgnoreCase("reset"))&&(sender instanceof Player))
 						&&(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
 					HotelsCreationMode.resetInventoryFiles(sender);
-					sender.sendMessage("§2The inventory files have been reset");
+					sender.sendMessage(locale.getString("chat.commands.creationMode.reset").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if(((args.length == 2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode")||
 						(args.length == 1)&&(args[0].equalsIgnoreCase("cm"))))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
 
-					sender.sendMessage(ChatColor.DARK_RED+"Please specify "+ChatColor.YELLOW+"enter"+ChatColor.DARK_RED+" or "+ChatColor.YELLOW+"exit "+ChatColor.DARK_RED+"mode");
+					sender.sendMessage(locale.getString("chat.commands.creationMode.noarg").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if((((args.length==2)||(args.length==1))&&(args[0].equalsIgnoreCase("check"))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&((sender.hasPermission("hotels.check")||(sender.hasPermission("hotels.check.others"))
@@ -161,7 +163,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 								check(p, sender);
 							}
 							else
-								sender.sendMessage("§4You do not have permission!");
+								sender.sendMessage(locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						}
 					}if(!(sender instanceof Player)){
 						if(args.length>=2){
@@ -169,7 +171,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 							check(p, sender);
 						}
 						else
-							sender.sendMessage("Please specify player");
+							sender.sendMessage(locale.getString("chat.commands.noPlayer").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 					}
 				}
 				else if((((args.length==2)||(args.length==3))&&(args[0].equalsIgnoreCase("roomlist")||args[0].equalsIgnoreCase("rlist"))&&
@@ -183,7 +185,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 								listRooms(hotel,w,sender);
 							}
 							else
-								sender.sendMessage("§4Specified hotel does not exist");
+								sender.sendMessage(locale.getString("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						}
 						else if(!(sender instanceof Player)){
 							if(args.length!=2){
@@ -194,19 +196,19 @@ public class HotelsCommandHandler implements CommandExecutor {
 										listRooms(hotel,w,sender);
 									}
 									else
-										sender.sendMessage("Specified hotel does not exist");
+										sender.sendMessage(locale.getString("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 								}
 								else
-									sender.sendMessage("World does not exist");
+									sender.sendMessage(locale.getString("chat.commands.worldNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 							}
 							else
-								sender.sendMessage("Please specify world");
+								sender.sendMessage(locale.getString("chat.commands.noWorld").replaceAll("(?i)&([a-fk-r0-9])", ""));
 						}
 						else
 							sender.sendMessage("How did you get here");
 					}
 					else
-						sender.sendMessage(ChatColor.DARK_RED+"Please specify hotel");
+						sender.sendMessage(locale.getString("chat.commands.noHotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if((((args.length==2)||(args.length==1))&&(args[0].equalsIgnoreCase("hotelslist")||args[0].equalsIgnoreCase("hlist")||args[0].equalsIgnoreCase("list"))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.list.hotels")||sender.hasPermission("hotels.*")))))){
@@ -221,7 +223,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 							listHotels(w,sender);
 						}
 						else{
-							sender.sendMessage("Please specify world");
+							sender.sendMessage(locale.getString("chat.commands.noWorld").replaceAll("(?i)&([a-fk-r0-9])", ""));
 						}
 					}
 				}
@@ -234,7 +236,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						HotelsCreationMode.hotelSetup(args[1], sender);
 					}
 					else
-						sender.sendMessage("§4Could not create hotel. Did you enter Hotel Creation Mode? (§3§o/hotels cm enter§r§4)");
+						sender.sendMessage(locale.getString("chat.commands.create.fail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if((args.length==4||args.length==3)&&(args[0].equalsIgnoreCase("deleteroom")||(args[0].equalsIgnoreCase("delr")))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.delete.rooms")||sender.hasPermission("hotels.*"))))){
@@ -250,10 +252,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 										removeRoom(args[1],roomnum, world,sender);
 									}
 									else
-										sender.sendMessage("§4Specified room does not exist");
+										sender.sendMessage(locale.getString("chat.commands.roomNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 								}
 								else
-									sender.sendMessage("§4Specified hotel does not exist");
+									sender.sendMessage(locale.getString("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 							}
 							else{
 								World world = Bukkit.getWorld(args[3]);
@@ -264,14 +266,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 										removeRoom(args[1],roomnum, world,sender);
 									}
 									else
-										sender.sendMessage("§4Specified room does not exist");
+										sender.sendMessage(locale.getString("chat.commands.roomNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 								}
 								else
-									sender.sendMessage("§4Specified hotel does not exist");
+									sender.sendMessage(locale.getString("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 							}
 						}
 						else
-							sender.sendMessage("§4Correct usage: /hotels delr [hotelName] [roomNum] <world>");
+							sender.sendMessage(locale.getString("chat.commands.deleteRoom.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 					}
 					else if(!(sender instanceof Player)){
 						if(args.length>=4){
@@ -283,10 +285,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 									removeRoom(args[1],roomnum, world,sender);
 								}
 								else
-									sender.sendMessage("§4Specified room does not exist");
+									sender.sendMessage(locale.getString("chat.commands.roomNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 							}
 							else
-								sender.sendMessage("§4Specified hotel does not exist");
+								sender.sendMessage(locale.getString("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						}
 					}
 				}
@@ -304,7 +306,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 								renameHotel(args[1],args[2],world,sender);
 							}
 							else
-								sender.sendMessage("§4World specified does not exist!");
+								sender.sendMessage(locale.getString("chat.commands.worldNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						}
 					}
 					else if(!(sender instanceof Player)){
@@ -314,10 +316,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 								renameHotel(args[1],args[2],world,sender);
 							}
 							else
-								sender.sendMessage("§4World specified does not exist!");
+								sender.sendMessage(locale.getString("chat.commands.worldNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						}
 						else
-							sender.sendMessage("Please specify world");
+							sender.sendMessage(locale.getString("chat.commands.noWorld").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 					}
 				}
 				else if(((args.length==4||args.length==5)&&(args[0].equalsIgnoreCase("renumber")||args[0].equalsIgnoreCase("renum")))&&
@@ -334,7 +336,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 								renumber(args[1],args[2],args[3],world,sender);
 							}
 							else
-								sender.sendMessage("§4World specified does not exist!");
+								sender.sendMessage(locale.getString("chat.commands.worldNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						}
 					}
 					else if(!(sender instanceof Player)){
@@ -344,10 +346,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 								renumber(args[1],args[2],args[3],world,sender);
 							}
 							else
-								sender.sendMessage("§4World specified does not exist!");
+								sender.sendMessage(locale.getString("chat.commands.worldNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 						}
 						else
-							sender.sendMessage("Please specify world");
+							sender.sendMessage(locale.getString("chat.commands.noWorld").replaceAll("(?i)&([a-fk-r0-9])", ""));
 					}
 				}
 				else if(((args.length==2||args.length==3)&&(args[0].equalsIgnoreCase("delete")||args[0].equalsIgnoreCase("del")))&&
@@ -366,33 +368,33 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 				else if(((args.length<4)&&(args[0].equalsIgnoreCase("renumber")||(args[0].equalsIgnoreCase("renum"))))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.renumber")||sender.hasPermission("hotels.*"))))){
-					sender.sendMessage("§4Correct usage: /hotels renum [hotelName] [oldNum] [newNum] <world>");
+					sender.sendMessage(locale.getString("chat.commands.renumber.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if(((args.length<3)&&(args[0].equalsIgnoreCase("rename")||(args[0].equalsIgnoreCase("ren"))))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.rename")||sender.hasPermission("hotels.*"))))){
-					sender.sendMessage("§4Correct usage: /hotels ren [oldName] [newName] <world>");
+					sender.sendMessage(locale.getString("chat.commands.rename.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if(((args.length<3)&&(args[0].equalsIgnoreCase("deleteroom")||(args[0].equalsIgnoreCase("delr"))))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.delete.rooms")||sender.hasPermission("hotels.*"))))){
-					sender.sendMessage("§4Correct usage: /hotels delr [hotelName] [roomNum] <world>");
+					sender.sendMessage(locale.getString("chat.commands.deleteRoom.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if(((args.length==1)&&(args[0].equalsIgnoreCase("roomlist")||(args[0].equalsIgnoreCase("rlist"))))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.list.rooms")||sender.hasPermission("hotels.*"))))){
-					sender.sendMessage("§cPlease specify the hotel name");
+					sender.sendMessage(locale.getString("chat.commands.noHotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if(((args.length==1)&&(args[0].equalsIgnoreCase("delete")||(args[0].equalsIgnoreCase("del"))))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*"))))){
-					sender.sendMessage("§cPlease specify the hotel name");
+					sender.sendMessage(locale.getString("chat.commands.noHotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if((args.length==2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))||(args.length == 1)&&(args[0].equalsIgnoreCase("create")||(args.length == 1)&&(args[0].equalsIgnoreCase("c"))&&!(sender instanceof Player))){
-					sender.sendMessage("§4The console can't create a hotel!");
+					sender.sendMessage(locale.getString("chat.commands.create.consoleRejected").replaceAll("(?i)&([a-fk-r0-9])", ""));
 				}
 				else if(((args.length==2)&&(args[0].equalsIgnoreCase("create")||(args[0].equalsIgnoreCase("c")))&&(sender instanceof Player))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.create")||sender.hasPermission("hotels.*"))))){
-					sender.sendMessage(ChatColor.DARK_RED+"Give a name to your hotel!");
+					sender.sendMessage(locale.getString("chat.commands.create.noName").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if((args.length==2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode"))&&!(sender instanceof Player)){
-					sender.sendMessage("§4The console can't use hotel creation mode!");
+					sender.sendMessage(locale.getString("chat.commands.creationMode.consoleRejected").replaceAll("(?i)&([a-fk-r0-9])", ""));
 				}
 				else if(((args.length==3)&&(args[0].equalsIgnoreCase("room"))&&(sender instanceof Player))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.sign.create")||sender.hasPermission("hotels.*"))))){
@@ -400,7 +402,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					Player p = (Player) sender;
 
 					if(!(WorldGuardManager.hasRegion(p.getWorld(), "Hotel-"+hotelName)))
-						sender.sendMessage("§4The specified hotel does not exist");
+						sender.sendMessage(locale.getString("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 					else{
 						try{
 							int roomNum = Integer.parseInt(args[2]);
@@ -408,23 +410,25 @@ public class HotelsCommandHandler implements CommandExecutor {
 							hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
 							String roomNums = String.valueOf(roomNum);
 							roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1);
-							sender.sendMessage("§aYou created room "+roomNum+" of the "+hotelName+" hotel");
+							sender.sendMessage(locale.getString("chat.commands.room.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%roomnum%", String.valueOf(roomNum)).replaceAll("hotelname", hotelName));
 						} catch(NumberFormatException e){
-							sender.sendMessage("§4The room number is not an integer!");
+							sender.sendMessage(locale.getString("chat.commands.room.roomNumInvalid").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						}
 					}	
 				}
 				else if(((args.length ==1)||(args.length ==2))&&(args[0].equalsIgnoreCase("room"))){
-					sender.sendMessage("§4Correct Usage: §6§o/hotels room hotelname roomnum");
+					sender.sendMessage(locale.getString("chat.commands.room.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else {
-					sender.sendMessage("§4Unknown argument. Try §3§o/hotels");
+					sender.sendMessage(locale.getString("chat.commands.unknownArg").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 			}
 		}
 		return false;
 	}
 	private void renumber(String hotel,String oldnum,String newnum, World world,CommandSender sender){
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		if(Integer.parseInt(newnum)<100000){
 			if(WorldGuardManager.hasRegion(world, "Hotel-"+hotel)){
 				if(WorldGuardManager.hasRegion(world, "Hotel-"+hotel+"-"+oldnum)){
@@ -432,34 +436,40 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 					File file = new File("plugins//Hotels//Signs//"+hotel+"-"+oldnum+".yml");
 					if(file.exists()){
-					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-					World signworld = Bukkit.getWorld(config.getString("Sign.location.world").trim());
-					int signx = config.getInt("Sign.location.coords.x");
-					int signy = config.getInt("Sign.location.coords.y");
-					int signz = config.getInt("Sign.location.coords.z");
-					Block b = signworld.getBlockAt(signx,signy,signz);
+						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+						World signworld = Bukkit.getWorld(config.getString("Sign.location.world").trim());
+						int signx = config.getInt("Sign.location.coords.x");
+						int signy = config.getInt("Sign.location.coords.y");
+						int signz = config.getInt("Sign.location.coords.z");
+						Block b = signworld.getBlockAt(signx,signy,signz);
 
-					if(world==signworld){
-						if(b.getType().equals(Material.SIGN)||b.getType().equals(Material.SIGN_POST)||b.getType().equals(Material.WALL_SIGN)){
-							Sign s = (Sign) b.getState();
-							String Line1 = ChatColor.stripColor(s.getLine(0));
-							String Line2 = ChatColor.stripColor(s.getLine(1));
-							String signroom = Line2.split(" ")[1];
-							if(Line1.toLowerCase().matches(hotel.toLowerCase())){
-								if(WorldGuardManager.hasRegion(signworld, "Hotel-"+hotel)){
-									if(WorldGuardManager.getRegion(signworld, "Hotel-"+hotel).contains(signx, signy, signz)){
-										if(signroom.trim().toLowerCase().matches(oldnum.trim().toLowerCase())){
-											s.setLine(1, ChatColor.DARK_GREEN+"Room "+newnum+" - "+Line2.split(" ")[3]);
-											s.update();
-											config.set("Sign.room", Integer.valueOf(newnum));
-											config.set("Sign.region", "hotel-"+hotel+"-"+newnum);
-											try {
-												config.save(file);
-											} catch (IOException e) {
-												e.printStackTrace();
+						if(world==signworld){
+							if(b.getType().equals(Material.SIGN)||b.getType().equals(Material.SIGN_POST)||b.getType().equals(Material.WALL_SIGN)){
+								Sign s = (Sign) b.getState();
+								String Line1 = ChatColor.stripColor(s.getLine(0));
+								String Line2 = ChatColor.stripColor(s.getLine(1));
+								String signroom = Line2.split(" ")[1];
+								if(Line1.toLowerCase().matches(hotel.toLowerCase())){
+									if(WorldGuardManager.hasRegion(signworld, "Hotel-"+hotel)){
+										if(WorldGuardManager.getRegion(signworld, "Hotel-"+hotel).contains(signx, signy, signz)){
+											if(signroom.trim().toLowerCase().matches(oldnum.trim().toLowerCase())){
+												String roomS = locale.getString("chat.commands.unknownArg").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
+												s.setLine(1, roomS.replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+newnum+" - "+Line2.split(" ")[3]);
+												s.update();
+												config.set("Sign.room", Integer.valueOf(newnum));
+												config.set("Sign.region", "hotel-"+hotel+"-"+newnum);
+												try {
+													config.save(file);
+												} catch (IOException e) {
+													e.printStackTrace();
+												}
+												File newfile = new File("plugins//Hotels//Signs//"+hotel+"-"+newnum+".yml");
+												file.renameTo(newfile);
 											}
-											File newfile = new File("plugins//Hotels//Signs//"+hotel+"-"+newnum+".yml");
-											file.renameTo(newfile);
+											else{
+												b.setType(Material.AIR);
+												file.delete();
+											}
 										}
 										else{
 											b.setType(Material.AIR);
@@ -485,69 +495,70 @@ public class HotelsCommandHandler implements CommandExecutor {
 							b.setType(Material.AIR);
 							file.delete();
 						}
-					}
-					else{
-						b.setType(Material.AIR);
-						file.delete();
-					}
-					String idHotelName = WorldGuardManager.getRegion(world, "Hotel-"+hotel+"-"+newnum).getId();
-					String[] partsofhotelName = idHotelName.split("-");
-					String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1);
-					try {
-						WorldGuardManager.getWorldGuard().getRegionManager(world).save();
-						sender.sendMessage("§2You have successfully changed room "+oldnum+" to room "+partsofhotelName[2]+" of the "+fromIdhotelName+" hotel");
-					} catch (StorageException e) {
-						sender.sendMessage("§4Could not renumber room "+oldnum);
-						e.printStackTrace();
-					}
+						ProtectedRegion r = WorldGuardManager.getRegion(world, "Hotel-"+hotel+"-"+newnum);
+						String idHotelName = r.getId();
+						String[] partsofhotelName = idHotelName.split("-");
+						String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1);
+						r.setFlag(DefaultFlag.GREET_MESSAGE, ("&cWelcome to Room "+newnum));
+						try {
+							WorldGuardManager.getWorldGuard().getRegionManager(world).save();
+							sender.sendMessage(locale.getString("chat.commands.renumber.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%oldnum%", oldnum).replaceAll("%newnum%", partsofhotelName[2]).replaceAll("%hotelname%", fromIdhotelName));
+						} catch (StorageException e) {
+							sender.sendMessage(locale.getString("chat.commands.renumber.fail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%oldnum%", oldnum));
+							e.printStackTrace();
+						}
 					}
 					else
-						sender.sendMessage("§2You have successfully changed room "+oldnum+" to room "+newnum+" of the "+hotel+" hotel");
+						sender.sendMessage(locale.getString("chat.commands.renumber.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%oldnum%", oldnum).replaceAll("%newnum%", newnum).replaceAll("%hotelname%", hotel));
 				}
 				else
-					sender.sendMessage("§4Specified room does not exist!");
+					sender.sendMessage(locale.getString("chat.commands.roomNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 			}
 			else
-				sender.sendMessage("§4Specified hotel does not exist!");
+				sender.sendMessage(locale.getString("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 		}
 		else
-			sender.sendMessage("§4New number value is too big!");
+			sender.sendMessage(locale.getString("chat.commands.renumber.newNumTooBig").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 	}
 	private void renameHotel(String oldname,String newname, World world,CommandSender sender){
-		WorldGuardManager.renameRegion("Hotel-"+oldname, "Hotel-"+newname, world);
-
-		String idHotelName = WorldGuardManager.getRegion(world, "Hotel-"+newname).getId();
-		String[] partsofhotelName = idHotelName.split("-");
-		String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1);
-		sender.sendMessage("§2You have successfully renamed the "+fromIdhotelName+" hotel");
-		Map<String, ProtectedRegion> regionlist = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegions();
-		int Counter = regionlist.size();
-		//Rename rooms
-		while(Counter>0){
-			if(WorldGuardManager.hasRegion(world, "Hotel-"+oldname+"-"+Counter)){
-				WorldGuardManager.renameRegion("Hotel-"+oldname+"-"+Counter, "Hotel-"+newname+"-"+Counter, world);
-				Counter--;
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+		if(WorldGuardManager.hasRegion(world, "Hotel-"+oldname)){
+			WorldGuardManager.renameRegion("Hotel-"+oldname, "Hotel-"+newname, world);
+			ProtectedRegion r = WorldGuardManager.getRegion(world, "Hotel-"+newname);
+			String idHotelName = r.getId();
+			String[] partsofhotelName = idHotelName.split("-");
+			String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1);
+			r.setFlag(DefaultFlag.GREET_MESSAGE, ("&cWelcome to the "+fromIdhotelName+" hotel"));
+			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, ("&gCome back soon to the "+fromIdhotelName+" hotel"));
+			sender.sendMessage(locale.getString("chat.commands.rename.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotelname%" , fromIdhotelName));
+			Map<String, ProtectedRegion> regionlist = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegions();
+			//Rename rooms
+			for(int i = regionlist.size(); i>0; i--){
+				if(WorldGuardManager.hasRegion(world, "Hotel-"+oldname+"-"+i)){
+					WorldGuardManager.renameRegion("Hotel-"+oldname+"-"+i, "Hotel-"+newname+"-"+i, world);
+				}
 			}
-			else
-				Counter--;
+			try {
+				WorldGuardManager.getWorldGuard().getRegionManager(world).save();
+			} catch (StorageException e) {
+				sender.sendMessage(locale.getString("chat.commands.rename.failRooms").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				e.printStackTrace();
+			}
 		}
-		try {
-			WorldGuardManager.getWorldGuard().getRegionManager(world).save();
-		} catch (StorageException e) {
-			sender.sendMessage("§4Could not rename room "+Counter);
-			e.printStackTrace();
-		}
-
+		else
+			sender.sendMessage(locale.getString("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 	}
 	private void removeRoom(String hotelName,String roomNum,World world,CommandSender sender){
 		if(WorldGuardManager.hasRegion(world, "Hotel-"+hotelName+"-"+roomNum)){//If region exists
 			WorldGuardManager.getWorldGuard().getRegionManager(world).removeRegion("Hotel-"+hotelName+"-"+roomNum);//Delete region
-
+			File lfile = new File("plugins//Hotels//locale.yml");
+			YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 			try {
 				WorldGuardManager.getWorldGuard().getRegionManager(world).save();
-				sender.sendMessage("§aSuccessfully deleted room");
+				sender.sendMessage(locale.getString("chat.commands.removeRoom.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 			} catch (StorageException e) {
-				sender.sendMessage("§4Could not delete room");
+				sender.sendMessage(locale.getString("chat.commands.removeRoom.fail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				e.printStackTrace();
 			}
 
@@ -556,34 +567,31 @@ public class HotelsCommandHandler implements CommandExecutor {
 	private void removeRegions(String hotelName,World world,CommandSender sender){
 		if(WorldGuardManager.hasRegion(world, "Hotel-"+hotelName)){
 			WorldGuardManager.getWorldGuard().getRegionManager(world).removeRegion("Hotel-"+hotelName);
-
+			File lfile = new File("plugins//Hotels//locale.yml");
+			YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 			Map<String, ProtectedRegion> regionlist = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegions();
-			int Counter = regionlist.size();
-			while(Counter>0){
-				if(WorldGuardManager.hasRegion(world, "Hotel-"+hotelName+"-"+Counter)){
-					ProtectedRegion goodregion = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegion("Hotel-"+hotelName+"-"+Counter);
+			for(int i = regionlist.size(); i>0; i--){
+				if(WorldGuardManager.hasRegion(world, "Hotel-"+hotelName+"-"+i)){
+					ProtectedRegion goodregion = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegion("Hotel-"+hotelName+"-"+i);
 					WorldGuardManager.getWorldGuard().getRegionManager(world).removeRegion(goodregion.getId());
-					Counter--;
 				}
-				else
-					Counter--;
 			}
 			try {
 				WorldGuardManager.getWorldGuard().getRegionManager(world).save();
-				sender.sendMessage("§aSuccessfully deleted hotel regions");
+				sender.sendMessage(locale.getString("chat.commands.removeRegions.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 			} catch (StorageException e) {
-				sender.sendMessage("§4Could not delete hotel regions");
+				sender.sendMessage(locale.getString("chat.commands.removeRegions.fail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				e.printStackTrace();
 			}
-
 		}
 	}
 	private void check(String player, CommandSender sender){
-		sender.sendMessage("§a==Rented rooms list for "+player+"==");
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		List<World> worlds = Bukkit.getWorlds();
-		int f;
-		for(f=0; f<worlds.size(); f++){
+		sender.sendMessage(locale.getString("chat.commands.check.heading").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%player%", player));
+		for(int f=0; f<worlds.size(); f++){
 			World w = worlds.get(f);
 			regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
 			ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
@@ -607,12 +615,13 @@ public class HotelsCommandHandler implements CommandExecutor {
 									if(expirydate>0){
 										DecimalFormat df = new DecimalFormat("###.#");
 										hotelname = hotelname.substring(0, 1).toUpperCase() + hotelname.substring(1);
-										sender.sendMessage("§6Hotel: §c"+hotelname+"    §6Room: §c"+roomnum+"    §6Expires in: "+df.format(expirydate)+" minutes");
+										sender.sendMessage(locale.getString("chat.commands.check.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")
+												.replaceAll("%hotelname%", hotelname).replaceAll("%roomnum%", roomnum).replaceAll("%expirydate%", df.format(expirydate)));
 									}
 								}
 							}
 							else
-								sender.sendMessage("§4User does not exist!");
+								sender.sendMessage(locale.getString("chat.commands.userNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						}
 					}
 				}
@@ -620,25 +629,28 @@ public class HotelsCommandHandler implements CommandExecutor {
 		}
 	}
 	private void listHotels(World w, CommandSender sender){
-		sender.sendMessage("§a==Hotel list==");
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+		sender.sendMessage(locale.getString("chat.commands.listHotels.heading").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		int i;
-		for(i=0; i<rlist.length; i++){
+		for(int i=0; i<rlist.length; i++){
 			ProtectedRegion r = rlist[i];
 			if(r.getId().startsWith("hotel-")){ //If it's a hotel
 				if(!r.getId().matches("^hotel-.+-.+")){ //if it's not a room
 					String hotelName = (r.getId().replaceFirst("hotel-", "")).toLowerCase();
 					hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
-					sender.sendMessage("§6Hotel: §c"+hotelName);
+					sender.sendMessage(locale.getString("chat.commands.listHotels.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotelname%", hotelName));
 				}
 			}
 		}
 	}
 	private void listRooms(String hotel, World w, CommandSender sender){
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		String hotelName = hotel.substring(0, 1).toUpperCase() + hotel.substring(1);
-		sender.sendMessage("§a==Room list for "+hotelName+" hotel==");
+		sender.sendMessage(locale.getString("chat.commands.listRooms.heading").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotelname%", hotelName));
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
@@ -649,20 +661,23 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(r.getId().startsWith("hotel-")){ //If it's a hotel
 					if(r.getId().matches("^hotel-.+-.+")){ //If it's a room
 						String roomnum = (r.getId().replaceAll("hotel-.+-", ""));
-						sender.sendMessage("§6Room n: §c"+roomnum);
+						sender.sendMessage(locale.getString("chat.commands.listRooms.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%roomnum%", roomnum));
 					}
 				}
 			}
 		}
 		else
-			sender.sendMessage("§4There are no rooms in that hotel");	
+			sender.sendMessage(locale.getString("chat.commands.listRooms.noRooms").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 	}
 	private void removeSigns(String hotelName,World world,CommandSender sender){
 		if(WorldGuardManager.hasRegion(world, "Hotel-"+hotelName)){
+			File lfile = new File("plugins//Hotels//locale.yml");
+			YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 			ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins//Hotels//Signs");
 			for(String x: fileslist){
 				File file = new File("plugins//Hotels//Signs//"+x);
-				if(file.getName().matches("^Reception-.+-.+")){
+				String receptionLoc = locale.getString("sign.reception").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
+				if(file.getName().matches("^"+receptionLoc+"-.+-.+")){
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 					World worldsign = Bukkit.getWorld(config.getString("Reception.location.world").trim());
 					int locx = config.getInt("Reception.location.x");
@@ -710,10 +725,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 						signblock.setType(Material.AIR);
 						signblock.breakNaturally();
 						file.delete();
-						sender.sendMessage("§aSuccessfully destroyed sign "+x);
 					}
 				}
-				sender.sendMessage("§aSuccessfully destroyed all signs");
+				sender.sendMessage(locale.getString("chat.commands.removeSigns.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 			}
 		}
 	}

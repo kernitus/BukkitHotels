@@ -39,10 +39,12 @@ public class GameLoop extends BukkitRunnable {
 			dir.mkdir();
 
 		ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins//Hotels//Signs");
-
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+		
 		for(String x: fileslist){
 			File file = new File("plugins//Hotels//Signs//"+x);
-			if(file.getName().matches("^Reception-.+-.+")){
+			if(file.getName().matches("^"+locale.getString("sign.reception")+"-.+-.+")){
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 				World world = Bukkit.getWorld(config.getString("Reception.location.world").trim());
 				int locx = config.getInt("Reception.location.x");
@@ -53,7 +55,7 @@ public class GameLoop extends BukkitRunnable {
 				if(HotelsListener.updateReceptionSign(l)==true){
 					file.delete();
 					b.setType(Material.AIR);
-					plugin.getLogger().info("Reception file "+file.getName()+" did not match in-game characteristics and has been deleted");
+					plugin.getLogger().info(locale.getString("sign.delete.reception").replaceAll("%filename%", file.getName()));
 				}
 			}
 			else{
@@ -88,25 +90,25 @@ public class GameLoop extends BukkitRunnable {
 									} catch (IOException e) {
 										e.printStackTrace();
 									}
-									sign.setLine(3, "§aVacant");
+									sign.setLine(3, "§a"+locale.getString("sign.vacant"));
 									sign.update();
-									plugin.getLogger().info(p.getName()+"'s rent of room "+roomNum+" of the "+hotelName+" hotel has expired");
+									plugin.getLogger().info(locale.getString("sign.rentExpiredConsole").replaceAll("%roomnum%", String.valueOf(roomNum)).replaceAll("%hotelname%", hotelName).replaceAll("%player%", p.getName()));
 									if(p.isOnline())
-										p.sendMessage("§9Your rent of room "+roomNum+" of the "+hotelName+" hotel has expired");
+										p.sendMessage(locale.getString("sign.rentExpiredPlayer").replaceAll("%roomnum%", String.valueOf(roomNum)).replaceAll("%hotelname%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 								}
 							}
 						}
 						else{
 							file.delete();
-							plugin.getLogger().info("Sign file "+file.getName()+" did not match in-game roomNum and has been deleted");}
+							plugin.getLogger().info(locale.getString("sign.delete.roomNum").replaceAll("%filename%", file.getName()));}
 					}
 					else{
 						file.delete();
-						plugin.getLogger().info("Sign file "+file.getName()+" did not match in-game hotelname and has been deleted");}
+						plugin.getLogger().info(locale.getString("sign.delete.hotelName").replaceAll("%filename%", file.getName()));}
 				}
 				else{
 					file.delete();
-					plugin.getLogger().info("Sign file "+file.getName()+" did not match in-game location and has been deleted");}
+					plugin.getLogger().info(locale.getString("sign.delete.location").replaceAll("%filename%", file.getName()));}
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels;
 
 import java.io.File;
+import java.io.IOException;
 
 import handlers.HotelsCommandHandler;
 import handlers.HotelsConfigHandler;
@@ -51,6 +52,13 @@ public class HotelsMain extends JavaPlugin{
 		}
 		else
 			getLogger().info(pdfFile.getName()+" v"+pdfFile.getVersion()+ " has been enabled correctly");
+		//Metrics
+		try {
+	        Metrics metrics = new Metrics(this);
+	        metrics.start();
+	    } catch (IOException e) {
+	        // Failed to submit the stats :-(
+	    }
 	}
 	@Override
 	public void onDisable(){
