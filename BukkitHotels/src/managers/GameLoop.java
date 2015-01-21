@@ -41,7 +41,7 @@ public class GameLoop extends BukkitRunnable {
 		ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins//Hotels//Signs");
 		File lfile = new File("plugins//Hotels//locale.yml");
 		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
-		
+
 		for(String x: fileslist){
 			File file = new File("plugins//Hotels//Signs//"+x);
 			if(file.getName().matches("^"+locale.getString("sign.reception")+"-.+-.+")){
@@ -76,25 +76,27 @@ public class GameLoop extends BukkitRunnable {
 						if(roomNum==roomNumfromSign){				
 
 							long expirydate = config.getLong("Sign.expiryDate");
-							if(expirydate<System.currentTimeMillis()/1000/60){
-								String r = config.getString("Sign.region");
-								ProtectedCuboidRegion region = (ProtectedCuboidRegion) WorldGuardManager.getWorldGuard().getRegionManager(world).getRegion(r);
-								if(config.getString("Sign.renter")!=null){
-									Player p = Bukkit.getOfflinePlayer(UUID.fromString(config.getString("Sign.renter"))).getPlayer();
-									WorldGuardManager.removeMember(p, region);
-									config.set("Sign.renter", null);
-									config.set("Sign.timeRentedAt", null);
-									config.set("Sign.expiryDate", null);
-									try {
-										config.save(file);
-									} catch (IOException e) {
-										e.printStackTrace();
+							if(expirydate!=0){
+								if(expirydate<System.currentTimeMillis()/1000/60){
+									String r = config.getString("Sign.region");
+									ProtectedCuboidRegion region = (ProtectedCuboidRegion) WorldGuardManager.getWorldGuard().getRegionManager(world).getRegion(r);
+									if(config.getString("Sign.renter")!=null){
+										Player p = Bukkit.getOfflinePlayer(UUID.fromString(config.getString("Sign.renter"))).getPlayer();
+										WorldGuardManager.removeMember(p, region);
+										config.set("Sign.renter", null);
+										config.set("Sign.timeRentedAt", null);
+										config.set("Sign.expiryDate", null);
+										try {
+											config.save(file);
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
+										sign.setLine(3, "§a"+locale.getString("sign.vacant"));
+										sign.update();
+										plugin.getLogger().info(locale.getString("sign.rentExpiredConsole").replaceAll("%roomnum%", String.valueOf(roomNum)).replaceAll("%hotelname%", hotelName).replaceAll("%player%", p.getName()));
+										if(p.isOnline())
+											p.sendMessage(locale.getString("sign.rentExpiredPlayer").replaceAll("%roomnum%", String.valueOf(roomNum)).replaceAll("%hotelname%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 									}
-									sign.setLine(3, "§a"+locale.getString("sign.vacant"));
-									sign.update();
-									plugin.getLogger().info(locale.getString("sign.rentExpiredConsole").replaceAll("%roomnum%", String.valueOf(roomNum)).replaceAll("%hotelname%", hotelName).replaceAll("%player%", p.getName()));
-									if(p.isOnline())
-										p.sendMessage(locale.getString("sign.rentExpiredPlayer").replaceAll("%roomnum%", String.valueOf(roomNum)).replaceAll("%hotelname%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 								}
 							}
 						}

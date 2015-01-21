@@ -138,9 +138,15 @@ public class HotelsListener implements Listener {
 									//Creating sign config file:
 									YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
 
-									String immutedtime = Line4.trim(); //Time								
-									long timeinminutes = TimeConverter(immutedtime);
-									signConfig.set("Sign.time", Long.valueOf(timeinminutes));
+									String immutedtime = Line4.trim(); //Time
+
+									if(immutedtime.equals(0)){//Checking if time is set to infinite
+										signConfig.set("Sign.time", 0);
+									}
+									else{
+										long timeinminutes = TimeConverter(immutedtime);
+										signConfig.set("Sign.time", Long.valueOf(timeinminutes));
+									}
 
 									signConfig.set("Sign.hotel", Line2.toLowerCase());
 									signConfig.set("Sign.room", roomnum);
@@ -161,7 +167,12 @@ public class HotelsListener implements Listener {
 									String output = Line2.substring(0, 1).toUpperCase() + Line2.substring(1);
 									e.setLine(0, ChatColor.DARK_BLUE+output); //Hotel Name
 									e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost+"$"); //Room Number + Cost
-									e.setLine(2,immutedtime);  //Time
+									if(immutedtime.equals(0)){
+										e.setLine(2,locale.getString("sign.permanent").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+									}
+									else{
+										e.setLine(2,immutedtime);  //Time
+									}
 									e.setLine(3,ChatColor.GREEN+"Vacant"); //Renter
 									p.sendMessage(locale.getString("chat.sign.place.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 
@@ -250,8 +261,12 @@ public class HotelsListener implements Listener {
 
 														//Setting expiry time
 														long minstoexpire = signConfig.getLong("Sign.time");
-														long expirydate = currentmins+minstoexpire;
-														signConfig.set("Sign.expiryDate", expirydate);
+														if(minstoexpire==0)
+															signConfig.set("Sign.expiryDate", 0);
+														else{
+															long expirydate = currentmins+minstoexpire;
+															signConfig.set("Sign.expiryDate", expirydate);
+														}
 
 														try {//Saving config file
 															signConfig.save(signFile);

@@ -627,6 +627,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 			}
 		}
+		sender.sendMessage(locale.getString("chat.commands.check.footer").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%player%", player));
 	}
 	private void listHotels(World w, CommandSender sender){
 		File lfile = new File("plugins//Hotels//locale.yml");
@@ -645,6 +646,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 			}
 		}
+		sender.sendMessage(locale.getString("chat.commands.listHotels.footer").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 	}
 	private void listRooms(String hotel, World w, CommandSender sender){
 		File lfile = new File("plugins//Hotels//locale.yml");
@@ -668,6 +670,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 		}
 		else
 			sender.sendMessage(locale.getString("chat.commands.listRooms.noRooms").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+		sender.sendMessage(locale.getString("chat.commands.listRooms.footer").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotelname%", hotelName));
 	}
 	private void removeSigns(String hotelName,World world,CommandSender sender){
 		if(WorldGuardManager.hasRegion(world, "Hotel-"+hotelName)){

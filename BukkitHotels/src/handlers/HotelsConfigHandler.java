@@ -69,6 +69,7 @@ public class HotelsConfigHandler {
 		config.addDefault("main.enable.success", String.valueOf("%pluginname% v%version% has been enabled correctly"));
 		config.addDefault("main.disable.success", String.valueOf("%pluginname% v%version% has been disabled"));
 		
+		config.addDefault("sign.permanent", String.valueOf("Permanent"));
 		config.addDefault("sign.room", String.valueOf("&aRoom"));
 		config.addDefault("sign.room.free", String.valueOf("Free Rooms"));
 		config.addDefault("sign.room.total", String.valueOf("Total Rooms"));
@@ -160,10 +161,13 @@ public class HotelsConfigHandler {
 		config.addDefault("chat.commands.removeRegions.success", String.valueOf("&aSuccessfully deleted hotel regions"));
 		config.addDefault("chat.commands.removeRegions.fail", String.valueOf("&4Could not delete hotel regionsn"));
 		config.addDefault("chat.commands.check.heading", String.valueOf("&a==Rented rooms list for %player%=="));
+		config.addDefault("chat.commands.check.footer", String.valueOf("&c==End of rented rooms list for %player%=="));
 		config.addDefault("chat.commands.check.line", String.valueOf("&6Hotel: &c%hotelname%    &6Room: &c%roomnum%    &6Expires in: %expirydate% minutes"));
 		config.addDefault("chat.commands.listHotels.heading", String.valueOf("&a==Hotel list=="));
+		config.addDefault("chat.commands.listHotels.footer", String.valueOf("&c==End of hotel list=="));
 		config.addDefault("chat.commands.listHotels.line", String.valueOf("&6Hotel: &c%hotelname%"));
 		config.addDefault("chat.commands.listRooms.heading", String.valueOf("&a==Room list for %hotelname% hotel=="));
+		config.addDefault("chat.commands.listRooms.footer", String.valueOf("&c==End of room list for %hotelname% hotel=="));
 		config.addDefault("chat.commands.listRooms.line", String.valueOf("&6Room n: &c%roomnum%"));
 		config.addDefault("chat.commands.listRooms.noRooms", String.valueOf("&cThere are no rooms in that hotel"));
 		config.addDefault("chat.commands.removeSigns.success", String.valueOf("&aSuccessfully removed all signs"));
