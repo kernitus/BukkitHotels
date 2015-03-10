@@ -1,9 +1,13 @@
 package managers;
 
+import kernitus.plugin.Hotels.HotelsMain;
+
+import java.io.File;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -22,7 +26,12 @@ import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+
 public class WorldGuardManager {
+	
+	private static HotelsMain plugin;
+	static File lfile = new File("plugins//Hotels//locale.yml");
+	static YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 
 	public static WorldGuardPlugin getWorldGuard(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -36,25 +45,25 @@ public class WorldGuardManager {
 		return getWorldGuard().getRegionManager(world).getRegion(string);
 	}
 
-	public static void addOwner(Player p, ProtectedCuboidRegion r){
+	public static void addOwner(Player p, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
 		owners.addPlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
 		r.setOwners(owners);
 	}
 
-	public static void addMember(Player p, ProtectedCuboidRegion r){
+	public static void addMember(Player p, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
 		members.addPlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
 		r.setMembers(members);
 	}
 
-	public static void removeOwner(Player p, ProtectedCuboidRegion r){
+	public static void removeOwner(Player p, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
 		owners.removePlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
 		r.setOwners(owners);
 	}
 
-	public static void removeMember(Player p, ProtectedCuboidRegion r){
+	public static void removeMember(Player p, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
 		members.removePlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
 		r.setMembers(members);
@@ -100,7 +109,7 @@ public class WorldGuardManager {
 	public static void hotelFlags(ProtectedCuboidRegion r,String hotelName){
 		hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
 		//r.setFlag(DefaultFlag.PASSTHROUGH, State.ALLOW);
-		r.setFlag(DefaultFlag.BUILD, State.DENY);
+		//r.setFlag(DefaultFlag.BUILD, State.DENY);
 		r.setFlag(DefaultFlag.PVP, State.DENY);
 		//r.setFlag(DefaultFlag.CHEST_ACCESS, State.DENY);
 		r.setFlag(DefaultFlag.PISTONS, State.DENY);
@@ -120,8 +129,11 @@ public class WorldGuardManager {
 		r.setFlag(DefaultFlag.ENDERDRAGON_BLOCK_DAMAGE, State.DENY);
 		r.setFlag(DefaultFlag.GHAST_FIREBALL, State.DENY);
 		r.setFlag(DefaultFlag.ENDER_BUILD, State.DENY);
-		r.setFlag(DefaultFlag.GREET_MESSAGE, ("&cWelcome to the "+hotelName+" hotel"));
-		r.setFlag(DefaultFlag.FAREWELL_MESSAGE, ("&gCome back soon to the "+hotelName+" hotel"));
+		if(plugin.getConfig().getBoolean("settings.use-hotel_enter_message"))
+			r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.hotel.enter")).replaceAll("%hotel%", hotelName));
+		if(plugin.getConfig().getBoolean("settings.use-hotel_exit_message"))
+			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.hotel.exit")).replaceAll("%hotel%", hotelName));
+
 		//r.setFlag(DefaultFlag.NOTIFY_ENTER, Boolean.FALSE);
 		//r.setFlag(DefaultFlag.NOTIFY_LEAVE, Boolean.FALSE);
 		//r.setFlag(DefaultFlag.EXIT, State.ALLOW);
@@ -181,8 +193,10 @@ public class WorldGuardManager {
 		r.setFlag(DefaultFlag.TNT, State.DENY);
 		r.setFlag(DefaultFlag.LIGHTER, State.DENY);
 		r.setFlag(DefaultFlag.MOB_SPAWNING, State.DENY);
-		r.setFlag(DefaultFlag.GREET_MESSAGE, ("&cWelcome to Room "+roomNum));
-		r.setFlag(DefaultFlag.FAREWELL_MESSAGE, ("&gCome back soon to your room"));
+		if(plugin.getConfig().getBoolean("settings.use-room_enter_message"))
+			r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.room.enter")).replaceAll("%room%", String.valueOf(roomNum)));
+		if(plugin.getConfig().getBoolean("settings.use-room_exit_message"))
+			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.room.exit")).replaceAll("%room%", String.valueOf(roomNum)));
 	}
 	public static void groupFlags(ProtectedCuboidRegion r,StateFlag f){
 		r.setFlag(f, State.DENY);

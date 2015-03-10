@@ -54,18 +54,14 @@ public class HotelsMain extends JavaPlugin{
 			getLogger().info(pdfFile.getName()+" v"+pdfFile.getVersion()+ " has been enabled correctly");
 		//Metrics
 		try {
-	        Metrics metrics = new Metrics(this);
-	        metrics.start();
-	    } catch (IOException e) {
-	        // Failed to submit the stats :-(
-	    }
+			Metrics metrics = new Metrics(this);
+			metrics.start();
+		} catch (IOException e) {
+			// Failed to submit the stats :-(
+		}
 	}
 	@Override
 	public void onDisable(){
-
-		reloadConfig();
-		saveConfig();
-
 		gameloop.cancel();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
