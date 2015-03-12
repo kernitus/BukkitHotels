@@ -1,6 +1,4 @@
-package managers;
-
-import kernitus.plugin.Hotels.HotelsMain;
+package kernitus.plugin.Hotels.managers;
 
 import java.io.File;
 import java.util.Map;
@@ -28,14 +26,11 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 
 public class WorldGuardManager {
-	
-	private static HotelsMain plugin;
 	static File lfile = new File("plugins//Hotels//locale.yml");
-	static YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
-
+	private static YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+	
 	public static WorldGuardPlugin getWorldGuard(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-
 
 		if (p instanceof WorldGuardPlugin) return (WorldGuardPlugin) p;
 		else return null;
@@ -45,7 +40,7 @@ public class WorldGuardManager {
 		return getWorldGuard().getRegionManager(world).getRegion(string);
 	}
 
-	public static void addOwner(Player p, ProtectedRegion r){
+	public void addOwner(Player p, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
 		owners.addPlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
 		r.setOwners(owners);
@@ -57,7 +52,7 @@ public class WorldGuardManager {
 		r.setMembers(members);
 	}
 
-	public static void removeOwner(Player p, ProtectedRegion r){
+	public void removeOwner(Player p, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
 		owners.removePlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
 		r.setOwners(owners);
@@ -106,7 +101,7 @@ public class WorldGuardManager {
 			WorldGuardManager.saveRegions(world);
 		}
 	}
-	public static void hotelFlags(ProtectedCuboidRegion r,String hotelName){
+	public static void hotelFlags(ProtectedCuboidRegion r,String hotelName,Plugin plugin){
 		hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
 		//r.setFlag(DefaultFlag.PASSTHROUGH, State.ALLOW);
 		//r.setFlag(DefaultFlag.BUILD, State.DENY);
@@ -130,9 +125,9 @@ public class WorldGuardManager {
 		r.setFlag(DefaultFlag.GHAST_FIREBALL, State.DENY);
 		r.setFlag(DefaultFlag.ENDER_BUILD, State.DENY);
 		if(plugin.getConfig().getBoolean("settings.use-hotel_enter_message"))
-			r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.hotel.enter")).replaceAll("%hotel%", hotelName));
+			r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.hotel.enter").replaceAll("%hotel%", hotelName)));
 		if(plugin.getConfig().getBoolean("settings.use-hotel_exit_message"))
-			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.hotel.exit")).replaceAll("%hotel%", hotelName));
+			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.hotel.exit").replaceAll("%hotel%", hotelName)));
 
 		//r.setFlag(DefaultFlag.NOTIFY_ENTER, Boolean.FALSE);
 		//r.setFlag(DefaultFlag.NOTIFY_LEAVE, Boolean.FALSE);
@@ -177,7 +172,7 @@ public class WorldGuardManager {
 		//r.setFlag(DefaultFlag.PRICE, price);
 		//r.setFlag(DefaultFlag.BUYABLE, Boolean.FALSE);
 	}	
-	public static void roomFlags(ProtectedCuboidRegion r,String hotelName,Player p,int roomNum){
+	public static void roomFlags(ProtectedCuboidRegion r,String hotelName,Player p,int roomNum,Plugin plugin){
 
 		groupFlags(r,DefaultFlag.CHEST_ACCESS);
 		groupFlags(r,DefaultFlag.USE);
@@ -194,9 +189,9 @@ public class WorldGuardManager {
 		r.setFlag(DefaultFlag.LIGHTER, State.DENY);
 		r.setFlag(DefaultFlag.MOB_SPAWNING, State.DENY);
 		if(plugin.getConfig().getBoolean("settings.use-room_enter_message"))
-			r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.room.enter")).replaceAll("%room%", String.valueOf(roomNum)));
+			r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.room.enter").replaceAll("%room%", String.valueOf(roomNum))));
 		if(plugin.getConfig().getBoolean("settings.use-room_exit_message"))
-			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.room.exit")).replaceAll("%room%", String.valueOf(roomNum)));
+			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.room.exit").replaceAll("%room%", String.valueOf(roomNum))));
 	}
 	public static void groupFlags(ProtectedCuboidRegion r,StateFlag f){
 		r.setFlag(f, State.DENY);

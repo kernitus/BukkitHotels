@@ -1,12 +1,12 @@
 package kernitus.plugin.Hotels;
 
+import kernitus.plugin.Hotels.managers.SignManager;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import managers.SignManager;
-import managers.WorldGuardManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -35,9 +35,9 @@ public class HotelsListener implements Listener {
 		this.plugin = plugin;
 	}
 	//Prefix
-	static File lfile = new File("plugins//Hotels//locale.yml");
-	static YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
-	static String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
+	File lfile = new File("plugins//Hotels//locale.yml");
+	YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
 
 	@EventHandler
 	public void onSignPlace(SignChangeEvent e){
@@ -92,7 +92,7 @@ public class HotelsListener implements Listener {
 		}
 	}
 
-	public static int totalRooms(String hotelName,World w){
+	public int totalRooms(String hotelName,World w){
 		int tot = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
@@ -108,7 +108,7 @@ public class HotelsListener implements Listener {
 		return tot;
 	}
 
-	public static int freeRooms(String hotelName,World w){
+	public int freeRooms(String hotelName,World w){
 		int free = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
@@ -132,7 +132,7 @@ public class HotelsListener implements Listener {
 		return free;
 	}
 
-	public static boolean updateReceptionSign(Location l){
+	public boolean updateReceptionSign(Location l){
 		Block b = l.getBlock();
 		if(b.getType().equals(Material.WALL_SIGN)||b.getType().equals(Material.SIGN)||l.getBlock().getType().equals(Material.SIGN_POST)){
 			Sign s = (Sign) b.getState();

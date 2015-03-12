@@ -1,12 +1,12 @@
 package kernitus.plugin.Hotels;
 
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import managers.WorldGuardManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -26,11 +26,11 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HotelsCreationMode {
-	private static HotelsMain plugin;
 	//Prefix
 	static File lfile = new File("plugins//Hotels//locale.yml");
-	static YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+	private static YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 	static String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
+	static HotelsMain plugin;
 
 	public static void checkFolder(){
 		File file = new File("plugins//Hotels//Inventories");
@@ -39,14 +39,14 @@ public class HotelsCreationMode {
 		}
 	}
 
-	public static void checkHotelsFolder(){
+	public void checkHotelsFolder(){
 		File file = new File("plugins//Hotels//Hotels");
 		if(!file.exists()){
 			file.mkdir();
 		}
 	}	
 
-	public static void hotelSetup(String hotelName, CommandSender s){
+	public static void hotelSetup(String hotelName, CommandSender s,Plugin plugin){
 		Player p = (Player) s;
 		if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.commands")||p.hasPermission("hotels.*")))){
 			Selection sel = getWorldEdit().getSelection(p);
@@ -60,7 +60,7 @@ public class HotelsCreationMode {
 						new BlockVector(sel.getNativeMaximumPoint())
 						);
 				WorldGuardManager.addRegion(p.getWorld(), r);
-				WorldGuardManager.hotelFlags(r,hotelName);
+				WorldGuardManager.hotelFlags(r,hotelName,plugin);
 				WorldGuardManager.saveRegions(p.getWorld());
 				String idHotelName =r.getId();
 				String[] partsofhotelName = idHotelName.split("-");
@@ -74,7 +74,7 @@ public class HotelsCreationMode {
 			p.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 	}
 
-	public static void roomSetup(String hotelName,int roomNum,CommandSender s){
+	public static void roomSetup(String hotelName,int roomNum,CommandSender s,Plugin plugin){
 		Player p = (Player) s;
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
@@ -88,7 +88,7 @@ public class HotelsCreationMode {
 						new BlockVector(sel.getNativeMaximumPoint())
 						);
 				WorldGuardManager.addRegion(p.getWorld(), r);
-				WorldGuardManager.roomFlags(r,hotelName, p, roomNum);
+				WorldGuardManager.roomFlags(r,hotelName, p, roomNum,plugin);
 				r.setPriority(10);
 				WorldGuardManager.saveRegions(p.getWorld());
 			}
@@ -237,7 +237,7 @@ public class HotelsCreationMode {
 		else return null;
 	}
 
-	public static Selection getSelection(CommandSender s){
+	public Selection getSelection(CommandSender s){
 		Player p = ((Player) s);
 		return getWorldEdit().getSelection(p);
 	}

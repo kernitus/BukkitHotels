@@ -3,9 +3,9 @@ package kernitus.plugin.Hotels;
 import java.io.File;
 import java.io.IOException;
 
-import handlers.HotelsCommandHandler;
-import handlers.HotelsConfigHandler;
-import managers.GameLoop;
+import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.GameLoop;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.configuration.file.YamlConfiguration;

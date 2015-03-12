@@ -1,7 +1,7 @@
-package managers;
+package kernitus.plugin.Hotels.managers;
 
 import kernitus.plugin.Hotels.HotelsMain;
-import handlers.HotelsCommandHandler;
+import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -31,9 +31,9 @@ public class GameLoop extends BukkitRunnable {
 		this.plugin = plugin;
 	}
 	//Prefix
-	static File lfile = new File("plugins//Hotels//locale.yml");
-	static YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
-	static String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
+	File lfile = new File("plugins//Hotels//locale.yml");
+	YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
 
 	public GameLoop(HotelsCommandHandler hotelsCommandHandler) {}
 

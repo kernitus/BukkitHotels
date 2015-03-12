@@ -1,9 +1,9 @@
-package handlers;
+package kernitus.plugin.Hotels.handlers;
 
 import java.io.File;
 import java.io.IOException;
 
-import handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,9 +11,9 @@ import org.bukkit.plugin.Plugin;
 
 public class HotelsConfigHandler {
 
-	private static final HotelsConfigHandler instance = new HotelsConfigHandler();
+	private final static HotelsConfigHandler instance = new HotelsConfigHandler();
 
-	public static final HotelsConfigHandler getInstance() {
+	public final static HotelsConfigHandler getInstance() {
 		return instance;
 	}
 
@@ -73,10 +73,10 @@ public class HotelsConfigHandler {
 		config.addDefault("main.enable.success", String.valueOf("%pluginname% v%version% has been enabled correctly"));
 		config.addDefault("main.disable.success", String.valueOf("%pluginname% v%version% has been disabled"));
 
-		config.addDefault("message.hotel.enter", String.valueOf("&cWelcome to the %hotel% hotel"));
-		config.addDefault("message.hotel.exit", String.valueOf("&gCome back soon to the %hotel% hotel"));
-		config.addDefault("message.room.enter", String.valueOf("&cWelcome to room %room%"));
-		config.addDefault("message.room.exit", String.valueOf("&gCome back soon to Room %room%"));
+		config.addDefault("message.hotel.enter", String.valueOf("&bWelcome to the %hotel% hotel"));
+		config.addDefault("message.hotel.exit", String.valueOf("&aCome back soon to the %hotel% hotel"));
+		config.addDefault("message.room.enter", String.valueOf("&bWelcome to room %room%"));
+		config.addDefault("message.room.exit", String.valueOf("&aCome back soon to Room %room%"));
 
 		config.addDefault("sign.permanent", String.valueOf("Permanent"));
 		config.addDefault("sign.room", String.valueOf("&aRoom"));
