@@ -630,14 +630,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 		if(WorldGuardManager.hasRegion(world, "Hotel-"+hotelName)){
 			WorldGuardManager.getWorldGuard().getRegionManager(world).removeRegion("Hotel-"+hotelName);
 			Map<String, ProtectedRegion> regionlist = WorldGuardManager.getWorldGuard().getRegionManager(world).getRegions();
-			ProtectedRegion[] regionsarray = new ProtectedRegion[regionlist.size()];
-			regionsarray = regionlist.values().toArray();
-			for(int i = regionsarray.length; i>0; i--){
-				if(regionsarray[i-1].getId().matches("Hotel-"+hotelName+"-"+".+")){
-					ProtectedRegion goodregion = regionsarray[i-1];
+			
+			for(ProtectedRegion values : regionlist.values()){
+				if(values.getId().matches("hotel-"+hotelName+"-"+"[0-9]+")){
+					ProtectedRegion goodregion = values;
 					WorldGuardManager.getWorldGuard().getRegionManager(world).removeRegion(goodregion.getId());
 				}
 			}
+			
 			try {
 				WorldGuardManager.getWorldGuard().getRegionManager(world).save();
 				sender.sendMessage(prefix+locale.getString("chat.commands.removeRegions.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
