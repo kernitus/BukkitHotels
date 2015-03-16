@@ -18,9 +18,19 @@ public class HotelsMain extends JavaPlugin{
 	public static Economy economy = null; //Creating economy variable
 	HotelsConfigHandler hconfigh = HotelsConfigHandler.getInstance();
 	GameLoop gameloop;
+	protected HotelsUpdateChecker updateChecker;
 
 	@Override
 	public void onEnable(){
+		
+		this.updateChecker = new HotelsUpdateChecker(this, "http://dev.bukkit.org/bukkit-plugins/hotels/files.rss");
+		this.updateChecker.updateNeeded();
+
+		if(this.updateChecker.updateNeeded()&&getConfig().getBoolean("settings.checkForUpdates")){
+			this.getLogger().info(getConfig().getString("main.updateAvailable").replaceAll("%version%", this.updateChecker.getVersion()));
+			this.getLogger().info(getConfig().getString("main.updateAvailableLink").replaceAll("%link%", this.updateChecker.getLink()));
+		}
+		
 		setupConfig();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Listeners and stuff

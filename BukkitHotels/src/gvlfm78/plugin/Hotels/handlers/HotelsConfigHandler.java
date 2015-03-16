@@ -43,6 +43,7 @@ public class HotelsConfigHandler {
 		config.options().header("Hotels Plugin by kernitus");
 		config.addDefault("settings.language", String.valueOf("en"));
 		config.addDefault("settings.use-permissions", Boolean.valueOf(true));
+		config.addDefault("settings.checkForUpdates", Boolean.valueOf(true));
 		config.addDefault("settings.use-hotel_enter_message", Boolean.valueOf(true));
 		config.addDefault("settings.use-hotel_exit_message", Boolean.valueOf(true));
 		config.addDefault("settings.use-room_enter_message", Boolean.valueOf(true));
@@ -72,6 +73,8 @@ public class HotelsConfigHandler {
 		config.addDefault("main.enable.noVault", String.valueOf("No Vault dependency found!"));
 		config.addDefault("main.enable.success", String.valueOf("%pluginname% v%version% has been enabled correctly"));
 		config.addDefault("main.disable.success", String.valueOf("%pluginname% v%version% has been disabled"));
+		config.addDefault("main.updateAvailable", String.valueOf("Hotels v%version% is available for download!"));
+		config.addDefault("main.updateAvailableLink", String.valueOf("To download it, go to %link%"));
 
 		config.addDefault("message.hotel.enter", String.valueOf("&bWelcome to the %hotel% hotel"));
 		config.addDefault("message.hotel.exit", String.valueOf("&aCome back soon to the %hotel% hotel"));
