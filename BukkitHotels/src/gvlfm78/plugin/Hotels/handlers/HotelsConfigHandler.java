@@ -18,6 +18,9 @@ public class HotelsConfigHandler {
 	}
 
 	public void setupConfigs(Plugin plugin){
+		if(!new File(plugin.getDataFolder(), "queuedMessage.yml").exists()){
+			setupQueuedMessages(plugin);
+		}
 		if (!new File(plugin.getDataFolder(), "config.yml").exists()) { //Checking if config file exists
 			setupConfig(plugin);
 		}
@@ -52,6 +55,17 @@ public class HotelsConfigHandler {
 		config.options().copyDefaults(true);
 		plugin.saveConfig();
 		plugin.getLogger().info("[Hotels] Config file generated");
+	}
+	
+	public void setupQueuedMessages(Plugin plugin){
+		File file = new File("plugins//Hotels//queuedMessages.yml");
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		try {
+			config.save(file);
+		} catch (IOException e) {
+			System.out.println("Could not save queued messages file");
+			e.printStackTrace();
+		}
 	}
 
 	public void localeLanguageSelector(Plugin plugin){

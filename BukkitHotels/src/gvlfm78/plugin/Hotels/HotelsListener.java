@@ -23,6 +23,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -89,6 +90,22 @@ public class HotelsListener implements Listener {
 		Block b = e.getBlock();
 		if(b.getType().equals(Material.SIGN)||b.getType().equals(Material.SIGN_POST)||b.getType().equals(Material.WALL_SIGN)){
 			SignManager.breakRoomSign(e);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent e){
+		//Player joined the server, checking if he has hotel admin permission
+		Player p = e.getPlayer();
+		if(p.hasPermission("hotel.*")||p.isOp()){
+			File qfile = new File("plugins//Hotels//queuedMessages.yml");
+			YamlConfiguration queue = YamlConfiguration.loadConfiguration(qfile);
+			String ava = queue.getString("messages.update.available");
+			String lin = queue.getString("messages.update.link");
+			if(ava!=null)
+				p.sendMessage(ChatColor.BLUE+ava);
+			if(lin!=null)
+				p.sendMessage(ChatColor.BLUE+lin);
 		}
 	}
 

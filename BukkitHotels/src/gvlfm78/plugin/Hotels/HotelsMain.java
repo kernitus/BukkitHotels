@@ -22,23 +22,42 @@ public class HotelsMain extends JavaPlugin{
 
 	@Override
 	public void onEnable(){
-		
+		setupConfig();
+		File lfile = new File("plugins//Hotels//locale.yml");
+		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+		File qfile = new File("plugins//Hotels//queuedMessages.yml");
+		YamlConfiguration queue = YamlConfiguration.loadConfiguration(qfile);
 		this.updateChecker = new HotelsUpdateChecker(this, "http://dev.bukkit.org/bukkit-plugins/hotels/files.rss");
 		this.updateChecker.updateNeeded();
+		if(getConfig().getBoolean("settings.checkForUpdates")){
+			if(this.updateChecker.updateNeeded()){
+				String updateAvailable = locale.getString("main.updateAvailable").replaceAll("%version%", this.updateChecker.getVersion());
+				String updateLink = locale.getString("main.updateAvailableLink").replaceAll("%link%", this.updateChecker.getLink());
+				getLogger().info(updateAvailable);
+				getLogger().info(updateLink);
 
-		if(this.updateChecker.updateNeeded()&&getConfig().getBoolean("settings.checkForUpdates")){
-			this.getLogger().info(getConfig().getString("main.updateAvailable").replaceAll("%version%", this.updateChecker.getVersion()));
-			this.getLogger().info(getConfig().getString("main.updateAvailableLink").replaceAll("%link%", this.updateChecker.getLink()));
+				queue.set("messages.update.available", updateAvailable);
+				queue.set("messages.update.link", updateLink);
+				try {
+					queue.save(qfile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			else{
+				queue.set("messages.update", null);
+				try {
+					queue.save(qfile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-		
-		setupConfig();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Listeners and stuff
 		getServer().getPluginManager().registerEvents((new HotelsListener(this)), this);//Firing event listener
 		getCommand("Hotels").setExecutor(new HotelsCommandHandler(this));//Firing commands listener
 		setupEconomy();
-		File lfile = new File("plugins//Hotels//locale.yml");
-		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		//Economy and stuff
 		if (!setupEconomy()){
 			//If economy is turned on
@@ -113,10 +132,11 @@ public class HotelsMain extends JavaPlugin{
 
 	//Setting up the economy
 	private boolean setupEconomy()
-	{RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-	if (economyProvider != null) {
-		economy = economyProvider.getProvider();
-	}
-	return (economy != null);
+	{
+		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+		if (economyProvider != null) {
+			economy = economyProvider.getProvider();
+		}
+		return (economy != null);
 	}
 }
