@@ -426,7 +426,7 @@ public class SignManager {
 		case "m": return TimeUnit.MINUTES;
 		case "h": return TimeUnit.HOURS;
 		case "d": return TimeUnit.DAYS;
-		default: throw new IllegalArgumentException(String.format("%s is not a valid time code [smhd]", c));
+		default: throw new IllegalArgumentException(String.format("%s is not a valid time code [mhd]", c));
 		}
 	}
 	public static double CostConverter(String immutedcost)
@@ -453,7 +453,7 @@ public class SignManager {
 		case "b": return 1000000000;
 		case "": return 1;
 
-		default: throw new IllegalArgumentException(String.format("%s is not a valid cost code [thkm]", c));
+		default: throw new IllegalArgumentException(String.format("%s is not a valid cost code [thkmb]", c));
 		}
 	}
 }

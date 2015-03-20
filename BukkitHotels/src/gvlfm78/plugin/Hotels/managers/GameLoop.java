@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -56,7 +57,7 @@ public class GameLoop extends BukkitRunnable {
 				int locz = config.getInt("Reception.location.z");
 				Block b = world.getBlockAt(locx,locy,locz);
 				Location l = b.getLocation();
-				if(SignManager.updateReceptionSign(l)==true){//TODO There's some bug here
+				if(SignManager.updateReceptionSign(l)==true){
 					file.delete();
 					b.setType(Material.AIR);
 					plugin.getLogger().info(prefix+locale.getString("sign.delete.reception").replaceAll("%filename%", file.getName()));
@@ -101,6 +102,15 @@ public class GameLoop extends BukkitRunnable {
 											plugin.getLogger().info(prefix+locale.getString("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
 											if(p.isOnline())
 												p.sendMessage(prefix+locale.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+											else{
+												File qfile = new File("plugins//Hotels//queuedMessages.yml");
+												YamlConfiguration queue = YamlConfiguration.loadConfiguration(qfile);
+												Set<String> expiryMessages = queue.getConfigurationSection("messages.expiry").getKeys(false);
+												int expiryMessagesSize = expiryMessages.size();//TODO On login check config for warn user on expiry, then check user, then send message and delete it from config
+												String pathToPlace = "messages.expiry."+(expiryMessagesSize+1);
+												queue.set(pathToPlace+".UUID", p.getUniqueId());
+												queue.set(pathToPlace+".message", prefix+locale.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+											}
 										}
 									}
 								}

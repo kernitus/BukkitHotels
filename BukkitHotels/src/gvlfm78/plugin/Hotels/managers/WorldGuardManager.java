@@ -107,7 +107,7 @@ public class WorldGuardManager {
 		//r.setFlag(DefaultFlag.BUILD, State.DENY);
 		r.setFlag(DefaultFlag.PVP, State.DENY);
 		//r.setFlag(DefaultFlag.CHEST_ACCESS, State.DENY);
-		r.setFlag(DefaultFlag.PISTONS, State.DENY);
+		//r.setFlag(DefaultFlag.PISTONS, State.DENY);
 		r.setFlag(DefaultFlag.TNT, State.DENY);
 		r.setFlag(DefaultFlag.LIGHTER, State.DENY);
 		//r.setFlag(DefaultFlag.USE, State.DENY);
