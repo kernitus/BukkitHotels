@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="BukkitHotels/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre7"/>
+	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Hotel Stuff/craftbukkit-1.8.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Dependencies/Vault.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Dependencies/worldedit-bukkit-6.0.2-SNAPSHOT-dist.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ciro/Desktop/Java/Dependencies/worldguard-6.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
