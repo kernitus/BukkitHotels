@@ -2,6 +2,7 @@ package kernitus.plugin.Hotels.managers;
 
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -26,13 +27,16 @@ public class GameLoop extends BukkitRunnable {
 
 	FilenameFilter SignFileFilter;
 	HotelsMain plugin;
-
 	public GameLoop(HotelsMain plugin) {
 		this.plugin = plugin;
 	}
+	SignManager SM = new SignManager(plugin);
+	HotelsFileFinder HFF = new HotelsFileFinder(plugin);
+	WorldGuardManager WGM = new WorldGuardManager(plugin);
+	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	
 	//Prefix
-	File lfile = new File("plugins//Hotels//locale.yml");
-	YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+	YamlConfiguration locale = HConH.getLocale();
 	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
 
 	public GameLoop(HotelsCommandHandler hotelsCommandHandler) {}
@@ -44,7 +48,7 @@ public class GameLoop extends BukkitRunnable {
 		if(!(dir.exists()))
 			dir.mkdir();
 
-		ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins//Hotels//Signs");
+		ArrayList<String> fileslist = HFF.listFiles("plugins//Hotels//Signs");
 
 		for(String x: fileslist){
 			File file = new File("plugins//Hotels//Signs//"+x);
@@ -56,7 +60,7 @@ public class GameLoop extends BukkitRunnable {
 				int locz = config.getInt("Reception.location.z");
 				Block b = world.getBlockAt(locx,locy,locz);
 				Location l = b.getLocation();
-				if(SignManager.updateReceptionSign(l)==true){//TODO There's some bug here
+				if(SM.updateReceptionSign(l)==true){
 					file.delete();
 					b.setType(Material.AIR);
 					plugin.getLogger().info(prefix+locale.getString("sign.delete.reception").replaceAll("%filename%", file.getName()));
@@ -84,10 +88,10 @@ public class GameLoop extends BukkitRunnable {
 								if(expirydate!=0){
 									if(expirydate<System.currentTimeMillis()/1000/60){
 										String r = config.getString("Sign.region");
-										ProtectedCuboidRegion region = (ProtectedCuboidRegion) WorldGuardManager.getWorldGuard().getRegionManager(world).getRegion(r);
+										ProtectedCuboidRegion region = (ProtectedCuboidRegion) WGM.getWorldGuard().getRegionManager(world).getRegion(r);
 										if(config.getString("Sign.renter")!=null){
 											Player p = Bukkit.getOfflinePlayer(UUID.fromString(config.getString("Sign.renter"))).getPlayer();
-											WorldGuardManager.removeMember(p, region);
+											WGM.removeMember(p, region);
 											config.set("Sign.renter", null);
 											config.set("Sign.timeRentedAt", null);
 											config.set("Sign.expiryDate", null);

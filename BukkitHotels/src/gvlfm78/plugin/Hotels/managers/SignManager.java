@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels.managers;
 
 import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,18 +32,25 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class SignManager {
+	private HotelsMain plugin;
+	public SignManager(HotelsMain SM)
+	{
+		this.plugin = SM;
+	}
+	WorldGuardManager WGM = new WorldGuardManager(plugin);
+	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	
 	//Prefix
-	static File lfile = new File("plugins//Hotels//locale.yml");
-	static YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
-	static String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
+	YamlConfiguration locale = HConH.getLocale();
+	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
 
-	public static void placeReceptionSign(SignChangeEvent e){
+	public void placeReceptionSign(SignChangeEvent e){
 		Player p = e.getPlayer();
 		//Sign Lines
 		String Line2 = ChatColor.stripColor(e.getLine(1)).trim();
 		if(!Line2.isEmpty()){
-			if ((!(Line2.isEmpty()))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))){ //Hotel region exists
-				if(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ())){
+			if ((!(Line2.isEmpty()))&&(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))){ //Hotel region exists
+				if(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ())){
 					//Sign is within hotel region
 					int tot = totalRooms(Line2,p.getWorld()); //Getting total amount of rooms in hotel
 					int free = freeRooms(Line2,p.getWorld()); //Getting amount of free rooms in hotel
@@ -97,7 +105,7 @@ public class SignManager {
 		return;
 	}
 
-	public static void placeRoomSign(SignChangeEvent e){
+	public void placeRoomSign(SignChangeEvent e){
 		Player p = e.getPlayer();
 		//Sign Lines
 		String Line2 = ChatColor.stripColor(e.getLine(1)).trim();
@@ -115,10 +123,10 @@ public class SignManager {
 			if((roomnumb.length()+cost.length()+9)<22){
 				File signFile = new File("plugins//Hotels//Signs//"+Line2+"-"+roomnum+".yml");
 				if(!signFile.exists()){ //Sign for room doesn't already exist
-					if ((!(Line2.isEmpty()))&&(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&& //Hotel region exists
-							(WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ()))){
+					if ((!(Line2.isEmpty()))&&(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&& //Hotel region exists
+							(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ()))){
 						//Sign is within hotel region
-						if((WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2+"-"+roomnum))){ //Room region exists
+						if((WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2+"-"+roomnum))){ //Room region exists
 							//Successful Sign
 							if(!signFile.exists()){
 								try {
@@ -148,7 +156,7 @@ public class SignManager {
 							signConfig.set("Sign.room", roomnum);
 							signConfig.set("Sign.cost", acccost);
 
-							signConfig.set("Sign.region", WorldGuardManager.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2+"-"+roomnum).getId().toString());
+							signConfig.set("Sign.region", WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2+"-"+roomnum).getId().toString());
 							signConfig.set("Sign.location.world", String.valueOf(e.getBlock().getWorld().getName()));
 							signConfig.set("Sign.location.coords.x", Integer.valueOf(e.getBlock().getLocation().getBlockX()));
 							signConfig.set("Sign.location.coords.y", Integer.valueOf(e.getBlock().getLocation().getBlockY()));
@@ -196,7 +204,7 @@ public class SignManager {
 			//Line 3 does not contain separator
 		}
 	}
-	public static void useRoomSign(PlayerInteractEvent e){
+	public void useRoomSign(PlayerInteractEvent e){
 		Player p = e.getPlayer();
 		//Sign lines
 		Sign s = (Sign) e.getClickedBlock().getState();
@@ -205,12 +213,12 @@ public class SignManager {
 		String hotelName = ChatColor.stripColor(Line1); //Hotel name
 
 		//If Hotel region exists
-		if(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)){
+		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)){
 			int x = e.getClickedBlock().getX();
 			int y = e.getClickedBlock().getY();
 			int z = e.getClickedBlock().getZ();
 			//If sign is within region
-			if(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+hotelName).contains(x, y, z)){
+			if(WGM.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+hotelName).contains(x, y, z)){
 
 				String[] Line2parts = Line2.split("\\s"); //Splitting Line2 into room num + cost
 				int roomNum = Integer.valueOf(Line2parts[1].trim()); //Room Number
@@ -223,7 +231,7 @@ public class SignManager {
 					if(hotelName.equalsIgnoreCase(cHotelName)){ //If hotel names match
 						if(roomNum==cRoomNum){ //If room nums match
 							//If region exists
-							if(WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).hasRegion(signConfig.getString("Sign.region"))){
+							if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion(signConfig.getString("Sign.region"))){
 
 								String cRenter = signConfig.getString("Sign.renter");
 								if(cRenter==null){ //If there is a renter
@@ -255,11 +263,11 @@ public class SignManager {
 											}
 
 											//Adding renter as region member
-											ProtectedRegion r = WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+cHotelName+"-"+cRoomNum);
-											WorldGuardManager.addMember(p, (ProtectedCuboidRegion) r);
+											ProtectedRegion r = WGM.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+cHotelName+"-"+cRoomNum);
+											WGM.addMember(p, (ProtectedCuboidRegion) r);
 
 											try {//Saving WG regions
-												WorldGuardManager.getWorldGuard().getRegionManager(p.getWorld()).save();
+												WGM.getWorldGuard().getRegionManager(p.getWorld()).save();
 											} catch (StorageException e1) {
 												e1.printStackTrace();
 											}
@@ -298,18 +306,18 @@ public class SignManager {
 				p.sendMessage(prefix+locale.getString("chat.sign.use.signOutOfRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 		}
 	}
-	public static void breakRoomSign(BlockBreakEvent e){
+	public void breakRoomSign(BlockBreakEvent e){
 		Block b = e.getBlock();
 		Sign s = (Sign) b.getState();
 		String Line1 = ChatColor.stripColor(s.getLine(0));
 		World w = b.getWorld();
-		if(WorldGuardManager.hasRegion(w, "Hotel-"+Line1)){
+		if(WGM.hasRegion(w, "Hotel-"+Line1)){
 			//Room sign has been broken?
-			if(WorldGuardManager.getRegion(w, "Hotel-"+Line1).contains(b.getX(), b.getY(), b.getZ())){
+			if(WGM.getRegion(w, "Hotel-"+Line1).contains(b.getX(), b.getY(), b.getZ())){
 				String Line2 = ChatColor.stripColor(s.getLine(1));
 				String[] Line2split = Line2.split(" ");
 				int roomnum = Integer.parseInt(Line2split[1]);
-				if(WorldGuardManager.hasRegion(w, "Hotel-"+Line1+"-"+roomnum)){
+				if(WGM.hasRegion(w, "Hotel-"+Line1+"-"+roomnum)){
 					File signFile = new File("plugins//Hotels//Signs//"+Line1+"-"+roomnum+".yml");
 					if(signFile.exists()){
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
@@ -335,11 +343,11 @@ public class SignManager {
 		}
 	}
 
-	public static int totalRooms(String hotelName,World w){
+	public int totalRooms(String hotelName,World w){
 		//Finds total amount of rooms in given hotel
 		int tot = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
+		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
 		int i;
 		for(i=0; i<rlist.length; i++){
@@ -353,11 +361,11 @@ public class SignManager {
 		return tot;
 	}
 
-	public static int freeRooms(String hotelName,World w){
+	public int freeRooms(String hotelName,World w){
 		//Finds total amount of free rooms in given hotel
 		int free = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
+		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
 		int i;
 		for(i=0; i<rlist.length; i++){
@@ -379,7 +387,7 @@ public class SignManager {
 		return free;
 	}
 
-	public static boolean updateReceptionSign(Location l){
+	public boolean updateReceptionSign(Location l){
 		//Updates the reception sign at given location
 		Block b = l.getBlock();
 		if(b.getType().equals(Material.WALL_SIGN)||b.getType().equals(Material.SIGN)||l.getBlock().getType().equals(Material.SIGN_POST)){
@@ -390,7 +398,7 @@ public class SignManager {
 				if(Line2!=null){
 					String[] Line2split = Line2.split(" ");
 					String hotelname = Line2split[0].toLowerCase();
-					if(WorldGuardManager.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
+					if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
 						int tot = totalRooms(hotelname,b.getWorld());
 						int free = freeRooms(hotelname,b.getWorld());
 						s.setLine(2, "§1"+tot+"§0 "+locale.getString("sign.room.total").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
@@ -406,7 +414,7 @@ public class SignManager {
 		}
 		return true;
 	}
-	public static long TimeConverter(String immutedtime){
+	public long TimeConverter(String immutedtime){
 		final Pattern p = Pattern.compile("(\\d+)([hmd])");
 		final Matcher m = p.matcher(immutedtime);
 		long totalMins = 0;
@@ -420,16 +428,16 @@ public class SignManager {
 		return totalMins;
 	}
 
-	public static TimeUnit toTimeUnit(@Nonnull final String c){
+	public TimeUnit toTimeUnit(@Nonnull final String c){
 		switch (c)
 		{
 		case "m": return TimeUnit.MINUTES;
 		case "h": return TimeUnit.HOURS;
 		case "d": return TimeUnit.DAYS;
-		default: throw new IllegalArgumentException(String.format("%s is not a valid time code [smhd]", c));
+		default: throw new IllegalArgumentException(String.format("%s is not a valid time code [mhd]", c));
 		}
 	}
-	public static double CostConverter(String immutedcost)
+	public double CostConverter(String immutedcost)
 	{
 		final Pattern p = Pattern.compile("(\\d+)([thkmb]||)");
 		final Matcher m = p.matcher(immutedcost);
@@ -439,12 +447,12 @@ public class SignManager {
 			final double duration = Double.parseDouble(m.group(1));
 			final double interval = toCost(m.group(2));
 			final double l = interval*duration;
-			totalCost += + l;
+			totalCost += l;
 		}
 		return totalCost;
 	}
 
-	public static double toCost(@Nonnull final String c){
+	public double toCost(@Nonnull final String c){
 		switch (c){
 		case "t": return 10;
 		case "h": return 100;
@@ -453,7 +461,7 @@ public class SignManager {
 		case "b": return 1000000000;
 		case "": return 1;
 
-		default: throw new IllegalArgumentException(String.format("%s is not a valid cost code [thkm]", c));
+		default: throw new IllegalArgumentException(String.format("%s is not a valid cost code [thkmb]", c));
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package kernitus.plugin.Hotels;
 
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
@@ -30,14 +31,16 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HotelsListener implements Listener {
 
-	public HotelsMain plugin;
-
+	private HotelsMain plugin;
 	public HotelsListener(HotelsMain plugin){
 		this.plugin = plugin;
 	}
+	SignManager SM = new SignManager(plugin);
+	WorldGuardManager WGM = new WorldGuardManager(plugin);
+	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	
 	//Prefix
-	File lfile = new File("plugins//Hotels//locale.yml");
-	YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+	YamlConfiguration locale = HConH.getLocale();
 	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
 
 	@EventHandler
@@ -53,11 +56,11 @@ public class HotelsListener implements Listener {
 
 				if(Line3.isEmpty()&&Line4.isEmpty()){
 					//Reception sign?
-					SignManager.placeReceptionSign(e);
+					SM.placeReceptionSign(e);
 				}
 				else{
 					//Room sign?
-					SignManager.placeRoomSign(e);
+					SM.placeRoomSign(e);
 				}
 			}
 			else{
@@ -76,7 +79,7 @@ public class HotelsListener implements Listener {
 				Player p = e.getPlayer();
 				//Permission check
 				if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.use")||p.hasPermission("hotels.*")))){
-					SignManager.useRoomSign(e);
+					SM.useRoomSign(e);
 				}
 				else
 					p.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
@@ -89,7 +92,7 @@ public class HotelsListener implements Listener {
 		//Player broke a sign, checking if it's a hotel sign
 		Block b = e.getBlock();
 		if(b.getType().equals(Material.SIGN)||b.getType().equals(Material.SIGN_POST)||b.getType().equals(Material.WALL_SIGN)){
-			SignManager.breakRoomSign(e);
+			SM.breakRoomSign(e);
 		}
 	}
 	
@@ -112,7 +115,7 @@ public class HotelsListener implements Listener {
 	public int totalRooms(String hotelName,World w){
 		int tot = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
+		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
 		for(int i=0; i<rlist.length; i++){
 			ProtectedRegion r = rlist[i];
@@ -128,7 +131,7 @@ public class HotelsListener implements Listener {
 	public int freeRooms(String hotelName,World w){
 		int free = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WorldGuardManager.getWorldGuard().getRegionManager(w).getRegions();
+		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
 		for(int i=0; i<rlist.length; i++){
 			ProtectedRegion r = rlist[i];
@@ -161,7 +164,7 @@ public class HotelsListener implements Listener {
 				if(Line2!=null){
 					String[] Line2split = Line2.split(" ");
 					String hotelname = Line2split[0].toLowerCase();
-					if(WorldGuardManager.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
+					if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
 						int tot = totalRooms(hotelname,b.getWorld());
 						int free = freeRooms(hotelname,b.getWorld());
 						s.setLine(2, locale.getString("chat.sign.reception.total").replaceAll("%tot%", String.valueOf(tot)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));

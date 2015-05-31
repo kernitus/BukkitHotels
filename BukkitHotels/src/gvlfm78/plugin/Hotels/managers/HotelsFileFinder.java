@@ -1,12 +1,20 @@
 package kernitus.plugin.Hotels.managers;
 
+import kernitus.plugin.Hotels.HotelsMain;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 
 public class HotelsFileFinder {
+	@SuppressWarnings("unused")
+	private HotelsMain plugin;
+	public HotelsFileFinder(HotelsMain plugin) {
+		this.plugin = plugin;
+	}
+	
 
-	public static ArrayList<String> listFiles(String dir) {
+	public ArrayList<String> listFiles(String dir) {
 		 
 	    File directory = new File(dir);
 	 

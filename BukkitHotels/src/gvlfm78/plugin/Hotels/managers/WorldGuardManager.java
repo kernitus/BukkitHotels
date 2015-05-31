@@ -1,6 +1,8 @@
 package kernitus.plugin.Hotels.managers;
 
-import java.io.File;
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -26,58 +28,63 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 
 public class WorldGuardManager {
-	static File lfile = new File("plugins//Hotels//locale.yml");
-	private static YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
+	private HotelsMain plugin;
+	public WorldGuardManager(HotelsMain plugin) {
+		this.plugin = plugin;
+	}
+	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 	
-	public static WorldGuardPlugin getWorldGuard(){
+	YamlConfiguration locale = HConH.getLocale();
+	
+	public WorldGuardPlugin getWorldGuard(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 
 		if (p instanceof WorldGuardPlugin) return (WorldGuardPlugin) p;
 		else return null;
 	}
 
-	public static ProtectedRegion getRegion(World world, String string) {
+	public ProtectedRegion getRegion(World world, String string) {
 		return getWorldGuard().getRegionManager(world).getRegion(string);
 	}
 
 	public void addOwner(Player p, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
-		owners.addPlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
+		owners.addPlayer(getWorldGuard().wrapPlayer(p));
 		r.setOwners(owners);
 	}
 
-	public static void addMember(Player p, ProtectedRegion r){
+	public void addMember(Player p, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
-		members.addPlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
+		members.addPlayer(getWorldGuard().wrapPlayer(p));
 		r.setMembers(members);
 	}
 
 	public void removeOwner(Player p, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
-		owners.removePlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
+		owners.removePlayer(getWorldGuard().wrapPlayer(p));
 		r.setOwners(owners);
 	}
 
-	public static void removeMember(Player p, ProtectedRegion r){
+	public void removeMember(Player p, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
-		members.removePlayer(WorldGuardManager.getWorldGuard().wrapPlayer(p));
+		members.removePlayer(getWorldGuard().wrapPlayer(p));
 		r.setMembers(members);
 	}
 
-	public static void addRegion(World w, ProtectedCuboidRegion r){
+	public void addRegion(World w, ProtectedCuboidRegion r){
 		getWorldGuard().getRegionManager(w).addRegion(r);
 	}
-	public static void removeRegion(World w, String r){
+	public void removeRegion(World w, String r){
 		getWorldGuard().getRegionManager(w).removeRegion(r);
 	}
-	public static boolean hasRegion(World w, String r){
+	public boolean hasRegion(World w, String r){
 		if(getWorldGuard().getRegionManager(w).hasRegion(r))
 			return true;
 		else
 			return false;
 	}
 
-	public static void saveRegions(World world){
+	public void saveRegions(World world){
 		RegionManager regionManager = getWorldGuard().getRegionManager(world);
 		try {
 			regionManager.save();
@@ -85,23 +92,23 @@ public class WorldGuardManager {
 			e.printStackTrace();
 		}
 	}
-	public static void renameRegion(String oldname, String newname,World world){
-		if(WorldGuardManager.hasRegion(world, oldname)){//If old hotel exists
-			ProtectedRegion oldr = WorldGuardManager.getRegion(world, oldname);//Get old region
+	public void renameRegion(String oldname, String newname,World world){
+		if(hasRegion(world, oldname)){//If old hotel exists
+			ProtectedRegion oldr = getRegion(world, oldname);//Get old region
 			ProtectedCuboidRegion newr2 = new ProtectedCuboidRegion(
 					newname, 
 					new BlockVector(oldr.getMinimumPoint()), 
 					new BlockVector(oldr.getMaximumPoint())
 					);
-			WorldGuardManager.addRegion(world, newr2);
-			ProtectedRegion newr = WorldGuardManager.getRegion(world, newname);
+			addRegion(world, newr2);
+			ProtectedRegion newr = getRegion(world, newname);
 			Map<Flag<?>, Object> flags = oldr.getFlags();
 			newr.setFlags(flags);
-			WorldGuardManager.removeRegion(world, oldr.getId());
-			WorldGuardManager.saveRegions(world);
+			removeRegion(world, oldr.getId());
+			saveRegions(world);
 		}
 	}
-	public static void hotelFlags(ProtectedCuboidRegion r,String hotelName,Plugin plugin){
+	public void hotelFlags(ProtectedCuboidRegion r,String hotelName,Plugin plugin){
 		hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
 		//r.setFlag(DefaultFlag.PASSTHROUGH, State.ALLOW);
 		//r.setFlag(DefaultFlag.BUILD, State.DENY);
@@ -172,7 +179,7 @@ public class WorldGuardManager {
 		//r.setFlag(DefaultFlag.PRICE, price);
 		//r.setFlag(DefaultFlag.BUYABLE, Boolean.FALSE);
 	}	
-	public static void roomFlags(ProtectedCuboidRegion r,String hotelName,Player p,int roomNum,Plugin plugin){
+	public void roomFlags(ProtectedCuboidRegion r,String hotelName,Player p,int roomNum,Plugin plugin){
 
 		groupFlags(r,DefaultFlag.CHEST_ACCESS);
 		groupFlags(r,DefaultFlag.USE);
@@ -193,11 +200,11 @@ public class WorldGuardManager {
 		if(plugin.getConfig().getBoolean("settings.use-room_exit_message"))
 			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.room.exit").replaceAll("%room%", String.valueOf(roomNum))));
 	}
-	public static void groupFlags(ProtectedCuboidRegion r,StateFlag f){
+	public void groupFlags(ProtectedCuboidRegion r,StateFlag f){
 		r.setFlag(f, State.DENY);
 		RegionGroupFlag gf = f.getRegionGroupFlag();
 		try {
-			RegionGroup groupValue = gf.parseInput(WorldGuardManager.getWorldGuard(), null, "non_members");
+			RegionGroup groupValue = gf.parseInput(getWorldGuard(), null, "non_members");
 			r.setFlag(gf, groupValue);
 		} catch (InvalidFlagFormat e) {
 			e.printStackTrace();

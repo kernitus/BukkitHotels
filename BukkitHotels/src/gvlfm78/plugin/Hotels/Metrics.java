@@ -57,19 +57,19 @@ public class Metrics {
 	/**
 	 * The current revision number
 	 */
-	private final static int REVISION = 7;
+	private final int REVISION = 7;
 	/**
 	 * The base url of the metrics domain
 	 */
-	private static final String BASE_URL = "http://report.mcstats.org";
+	private final String BASE_URL = "http://report.mcstats.org";
 	/**
 	 * The url used to report a server's status
 	 */
-	private static final String REPORT_URL = "/plugin/%s";
+	private final String REPORT_URL = "/plugin/%s";
 	/**
 	 * Interval of time to ping (in minutes)
 	 */
-	private static final int PING_INTERVAL = 15;
+	private final int PING_INTERVAL = 15;
 	/**
 	 * The plugin this metrics submits for
 	 */
@@ -414,7 +414,7 @@ public class Metrics {
 	 * @param input
 	 * @return
 	 */
-	public static byte[] gzip(String input) {
+	public byte[] gzip(String input) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		GZIPOutputStream gzos = null;
 		try {
@@ -451,7 +451,7 @@ public class Metrics {
 	 * @param value
 	 * @throws UnsupportedEncodingException
 	 */
-	private static void appendJSONPair(StringBuilder json, String key, String value) throws UnsupportedEncodingException {
+	private void appendJSONPair(StringBuilder json, String key, String value) throws UnsupportedEncodingException {
 		boolean isValueNumeric = false;
 		try {
 			if (value.equals("0") || !value.endsWith("0")) {
@@ -478,7 +478,7 @@ public class Metrics {
 	 * @param text
 	 * @return
 	 */
-	private static String escapeJSON(String text) {
+	private String escapeJSON(String text) {
 		StringBuilder builder = new StringBuilder();
 		builder.append('"');
 		for (int index = 0; index < text.length(); index++) {
@@ -520,13 +520,13 @@ public class Metrics {
 	 * @param text the text to encode
 	 * @return the encoded text, as UTF-8
 	 */
-	private static String urlEncode(final String text) throws UnsupportedEncodingException {
+	private String urlEncode(final String text) throws UnsupportedEncodingException {
 		return URLEncoder.encode(text, "UTF-8");
 	}
 	/**
 	 * Represents a custom graph on the website
 	 */
-	public static class Graph {
+	public class Graph {
 		/**
 		 * The graph's name, alphanumeric and spaces only :) If it does not comply to the above when submitted, it is
 		 * rejected
@@ -592,7 +592,7 @@ public class Metrics {
 	/**
 	 * Interface used to collect custom data for a plugin
 	 */
-	public static abstract class Plotter {
+	public abstract class Plotter {
 		/**
 		 * The plot's name
 		 */

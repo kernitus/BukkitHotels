@@ -1,22 +1,32 @@
 package kernitus.plugin.Hotels;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 public class HotelsUpdateChecker {
+	
+	private HotelsMain plugin;
 
 	public HotelsUpdateChecker(HotelsMain Huc)
 	{
 		this.plugin = Huc;
 	}
 
-	private HotelsMain plugin;
+	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	YamlConfiguration locale = HConH.getLocale();
+	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "")+" ");
+	
 	private URL filesFeed;
 
 	private String version;
@@ -46,6 +56,8 @@ public class HotelsUpdateChecker {
 			if(versionCompare(plugin.getDescription().getVersion(),this.version)<0){
 				return true;
 			}
+		} catch (UnknownHostException uhe){
+			plugin.getServer().getLogger().severe(prefix+locale.getString("main.noConnection"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

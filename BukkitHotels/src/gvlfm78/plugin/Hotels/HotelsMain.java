@@ -16,10 +16,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class HotelsMain extends JavaPlugin{
 
 	public static Economy economy = null; //Creating economy variable
-	HotelsConfigHandler hconfigh = HotelsConfigHandler.getInstance();
+	
+	HotelsConfigHandler HConH = new HotelsConfigHandler(this);
 	GameLoop gameloop;
 	protected HotelsUpdateChecker updateChecker;
-
+	
+	YamlConfiguration locale = HConH.getLocale();
+	
 	@Override
 	public void onEnable(){
 		setupConfig();
@@ -127,7 +130,7 @@ public class HotelsMain extends JavaPlugin{
 
 	//Setting up config files
 	private void setupConfig(){
-		hconfigh.setupConfigs(this);//Creates config file
+		HConH.setupConfigs(this);//Creates config file
 	}
 
 	//Setting up the economy
