@@ -63,7 +63,7 @@ public class HotelsConfigHandler {
 	}
 	
 	public void setupQueuedMessages(Plugin plugin){
-		saveMessageQueue();
+		saveMessageQueue(getMessageQueue());
 	}
 
 	public void localeLanguageSelector(Plugin plugin){
@@ -105,9 +105,8 @@ public class HotelsConfigHandler {
 		}
 	}
 	
-	public void saveMessageQueue(){
+	public void saveMessageQueue(YamlConfiguration config){
 		File file = getMessageQueueFile();
-		YamlConfiguration config = getMessageQueue();
 		try {
 			config.save(file);
 		} catch (IOException e) {

@@ -6,6 +6,7 @@ import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -65,9 +66,9 @@ public class WorldGuardManager {
 		r.setOwners(owners);
 	}
 
-	public void removeMember(Player p, ProtectedRegion r){
+	public void removeMember(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
-		members.removePlayer(getWorldGuard().wrapPlayer(p));
+		members.removePlayer(p.getName());
 		r.setMembers(members);
 	}
 

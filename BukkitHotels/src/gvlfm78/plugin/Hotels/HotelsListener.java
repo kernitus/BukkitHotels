@@ -15,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,7 +39,7 @@ public class HotelsListener implements Listener {
 	SignManager SM = new SignManager(plugin);
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	
+
 	//Prefix
 	YamlConfiguration locale = HConH.getLocale();
 	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
@@ -95,10 +96,10 @@ public class HotelsListener implements Listener {
 			SM.breakRoomSign(e);
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
-		//Player joined the server, checking if he has hotel admin permission
+		//Player joined the server, update notification to admins:
 		Player p = e.getPlayer();
 		if(p.hasPermission("hotel.*")||p.isOp()){
 			File qfile = new File("plugins//Hotels//queuedMessages.yml");
@@ -109,6 +110,18 @@ public class HotelsListener implements Listener {
 				p.sendMessage(ChatColor.BLUE+ava);
 			if(lin!=null)
 				p.sendMessage(ChatColor.BLUE+lin);
+		}
+		//Notifying players if any of their rooms has expired while they were offline
+		UUID playerUUID = p.getUniqueId();
+		YamlConfiguration queue = HConH.getMessageQueue();
+		ConfigurationSection allExpiryMessages = queue.getConfigurationSection("messages.expiry");//TODO On login check config for warn user on expiry, then check user, then send message and delete it from config
+		for(String key:allExpiryMessages.getKeys(false)){
+			UUID configUUID = UUID.fromString(queue.getString("messages.expiry."+key+".UUID"));
+			if(playerUUID.equals(configUUID)){
+				p.sendMessage(queue.getString("messages.expiry."+key+".message"));
+				queue.set("messages.expiry."+key, null);
+				HConH.saveMessageQueue(queue);
+			}
 		}
 	}
 

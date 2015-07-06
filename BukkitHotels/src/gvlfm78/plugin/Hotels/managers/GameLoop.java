@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -35,7 +36,7 @@ public class GameLoop extends BukkitRunnable {
 	HotelsFileFinder HFF = new HotelsFileFinder(plugin);
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	
+
 	//Prefix
 	YamlConfiguration locale = HConH.getLocale();
 	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
@@ -64,12 +65,13 @@ public class GameLoop extends BukkitRunnable {
 				if(SM.updateReceptionSign(l)==true){
 					file.delete();
 					b.setType(Material.AIR);
-					plugin.getLogger().info(prefix+locale.getString("sign.delete.reception").replaceAll("%filename%", file.getName()));
+					plugin.getLogger().info(locale.getString("sign.delete.reception").replaceAll("%filename%", file.getName()));
 				}
 			}
 			else{
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 				String hotelName = config.getString("Sign.hotel");
+				hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
 				World world = Bukkit.getWorld(config.getString("Sign.location.world").trim());
 				int roomNum = config.getInt("Sign.room");
 				int locx = config.getInt("Sign.location.coords.x");
@@ -91,8 +93,28 @@ public class GameLoop extends BukkitRunnable {
 										String r = config.getString("Sign.region");
 										ProtectedCuboidRegion region = (ProtectedCuboidRegion) WGM.getWorldGuard().getRegionManager(world).getRegion(r);
 										if(config.getString("Sign.renter")!=null){
-											Player p = Bukkit.getOfflinePlayer(UUID.fromString(config.getString("Sign.renter"))).getPlayer();
+											OfflinePlayer p = Bukkit.getServer().getOfflinePlayer(UUID.fromString(config.getString("Sign.renter")));
 											WGM.removeMember(p, region);
+											sign.setLine(3, "§a"+locale.getString("sign.vacant"));
+											sign.update();
+											plugin.getLogger().info(locale.getString("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
+											if(p.isOnline()){
+												Player op = Bukkit.getServer().getPlayer(UUID.fromString(config.getString("Sign.renter")));
+												op.sendMessage(prefix+locale.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+											}
+											else{
+												YamlConfiguration queue = HConH.getMessageQueue();
+												if(!queue.contains("messages.expiry")){
+													queue.createSection("messages.expiry");
+													HConH.saveMessageQueue(queue);
+												}
+												Set<String> expiryMessages = queue.getConfigurationSection("messages.expiry").getKeys(false);
+												int expiryMessagesSize = expiryMessages.size();
+												String pathToPlace = "messages.expiry."+(expiryMessagesSize+1);
+												queue.set(pathToPlace+".UUID", p.getUniqueId().toString());
+												queue.set(pathToPlace+".message", locale.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+												HConH.saveMessageQueue(queue);
+											}
 											config.set("Sign.renter", null);
 											config.set("Sign.timeRentedAt", null);
 											config.set("Sign.expiryDate", null);
@@ -100,20 +122,6 @@ public class GameLoop extends BukkitRunnable {
 												config.save(file);
 											} catch (IOException e) {
 												e.printStackTrace();
-											}
-											sign.setLine(3, "§a"+locale.getString("sign.vacant"));
-											sign.update();
-											plugin.getLogger().info(prefix+locale.getString("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
-											if(p.isOnline())
-												p.sendMessage(prefix+locale.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-											else{
-												File qfile = new File("plugins//Hotels//queuedMessages.yml");
-												YamlConfiguration queue = YamlConfiguration.loadConfiguration(qfile);
-												Set<String> expiryMessages = queue.getConfigurationSection("messages.expiry").getKeys(false);
-												int expiryMessagesSize = expiryMessages.size();//TODO On login check config for warn user on expiry, then check user, then send message and delete it from config
-												String pathToPlace = "messages.expiry."+(expiryMessagesSize+1);
-												queue.set(pathToPlace+".UUID", p.getUniqueId());
-												queue.set(pathToPlace+".message", prefix+locale.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 											}
 										}
 									}
@@ -134,15 +142,15 @@ public class GameLoop extends BukkitRunnable {
 						}
 						else{
 							file.delete();
-							plugin.getLogger().info(prefix+locale.getString("sign.delete.roomNum").replaceAll("%filename%", file.getName()));}
+							plugin.getLogger().info(locale.getString("sign.delete.roomNum").replaceAll("%filename%", file.getName()));}
 					}
 					else{
 						file.delete();
-						plugin.getLogger().info(prefix+locale.getString("sign.delete.hotelName").replaceAll("%filename%", file.getName()));}
+						plugin.getLogger().info(locale.getString("sign.delete.hotelName").replaceAll("%filename%", file.getName()));}
 				}
 				else{
 					file.delete();
-					plugin.getLogger().info(prefix+locale.getString("sign.delete.location").replaceAll("%filename%", file.getName()));}
+					plugin.getLogger().info(locale.getString("sign.delete.location").replaceAll("%filename%", file.getName()));}
 			}
 		}
 	}
