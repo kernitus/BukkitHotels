@@ -125,7 +125,6 @@ public class HotelsConfigHandler {
 
 	public void setupLanguageEnglish(Plugin plugin){
 		locale.addDefault("language", String.valueOf("en"));
-		locale.addDefault("main.enable.noVault", String.valueOf("No Vault dependency found!"));
 		locale.addDefault("main.enable.success", String.valueOf("%pluginname% v%version% has been enabled correctly"));
 		locale.addDefault("main.disable.success", String.valueOf("%pluginname% v%version% has been disabled"));
 		locale.addDefault("main.updateAvailable", String.valueOf("Hotels v%version% is available for download!"));
@@ -245,7 +244,21 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.commands.listRooms.line", String.valueOf("&6Room n: &c%room%"));
 		locale.addDefault("chat.commands.listRooms.noRooms", String.valueOf("&cThere are no rooms in that hotel"));
 		locale.addDefault("chat.commands.removeSigns.success", String.valueOf("&aSuccessfully removed all signs"));
-
+		locale.addDefault("chat.commands.friend.usage", String.valueOf("&4Correct usage: /hotels friend [add/remove/list] [hotel] [room] <friendname>"));
+		locale.addDefault("chat.commands.friend.wrongData", String.valueOf("&4The hotel or room number entered do not match any existing location"));
+		locale.addDefault("chat.commands.friend.noRenter", String.valueOf("&4The room you specified has no renter!"));
+		locale.addDefault("chat.commands.friend.notRenter", String.valueOf("&4You are not the renter of the specified room!"));
+		locale.addDefault("chat.commands.friend.consoleRejected", String.valueOf("The console can't add/remove friend from a room!"));
+		locale.addDefault("chat.commands.friend.addYourself", String.valueOf("&4You can't add yourself to the friend list!"));
+		locale.addDefault("chat.commands.friend.nonExistant", String.valueOf("&4You can't add imaginary friends to the friend list!"));
+		locale.addDefault("chat.commands.friend.friendNotInList", String.valueOf("&4The user you specified is not in the friend list!"));
+		locale.addDefault("chat.commands.friend.addSuccess", String.valueOf("&aSuccessfully added %friend% to the friend list"));
+		locale.addDefault("chat.commands.friend.removeSuccess", String.valueOf("&aSuccessfully removed %friend% to the friend list"));
+		locale.addDefault("chat.commands.friend.noFriends", String.valueOf("&2You have not added any friends to the specified room"));
+		locale.addDefault("chat.commands.friend.list.heading", String.valueOf("&a==Friend list for room n. %room% of the %hotel% hotel=="));
+		locale.addDefault("chat.commands.friend.list.footer", String.valueOf("&c==End of friend list=="));
+		locale.addDefault("chat.commands.friend.list.line", String.valueOf("&6Friend: &c%name%"));
+		
 		locale.options().copyDefaults(true);
 		saveLocale(locale);
 		plugin.getLogger().info("[Hotels] Language strings generated");

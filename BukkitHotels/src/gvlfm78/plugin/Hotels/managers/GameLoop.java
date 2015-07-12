@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -95,6 +96,14 @@ public class GameLoop extends BukkitRunnable {
 										if(config.getString("Sign.renter")!=null){
 											OfflinePlayer p = Bukkit.getServer().getOfflinePlayer(UUID.fromString(config.getString("Sign.renter")));
 											WGM.removeMember(p, region);
+											
+											//Removing friends
+											List<String> stringList = config.getStringList("Sign.friends");
+											for(String currentFriend : stringList){
+												OfflinePlayer cf = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
+												WGM.removeMember(cf, region);
+											}
+											
 											sign.setLine(3, "§a"+locale.getString("sign.vacant"));
 											sign.update();
 											plugin.getLogger().info(locale.getString("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
@@ -118,6 +127,7 @@ public class GameLoop extends BukkitRunnable {
 											config.set("Sign.renter", null);
 											config.set("Sign.timeRentedAt", null);
 											config.set("Sign.expiryDate", null);
+											config.set("Sign.friends", null);
 											try {
 												config.save(file);
 											} catch (IOException e) {
@@ -131,6 +141,7 @@ public class GameLoop extends BukkitRunnable {
 								config.set("Sign.renter", null);
 								config.set("Sign.timeRentedAt", null);
 								config.set("Sign.expiryDate", null);
+								config.set("Sign.friends", null);
 								try {
 									config.save(file);
 								} catch (IOException e) {

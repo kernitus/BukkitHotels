@@ -17,6 +17,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -159,6 +160,154 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 					sender.sendMessage(prefix+locale.getString("chat.commands.creationMode.noarg").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
+				else if((args.length>3)&&(args[0].equalsIgnoreCase("friend")||(args[0].equalsIgnoreCase("f")))){
+					if(sender instanceof Player){
+						if(sender.hasPermission("chat.commands.friend")){
+							//Adding a friend?
+							if(args[1].equalsIgnoreCase("add")){
+								if(args.length>4){
+									String hotel = args[2];
+									String room = args[3];
+									String friendName = args[4];
+									File signFile = new File("plugins//Hotels//Signs//"+hotel+"-"+room+".yml");
+									if(signFile.exists()){
+										YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
+										String renterUUID = signConfig.getString("Sign.renter");
+										if(renterUUID!=null){
+											Player pl = (Player) sender;
+											if(pl.getUniqueId().equals(UUID.fromString(renterUUID))){
+												@SuppressWarnings("deprecation")
+												OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(friendName);
+												if(friend.hasPlayedBefore()){
+													if(!pl.getUniqueId().equals(friend.getUniqueId())){
+														//Adding player as region member
+														World fromConfigWorld = Bukkit.getWorld(signConfig.getString("Sign.location.world"));
+														String fromConfigRegionName = signConfig.getString("Sign.region");
+														ProtectedRegion r = WGM.getRegion(fromConfigWorld, fromConfigRegionName);
+														WGM.addMember(friend, r);
+														//Adding player to config under friends list
+														List<String> stringList = signConfig.getStringList("Sign.friends");
+														stringList.add(friend.getUniqueId().toString());
+														signConfig.set("Sign.friends", stringList);
+
+														try {
+															signConfig.save(signFile);
+														} catch (IOException e) {
+															e.printStackTrace();
+														}
+														//Friend /name/ added successfully
+														sender.sendMessage(prefix+locale.getString("chat.commands.friend.addSuccess").replaceAll("%friend%", friend.getName()).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+													}
+													else
+														sender.sendMessage(prefix+locale.getString("chat.commands.friend.addYourself").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+												}
+												else
+													sender.sendMessage(prefix+locale.getString("chat.commands.friend.nonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+											}
+											else
+												sender.sendMessage(prefix+locale.getString("chat.commands.friend.notRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+										}
+										else
+											sender.sendMessage(prefix+locale.getString("chat.commands.friend.noRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));	
+									}
+									else
+										sender.sendMessage(prefix+locale.getString("chat.commands.friend.wrongData").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+								}
+								else
+									sender.sendMessage(prefix+locale.getString("chat.commands.friend.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							}
+							//Removing a friend?
+							else if(args[1].equalsIgnoreCase("remove")){
+								if(args.length>4){
+									String hotel = args[2];
+									String room = args[3];
+									String friendName = args[4];
+									File signFile = new File("plugins//Hotels//Signs//"+hotel+"-"+room+".yml");
+									if(signFile.exists()){
+										YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
+										String renterUUID = signConfig.getString("Sign.renter");
+										Player pl = (Player) sender;
+										if(renterUUID!=null){
+											if(pl.getUniqueId().equals(UUID.fromString(renterUUID))){
+												@SuppressWarnings("deprecation")
+												OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(friendName);
+												if(signConfig.getStringList("Sign.friends").contains(friend.getUniqueId().toString())){
+													//Removing player as region member
+													World fromConfigWorld = Bukkit.getWorld(signConfig.getString("Sign.location.world"));
+													String fromConfigRegionName = signConfig.getString("Sign.region");
+													ProtectedRegion r = WGM.getRegion(fromConfigWorld, fromConfigRegionName);
+													WGM.removeMember(friend, r);
+													//Removing player from config under friends list
+													List<String> stringList = signConfig.getStringList("Sign.friends");
+													stringList.remove(friend.getUniqueId().toString());
+													signConfig.set("Sign.friends", stringList);
+
+													try {
+														signConfig.save(signFile);
+													} catch (IOException e) {
+														e.printStackTrace();
+													}
+													//Friend /name/ removed successfully
+													sender.sendMessage(prefix+locale.getString("chat.commands.friend.removeSuccess").replaceAll("%friend%", friend.getName()).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+												}
+												else
+												sender.sendMessage(prefix+locale.getString("chat.commands.friend.friendNotInList").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+											}
+											else
+												sender.sendMessage(prefix+locale.getString("chat.commands.friend.notRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+										}
+										else
+											sender.sendMessage(prefix+locale.getString("chat.commands.friend.noRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+									}
+									else
+										sender.sendMessage(prefix+locale.getString("chat.commands.friend.wrongData").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+								}
+								else
+									sender.sendMessage(prefix+locale.getString("chat.commands.friend.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							}
+							else if(args[1].equalsIgnoreCase("list")){
+								//Listing friends in specified hotel+room
+								String hotel = args[2];
+								String room = args[3];
+								File signFile = new File("plugins//Hotels//Signs//"+hotel+"-"+room+".yml");
+								if(signFile.exists()){
+									YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
+									String renterUUID = signConfig.getString("Sign.renter");
+									Player pl = (Player) sender;
+									if(renterUUID!=null){
+										if(pl.getUniqueId().equals(UUID.fromString(renterUUID))){
+											List<String> stringList = signConfig.getStringList("Sign.friends");
+											if(!stringList.isEmpty()){
+												hotel = hotel.substring(0, 1).toUpperCase() + hotel.substring(1);
+												sender.sendMessage(prefix+locale.getString("chat.commands.friend.list.heading").replaceAll("%room%", room).replaceAll("%hotel%", hotel).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+												for(String currentFriend : stringList){
+													OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
+													String friendName = friend.getName();
+													sender.sendMessage(prefix+locale.getString("chat.commands.friend.list.line").replaceAll("%name%", friendName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));//TODO
+												}
+												sender.sendMessage(prefix+locale.getString("chat.commands.friend.list.footer").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+											}
+											else
+												sender.sendMessage(prefix+locale.getString("chat.commands.friend.noFriends").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));	
+										}
+										else
+											sender.sendMessage(prefix+locale.getString("chat.commands.friend.notRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));	
+									}
+									else
+										sender.sendMessage(prefix+locale.getString("chat.commands.friend.noRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+								}
+								else
+									sender.sendMessage(prefix+locale.getString("chat.commands.friend.wrongData").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							}
+							else
+								sender.sendMessage(prefix+locale.getString("chat.commands.friend.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						}
+						else
+							sender.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					}
+					else
+						sender.sendMessage(prefix+locale.getString("chat.commands.friend.consoleRejected").replaceAll("(?i)&([a-fk-r0-9])", ""));
+				}
 				else if((((args.length==2)||(args.length==1))&&(args[0].equalsIgnoreCase("check"))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&((sender.hasPermission("hotels.check")||(sender.hasPermission("hotels.check.others"))
 								||sender.hasPermission("hotels.*"))))))){
@@ -192,7 +341,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.list.rooms")||sender.hasPermission("hotels.*")))))){
 					if(args[1]!=null){
 						if(sender instanceof Player){
-							if(args.length==2){
+							if(args.length>1){
 								Player p = (Player) sender;
 								World w = p.getWorld();
 								String hotel = args[1];
@@ -456,6 +605,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 				else if((args.length==2)&&(args[0].equalsIgnoreCase("createmode")||(args[0].equalsIgnoreCase("cm")))||(args.length == 1)&&(args[0].equalsIgnoreCase("createmode"))&&!(sender instanceof Player)){
 					sender.sendMessage(prefix+locale.getString("chat.commands.creationMode.consoleRejected").replaceAll("(?i)&([a-fk-r0-9])", ""));
 				}
+				else if((args.length<4)&&(args[0].equalsIgnoreCase("friend")||(args[0].equalsIgnoreCase("f")))){
+					if(sender.hasPermission("chat.commands.friend"))
+						sender.sendMessage(prefix+locale.getString("chat.commands.friend.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					else
+						sender.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				}
 				else if(((args.length>=2)&&(args[0].equalsIgnoreCase("room"))&&(sender instanceof Player))&&
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.sign.create")||sender.hasPermission("hotels.*"))))){
 					String hotelName = args[1];
@@ -675,6 +830,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 								config.set("Sign.renter", null);
 								config.set("Sign.timeRentedAt", null);
 								config.set("Sign.expiryDate", null);
+								config.set("Sign.friends", null);
 								try {
 									config.save(file);
 								} catch (IOException e) {
@@ -708,17 +864,15 @@ public class HotelsCommandHandler implements CommandExecutor {
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		List<World> worlds = Bukkit.getWorlds();
 		@SuppressWarnings("deprecation")
-		Player p = Bukkit.getPlayerExact(player);
+		OfflinePlayer p = Bukkit.getOfflinePlayer(player);
 		if(p!=null&&p.hasPlayedBefore()){
 			sender.sendMessage(prefix+locale.getString("chat.commands.check.heading").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%player%", player));
 			for(int f=0; f<worlds.size(); f++){
 				World w = worlds.get(f);
 				regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 				ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-				int i;
-				if(!(rlist.length<0)){
-					for(i=0; i<rlist.length; i++){
-						ProtectedRegion r = rlist[i];
+				if(rlist.length>0){
+					for(ProtectedRegion r:rlist){
 						if(r.getId().startsWith("hotel-")){ //If it's a hotel
 							if(r.getId().matches("^hotel-.+-.+")){ //If it's a room
 								UUID puuid = p.getUniqueId();
@@ -751,11 +905,11 @@ public class HotelsCommandHandler implements CommandExecutor {
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		for(int i=0; i<rlist.length; i++){
-			ProtectedRegion r = rlist[i];
-			if(r.getId().startsWith("hotel-")){ //If it's a hotel
-				if(!r.getId().matches("^hotel-.+-.+")){ //if it's not a room
-					String hotelName = (r.getId().replaceFirst("hotel-", "")).toLowerCase();
+		for(ProtectedRegion r:rlist){
+			String id = r.getId();
+			if(id.startsWith("hotel-")){ //If it's a hotel
+				if(!id.matches("^hotel-.+-.+")){ //if it's not a room
+					String hotelName = (id.replaceFirst("hotel-", "")).toLowerCase();
 					hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
 					sender.sendMessage(prefix+locale.getString("chat.commands.listHotels.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotel%", hotelName));
 				}
@@ -769,13 +923,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		int i;
-		if(!(rlist.length<0)){
-			for(i=0; i<rlist.length; i++){
-				ProtectedRegion r = rlist[i];
-				if(r.getId().startsWith("hotel-")){ //If it's a hotel
-					if(r.getId().matches("^hotel-.+-.+")){ //If it's a room
-						String roomnum = (r.getId().replaceAll("hotel-.+-", ""));
+		if(rlist.length>0){
+			for(ProtectedRegion r : rlist){
+				String id = r.getId();
+				if(id.startsWith("hotel-")){ //If it's a hotel
+					if(id.matches("^hotel-"+hotel.toLowerCase()+"-.+")){ //If it's a room of the specified hotel
+						String roomnum = (id.replaceAll("hotel-.+-", ""));
 						sender.sendMessage(prefix+locale.getString("chat.commands.listRooms.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%room%", roomnum));
 					}
 				}

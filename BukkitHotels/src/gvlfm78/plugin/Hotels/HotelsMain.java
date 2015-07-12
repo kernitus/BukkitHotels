@@ -1,6 +1,5 @@
 package kernitus.plugin.Hotels;
 
-import java.io.File;
 import java.io.IOException;
 
 import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
@@ -22,14 +21,11 @@ public class HotelsMain extends JavaPlugin{
 	protected HotelsUpdateChecker updateChecker;
 	
 	YamlConfiguration locale = HConH.getLocale();
+	YamlConfiguration queue = HConH.getMessageQueue();
 	
 	@Override
 	public void onEnable(){
 		setupConfig();
-		File lfile = new File("plugins//Hotels//locale.yml");
-		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
-		File qfile = new File("plugins//Hotels//queuedMessages.yml");
-		YamlConfiguration queue = YamlConfiguration.loadConfiguration(qfile);
 		this.updateChecker = new HotelsUpdateChecker(this, "http://dev.bukkit.org/bukkit-plugins/hotels/files.rss");
 		this.updateChecker.updateNeeded();
 		if(getConfig().getBoolean("settings.checkForUpdates")){
@@ -41,19 +37,11 @@ public class HotelsMain extends JavaPlugin{
 
 				queue.set("messages.update.available", updateAvailable);
 				queue.set("messages.update.link", updateLink);
-				try {
-					queue.save(qfile);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				HConH.saveMessageQueue(queue);
 			}
 			else{
 				queue.set("messages.update", null);
-				try {
-					queue.save(qfile);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				HConH.saveMessageQueue(queue);
 			}
 		}
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -97,12 +85,10 @@ public class HotelsMain extends JavaPlugin{
 		gameloop.cancel();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
-		File lfile = new File("plugins//Hotels//locale.yml");
-		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		//Logging to console the disabling of Hotels
 		String message = locale.getString("main.disable.success");
 		if(message!=null){
-			getLogger().info(locale.getString("main.disable.success").replaceAll("%version%", pdfFile.getVersion()));
+			getLogger().info(locale.getString("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 		}
 		else
 			getLogger().info(pdfFile.getName() + " v" + pdfFile.getVersion() + " has been disabled");
@@ -112,20 +98,6 @@ public class HotelsMain extends JavaPlugin{
 	public void onLoad(){
 		setupConfig();
 		setupEconomy();
-		PluginDescriptionFile pdfFile = this.getDescription();
-		File lfile = new File("plugins//Hotels//locale.yml");
-		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
-		//Economy and stuff
-		if (!setupEconomy()){
-			//If economy is turned on
-			//but no vault is found it will warn the user
-			String message = locale.getString("main.enable.noVault");
-			if(message!=null){
-				getLogger().severe(message.replaceAll("%pluginname%", pdfFile.getName()));
-			}
-			else
-				getLogger().severe(pdfFile.getName() + " No Vault dependency found!");
-		}
 	}
 
 	//Setting up config files

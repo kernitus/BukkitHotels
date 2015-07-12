@@ -114,7 +114,7 @@ public class HotelsListener implements Listener {
 		//Notifying players if any of their rooms has expired while they were offline
 		UUID playerUUID = p.getUniqueId();
 		YamlConfiguration queue = HConH.getMessageQueue();
-		ConfigurationSection allExpiryMessages = queue.getConfigurationSection("messages.expiry");//TODO On login check config for warn user on expiry, then check user, then send message and delete it from config
+		ConfigurationSection allExpiryMessages = queue.getConfigurationSection("messages.expiry");
 		for(String key:allExpiryMessages.getKeys(false)){
 			UUID configUUID = UUID.fromString(queue.getString("messages.expiry."+key+".UUID"));
 			if(playerUUID.equals(configUUID)){

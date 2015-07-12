@@ -48,21 +48,21 @@ public class WorldGuardManager {
 		return getWorldGuard().getRegionManager(world).getRegion(string);
 	}
 
-	public void addOwner(Player p, ProtectedRegion r){
+	public void addOwner(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
-		owners.addPlayer(getWorldGuard().wrapPlayer(p));
+		owners.removePlayer(p.getName());
 		r.setOwners(owners);
 	}
 
-	public void addMember(Player p, ProtectedRegion r){
+	public void addMember(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
-		members.addPlayer(getWorldGuard().wrapPlayer(p));
+		members.removePlayer(p.getName());
 		r.setMembers(members);
 	}
 
-	public void removeOwner(Player p, ProtectedRegion r){
+	public void removeOwner(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
-		owners.removePlayer(getWorldGuard().wrapPlayer(p));
+		owners.removePlayer(p.getName());
 		r.setOwners(owners);
 	}
 
