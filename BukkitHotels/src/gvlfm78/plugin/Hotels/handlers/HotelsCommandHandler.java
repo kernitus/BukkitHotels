@@ -162,7 +162,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 				else if((args.length>3)&&(args[0].equalsIgnoreCase("friend")||(args[0].equalsIgnoreCase("f")))){
 					if(sender instanceof Player){
-						if(sender.hasPermission("chat.commands.friend")){
+						if(sender.hasPermission("hotels.friend")){
 							//Adding a friend?
 							if(args[1].equalsIgnoreCase("add")){
 								if(args.length>4){
