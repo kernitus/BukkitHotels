@@ -56,6 +56,7 @@ public class GameLoop extends BukkitRunnable {
 		for(String x: fileslist){
 			File file = new File("plugins//Hotels//Signs//"+x);
 			if(file.getName().matches("^"+locale.getString("sign.reception")+"-.+-.+")){
+				//It's a reception sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 				World world = Bukkit.getWorld(config.getString("Reception.location.world").trim());
 				int locx = config.getInt("Reception.location.x");
@@ -70,6 +71,7 @@ public class GameLoop extends BukkitRunnable {
 				}
 			}
 			else{
+				//Room sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 				String hotelName = config.getString("Sign.hotel");
 				hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
@@ -80,30 +82,30 @@ public class GameLoop extends BukkitRunnable {
 				int locz = config.getInt("Sign.location.coords.z");
 				Block signblock = world.getBlockAt(locx, locy, locz);
 
-				if((signblock.getType().equals(Material.WALL_SIGN))||(signblock.getType().equals(Material.SIGN_POST))||(signblock.getType().equals(Material.SIGN))){ 
+				if((signblock.getType().equals(Material.WALL_SIGN))||(signblock.getType().equals(Material.SIGN_POST))||(signblock.getType().equals(Material.SIGN))){
 					Sign sign = (Sign) signblock.getState();
 					if(hotelName.equalsIgnoreCase(ChatColor.stripColor(sign.getLine(0)))){
 						String[] Line2parts = ChatColor.stripColor(sign.getLine(1)).split("\\s");
 						int roomNumfromSign = Integer.valueOf(Line2parts[1].trim()); //Room Number
-						if(roomNum==roomNumfromSign){				
-
+						if(roomNum==roomNumfromSign){
+							//Room numbers match
 							if(config.get("Sign.expiryDate")!=null){
 								long expirydate = config.getLong("Sign.expiryDate");
 								if(expirydate!=0){
-									if(expirydate<System.currentTimeMillis()/1000/60){
+									if(expirydate<System.currentTimeMillis()/1000/60){//If rent has expired
 										String r = config.getString("Sign.region");
 										ProtectedCuboidRegion region = (ProtectedCuboidRegion) WGM.getWorldGuard().getRegionManager(world).getRegion(r);
 										if(config.getString("Sign.renter")!=null){
 											OfflinePlayer p = Bukkit.getServer().getOfflinePlayer(UUID.fromString(config.getString("Sign.renter")));
 											WGM.removeMember(p, region);
-											
+
 											//Removing friends
 											List<String> stringList = config.getStringList("Sign.friends");
 											for(String currentFriend : stringList){
 												OfflinePlayer cf = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
 												WGM.removeMember(cf, region);
 											}
-											
+
 											sign.setLine(3, "§a"+locale.getString("sign.vacant"));
 											sign.update();
 											plugin.getLogger().info(locale.getString("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
@@ -134,7 +136,30 @@ public class GameLoop extends BukkitRunnable {
 												e.printStackTrace();
 											}
 										}
+										//Resetting time on sign to default
+										long[] ftime = SM.TimeFormatter(config.getLong("Sign.time"));
+										if(ftime[0]>0)
+											sign.setLine(2, ftime[0]+"d"+ftime[1]+"h"+ftime[2]+"m");
+										else if(ftime[1]>0)
+											sign.setLine(2, ftime[1]+"h"+ftime[2]+"m");
+										else
+											sign.setLine(2, ftime[2]+"m");//Time
+
+										sign.update();
 									}
+								}
+								else{
+									//Updating time remaining till expiry
+									long expiryDate = config.getLong("Sign.expiryDate");
+									long currentmins = System.currentTimeMillis()/1000/60;
+									long[] ftime = SM.TimeFormatter(expiryDate-currentmins);
+									if(ftime[0]>0)
+										sign.setLine(2, ftime[0]+"d"+ftime[1]+"h"+ftime[2]+"m");
+									else if(ftime[1]>0)
+										sign.setLine(2, ftime[1]+"h"+ftime[2]+"m");
+									else
+										sign.setLine(2, ftime[2]+"m");
+									sign.update();
 								}
 							}
 							else{

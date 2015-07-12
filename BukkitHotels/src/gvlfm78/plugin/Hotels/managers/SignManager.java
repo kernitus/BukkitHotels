@@ -50,8 +50,6 @@ public class SignManager {
 		String Line2 = ChatColor.stripColor(e.getLine(1)).trim();
 		if(!Line2.isEmpty()){
 			if ((!(Line2.isEmpty()))&&(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))){ //Hotel region exists
-				if(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ())){
-					//Sign is within hotel region
 					int tot = totalRooms(Line2,p.getWorld()); //Getting total amount of rooms in hotel
 					int free = freeRooms(Line2,p.getWorld()); //Getting amount of free rooms in hotel
 					String hotelName = Line2.substring(0, 1).toUpperCase() + Line2.substring(1); //Beautifying hotel name
@@ -87,11 +85,6 @@ public class SignManager {
 							e1.printStackTrace();
 						}
 					}		
-				}
-				else{
-					e.setLine(0, "§4[Hotels]");
-					p.sendMessage(prefix+locale.getString("chat.sign.place.outOfRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				}
 			}
 			else{
 				e.setLine(0, "§4[Hotels]");
@@ -173,8 +166,16 @@ public class SignManager {
 							e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost.toUpperCase()+"$"); //Room Number + Cost
 							if(immutedtime.matches("0"))
 								e.setLine(2,locale.getString("sign.permanent").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-							else
-								e.setLine(2,immutedtime);  //Time
+							else{
+								long ktimeinminutes = TimeConverter(immutedtime);
+								long[] ftime = TimeFormatter(ktimeinminutes);
+								if(ftime[0]>0)
+								e.setLine(2, ftime[0]+"d"+ftime[1]+"h"+ftime[2]+"m");
+								else if(ftime[1]>0)
+									e.setLine(2, ftime[1]+"h"+ftime[2]+"m");
+								else
+									e.setLine(2, ftime[2]+"m");//Time
+								}
 							e.setLine(3,ChatColor.GREEN+"Vacant"); //Renter
 							p.sendMessage(prefix+locale.getString("chat.sign.place.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 
@@ -463,5 +464,13 @@ public class SignManager {
 
 		default: throw new IllegalArgumentException(String.format("%s is not a valid cost code [thkmb]", c));
 		}
+	}
+	public long[] TimeFormatter(long input){
+		//Formats time in minutes to days, hours and minutes
+		long[] result = new long[3];
+		result[0] = TimeUnit.MINUTES.toDays(input); //Days
+		result[1] = TimeUnit.MINUTES.toHours(input) - TimeUnit.DAYS.toHours(result[0]); //Hours
+		result[2] = input - TimeUnit.DAYS.toMinutes(result[0]) - TimeUnit.HOURS.toMinutes(result[1]); //Minutes
+		return result;
 	}
 }
