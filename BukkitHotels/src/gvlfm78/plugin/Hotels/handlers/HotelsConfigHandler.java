@@ -13,9 +13,8 @@ import org.bukkit.plugin.Plugin;
 public class HotelsConfigHandler {
 	@SuppressWarnings("unused")
 	private HotelsMain plugin;
-	public HotelsConfigHandler(HotelsMain HConH)
-	{
-		this.plugin = HConH;
+	public HotelsConfigHandler(HotelsMain instance){
+		this.plugin = instance;
 	}
 	YamlConfiguration locale = getLocale();
 
@@ -50,6 +49,8 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info("[Hotels] Generating config file...");
 		config.options().header("Hotels Plugin by kernitus");
 		config.addDefault("settings.language", String.valueOf("en"));
+		config.addDefault("settings.max_rooms_owned", Integer.valueOf(3));
+		config.addDefault("settings.max_rent_extend", Integer.valueOf(3));
 		config.addDefault("settings.use-permissions", Boolean.valueOf(true));
 		config.addDefault("settings.checkForUpdates", Boolean.valueOf(true));
 		config.addDefault("settings.use-hotel_enter_message", Boolean.valueOf(true));
@@ -171,7 +172,10 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.sign.use.fileNonExistant", String.valueOf("&4Sign file does not exist!"));
 		locale.addDefault("chat.sign.use.signOutOfRegion", String.valueOf("&4Sign is not inside specified hotel region"));
 		locale.addDefault("chat.sign.use.differentRoomNums", String.valueOf("&4Room numbers don't match!"));
-
+		locale.addDefault("chat.sign.use.maxEntendReached", String.valueOf("&4You have reached the limit of rent extention of %max% times!"));
+		locale.addDefault("chat.sign.use.maxRoomsReached", String.valueOf("&4You have reached the limit of %max% rooms you can own"));
+		locale.addDefault("chat.sign.use.extensionSuccess", String.valueOf("&aRent has been extended %tot% times. You can extend it another %left% times."));
+		locale.addDefault("chat.sign.use.extensionSuccessNoMore", String.valueOf("&aRent has been extended %tot% times. You can't extend it any more."));
 
 		locale.addDefault("chat.creationMode.hotelCreationFailed", String.valueOf("&4Could not create Hotel, hotel already exists"));
 		locale.addDefault("chat.creationMode.hotelCreationSuccessful", String.valueOf("&2You have successfully created the %hotel% hotel"));

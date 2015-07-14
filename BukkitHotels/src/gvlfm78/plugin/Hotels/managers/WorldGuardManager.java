@@ -30,13 +30,13 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class WorldGuardManager {
 	private HotelsMain plugin;
-	public WorldGuardManager(HotelsMain plugin) {
-		this.plugin = plugin;
+	public WorldGuardManager(HotelsMain instance){
+		this.plugin = instance;
 	}
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 	
 	YamlConfiguration locale = HConH.getLocale();
-	
+
 	public WorldGuardPlugin getWorldGuard(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 
@@ -50,13 +50,13 @@ public class WorldGuardManager {
 
 	public void addOwner(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
-		owners.removePlayer(p.getName());
+		owners.addPlayer(p.getName());
 		r.setOwners(owners);
 	}
 
 	public void addMember(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
-		members.removePlayer(p.getName());
+		members.addPlayer(p.getName());
 		r.setMembers(members);
 	}
 

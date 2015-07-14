@@ -28,9 +28,9 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HotelsCreationMode {
 	private HotelsMain plugin;
-	public HotelsCreationMode(HotelsMain HCM)
+	public HotelsCreationMode(HotelsMain instance)
 	{
-		this.plugin = HCM;
+		this.plugin = instance;
 	}
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);

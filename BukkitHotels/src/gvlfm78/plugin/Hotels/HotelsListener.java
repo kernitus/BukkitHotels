@@ -33,8 +33,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class HotelsListener implements Listener {
 
 	private HotelsMain plugin;
-	public HotelsListener(HotelsMain plugin){
-		this.plugin = plugin;
+	public HotelsListener(HotelsMain instance){
+		this.plugin = instance;
 	}
 	SignManager SM = new SignManager(plugin);
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
@@ -80,7 +80,7 @@ public class HotelsListener implements Listener {
 				Player p = e.getPlayer();
 				//Permission check
 				if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.use")||p.hasPermission("hotels.*")))){
-					SM.useRoomSign(e);
+					SM.useRoomSign(e,plugin);
 				}
 				else
 					p.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 

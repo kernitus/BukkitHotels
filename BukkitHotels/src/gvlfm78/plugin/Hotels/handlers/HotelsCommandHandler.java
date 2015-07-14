@@ -33,12 +33,11 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HotelsCommandHandler implements CommandExecutor {
 	private HotelsMain plugin;
-	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
-
-	public HotelsCommandHandler(HotelsMain HCH)
+	public HotelsCommandHandler(HotelsMain instance)
 	{
-		this.plugin = HCH;
+		this.plugin = instance;
 	}
+	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 	HotelsFileFinder HFF = new HotelsFileFinder(plugin);

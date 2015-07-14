@@ -30,8 +30,8 @@ public class GameLoop extends BukkitRunnable {
 
 	FilenameFilter SignFileFilter;
 	HotelsMain plugin;
-	public GameLoop(HotelsMain plugin) {
-		this.plugin = plugin;
+	public GameLoop(HotelsMain instance) {
+		this.plugin = instance;
 	}
 	SignManager SM = new SignManager(plugin);
 	HotelsFileFinder HFF = new HotelsFileFinder(plugin);
@@ -137,29 +137,17 @@ public class GameLoop extends BukkitRunnable {
 											}
 										}
 										//Resetting time on sign to default
-										long[] ftime = SM.TimeFormatter(config.getLong("Sign.time"));
-										if(ftime[0]>0)
-											sign.setLine(2, ftime[0]+"d"+ftime[1]+"h"+ftime[2]+"m");
-										else if(ftime[1]>0)
-											sign.setLine(2, ftime[1]+"h"+ftime[2]+"m");
-										else
-											sign.setLine(2, ftime[2]+"m");//Time
-
+										sign.setLine(2, SM.TimeFormatter(config.getLong("Sign.time")));
 										sign.update();
 									}
-								}
-								else{
-									//Updating time remaining till expiry
-									long expiryDate = config.getLong("Sign.expiryDate");
-									long currentmins = System.currentTimeMillis()/1000/60;
-									long[] ftime = SM.TimeFormatter(expiryDate-currentmins);
-									if(ftime[0]>0)
-										sign.setLine(2, ftime[0]+"d"+ftime[1]+"h"+ftime[2]+"m");
-									else if(ftime[1]>0)
-										sign.setLine(2, ftime[1]+"h"+ftime[2]+"m");
-									else
-										sign.setLine(2, ftime[2]+"m");
-									sign.update();
+									else{
+										//Updating time remaining till expiry
+										long expiryDate = config.getLong("Sign.expiryDate");
+										long currentmins = System.currentTimeMillis()/1000/60;
+										//Time remaining
+										sign.setLine(2, SM.TimeFormatter(expiryDate-currentmins));
+										sign.update();
+									}
 								}
 							}
 							else{
@@ -173,6 +161,7 @@ public class GameLoop extends BukkitRunnable {
 									e.printStackTrace();
 								}
 								sign.setLine(3, "§a"+locale.getString("sign.vacant"));
+								sign.setLine(2, SM.TimeFormatter(config.getLong("Sign.time")));
 								sign.update();
 							}
 						}
