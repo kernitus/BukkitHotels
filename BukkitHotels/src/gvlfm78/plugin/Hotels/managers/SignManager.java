@@ -243,49 +243,49 @@ public class SignManager {
 										if(account>=price){//If player has enough money
 											//If player is under max owned rooms limit
 											if(getTimesRented(p.getUniqueId(),pluginstance)<pluginstance.getConfig().getInt("settings.max_rooms_owned")){
-											//Renter has passed all conditions and is able to rent this room
-											HotelsMain.economy.withdrawPlayer(p, price);
-											//Setting time rented at
-											signConfig.set("Sign.renter", p.getUniqueId().toString());
-											long currentmins = System.currentTimeMillis()/1000/60;
-											signConfig.set("Sign.timeRentedAt", currentmins);
+												//Renter has passed all conditions and is able to rent this room
+												HotelsMain.economy.withdrawPlayer(p, price);
+												//Setting time rented at
+												signConfig.set("Sign.renter", p.getUniqueId().toString());
+												long currentmins = System.currentTimeMillis()/1000/60;
+												signConfig.set("Sign.timeRentedAt", currentmins);
 
-											//Setting expiry time
-											long minstoexpire = signConfig.getLong("Sign.time");
-											if(minstoexpire==0){
-												signConfig.set("Sign.expiryDate", 0);
+												//Setting expiry time
+												long minstoexpire = signConfig.getLong("Sign.time");
+												if(minstoexpire==0){
+													signConfig.set("Sign.expiryDate", 0);
+												}
+												else{
+													long expirydate = currentmins+minstoexpire;
+													signConfig.set("Sign.expiryDate", expirydate);
+												}
+
+												try {//Saving config file
+													signConfig.save(signFile);
+												} catch (IOException e1) {
+													e1.printStackTrace();
+												}
+
+												//Adding renter as region member
+												ProtectedRegion r = WGM.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+cHotelName+"-"+cRoomNum);
+												WGM.addMember(p, (ProtectedCuboidRegion) r);
+
+												try {//Saving WG regions
+													WGM.getWorldGuard().getRegionManager(p.getWorld()).save();
+												} catch (StorageException e1) {
+													e1.printStackTrace();
+												}
+												//pluginstance.getLogger().info("WGM Stuff: "WGM.getRegion(world, string));
+
+												s.setLine(3, "§c"+p.getName());//Writing renter name on sign
+												s.update();
+												DecimalFormat df = new DecimalFormat("#.##");
+												p.sendMessage(prefix+locale.getString("chat.sign.use.success").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName)
+														.replaceAll("%price%", String.valueOf(df.format(price))).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+												//Successfully rented room
 											}
-											else{
-												long expirydate = currentmins+minstoexpire;
-												signConfig.set("Sign.expiryDate", expirydate);
-											}
-
-											try {//Saving config file
-												signConfig.save(signFile);
-											} catch (IOException e1) {
-												e1.printStackTrace();
-											}
-
-											//Adding renter as region member
-											ProtectedRegion r = WGM.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+cHotelName+"-"+cRoomNum);
-											WGM.addMember(p, (ProtectedCuboidRegion) r);
-
-											try {//Saving WG regions
-												WGM.getWorldGuard().getRegionManager(p.getWorld()).save();
-											} catch (StorageException e1) {
-												e1.printStackTrace();
-											}
-											//pluginstance.getLogger().info("WGM Stuff: "WGM.getRegion(world, string));
-
-											s.setLine(3, "§c"+p.getName());//Writing renter name on sign
-											s.update();
-											DecimalFormat df = new DecimalFormat("#.##");
-											p.sendMessage(prefix+locale.getString("chat.sign.use.success").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName)
-													.replaceAll("%price%", String.valueOf(df.format(price))).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-											//Successfully rented room
-										}
-										else
-											p.sendMessage(prefix+locale.getString("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(pluginstance.getConfig().getInt("settings.max_rooms_owned"))).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+											else
+												p.sendMessage(prefix+locale.getString("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(pluginstance.getConfig().getInt("settings.max_rooms_owned"))).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 										}
 										else{
 											double topay = price-account;
@@ -372,7 +372,7 @@ public class SignManager {
 				if(renterUUIDfromConfigString!=null){
 					UUID renterUUIDfromConfig = UUID.fromString(renterUUIDfromConfigString);
 					if(ptocheck.equals(renterUUIDfromConfig))
-					rents++;	
+						rents++;	
 				}
 				//There is no renter
 			}
@@ -385,41 +385,43 @@ public class SignManager {
 		Player p = e.getPlayer();
 		//Sign lines
 		Sign s = (Sign) e.getClickedBlock().getState();
-		double account = HotelsMain.economy.getBalance(p);
-		double price = sconfig.getDouble("Sign.cost");
-		if(account>=price){//If player has enough money
-			HotelsMain.economy.withdrawPlayer(p, price);
-			int extended = sconfig.getInt("Sign.extended");
-			int max = ymlconfig.getInt("settings.max_rent_extend");
-			if(extended<max){
-				sconfig.set("Sign.extended", extended+1);
-				try {
-					sconfig.save(signFile);
-				} catch (IOException e1) {
-					e1.printStackTrace();
+		if(sconfig.getInt("Sign.time")>0){
+			double account = HotelsMain.economy.getBalance(p);
+			double price = sconfig.getDouble("Sign.cost");
+			if(account>=price){//If player has enough money
+				HotelsMain.economy.withdrawPlayer(p, price);
+				int extended = sconfig.getInt("Sign.extended");
+				int max = ymlconfig.getInt("settings.max_rent_extend");
+				if(extended<max){
+					sconfig.set("Sign.extended", extended+1);
+					try {
+						sconfig.save(signFile);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					long expiryDate = sconfig.getLong("Sign.expiryDate");
+					long deftime = sconfig.getLong("Sign.time");
+					sconfig.set("Sign.expiryDate", expiryDate+deftime);
+					try {
+						sconfig.save(signFile);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+					s.setLine(2, TimeFormatter(sconfig.getLong("Sign.expiryDate")-(System.currentTimeMillis()/1000/60) ));
+					s.update();
+					extended+=1;
+					if(max-extended>0)
+						p.sendMessage(prefix+locale.getString("chat.sign.use.extensionSuccess").replaceAll("%tot%", String.valueOf(extended)).replaceAll("%left%", String.valueOf(max-extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					else
+						p.sendMessage(prefix+locale.getString("chat.sign.use.extensionSuccessNoMore").replaceAll("%tot%", String.valueOf(extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
-				long expiryDate = sconfig.getLong("Sign.expiryDate");
-				long deftime = sconfig.getLong("Sign.time");
-				sconfig.set("Sign.expiryDate", expiryDate+deftime);
-				try {
-					sconfig.save(signFile);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-				s.setLine(2, TimeFormatter(sconfig.getLong("Sign.expiryDate")-(System.currentTimeMillis()/1000/60) ));
-				s.update();
-				extended+=1;
-				if(max-extended>0)
-					p.sendMessage(prefix+locale.getString("chat.sign.use.extensionSuccess").replaceAll("%tot%", String.valueOf(extended)).replaceAll("%left%", String.valueOf(max-extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				else
-					p.sendMessage(prefix+locale.getString("chat.sign.use.extensionSuccessNoMore").replaceAll("%tot%", String.valueOf(extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					p.sendMessage(prefix+locale.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 			}
-			else
-				p.sendMessage(prefix+locale.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-		}
-		else{
-			double topay = price-account;
-			p.sendMessage(prefix+locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			else{
+				double topay = price-account;
+				p.sendMessage(prefix+locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			}
 		}
 	}
 
@@ -545,6 +547,7 @@ public class SignManager {
 		}
 	}
 	public String TimeFormatter(long input){
+		if(input>0){
 		//Formats time in minutes to days, hours and minutes
 		long[] ftime = new long[3];
 		ftime[0] = TimeUnit.MINUTES.toDays(input); //Days
@@ -558,5 +561,8 @@ public class SignManager {
 		if(ftime[2]>0)
 			line2 = line2+ftime[2]+"m";
 		return line2;
+	}
+		else
+			return locale.getString("sign.permanent");
 	}
 }

@@ -61,36 +61,38 @@ public class HotelsCommandHandler implements CommandExecutor {
 				else if(args.length>=1&&args[0].equalsIgnoreCase("commands")){
 					sender.sendMessage("§4================================");
 					sender.sendMessage("§5--Hotels plugin command help page--");
-					sender.sendMessage("§6/hotels creationmode [enter/exit] - §aEnter/exit creation mode");
-					sender.sendMessage("§6/hotels help - §aDisplays help page");
-					sender.sendMessage("§6/hotels list <world> - §aLists all hotels in current/specified world");
-					sender.sendMessage("§6/hotels rlist [hotel] <world> - §aLists all rooms in specified hotel in current/specified world");
-					sender.sendMessage("§6/hotels check <player> - §aLists all rooms rented by you/specified player");
-					sender.sendMessage("§6/hotels remove [player] [hotel] [room] - §aRemoves player from his rented room");
-					sender.sendMessage("§6/hotels create [hotelname] - §aCreate a hotel with current selection");
-					sender.sendMessage("§6/hotels room [hotelname] <roomnum> - §aCreate room with current selection within specified hotel");
-					sender.sendMessage("§6/hotels delete [hotelname] - §aDelete specified hotel");
-					sender.sendMessage("§6/hotels delr [hotelname] [roomnum] - §aDeletes specified room");
-					sender.sendMessage("§6/hotels rename [oldname] [newname] - §aRenames specified hotel");
-					sender.sendMessage("§6/hotels renum [hotel] [oldnum] [newnum] - §aRenumbers specified room");
+					sender.sendMessage("§6/ht [creationmode|cm] [enter/exit] - §aEnter/exit creation mode");
+					sender.sendMessage("§6/ht help - §aDisplays help page");
+					sender.sendMessage("§6/ht list <world> - §aLists all hotels in current/specified world");
+					sender.sendMessage("§6/ht rlist [hotel] <world> - §aLists all rooms in specified hotel in current/specified world");
+					sender.sendMessage("§6/ht check <player> - §aLists all rooms rented by you/specified player");
+					sender.sendMessage("§6/ht remove [player] [hotel] [room] - §aRemoves player from his rented room");
+					sender.sendMessage("§6/ht [create|c] [hotelname] - §aCreate a hotel with current selection");
+					sender.sendMessage("§6/ht room [hotelname] <roomnum> - §aCreate room with current selection within specified hotel");
+					sender.sendMessage("§6/ht delete [hotelname] - §aDelete specified hotel");
+					sender.sendMessage("§6/ht delr [hotelname] [roomnum] - §aDeletes specified room");
+					sender.sendMessage("§6/ht rename [oldname] [newname] - §aRenames specified hotel");
+					sender.sendMessage("§6/ht renum [hotel] [oldnum] [newnum] - §aRenumbers specified room");
+					sender.sendMessage("§6/ht friend [add/remove] [hotel] [room] [player] - §aAdds/removes a player from the list of friends that can access the specified room");
+					sender.sendMessage("§6/ht friend list [hotel] [room] - §aLists players in friend list of specified hotel room");
 					sender.sendMessage("§4================================");
 				}
 				else if((args.length==1)&&(args[0].equalsIgnoreCase("help"))||(args.length>1)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("1")))){
 					sender.sendMessage("§4==========================");
 					sender.sendMessage("§5--Hotels plugin help page--");
 					sender.sendMessage(ChatColor.DARK_RED+"-Page 1- §9Selection of hotel cuboid");
-					sender.sendMessage(ChatColor.YELLOW+"1. Type §3§o/hotels [creationmode§r§3|§3§ocm] enter");
+					sender.sendMessage(ChatColor.YELLOW+"1. Type §3§o/ht [creationmode§r§3|§3§ocm] enter");
 					sender.sendMessage(ChatColor.YELLOW+"2. Take your WorldEdit wand in hand");
 					sender.sendMessage(ChatColor.YELLOW+"3. Left click and right click opposing corners of your hotel");
-					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/hotels help 2§r§4 to get to page 2");
+					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/ht help 2§r§4 to get to page 2");
 					sender.sendMessage("§4==========================");
 				}
 				else if((args.length>1)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("2")))){
 					sender.sendMessage("§4==========================");
 					sender.sendMessage("§5--Hotels plugin help page--");
 					sender.sendMessage(ChatColor.DARK_RED+"-Page 2- §9Creation of the hotel");
-					sender.sendMessage(ChatColor.YELLOW+"1. Type §3§o/hotels [create§r§3|§oc] [nameofhotel]");
-					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/hotels help 3§r§4 to get to page 3");
+					sender.sendMessage(ChatColor.YELLOW+"1. Type §3§o/ht [create§r§3|§oc] [nameofhotel]");
+					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/ht help 3§r§4 to get to page 3");
 					sender.sendMessage("§4==========================");
 				}
 				else if((args.length>1)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("3")))){
@@ -99,8 +101,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(ChatColor.DARK_RED+"-Page 3- §9Creation of a room");
 					sender.sendMessage(ChatColor.YELLOW+"1. Get out your WorldEdit wand again");
 					sender.sendMessage(ChatColor.YELLOW+"2. Left click and right click opposing corners of the room");
-					sender.sendMessage(ChatColor.YELLOW+"3. Type §3§o/hotels room [hotel] [roomnum]");
-					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/hotels help 4§r§4 to get to page 4");
+					sender.sendMessage(ChatColor.YELLOW+"3. Type §3§o/ht room [hotel] [roomnum]");
+					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/ht help 4§r§4 to get to page 4");
 					sender.sendMessage("§4==========================");
 				}
 				else if((args.length>1)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("4")))){
@@ -113,7 +115,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(ChatColor.YELLOW+"    <hotelname>");
 					sender.sendMessage(ChatColor.YELLOW+"    <roomnum:cost>");
 					sender.sendMessage(ChatColor.YELLOW+"    <time>");
-					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/hotels help 5§r§4 to get to page 5");
+					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/ht help 5§r§4 to get to page 5");
 					sender.sendMessage("§4==========================");
 				}
 				else if((args.length>1)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("5")))){
@@ -127,7 +129,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage("§e    3d 6m 2s");
 					sender.sendMessage("§9§oYou can use §20 §9§oas a time to make the rent infinite");
 					sender.sendMessage("§9§oIn cost, §5t§9 = §210§9, §5h§9 = §2100§9, §5k§9 = §21000§9, §5m§9 = §2million§9 §5b§9 = §2billion (1000 million)");
-					sender.sendMessage(ChatColor.DARK_RED+"Last page. Type §3§o/hotels help§r§4 to get to page 1");
+					sender.sendMessage(ChatColor.DARK_RED+"Last page. Type §3§o/ht help§r§4 to get to page 1");
 					sender.sendMessage("§4==========================");
 				}
 				else if(((args.length>0)&&(args[0].equalsIgnoreCase("reload"))&&(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.reload")||sender.hasPermission("hotels.*")))))){
@@ -657,6 +659,28 @@ public class HotelsCommandHandler implements CommandExecutor {
 		}
 		return false;
 	}
+	/*private void setHome(CommandSender sender){
+		if(sender instanceof Player){
+			Player p = (Player) sender;
+			Location loc = p.getLocation();
+			World w = p.getWorld();
+			ApplicableRegionSet regions = WGM.getWorldGuard().getRegionManager(w).getApplicableRegions(loc);
+			ArrayList<ProtectedRegion> rf = null;
+			for(ProtectedRegion r : regions) {
+			    //Regions that match player's location
+				rf.add(r);
+			}
+			if(rf!=null){
+				rf.contains(o)
+				for(ProtectedRegion r : rf){
+					
+				}
+			}
+			else
+				//Player is not in any region
+
+		}
+		}*/
 	private void renumber(String hotel,String oldnum,String newnum, World world,CommandSender sender){
 		if(Integer.parseInt(newnum)<100000){
 			if(WGM.hasRegion(world, "Hotel-"+hotel)){
@@ -830,6 +854,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 								config.set("Sign.timeRentedAt", null);
 								config.set("Sign.expiryDate", null);
 								config.set("Sign.friends", null);
+								config.set("Sign.extended", null);
 								try {
 									config.save(file);
 								} catch (IOException e) {

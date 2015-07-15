@@ -130,6 +130,7 @@ public class GameLoop extends BukkitRunnable {
 											config.set("Sign.timeRentedAt", null);
 											config.set("Sign.expiryDate", null);
 											config.set("Sign.friends", null);
+											config.set("Sign.extended", null);
 											try {
 												config.save(file);
 											} catch (IOException e) {
@@ -155,6 +156,7 @@ public class GameLoop extends BukkitRunnable {
 								config.set("Sign.timeRentedAt", null);
 								config.set("Sign.expiryDate", null);
 								config.set("Sign.friends", null);
+								config.set("Sign.extended", null);
 								try {
 									config.save(file);
 								} catch (IOException e) {
