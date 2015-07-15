@@ -239,7 +239,7 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.commands.remove.usage", String.valueOf("&4Correct usage: /hotels remove [player] [hotel] [room] <world>"));
 		locale.addDefault("chat.commands.check.heading", String.valueOf("&a==Rented rooms list for %player%=="));
 		locale.addDefault("chat.commands.check.footer", String.valueOf("&c==End of rented rooms list for %player%=="));
-		locale.addDefault("chat.commands.check.line", String.valueOf("&6Hotel: &c%hotel%    &6Room: &c%room%    &6Expires in: %expirydate% minutes"));
+		locale.addDefault("chat.commands.check.line", String.valueOf("&6Hotel: &c%hotel%    &6Room: &c%room%    &6Expires in: &c%timeleft%"));
 		locale.addDefault("chat.commands.listHotels.heading", String.valueOf("&a==Hotel list=="));
 		locale.addDefault("chat.commands.listHotels.footer", String.valueOf("&c==End of hotel list=="));
 		locale.addDefault("chat.commands.listHotels.line", String.valueOf("&6Hotel: &c%hotel%"));
