@@ -143,6 +143,7 @@ public class HotelsConfigHandler {
 		locale.addDefault("sign.room.total", String.valueOf("Total Rooms"));
 		locale.addDefault("sign.reception", String.valueOf("Reception"));
 		locale.addDefault("sign.vacant", String.valueOf("Vacant"));
+		locale.addDefault("sign.occupied", String.valueOf("Occupied"));
 		locale.addDefault("sign.rentExpiredConsole", String.valueOf("%player%'s rent of room %room% of the %hotel% hotel has expired"));
 		locale.addDefault("sign.rentExpiredPlayer", String.valueOf("&9Your rent of room %room% of the %hotel% hotel has expired"));
 		locale.addDefault("sign.delete.reception", String.valueOf("Reception file %filename% did not match in-game characteristics and has been deleted"));
@@ -242,10 +243,10 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.commands.check.line", String.valueOf("&6Hotel: &c%hotel%    &6Room: &c%room%    &6Expires in: &c%timeleft%"));
 		locale.addDefault("chat.commands.listHotels.heading", String.valueOf("&a==Hotel list=="));
 		locale.addDefault("chat.commands.listHotels.footer", String.valueOf("&c==End of hotel list=="));
-		locale.addDefault("chat.commands.listHotels.line", String.valueOf("&6Hotel: &c%hotel%"));
+		locale.addDefault("chat.commands.listHotels.line", String.valueOf("&6Hotel: &c%hotel%%space%&9Total: &r%total%   &aFree: &r%free%"));
 		locale.addDefault("chat.commands.listRooms.heading", String.valueOf("&a==Room list for %hotel% hotel=="));
 		locale.addDefault("chat.commands.listRooms.footer", String.valueOf("&c==End of room list for %hotel% hotel=="));
-		locale.addDefault("chat.commands.listRooms.line", String.valueOf("&6Room n: &c%room%"));
+		locale.addDefault("chat.commands.listRooms.line", String.valueOf("&6Room n: &c%room%%space%%state%"));
 		locale.addDefault("chat.commands.listRooms.noRooms", String.valueOf("&cThere are no rooms in that hotel"));
 		locale.addDefault("chat.commands.removeSigns.success", String.valueOf("&aSuccessfully removed all signs"));
 		locale.addDefault("chat.commands.friend.usage", String.valueOf("&4Correct usage: /hotels friend [add/remove/list] [hotel] [room] <friendname>"));

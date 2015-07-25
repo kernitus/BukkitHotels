@@ -7,6 +7,7 @@ import kernitus.plugin.Hotels.managers.WorldGuardManager;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
@@ -115,14 +116,21 @@ public class HotelsListener implements Listener {
 		UUID playerUUID = p.getUniqueId();
 		YamlConfiguration queue = HConH.getMessageQueue();
 		ConfigurationSection allExpiryMessages = queue.getConfigurationSection("messages.expiry");
-		for(String key:allExpiryMessages.getKeys(false)){
-			UUID configUUID = UUID.fromString(queue.getString("messages.expiry."+key+".UUID"));
-			if(playerUUID.equals(configUUID)){
-				p.sendMessage(queue.getString("messages.expiry."+key+".message"));
-				queue.set("messages.expiry."+key, null);
-				HConH.saveMessageQueue(queue);
+		if(allExpiryMessages!=null){
+			Set<String> keys = allExpiryMessages.getKeys(false);
+			if(keys!=null){
+				for(String key:keys){
+					UUID configUUID = UUID.fromString(queue.getString("messages.expiry."+key+".UUID"));
+					if(playerUUID.equals(configUUID)){
+						p.sendMessage(queue.getString("messages.expiry."+key+".message"));
+						queue.set("messages.expiry."+key, null);
+						HConH.saveMessageQueue(queue);
+					}
+				}
 			}
+			//There are no messages
 		}
+		//There are no messages
 	}
 
 	public int totalRooms(String hotelName,World w){

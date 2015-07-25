@@ -40,7 +40,6 @@ public class HotelsFileFinder {
 	    
 	    for (String name : filenames) {
 	    	nameslist.add(name);
-	    	
 	    }
 	    return nameslist;
 	  }

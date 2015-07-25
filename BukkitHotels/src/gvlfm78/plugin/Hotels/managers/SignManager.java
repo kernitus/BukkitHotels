@@ -426,14 +426,13 @@ public class SignManager {
 	}
 
 	public int totalRooms(String hotelName,World w){
+		hotelName = hotelName.toLowerCase();
 		//Finds total amount of rooms in given hotel
 		int tot = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		int i;
-		for(i=0; i<rlist.length; i++){
-			ProtectedRegion r = rlist[i];
+		for(ProtectedRegion r:rlist){
 			if(r.getId().startsWith("hotel-"+hotelName)){
 				if(r.getId().matches("^hotel-"+hotelName+"-.+")){
 					tot++;
@@ -444,14 +443,13 @@ public class SignManager {
 	}
 
 	public int freeRooms(String hotelName,World w){
+		hotelName = hotelName.toLowerCase();
 		//Finds total amount of free rooms in given hotel
 		int free = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		int i;
-		for(i=0; i<rlist.length; i++){
-			ProtectedRegion r = rlist[i];
+		for(ProtectedRegion r:rlist){
 			if(r.getId().startsWith("hotel-"+hotelName)){
 				if(r.getId().matches("^hotel-"+hotelName+"-.+")){
 					int roomNum = Integer.parseInt(r.getId().replaceAll("^hotel-.+-", ""));

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -924,7 +925,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 										sender.sendMessage(prefix+locale.getString("chat.commands.check.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")
 												.replaceAll("%hotel%", hotelname).replaceAll("%room%", roomnum).replaceAll("%timeleft%", locale.getString("sign.permanent")));
 									}
-										
+
 								}
 							}
 						}
@@ -947,13 +948,20 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(!id.matches("^hotel-.+-.+")){ //if it's not a room
 					String hotelName = (id.replaceFirst("hotel-", "")).toLowerCase();
 					hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
-					sender.sendMessage(prefix+locale.getString("chat.commands.listHotels.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotel%", hotelName));
+					int spaceamount = 10-hotelName.length();
+					String space = " ";
+					String rep = StringUtils.repeat(space, spaceamount);
+					sender.sendMessage(prefix+locale.getString("chat.commands.listHotels.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotel%", hotelName)
+							.replaceAll("%total%", String.valueOf(SM.totalRooms(hotelName, w)))
+							.replaceAll("%free%", String.valueOf(SM.freeRooms(hotelName, w)))
+							.replaceAll("%space%", rep)
+							);
 				}
 			}
 		}
 		sender.sendMessage(prefix+locale.getString("chat.commands.listHotels.footer").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 	}
-	private void listRooms(String hotel, World w, CommandSender sender){
+	private void listRooms(String hotel, World w, CommandSender sender){//TODO
 		String hotelName = hotel.substring(0, 1).toUpperCase() + hotel.substring(1);
 		sender.sendMessage(prefix+locale.getString("chat.commands.listRooms.heading").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotel%", hotelName));
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
@@ -965,7 +973,28 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(id.startsWith("hotel-")){ //If it's a hotel
 					if(id.matches("^hotel-"+hotel.toLowerCase()+"-.+")){ //If it's a room of the specified hotel
 						String roomnum = (id.replaceAll("hotel-.+-", ""));
-						sender.sendMessage(prefix+locale.getString("chat.commands.listRooms.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%room%", roomnum));
+						int spaceamount = 10-roomnum.length();
+						String space = " ";
+						String rep = StringUtils.repeat(space, spaceamount);
+						File file = new File("plugins//Hotels//Signs//"+hotel.toLowerCase()+"-"+roomnum+".yml");
+						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+						String state = "";
+						if(config!=null){
+							String renter = config.getString("Sign.renter");
+							if(renter==null){
+								//Vacant
+								state = ChatColor.GREEN+locale.getString("sign.vacant");
+							}
+							else{
+								//Occupied
+								state = ChatColor.BLUE+locale.getString("sign.occupied");
+							}
+							sender.sendMessage(prefix+locale.getString("chat.commands.listRooms.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")
+									.replaceAll("%room%", roomnum)
+									.replaceAll("%state%", state)
+									.replaceAll("%space%", rep)
+									);
+						}
 					}
 				}
 			}
@@ -1030,8 +1059,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 						file.delete();
 					}
 				}
-				sender.sendMessage(prefix+locale.getString("chat.commands.removeSigns.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 			}
+			sender.sendMessage(prefix+locale.getString("chat.commands.removeSigns.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 		}
 	}
 	private int nextNewRoom(World w, String hotel){
