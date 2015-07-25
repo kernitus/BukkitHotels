@@ -67,7 +67,7 @@ public class HotelsListener implements Listener {
 			}
 			else{
 				p.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
-				e.setLine(0, "§4[Hotels]");
+				e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 				//No permissions
 			}
 		}
@@ -103,7 +103,7 @@ public class HotelsListener implements Listener {
 		//Player joined the server, update notification to admins:
 		Player p = e.getPlayer();
 		if(p.hasPermission("hotel.*")||p.isOp()){
-			File qfile = new File("plugins//Hotels//queuedMessages.yml");
+			File qfile = HConH.getFile("queuedMessages.yml");
 			YamlConfiguration queue = YamlConfiguration.loadConfiguration(qfile);
 			String ava = queue.getString("messages.update.available");
 			String lin = queue.getString("messages.update.link");
@@ -159,7 +159,7 @@ public class HotelsListener implements Listener {
 			if(r.getId().startsWith("hotel-"+hotelName)){
 				if(r.getId().matches("^hotel-"+hotelName+"-.+")){
 					int roomNum = Integer.parseInt(r.getId().replaceAll("^hotel-.+-", ""));
-					File signFile = new File("plugins//Hotels//Signs//"+hotelName+"-"+roomNum+".yml");
+					File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 					if(signFile.exists()){
 						new YamlConfiguration();
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
@@ -179,8 +179,6 @@ public class HotelsListener implements Listener {
 			Sign s = (Sign) b.getState();
 			String Line1 = ChatColor.stripColor(s.getLine(0));
 			String Line2 = ChatColor.stripColor(s.getLine(1));
-			File lfile = new File("plugins//Hotels//locale.yml");
-			YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 			if(Line1.equals("Reception")){ //First line is "Reception"
 				if(Line2!=null){
 					String[] Line2split = Line2.split(" ");
@@ -207,7 +205,7 @@ public class HotelsListener implements Listener {
 	public void avoidDrop(PlayerDropItemEvent e) {
 		Player p = e.getPlayer();
 		UUID playerUUID = p.getUniqueId();
-		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
+		File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
 
 		if(file.exists())
 			e.setCancelled(true);
@@ -217,7 +215,7 @@ public class HotelsListener implements Listener {
 	public void avoidPickup(PlayerPickupItemEvent e) {
 		Player p = e.getPlayer();
 		UUID playerUUID = p.getUniqueId();
-		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
+		File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
 
 		if(file.exists())
 			e.setCancelled(true);

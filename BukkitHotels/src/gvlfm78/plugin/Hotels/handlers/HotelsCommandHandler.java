@@ -54,86 +54,86 @@ public class HotelsCommandHandler implements CommandExecutor {
 		if(cmd.getName().equalsIgnoreCase("Hotels")){
 			if(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.commands")||sender.hasPermission("hotels.*")))){
 				if(args.length==0){
-					sender.sendMessage("§4==========Hotels==========");
-					sender.sendMessage("§2"+plugin.getDescription().getName()+" plugin by kernitus");
-					sender.sendMessage("§2"+plugin.getDescription().getName()+" version "+plugin.getDescription().getVersion());
-					sender.sendMessage("§4Type §3/hotels help §4for help with creating a hotel");
-					sender.sendMessage("§4Type §3/hotels commands §4for help with the commands");
-					sender.sendMessage("§4==========================");
+					sender.sendMessage(("&4==========Hotels==========").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&2"+plugin.getDescription().getName()+" plugin by kernitus").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&2"+plugin.getDescription().getName()+" version "+plugin.getDescription().getVersion()).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&4Type &3/hotels help &4for help with creating a hotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&4Type &3/hotels commands &4for help with the commands").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if(args.length>=1&&args[0].equalsIgnoreCase("commands")){
-					sender.sendMessage("§4================================");
-					sender.sendMessage("§5--Hotels plugin command help page--");
-					sender.sendMessage("§6/ht [creationmode|cm] [enter/exit] - §aEnter/exit creation mode");
-					sender.sendMessage("§6/ht help - §aDisplays help page");
-					sender.sendMessage("§6/ht list <world> - §aLists all hotels in current/specified world");
-					sender.sendMessage("§6/ht rlist [hotel] <world> - §aLists all rooms in specified hotel in current/specified world");
-					sender.sendMessage("§6/ht check <player> - §aLists all rooms rented by you/specified player");
-					sender.sendMessage("§6/ht remove [player] [hotel] [room] - §aRemoves player from his rented room");
-					sender.sendMessage("§6/ht [create|c] [hotelname] - §aCreate a hotel with current selection");
-					sender.sendMessage("§6/ht room [hotelname] <roomnum> - §aCreate room with current selection within specified hotel");
-					sender.sendMessage("§6/ht delete [hotelname] - §aDelete specified hotel");
-					sender.sendMessage("§6/ht delr [hotelname] [roomnum] - §aDeletes specified room");
-					sender.sendMessage("§6/ht rename [oldname] [newname] - §aRenames specified hotel");
-					sender.sendMessage("§6/ht renum [hotel] [oldnum] [newnum] - §aRenumbers specified room");
-					sender.sendMessage("§6/ht friend [add/remove] [hotel] [room] [player] - §aAdds/removes a player from the list of friends that can access the specified room");
-					sender.sendMessage("§6/ht friend list [hotel] [room] - §aLists players in friend list of specified hotel room");
-					sender.sendMessage("§4================================");
+					sender.sendMessage(("&4================================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&5--Hotels plugin command help page--").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht [creationmode|cm] [enter/exit] - &aEnter/exit creation mode").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht help - &aDisplays help page").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht list <world> - &aLists all hotels in current/specified world").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht rlist [hotel] <world> - &aLists all rooms in specified hotel in current/specified world").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht check <player> - &aLists all rooms rented by you/specified player").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht remove [player] [hotel] [room] - &aRemoves player from his rented room").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht [create|c] [hotelname] - &aCreate a hotel with current selection").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht room [hotelname] <roomnum> - &aCreate room with current selection within specified hotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht delete [hotelname] - &aDelete specified hotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht delr [hotelname] [roomnum] - &aDeletes specified room").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht rename [oldname] [newname] - &aRenames specified hotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht renum [hotel] [oldnum] [newnum] - &aRenumbers specified room").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht friend [add/remove] [hotel] [room] [player] - &aAdds/removes a player from the list of friends that can access the specified room").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&6/ht friend list [hotel] [room] - &aLists players in friend list of specified hotel room").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&4================================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if((args.length==1)&&(args[0].equalsIgnoreCase("help"))||(args.length>1)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("1")))){
-					sender.sendMessage("§4==========================");
-					sender.sendMessage("§5--Hotels plugin help page--");
-					sender.sendMessage(ChatColor.DARK_RED+"-Page 1- §9Selection of hotel cuboid");
-					sender.sendMessage(ChatColor.YELLOW+"1. Type §3§o/ht [creationmode§r§3|§3§ocm] enter");
-					sender.sendMessage(ChatColor.YELLOW+"2. Take your WorldEdit wand in hand");
-					sender.sendMessage(ChatColor.YELLOW+"3. Left click and right click opposing corners of your hotel");
-					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/ht help 2§r§4 to get to page 2");
-					sender.sendMessage("§4==========================");
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&5--Hotels plugin help page--").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.DARK_RED+"-Page 1- &9Selection of hotel cuboid").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"1. Type &3&o/ht [creationmode&r&3|&3&ocm] enter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"2. Take your WorldEdit wand in hand").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"3. Left click and right click opposing corners of your hotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.DARK_RED+"Type &3&o/ht help 2&r&4 to get to page 2").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if((args.length>1)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("2")))){
-					sender.sendMessage("§4==========================");
-					sender.sendMessage("§5--Hotels plugin help page--");
-					sender.sendMessage(ChatColor.DARK_RED+"-Page 2- §9Creation of the hotel");
-					sender.sendMessage(ChatColor.YELLOW+"1. Type §3§o/ht [create§r§3|§oc] [nameofhotel]");
-					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/ht help 3§r§4 to get to page 3");
-					sender.sendMessage("§4==========================");
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&5--Hotels plugin help page--").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.DARK_RED+"-Page 2- &9Creation of the hotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"1. Type &3&o/ht [create&r&3|&oc] [nameofhotel]").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.DARK_RED+"Type &3&o/ht help 3&r&4 to get to page 3").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if((args.length>1)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("3")))){
-					sender.sendMessage("§4==========================");
-					sender.sendMessage("§5--Hotels plugin help page--");
-					sender.sendMessage(ChatColor.DARK_RED+"-Page 3- §9Creation of a room");
-					sender.sendMessage(ChatColor.YELLOW+"1. Get out your WorldEdit wand again");
-					sender.sendMessage(ChatColor.YELLOW+"2. Left click and right click opposing corners of the room");
-					sender.sendMessage(ChatColor.YELLOW+"3. Type §3§o/ht room [hotel] [roomnum]");
-					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/ht help 4§r§4 to get to page 4");
-					sender.sendMessage("§4==========================");
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&5--Hotels plugin help page--").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.DARK_RED+"-Page 3- &9Creation of a room").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"1. Get out your WorldEdit wand again").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"2. Left click and right click opposing corners of the room").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"3. Type &3&o/ht room [hotel] [roomnum]").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.DARK_RED+"Type &3&o/ht help 4&r&4 to get to page 4").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if((args.length>1)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("4")))){
-					sender.sendMessage("§4==========================");
-					sender.sendMessage("§5--Hotels plugin help page--");
-					sender.sendMessage(ChatColor.DARK_RED+"-Page 4- §9Adding a sign");
-					sender.sendMessage(ChatColor.YELLOW+"1. Grab a sign and place it outside of the room");
-					sender.sendMessage(ChatColor.YELLOW+"2. Type on the sign:");
-					sender.sendMessage(ChatColor.YELLOW+"    [Hotels]");
-					sender.sendMessage(ChatColor.YELLOW+"    <hotelname>");
-					sender.sendMessage(ChatColor.YELLOW+"    <roomnum:cost>");
-					sender.sendMessage(ChatColor.YELLOW+"    <time>");
-					sender.sendMessage(ChatColor.DARK_RED+"Type §3§o/ht help 5§r§4 to get to page 5");
-					sender.sendMessage("§4==========================");
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&5--Hotels plugin help page--").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.DARK_RED+"-Page 4- &9Adding a sign").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"1. Grab a sign and place it outside of the room").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"2. Type on the sign:").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"    [Hotels]").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"    <hotelname>").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"    <roomnum:cost>").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.YELLOW+"    <time>").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.DARK_RED+"Type &3&o/ht help 5&r&4 to get to page 5").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if((args.length>1)&&(args[0].equalsIgnoreCase("help")&&(args[1].equalsIgnoreCase("5")))){
-					sender.sendMessage("§4==========================");
-					sender.sendMessage("§5--Hotels plugin help page--");
-					sender.sendMessage("§4-Page 5- §9Example of a sign");
-					sender.sendMessage("§e1. Example of a sign:");
-					sender.sendMessage("§e    [Hotels]");
-					sender.sendMessage("§e    TheBestHotel");
-					sender.sendMessage("§e    15:1m3k");
-					sender.sendMessage("§e    3d 6m 2s");
-					sender.sendMessage("§9§oYou can use §20 §9§oas a time to make the rent infinite");
-					sender.sendMessage("§9§oIn cost, §5t§9 = §210§9, §5h§9 = §2100§9, §5k§9 = §21000§9, §5m§9 = §2million§9 §5b§9 = §2billion (1000 million)");
-					sender.sendMessage(ChatColor.DARK_RED+"Last page. Type §3§o/ht help§r§4 to get to page 1");
-					sender.sendMessage("§4==========================");
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&5--Hotels plugin help page--").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&4-Page 5- &9Example of a sign").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&e1. Example of a sign:").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&e    [Hotels]").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&e    TheBestHotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&e    15:1m3k").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&e    3d 6m 2s").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&9&oYou can use &20 &9&oas a time to make the rent infinite").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&9&oIn cost, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2billion (1000 million)").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage((ChatColor.DARK_RED+"Last page. Type &3&o/ht help&r&4 to get to page 1").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
 				else if(((args.length>0)&&(args[0].equalsIgnoreCase("reload"))&&(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.reload")||sender.hasPermission("hotels.*")))))){
 					HConH.reloadConfigs(plugin);
@@ -173,7 +173,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 									String hotel = args[2];
 									String room = args[3];
 									String friendName = args[4];
-									File signFile = new File("plugins//Hotels//Signs//"+hotel+"-"+room+".yml");
+									File signFile = HConH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
 									if(signFile.exists()){
 										YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
 										String renterUUID = signConfig.getString("Sign.renter");
@@ -226,7 +226,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 									String hotel = args[2];
 									String room = args[3];
 									String friendName = args[4];
-									File signFile = new File("plugins//Hotels//Signs//"+hotel+"-"+room+".yml");
+									File signFile = HConH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
 									if(signFile.exists()){
 										YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
 										String renterUUID = signConfig.getString("Sign.renter");
@@ -273,7 +273,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 								//Listing friends in specified hotel+room
 								String hotel = args[2];
 								String room = args[3];
-								File signFile = new File("plugins//Hotels//Signs//"+hotel+"-"+room+".yml");
+								File signFile = HConH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
 								if(signFile.exists()){
 									YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
 									String renterUUID = signConfig.getString("Sign.renter");
@@ -423,7 +423,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.create")||sender.hasPermission("hotels.*"))))){
 					Player p = (Player) sender;
 					UUID playerUUID = p.getUniqueId();
-					File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
+					File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
 					if(file.exists()){
 						HCM.hotelSetup(args[1], sender, plugin);
 					}
@@ -690,7 +690,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(WGM.hasRegion(world, "Hotel-"+hotel+"-"+oldnum)){
 					WGM.renameRegion("Hotel-"+hotel+"-"+oldnum, "Hotel-"+hotel+"-"+newnum, world);
 
-					File file = new File("plugins//Hotels//Signs//"+hotel+"-"+oldnum+".yml");
+					File file = HConH.getFile("Signs"+File.separator+hotel+"-"+oldnum+".yml");
 					if(file.exists()){
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 						World signworld = Bukkit.getWorld(config.getString("Sign.location.world").trim());
@@ -719,7 +719,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 												} catch (IOException e) {
 													e.printStackTrace();
 												}
-												File newfile = new File("plugins//Hotels//Signs//"+hotel+"-"+newnum+".yml");
+												File newfile = HConH.getFile("Signs"+File.separator+hotel+"-"+newnum+".yml");
 												file.renameTo(newfile);
 											}
 											else{
@@ -850,7 +850,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					@SuppressWarnings("deprecation")
 					Player player = Bukkit.getOfflinePlayer(toRemovePlayer).getPlayer();
 					if(player!=null){
-						File file = new File("plugins//Hotels//Signs//"+hotel+"-"+room+".yml");
+						File file = HConH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 						String renter = config.getString("Sign.renter");
 						if(renter!=null){
@@ -911,7 +911,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 									String[] rId = r.getId().toLowerCase().split("-");
 									String hotelname = rId[1].replaceAll("-", "");
 									String roomnum = rId[2].replaceAll("-", "");
-									File file = new File("plugins//Hotels//Signs//"+hotelname+"-"+roomnum+".yml");
+									File file = HConH.getFile("Signs"+File.separator+hotelname+"-"+roomnum+".yml");
 									YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 									long expiryDate = config.getLong("Sign.expiryDate");
 									hotelname = hotelname.substring(0, 1).toUpperCase() + hotelname.substring(1);
@@ -976,7 +976,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						int spaceamount = 10-roomnum.length();
 						String space = " ";
 						String rep = StringUtils.repeat(space, spaceamount);
-						File file = new File("plugins//Hotels//Signs//"+hotel.toLowerCase()+"-"+roomnum+".yml");
+						File file = HConH.getFile("Signs"+File.separator+hotel.toLowerCase()+"-"+roomnum+".yml");
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 						String state = "";
 						if(config!=null){
@@ -1007,7 +1007,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 		if(WGM.hasRegion(world, "Hotel-"+hotelName)){
 			ArrayList<String> fileslist = HFF.listFiles("plugins//Hotels//Signs");
 			for(String x: fileslist){
-				File file = new File("plugins//Hotels//Signs//"+x);
+				File file = HConH.getFile("Signs"+File.separator+x);
 				String receptionLoc = locale.getString("sign.reception").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
 				if(file.getName().matches("^"+receptionLoc+"-.+-.+")){
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);

@@ -40,18 +40,11 @@ public class HotelsCreationMode {
 	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
 
 	public void checkFolder(){
-		File file = new File("plugins//Hotels//Inventories");
+		File file = HConH.getFile("Inventories");
 		if(!file.exists()){
 			file.mkdir();
 		}
 	}
-
-	public void checkHotelsFolder(){
-		File file = new File("plugins//Hotels//Hotels");
-		if(!file.exists()){
-			file.mkdir();
-		}
-	}	
 
 	public void hotelSetup(String hotelName, CommandSender s,Plugin plugin){
 		Player p = (Player) s;
@@ -113,8 +106,8 @@ public class HotelsCreationMode {
 	public void resetInventoryFiles(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
-		File invFile = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
-		File armFile = new File("plugins//Hotels//Inventories//"+"Armour-"+playerUUID+".yml");
+		File invFile = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
+		File armFile = HConH.getFile("Inventories"+File.separator+"Armour-"+playerUUID+".yml");
 		if(invFile.exists()){
 			invFile.delete();
 		}
@@ -129,7 +122,7 @@ public class HotelsCreationMode {
 		Player p = ((Player) s);
 		ArrayList<ItemStack> list = new ArrayList<>();
 		UUID playerUUID = p.getUniqueId();
-		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
+		File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
 
 		if(!file.exists()){
 			try {
@@ -162,7 +155,7 @@ public class HotelsCreationMode {
 		Player p = ((Player) s);
 		ArrayList<ItemStack> list = new ArrayList<>();
 		UUID playerUUID = p.getUniqueId();
-		File file = new File("plugins//Hotels//Inventories//"+"Armour-"+playerUUID+".yml");
+		File file = HConH.getFile("Inventories"+File.separator+"Armour-"+playerUUID+".yml");
 
 		if(!file.exists()){
 			try {
@@ -194,7 +187,7 @@ public class HotelsCreationMode {
 	public void loadArmour(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
-		File file = new File("plugins//Hotels//Inventories//"+"Armour-"+playerUUID+".yml");
+		File file = HConH.getFile("Inventories"+File.separator+"Armour-"+playerUUID+".yml");
 
 		if(file.exists()){
 			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
@@ -217,7 +210,7 @@ public class HotelsCreationMode {
 	public void loadInventory(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
-		File file = new File("plugins//Hotels//Inventories//"+"Inventory-"+playerUUID+".yml");
+		File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
 
 		if(file.exists()){
 			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
@@ -250,10 +243,8 @@ public class HotelsCreationMode {
 	}
 
 	public void giveItems(CommandSender s){
-		File lfile = new File("plugins//Hotels//locale.yml");
-		YamlConfiguration locale = YamlConfiguration.loadConfiguration(lfile);
 		Player p = ((Player) s);
-		File file = new File("plugins//Worldedit//config.yml");
+		File file = new File("plugins"+File.separator+"Worldedit"+File.separator+"config.yml");
 		PlayerInventory pi = p.getInventory();
 
 		if(file.exists()){

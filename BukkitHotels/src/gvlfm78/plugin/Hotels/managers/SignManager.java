@@ -60,14 +60,14 @@ public class SignManager {
 				int free = freeRooms(Line2,p.getWorld()); //Getting amount of free rooms in hotel
 				String hotelName = Line2.substring(0, 1).toUpperCase() + Line2.substring(1); //Beautifying hotel name
 				//Setting all sign lines
-				e.setLine(0, "§a"+locale.getString("sign.reception"));
-				e.setLine(1, "§1"+hotelName+" Hotel");
-				e.setLine(2, "§1"+tot+"§0 "+locale.getString("sign.room.total").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				e.setLine(3, "§a"+free+"§0 "+locale.getString("sign.room.free").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				e.setLine(0, "&a"+locale.getString("sign.reception"));
+				e.setLine(1, "&1"+hotelName+" Hotel");
+				e.setLine(2, "&1"+tot+"&0 "+locale.getString("sign.room.total").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				e.setLine(3, "&a"+free+"&0 "+locale.getString("sign.room.free").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				//Updating sign file
-				File signFile = new File("plugins//Hotels//Signs//Reception-"+Line2+"-1.yml");
+				File signFile = HConH.getFile("Signs"+File.separator+"Reception-"+Line2+"-1.yml");
 				for(int i = 1; signFile.exists(); i++){
-					signFile = new File("plugins//Hotels//Signs//Reception-"+Line2+"-"+i+".yml");
+					signFile = HConH.getFile("Signs"+File.separator+"Reception-"+Line2+"-"+i+".yml");
 				}
 				if(!signFile.exists()){
 					try {
@@ -93,12 +93,12 @@ public class SignManager {
 				}		
 			}
 			else{
-				e.setLine(0, "§4[Hotels]");
+				e.setLine(0, "&4[Hotels]");
 				p.sendMessage(prefix+locale.getString("chat.sign.place.noHotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 			}
 		}
 		else{
-			e.setLine(0, "§4[Hotels]");
+			e.setLine(0, "&4[Hotels]");
 			p.sendMessage(prefix+locale.getString("chat.sign.place.emptySign").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 		}
 		return;
@@ -111,7 +111,7 @@ public class SignManager {
 		String Line3 = ChatColor.stripColor(e.getLine(2)).trim();
 		String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
 
-		File directory = new File("plugins//Hotels//Signs");
+		File directory = HConH.getFile("Signs");
 		if(!directory.exists()){
 			directory.mkdir();}
 		if(Line3.contains(":")){
@@ -120,7 +120,7 @@ public class SignManager {
 			String roomnumb = String.valueOf(roomnum);
 			String cost = Line3parts[1]; //Cost
 			if((roomnumb.length()+cost.length()+9)<22){
-				File signFile = new File("plugins//Hotels//Signs//"+Line2+"-"+roomnum+".yml");
+				File signFile = HConH.getFile("Signs"+File.separator+Line2+"-"+roomnum+".yml");
 				if(!signFile.exists()){ //Sign for room doesn't already exist
 					if ((!(Line2.isEmpty()))&&(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&& //Hotel region exists
 							(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ()))){
@@ -186,23 +186,23 @@ public class SignManager {
 						}
 					} else{
 						p.sendMessage(prefix+locale.getString("chat.sign.place.outOfRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));       		
-						e.setLine(0, "§4[Hotels]");
+						e.setLine(0, "&4[Hotels]");
 						//Sign not in hotel borders
 					}
 				}else{
 					p.sendMessage(prefix+locale.getString("chat.sign.place.alreadyExists").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-					e.setLine(0, "§4[Hotels]");
+					e.setLine(0, "&4[Hotels]");
 					//Sign for specified room already exists
 				}
 			}
 			else{
 				p.sendMessage(prefix+locale.getString("chat.sign.place.tooLong").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));				
-				e.setLine(0, "§4[Hotels]");
+				e.setLine(0, "&4[Hotels]");
 				//Room num of price too big
 			}
 		}else{
 			p.sendMessage(prefix+locale.getString("chat.sign.place.noSeparator").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));  				
-			e.setLine(0, "§4[Hotels]");
+			e.setLine(0, "&4[Hotels]");
 			//Line 3 does not contain separator
 		}
 	}
@@ -224,8 +224,7 @@ public class SignManager {
 
 				String[] Line2parts = Line2.split("\\s"); //Splitting Line2 into room num + cost
 				int roomNum = Integer.valueOf(Line2parts[1].trim()); //Room Number
-				File signFile = new File("plugins//Hotels//Signs//"+hotelName+"-"+roomNum+".yml");
-
+				File signFile = HConH.getFile("Signs"+File.separator+hotelName.toLowerCase()+"-"+roomNum+".yml");
 				if(signFile.exists()){
 					YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
 					String cHotelName = signConfig.getString("Sign.hotel");
@@ -277,7 +276,7 @@ public class SignManager {
 												}
 												//pluginstance.getLogger().info("WGM Stuff: "WGM.getRegion(world, string));
 
-												s.setLine(3, "§c"+p.getName());//Writing renter name on sign
+												s.setLine(3, ChatColor.RED+p.getName());//Writing renter name on sign
 												s.update();
 												DecimalFormat df = new DecimalFormat("#.##");
 												p.sendMessage(prefix+locale.getString("chat.sign.use.success").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName)
@@ -330,7 +329,7 @@ public class SignManager {
 				String[] Line2split = Line2.split(" ");
 				int roomnum = Integer.parseInt(Line2split[1]);
 				if(WGM.hasRegion(w, "Hotel-"+Line1+"-"+roomnum)){
-					File signFile = new File("plugins//Hotels//Signs//"+Line1+"-"+roomnum+".yml");
+					File signFile = HConH.getFile("Signs"+File.separator+Line1+"-"+roomnum+".yml");
 					if(signFile.exists()){
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
 						if(config.getString("Sign.hotel").equalsIgnoreCase(Line1)){
@@ -356,15 +355,14 @@ public class SignManager {
 	}
 
 	public int getTimesRented(UUID ptocheck, HotelsMain pluginstance){
-		//TODO
-		File dir = new File("plugins//Hotels//Signs");
+		File dir = HConH.getFile("Signs");
 		if(!(dir.exists()))
 			dir.mkdir();
 
-		ArrayList<String> fileslist = HFF.listFiles("plugins//Hotels//Signs");
+		ArrayList<String> fileslist = HFF.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
 		int rents = 0;
 		for(String x: fileslist){
-			File file = new File("plugins//Hotels//Signs//"+x);
+			File file = HConH.getFile("Signs"+File.separator+x);
 			if(!file.getName().matches("^"+locale.getString("sign.reception")+"-.+-.+")){
 				//Not a reception sign, therefore a room sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -453,7 +451,7 @@ public class SignManager {
 			if(r.getId().startsWith("hotel-"+hotelName)){
 				if(r.getId().matches("^hotel-"+hotelName+"-.+")){
 					int roomNum = Integer.parseInt(r.getId().replaceAll("^hotel-.+-", ""));
-					File signFile = new File("plugins//Hotels//Signs//"+hotelName+"-"+roomNum+".yml");
+					File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 					if(signFile.exists()){
 						new YamlConfiguration();
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
@@ -481,8 +479,8 @@ public class SignManager {
 					if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
 						int tot = totalRooms(hotelname,b.getWorld());
 						int free = freeRooms(hotelname,b.getWorld());
-						s.setLine(2, "§1"+tot+"§0 "+locale.getString("sign.room.total").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-						s.setLine(3, "§a"+free+"§0 "+locale.getString("sign.room.free").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.setLine(2, "&1"+tot+"&0 "+locale.getString("sign.room.total").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.setLine(3, "&a"+free+"&0 "+locale.getString("sign.room.free").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						s.update();
 						return false;
 					}

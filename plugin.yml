@@ -1,6 +1,6 @@
 main: kernitus.plugin.Hotels.HotelsMain
 name: Hotels
-version: 0.4
+version: 0.4.1
 author: kernitus
 description: Allows the making of hotels and renting of rooms.
 website: http://www.spigotmc.org/resources/hotels.2047/
@@ -32,6 +32,7 @@ permissions:
        hotels.sign.use: true
        hotels.list.hotels: true
        hotels.list.rooms: true
+       hotels.friend: true
    hotels.createmode:
      description: Allows you to enter hotel creation mode
      default: op
@@ -64,10 +65,13 @@ permissions:
      default: op
    hotels.sign.use:
      description: Allows you to use hotel room signs
-     default: op
+     default: true
    hotels.list.hotels:
      description: Allows you to see a list of all hotels
-     default: op
+     default: true
    hotels.list.rooms:
      description: Allows you to see a list of all rooms within a hotel
      default: op
+   hotels.friend:
+     description: Allows you to add and remove friends from rented rooms
+     default: true

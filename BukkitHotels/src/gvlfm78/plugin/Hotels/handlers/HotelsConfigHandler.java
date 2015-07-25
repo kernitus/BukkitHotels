@@ -79,6 +79,14 @@ public class HotelsConfigHandler {
 
 	}
 	
+	public File getFile(String filepath){
+		return new File("plugins"+File.separator+"Hotels"+File.separator+filepath);
+	}
+	
+	public YamlConfiguration getyml(String filepath){
+		return YamlConfiguration.loadConfiguration(getFile(filepath));
+	}
+	
 	public File getLocaleFile(){
 		return new File("plugins//Hotels//locale.yml");
 	}
@@ -199,7 +207,7 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.creationMode.items.compass.lore2", String.valueOf("R-click to pass through"));
 		locale.addDefault("chat.creationMode.items.sign.name", String.valueOf("&bEpic Sign"));
 		locale.addDefault("chat.creationMode.items.sign.lore1", String.valueOf("R-click to place"));
-		locale.addDefault("chat.creationMode.items.sign.lore2", String.valueOf("First Line: �9[Hotels]"));
+		locale.addDefault("chat.creationMode.items.sign.lore2", String.valueOf("First Line: &9[Hotels]"));
 
 		locale.addDefault("chat.commands.unknownArg", String.valueOf("&4Unknown argument. Try &3&o/hotels"));
 		locale.addDefault("chat.commands.noWorld", String.valueOf("&cPlease specify world"));
@@ -273,7 +281,7 @@ public class HotelsConfigHandler {
 		locale.addDefault("language", String.valueOf("en"));
 		locale.addDefault("settings.chat.firstLine", String.valueOf("hotels"));
 		locale.addDefault("settings.chat.prefix", String.valueOf("[Hotels]"));
-		locale.addDefault("settings.chat.creationMode.hotelCreationFailed", String.valueOf("�4Could not create Hotel, hotel already exists"));
+		locale.addDefault("settings.chat.creationMode.hotelCreationFailed", String.valueOf("&4Could not create Hotel, hotel already exists"));
 
 		locale.options().copyDefaults(true);
 		saveLocale(locale);
@@ -366,10 +374,10 @@ public class HotelsConfigHandler {
 
 		try {
 			cf.save(configFile);
-			plugin.getLogger().info("�2Flags file has been created");
+			plugin.getLogger().info("&2Flags file has been created");
 		} catch (IOException e) {
 			e.printStackTrace();
-			plugin.getLogger().severe("�4Could not save Flags file");
+			plugin.getLogger().severe("&4Could not save Flags file");
 		}
 	}*/
 }

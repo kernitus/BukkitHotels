@@ -46,15 +46,13 @@ public class GameLoop extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		//int list = new File("plugins//Hotels//Signs").listFiles().length;
 		File dir = new File("plugins//Hotels//Signs");
 		if(!(dir.exists()))
 			dir.mkdir();
 
-		ArrayList<String> fileslist = HFF.listFiles("plugins//Hotels//Signs");
-
+		ArrayList<String> fileslist = HFF.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
 		for(String x: fileslist){
-			File file = new File("plugins//Hotels//Signs//"+x);
+			File file = HConH.getFile("Signs"+File.separator+x);
 			if(file.getName().matches("^"+locale.getString("sign.reception")+"-.+-.+")){
 				//It's a reception sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -105,7 +103,7 @@ public class GameLoop extends BukkitRunnable {
 												WGM.removeMember(cf, region);
 											}
 
-											sign.setLine(3, "§a"+locale.getString("sign.vacant"));
+											sign.setLine(3, ChatColor.GREEN+locale.getString("sign.vacant"));
 											sign.update();
 											plugin.getLogger().info(locale.getString("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
 											if(p.isOnline()){
@@ -161,7 +159,7 @@ public class GameLoop extends BukkitRunnable {
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
-								sign.setLine(3, "§a"+locale.getString("sign.vacant"));
+								sign.setLine(3, ChatColor.GREEN+locale.getString("sign.vacant"));
 								sign.setLine(2, SM.TimeFormatter(config.getLong("Sign.time")));
 								sign.update();
 							}
