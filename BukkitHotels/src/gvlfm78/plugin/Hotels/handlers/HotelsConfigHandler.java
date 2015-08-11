@@ -277,6 +277,19 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info("[Hotels] Language strings generated");
 	}
 
+	/*public void setupLanguageChinese(Plugin plugin){
+		        if (this.IPconfigFile == null)
+		            this.IPconfigFile = new File(getDataFolder(), "IPs.yml");
+		       
+		        this.IPconfig = YamlConfiguration.loadConfiguration(this.IPconfigFile);
+		        if(!IPconfig.contains("Allowed"))
+		            IPconfig.createSection("Allowed");
+		        if(!IPconfig.contains("Attempted"))
+		            IPconfig.createSection("Attempted");
+		        IPconfig.options().copyHeader(true);
+		        saveIPconfig();
+	}
+	*/
 	public void setupLanguageItalian(Plugin plugin){
 		locale.addDefault("language", String.valueOf("en"));
 		locale.addDefault("settings.chat.firstLine", String.valueOf("hotels"));
@@ -287,6 +300,13 @@ public class HotelsConfigHandler {
 		saveLocale(locale);
 		plugin.getLogger().info("[Hotels] Language strings generated");
 	}
+	
+    public void saveDefaultLocale(Plugin plugin) {
+    	File localeFile = getLocaleFile();
+        if (!localeFile.exists()) {            
+             plugin.saveResource("locale_zh.yml", false);
+         }
+    }
 
 	/*public void setupFlagsFile(Plugin plugin){
 		Map<String, String> flags = new HashMap<String, String>(66);

@@ -58,12 +58,13 @@ public class SignManager {
 			if ((!(Line2.isEmpty()))&&(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))){ //Hotel region exists
 				int tot = totalRooms(Line2,p.getWorld()); //Getting total amount of rooms in hotel
 				int free = freeRooms(Line2,p.getWorld()); //Getting amount of free rooms in hotel
+				Line2 = Line2.toLowerCase();
 				String hotelName = Line2.substring(0, 1).toUpperCase() + Line2.substring(1); //Beautifying hotel name
 				//Setting all sign lines
-				e.setLine(0, "&a"+locale.getString("sign.reception"));
-				e.setLine(1, "&1"+hotelName+" Hotel");
-				e.setLine(2, "&1"+tot+"&0 "+locale.getString("sign.room.total").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				e.setLine(3, "&a"+free+"&0 "+locale.getString("sign.room.free").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				e.setLine(0, ("&a"+locale.getString("sign.reception")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				e.setLine(1, ("&1"+hotelName+" Hotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				e.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				e.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				//Updating sign file
 				File signFile = HConH.getFile("Signs"+File.separator+"Reception-"+Line2+"-1.yml");
 				for(int i = 1; signFile.exists(); i++){
@@ -107,7 +108,7 @@ public class SignManager {
 	public void placeRoomSign(SignChangeEvent e){
 		Player p = e.getPlayer();
 		//Sign Lines
-		String Line2 = ChatColor.stripColor(e.getLine(1)).trim();
+		String Line2 = (ChatColor.stripColor(e.getLine(1)).trim()).toLowerCase();
 		String Line3 = ChatColor.stripColor(e.getLine(2)).trim();
 		String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
 
@@ -212,7 +213,7 @@ public class SignManager {
 		Sign s = (Sign) e.getClickedBlock().getState();
 		String Line1 = ChatColor.stripColor(s.getLine(0)); //Line1
 		String Line2 = ChatColor.stripColor(s.getLine(1)); //Line2
-		String hotelName = ChatColor.stripColor(Line1); //Hotel name
+		String hotelName = (ChatColor.stripColor(Line1)).toLowerCase(); //Hotel name
 
 		//If Hotel region exists
 		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)){
@@ -320,7 +321,7 @@ public class SignManager {
 	public void breakRoomSign(BlockBreakEvent e){
 		Block b = e.getBlock();
 		Sign s = (Sign) b.getState();
-		String Line1 = ChatColor.stripColor(s.getLine(0));
+		String Line1 = (ChatColor.stripColor(s.getLine(0))).toLowerCase();
 		World w = b.getWorld();
 		if(WGM.hasRegion(w, "Hotel-"+Line1)){
 			//Room sign has been broken?
@@ -384,13 +385,13 @@ public class SignManager {
 		//Sign lines
 		Sign s = (Sign) e.getClickedBlock().getState();
 		if(sconfig.getInt("Sign.time")>0){
-			double account = HotelsMain.economy.getBalance(p);
-			double price = sconfig.getDouble("Sign.cost");
-			if(account>=price){//If player has enough money
-				HotelsMain.economy.withdrawPlayer(p, price);
-				int extended = sconfig.getInt("Sign.extended");
-				int max = ymlconfig.getInt("settings.max_rent_extend");
-				if(extended<max){
+			int extended = sconfig.getInt("Sign.extended");
+			int max = ymlconfig.getInt("settings.max_rent_extend");
+			if(extended<max){
+				double account = HotelsMain.economy.getBalance(p);
+				double price = sconfig.getDouble("Sign.cost");
+				if(account>=price){//If player has enough money
+					HotelsMain.economy.withdrawPlayer(p, price);
 					sconfig.set("Sign.extended", extended+1);
 					try {
 						sconfig.save(signFile);
@@ -413,13 +414,13 @@ public class SignManager {
 					else
 						p.sendMessage(prefix+locale.getString("chat.sign.use.extensionSuccessNoMore").replaceAll("%tot%", String.valueOf(extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
-				else
-					p.sendMessage(prefix+locale.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				else{
+					double topay = price-account;
+					p.sendMessage(prefix+locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				}
 			}
-			else{
-				double topay = price-account;
-				p.sendMessage(prefix+locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-			}
+			else
+				p.sendMessage(prefix+locale.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 		}
 	}
 
@@ -479,8 +480,8 @@ public class SignManager {
 					if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
 						int tot = totalRooms(hotelname,b.getWorld());
 						int free = freeRooms(hotelname,b.getWorld());
-						s.setLine(2, "&1"+tot+"&0 "+locale.getString("sign.room.total").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-						s.setLine(3, "&a"+free+"&0 "+locale.getString("sign.room.free").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						s.update();
 						return false;
 					}
@@ -544,20 +545,20 @@ public class SignManager {
 	}
 	public String TimeFormatter(long input){
 		if(input>0){
-		//Formats time in minutes to days, hours and minutes
-		long[] ftime = new long[3];
-		ftime[0] = TimeUnit.MINUTES.toDays(input); //Days
-		ftime[1] = TimeUnit.MINUTES.toHours(input) - TimeUnit.DAYS.toHours(ftime[0]); //Hours
-		ftime[2] = input - TimeUnit.DAYS.toMinutes(ftime[0]) - TimeUnit.HOURS.toMinutes(ftime[1]); //Minutes
-		String line2 = "";
-		if(ftime[0]>0)
-			line2 = line2+ftime[0]+"d";
-		if(ftime[1]>0)
-			line2 = line2+ftime[1]+"h";
-		if(ftime[2]>0)
-			line2 = line2+ftime[2]+"m";
-		return line2;
-	}
+			//Formats time in minutes to days, hours and minutes
+			long[] ftime = new long[3];
+			ftime[0] = TimeUnit.MINUTES.toDays(input); //Days
+			ftime[1] = TimeUnit.MINUTES.toHours(input) - TimeUnit.DAYS.toHours(ftime[0]); //Hours
+			ftime[2] = input - TimeUnit.DAYS.toMinutes(ftime[0]) - TimeUnit.HOURS.toMinutes(ftime[1]); //Minutes
+			String line2 = "";
+			if(ftime[0]>0)
+				line2 = line2+ftime[0]+"d";
+			if(ftime[1]>0)
+				line2 = line2+ftime[1]+"h";
+			if(ftime[2]>0)
+				line2 = line2+ftime[2]+"m";
+			return line2;
+		}
 		else
 			return locale.getString("sign.permanent");
 	}
