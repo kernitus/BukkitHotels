@@ -54,7 +54,9 @@ public class HotelsCreationMode {
 			if(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
 				p.sendMessage(prefix+locale.getString("chat.creationMode.hotelCreationFailed").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				return;}
-			else if(!(sel==null)){
+			else if(!(sel==null)){//TODO Allow all selection types
+				Object obj = sel.getClass();
+				System.out.println("Class is: "+obj);
 				ProtectedCuboidRegion r = new ProtectedCuboidRegion(
 						"Hotel-"+hotelName, 
 						new BlockVector(sel.getNativeMinimumPoint()), 
