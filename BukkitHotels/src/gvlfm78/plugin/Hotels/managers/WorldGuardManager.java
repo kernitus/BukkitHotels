@@ -72,7 +72,7 @@ public class WorldGuardManager {
 		r.setMembers(members);
 	}
 
-	public void addRegion(World w, ProtectedCuboidRegion r){
+	public void addRegion(World w, ProtectedRegion r){
 		getWorldGuard().getRegionManager(w).addRegion(r);
 	}
 	public void removeRegion(World w, String r){
@@ -109,7 +109,7 @@ public class WorldGuardManager {
 			saveRegions(world);
 		}
 	}
-	public void hotelFlags(ProtectedCuboidRegion r,String hotelName,Plugin plugin){
+	public void hotelFlags(ProtectedRegion r,String hotelName,Plugin plugin){
 		hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
 		//r.setFlag(DefaultFlag.PASSTHROUGH, State.ALLOW);
 		//r.setFlag(DefaultFlag.BUILD, State.DENY);
@@ -180,33 +180,33 @@ public class WorldGuardManager {
 		//r.setFlag(DefaultFlag.PRICE, price);
 		//r.setFlag(DefaultFlag.BUYABLE, Boolean.FALSE);
 	}	
-	public void roomFlags(ProtectedCuboidRegion r,String hotelName,Player p,int roomNum,Plugin plugin){
+	public void roomFlags(ProtectedRegion region,String hotelName,Player p,int roomNum,Plugin plugin){
 
-		groupFlags(r,DefaultFlag.CHEST_ACCESS);
-		groupFlags(r,DefaultFlag.USE);
-		groupFlags(r,DefaultFlag.SLEEP);
-		groupFlags(r,DefaultFlag.POTION_SPLASH);
-		groupFlags(r,DefaultFlag.ITEM_DROP);
-		groupFlags(r,DefaultFlag.EXP_DROPS);
+		groupFlags(region,DefaultFlag.CHEST_ACCESS);
+		groupFlags(region,DefaultFlag.USE);
+		groupFlags(region,DefaultFlag.SLEEP);
+		groupFlags(region,DefaultFlag.POTION_SPLASH);
+		groupFlags(region,DefaultFlag.ITEM_DROP);
+		groupFlags(region,DefaultFlag.EXP_DROPS);
 
-		r.setFlag(DefaultFlag.BLOCK_BREAK, State.DENY);
-		r.setFlag(DefaultFlag.BLOCK_PLACE, State.DENY);
-		r.setFlag(DefaultFlag.PVP, State.DENY);
-		r.setFlag(DefaultFlag.PISTONS, State.DENY);
-		r.setFlag(DefaultFlag.TNT, State.DENY);
-		r.setFlag(DefaultFlag.LIGHTER, State.DENY);
-		r.setFlag(DefaultFlag.MOB_SPAWNING, State.DENY);
+		region.setFlag(DefaultFlag.BLOCK_BREAK, State.DENY);
+		region.setFlag(DefaultFlag.BLOCK_PLACE, State.DENY);
+		region.setFlag(DefaultFlag.PVP, State.DENY);
+		region.setFlag(DefaultFlag.PISTONS, State.DENY);
+		region.setFlag(DefaultFlag.TNT, State.DENY);
+		region.setFlag(DefaultFlag.LIGHTER, State.DENY);
+		region.setFlag(DefaultFlag.MOB_SPAWNING, State.DENY);
 		if(plugin.getConfig().getBoolean("settings.use-room_enter_message"))
-			r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.room.enter").replaceAll("%room%", String.valueOf(roomNum))));
+			region.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.room.enter").replaceAll("%room%", String.valueOf(roomNum))));
 		if(plugin.getConfig().getBoolean("settings.use-room_exit_message"))
-			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.room.exit").replaceAll("%room%", String.valueOf(roomNum))));
+			region.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.room.exit").replaceAll("%room%", String.valueOf(roomNum))));
 	}
-	public void groupFlags(ProtectedCuboidRegion r,StateFlag f){
-		r.setFlag(f, State.DENY);
+	public void groupFlags(ProtectedRegion region,StateFlag f){
+		region.setFlag(f, State.DENY);
 		RegionGroupFlag gf = f.getRegionGroupFlag();
 		try {
 			RegionGroup groupValue = gf.parseInput(getWorldGuard(), null, "non_members");
-			r.setFlag(gf, groupValue);
+			region.setFlag(gf, groupValue);
 		} catch (InvalidFlagFormat e) {
 			e.printStackTrace();
 		}

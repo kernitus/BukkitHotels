@@ -189,8 +189,9 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.creationMode.hotelCreationFailed", String.valueOf("&4Could not create Hotel, hotel already exists"));
 		locale.addDefault("chat.creationMode.hotelCreationSuccessful", String.valueOf("&2You have successfully created the %hotel% hotel"));
 		locale.addDefault("chat.creationMode.noSelection", String.valueOf("&4Please select an area using the WE wand"));
+		locale.addDefault("chat.creationMode.selectionInvalid", String.valueOf("&4Invalid selection. Please select the are again"));
 		locale.addDefault("chat.creationMode.rooms.notInHotel", String.valueOf("&4The room is not in the specified hotel!"));
-		locale.addDefault("chat.creationMode.rooms.notInHotel", String.valueOf("&4Could not create room!"));
+		locale.addDefault("chat.creationMode.rooms.fail", String.valueOf("&4Could not create room!"));
 		locale.addDefault("chat.creationMode.inventory.storeFail", String.valueOf("&4Could not store your inventory"));
 		locale.addDefault("chat.creationMode.inventory.storeSuccess", String.valueOf("&aSuccessfully stored your inventory"));
 		locale.addDefault("chat.creationMode.inventory.restoreFail", String.valueOf("&4Failed to find your stored inventory"));

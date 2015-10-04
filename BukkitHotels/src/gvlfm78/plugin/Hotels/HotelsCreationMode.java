@@ -1,8 +1,5 @@
 package kernitus.plugin.Hotels;
 
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,10 +18,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
+import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsCreationMode {
 	private HotelsMain plugin;
@@ -34,7 +38,7 @@ public class HotelsCreationMode {
 	}
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	
+
 	//Prefix
 	YamlConfiguration locale = HConH.getLocale();
 	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
@@ -53,19 +57,24 @@ public class HotelsCreationMode {
 			if(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
 				p.sendMessage(prefix+locale.getString("chat.creationMode.hotelCreationFailed").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				return;}
-			else if(!(sel==null)){
-				ProtectedCuboidRegion r = new ProtectedCuboidRegion(
-						"Hotel-"+hotelName, 
-						new BlockVector(sel.getNativeMinimumPoint()), 
-						new BlockVector(sel.getNativeMaximumPoint())
-						);
-				WGM.addRegion(p.getWorld(), r);
-				WGM.hotelFlags(r,hotelName,plugin);
-				WGM.saveRegions(p.getWorld());
-				String idHotelName =r.getId();
-				String[] partsofhotelName = idHotelName.split("-");
-				String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1);
-				p.sendMessage(prefix+locale.getString("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", fromIdhotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			else if(sel!=null){
+				if(sel instanceof CuboidSelection){
+					ProtectedRegion r = new ProtectedCuboidRegion(
+							"Hotel-"+hotelName, 
+							new BlockVector(sel.getNativeMinimumPoint()), 
+							new BlockVector(sel.getNativeMaximumPoint())
+							);
+					createHotelRegion(plugin, p,r,hotelName);
+				}
+				else if(sel instanceof Polygonal2DSelection){
+					int minY = sel.getMinimumPoint().getBlockY();
+					int maxY = sel.getMaximumPoint().getBlockY();
+					List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
+					ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName, points, minY, maxY);
+					createHotelRegion(plugin, p,r,hotelName);
+				}
+				else
+					p.sendMessage(prefix+locale.getString("chat.creationMode.selectionInvalid").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 			}
 			else
 				p.sendMessage(prefix+locale.getString("chat.creationMode.noSelection").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
@@ -74,29 +83,56 @@ public class HotelsCreationMode {
 			p.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 	}
 
+	public void createHotelRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName){
+		World world = p.getWorld();
+		WGM.addRegion(world, region);
+		WGM.hotelFlags(region,hotelName,plugin);
+		WGM.saveRegions(world);
+		String idHotelName =region.getId();
+		String[] partsofhotelName = idHotelName.split("-");
+		String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1);
+		p.sendMessage(prefix+locale.getString("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", fromIdhotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+	}
+
+	public void createRoomRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName, int roomNum){
+		WGM.addRegion(p.getWorld(), region);
+		WGM.roomFlags(region,hotelName, p, roomNum,plugin);
+		region.setPriority(10);
+		WGM.saveRegions(p.getWorld());
+	}
+
 	public void roomSetup(String hotelName,int roomNum,CommandSender s,Plugin plugin){
 		Player p = (Player) s;
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
-		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)){
-			ProtectedRegion pr = WGM.getWorldGuard().getRegionManager(world).getRegion("Hotel-"+hotelName);
-			if((sel!=null)&&
-					(pr.contains(sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(), sel.getMinimumPoint().getBlockZ()))){
-				ProtectedCuboidRegion r = new ProtectedCuboidRegion(
-						"Hotel-"+hotelName+"-"+roomNum, 
-						new BlockVector(sel.getNativeMinimumPoint()), 
-						new BlockVector(sel.getNativeMaximumPoint())
-						);
-				WGM.addRegion(p.getWorld(), r);
-				WGM.roomFlags(r,hotelName, p, roomNum,plugin);
-				r.setPriority(10);
-				WGM.saveRegions(p.getWorld());
+		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("hotel-"+hotelName)){
+			ProtectedRegion pr = WGM.getWorldGuard().getRegionManager(world).getRegion("hotel-"+hotelName);
+			if(sel!=null){
+				if((sel instanceof Polygonal2DSelection)&&(pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
+				((sel instanceof CuboidSelection)&&(pr.contains(sel.getNativeMinimumPoint())&&pr.contains(sel.getNativeMaximumPoint())))){
+					//Creating room region
+					if(sel instanceof CuboidSelection){
+						ProtectedRegion r = new ProtectedCuboidRegion(
+								"Hotel-"+hotelName+"-"+roomNum, 
+								new BlockVector(sel.getNativeMinimumPoint()), 
+								new BlockVector(sel.getNativeMaximumPoint())
+								);
+						createRoomRegion(plugin,p,r,hotelName,roomNum);
+					}
+					else if(sel instanceof Polygonal2DSelection){
+						int minY = sel.getMinimumPoint().getBlockY();
+						int maxY = sel.getMaximumPoint().getBlockY();
+						List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
+						ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+roomNum, points, minY, maxY);
+						createRoomRegion(plugin,p,r,hotelName,roomNum);
+					}
+					else
+						p.sendMessage(prefix+locale.getString("chat.creationMode.selectionInvalid").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				}
+				else
+					p.sendMessage(prefix+locale.getString("chat.creationMode.rooms.notInHotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 			}
-			else if((sel!=null)&&
-					(!(pr.contains(sel.getMinimumPoint().getBlockX(), sel.getMinimumPoint().getBlockY(), sel.getMinimumPoint().getBlockZ())))){
-				p.sendMessage(prefix+locale.getString("chat.creationMode.rooms.notInHotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-			}
-			else if(sel==null)
+			else
 				p.sendMessage(prefix+locale.getString("chat.creationMode.noSelection").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 		}
 		else
