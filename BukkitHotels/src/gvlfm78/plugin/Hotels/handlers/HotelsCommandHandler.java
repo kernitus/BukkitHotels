@@ -164,6 +164,27 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 					sender.sendMessage(prefix+locale.getString("chat.commands.creationMode.noarg").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
+				else if(args.length>0&&args[0].equalsIgnoreCase("rent")){//TODO
+					if(sender instanceof Player){
+						Player p = ((Player) sender).getPlayer();
+						if(args.length<3)
+							sender.sendMessage(prefix+locale.getString("chat.commands.rent.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						else{
+							//Initialise renting
+							String hotelName = args[1];
+							String roomNum = args[2];
+							File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+							if(signFile.exists()){
+							YamlConfiguration signConfig = HConH.getyml(signFile);
+							SM.rentRoom(signConfig,plugin,signFile,p,hotelName,roomNum);
+							}
+							else
+								sender.sendMessage(prefix+locale.getString("chat.commands.rent.invalidData").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						}
+					}
+					else
+						sender.sendMessage(prefix+locale.getString("chat.commands.rent.consoleRejected").replaceAll("(?i)&([a-fk-r0-9])", ""));
+				}
 				else if((args.length>3)&&(args[0].equalsIgnoreCase("friend")||(args[0].equalsIgnoreCase("f")))){
 					if(sender instanceof Player){
 						if(sender.hasPermission("hotels.friend")){

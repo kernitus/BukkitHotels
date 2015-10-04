@@ -225,6 +225,7 @@ public class SignManager {
 
 				String[] Line2parts = Line2.split("\\s"); //Splitting Line2 into room num + cost
 				int roomNum = Integer.valueOf(Line2parts[1].trim()); //Room Number
+
 				File signFile = HConH.getFile("Signs"+File.separator+hotelName.toLowerCase()+"-"+roomNum+".yml");
 				if(signFile.exists()){
 					YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
@@ -232,78 +233,8 @@ public class SignManager {
 					int cRoomNum = signConfig.getInt("Sign.room");
 					if(hotelName.equalsIgnoreCase(cHotelName)){ //If hotel names match
 						if(roomNum==cRoomNum){ //If room nums match
-							//If region exists
-							if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion(signConfig.getString("Sign.region"))){
-
-								String cRenter = signConfig.getString("Sign.renter");
-								if(cRenter==null){ //If there is no renter
-									if(HotelsMain.economy.hasAccount(p)){
-										double account = HotelsMain.economy.getBalance(p);
-										double price = signConfig.getDouble("Sign.cost");
-										if(account>=price){//If player has enough money
-											//If player is under max owned rooms limit
-											if(getTimesRented(p.getUniqueId(),pluginstance)<pluginstance.getConfig().getInt("settings.max_rooms_owned")){
-												//Renter has passed all conditions and is able to rent this room
-												HotelsMain.economy.withdrawPlayer(p, price);
-												//Setting time rented at
-												signConfig.set("Sign.renter", p.getUniqueId().toString());
-												long currentmins = System.currentTimeMillis()/1000/60;
-												signConfig.set("Sign.timeRentedAt", currentmins);
-
-												//Setting expiry time
-												long minstoexpire = signConfig.getLong("Sign.time");
-												if(minstoexpire==0){
-													signConfig.set("Sign.expiryDate", 0);
-												}
-												else{
-													long expirydate = currentmins+minstoexpire;
-													signConfig.set("Sign.expiryDate", expirydate);
-												}
-
-												try {//Saving config file
-													signConfig.save(signFile);
-												} catch (IOException e1) {
-													e1.printStackTrace();
-												}
-
-												//Adding renter as region member
-												ProtectedRegion r = WGM.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+cHotelName+"-"+cRoomNum);
-												WGM.addMember(p, (ProtectedCuboidRegion) r);
-
-												try {//Saving WG regions
-													WGM.getWorldGuard().getRegionManager(p.getWorld()).save();
-												} catch (StorageException e1) {
-													e1.printStackTrace();
-												}
-												//pluginstance.getLogger().info("WGM Stuff: "WGM.getRegion(world, string));
-
-												s.setLine(3, ChatColor.RED+p.getName());//Writing renter name on sign
-												s.update();
-												DecimalFormat df = new DecimalFormat("#.##");
-												p.sendMessage(prefix+locale.getString("chat.sign.use.success").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName)
-														.replaceAll("%price%", String.valueOf(df.format(price))).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-												//Successfully rented room
-											}
-											else
-												p.sendMessage(prefix+locale.getString("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(pluginstance.getConfig().getInt("settings.max_rooms_owned"))).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-										}
-										else{
-											double topay = price-account;
-											p.sendMessage(prefix+locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
-										}
-									}
-									else
-										p.sendMessage(prefix+locale.getString("chat.sign.use.noAccount").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
-								}
-								else if(Bukkit.getServer().getOfflinePlayer(UUID.fromString(cRenter)).equals(p)){
-									//Renter is same player that right clicked
-									rentExtend(e,signConfig,signFile,pluginstance);
-								}
-								else
-									p.sendMessage(prefix+locale.getString("chat.sign.use.taken").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
-							}
-							else
-								p.sendMessage(prefix+locale.getString("chat.sign.use.nonExistantRoom").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+							String stringroomNum = String.valueOf(roomNum);
+							rentRoom(signConfig,pluginstance,signFile,p,hotelName,stringroomNum);
 						}
 						else
 							p.sendMessage(prefix+locale.getString("chat.sign.use.differentRoomNums").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
@@ -317,6 +248,89 @@ public class SignManager {
 			else
 				p.sendMessage(prefix+locale.getString("chat.sign.use.signOutOfRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 		}
+	}
+	public void rentRoom(YamlConfiguration signConfig,HotelsMain pluginstance,File signFile,Player p,String hotelName,String roomNum){
+		//If region exists
+		System.out.println("Region: "+signConfig.getString("Sign.region"));
+		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion(signConfig.getString("Sign.region"))){
+			String cRenter = signConfig.getString("Sign.renter");
+			if(cRenter==null){ //If there is no renter
+				if(HotelsMain.economy.hasAccount(p)){
+					double account = HotelsMain.economy.getBalance(p);
+					double price = signConfig.getDouble("Sign.cost");
+					if(account>=price){//If player has enough money
+						//If player is under max owned rooms limit
+						if(getTimesRented(p.getUniqueId(),pluginstance)<pluginstance.getConfig().getInt("settings.max_rooms_owned")){
+							//Renter has passed all conditions and is able to rent this room
+							HotelsMain.economy.withdrawPlayer(p, price);
+							//Setting time rented at
+							signConfig.set("Sign.renter", p.getUniqueId().toString());
+							long currentmins = System.currentTimeMillis()/1000/60;
+							signConfig.set("Sign.timeRentedAt", currentmins);
+
+							//Setting expiry time
+							long minstoexpire = signConfig.getLong("Sign.time");
+							if(minstoexpire==0){
+								signConfig.set("Sign.expiryDate", 0);
+							}
+							else{
+								long expirydate = currentmins+minstoexpire;
+								signConfig.set("Sign.expiryDate", expirydate);
+							}
+
+							try {//Saving config file
+								signConfig.save(signFile);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+
+							//Adding renter as region member
+							ProtectedRegion r = WGM.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+hotelName+"-"+roomNum);
+							WGM.addMember(p, (ProtectedCuboidRegion) r);
+
+							try {//Saving WG regions
+								WGM.getWorldGuard().getRegionManager(p.getWorld()).save();
+							} catch (StorageException e1) {
+								e1.printStackTrace();
+							}
+							World w = Bukkit.getWorld(signConfig.getString("Sign.location.world"));
+							int x = signConfig.getInt("Sign.location.coords.x");
+							int y = signConfig.getInt("Sign.location.coords.y");
+							int z = signConfig.getInt("Sign.location.coords.z");
+							Location loc = new Location(w,x,y,z);
+							Block block = loc.getBlock();
+							if(block.getType()==Material.SIGN||block.getType()==Material.WALL_SIGN||block.getType()==Material.SIGN_POST){
+								Sign s = (Sign) block.getState();
+								s.setLine(3, ChatColor.RED+p.getName());//Writing renter name on sign
+								s.update();
+								DecimalFormat df = new DecimalFormat("#.##");
+								p.sendMessage(prefix+locale.getString("chat.sign.use.success").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName)
+										.replaceAll("%price%", String.valueOf(df.format(price))).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+								//Successfully rented room
+							}
+							else
+								p.sendMessage(prefix+locale.getString("chat.commands.rent.invalidLocation").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+						}
+						else
+							p.sendMessage(prefix+locale.getString("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(pluginstance.getConfig().getInt("settings.max_rooms_owned"))).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					}
+					else{
+						double topay = price-account;
+						p.sendMessage(prefix+locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+					}
+				}
+				else
+					p.sendMessage(prefix+locale.getString("chat.sign.use.noAccount").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+			}
+			else if(Bukkit.getServer().getOfflinePlayer(UUID.fromString(cRenter)).equals(p)){
+				//Renter is same player that right clicked
+				rentExtend(p,signConfig,signFile,pluginstance);
+			}
+			else
+				p.sendMessage(prefix+locale.getString("chat.sign.use.taken").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+		}
+		else
+			p.sendMessage(prefix+locale.getString("chat.sign.use.nonExistantRoom").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 	}
 	public void breakRoomSign(BlockBreakEvent e){
 		Block b = e.getBlock();
@@ -379,113 +393,120 @@ public class SignManager {
 		return rents;
 	}
 
-	public void rentExtend(PlayerInteractEvent e,YamlConfiguration sconfig,File signFile,HotelsMain pluginstance){
-		FileConfiguration ymlconfig = pluginstance.getConfig();
-		Player p = e.getPlayer();
-		//Sign lines
-		Sign s = (Sign) e.getClickedBlock().getState();
-		if(sconfig.getInt("Sign.time")>0){
-			int extended = sconfig.getInt("Sign.extended");
-			int max = ymlconfig.getInt("settings.max_rent_extend");
-			if(extended<max){
-				double account = HotelsMain.economy.getBalance(p);
-				double price = sconfig.getDouble("Sign.cost");
-				if(account>=price){//If player has enough money
-					HotelsMain.economy.withdrawPlayer(p, price);
-					sconfig.set("Sign.extended", extended+1);
-					try {
-						sconfig.save(signFile);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-					long expiryDate = sconfig.getLong("Sign.expiryDate");
-					long deftime = sconfig.getLong("Sign.time");
-					sconfig.set("Sign.expiryDate", expiryDate+deftime);
-					try {
-						sconfig.save(signFile);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-					s.setLine(2, TimeFormatter(sconfig.getLong("Sign.expiryDate")-(System.currentTimeMillis()/1000/60) ));
-					s.update();
-					extended+=1;
-					if(max-extended>0)
-						p.sendMessage(prefix+locale.getString("chat.sign.use.extensionSuccess").replaceAll("%tot%", String.valueOf(extended)).replaceAll("%left%", String.valueOf(max-extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-					else
-						p.sendMessage(prefix+locale.getString("chat.sign.use.extensionSuccessNoMore").replaceAll("%tot%", String.valueOf(extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				}
-				else{
-					double topay = price-account;
-					p.sendMessage(prefix+locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				}
-			}
-			else
-				p.sendMessage(prefix+locale.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-		}
-	}
+	public void rentExtend(Player p,YamlConfiguration signConfig,File signFile,HotelsMain pluginstance){
+		FileConfiguration ymlConfig = pluginstance.getConfig();
+		World w = Bukkit.getWorld(signConfig.getString("Sign.location.world"));
+		int x = signConfig.getInt("Sign.location.coords.x");
+		int y = signConfig.getInt("Sign.location.coords.y");
+		int z = signConfig.getInt("Sign.location.coords.z");
+		Location loc = new Location(w,x,y,z);
+		Block block = loc.getBlock();
+		if(block.getType()==Material.SIGN||block.getType()==Material.WALL_SIGN||block.getType()==Material.SIGN_POST){
+			Sign s = (Sign) block.getState();
 
-	public int totalRooms(String hotelName,World w){
-		hotelName = hotelName.toLowerCase();
-		//Finds total amount of rooms in given hotel
-		int tot = 0;
-		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
-		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		for(ProtectedRegion r:rlist){
-			if(r.getId().startsWith("hotel-"+hotelName)){
-				if(r.getId().matches("^hotel-"+hotelName+"-.+")){
-					tot++;
-				}
-			}
-		}
-		return tot;
-	}
-
-	public int freeRooms(String hotelName,World w){
-		hotelName = hotelName.toLowerCase();
-		//Finds total amount of free rooms in given hotel
-		int free = 0;
-		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
-		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		for(ProtectedRegion r:rlist){
-			if(r.getId().startsWith("hotel-"+hotelName)){
-				if(r.getId().matches("^hotel-"+hotelName+"-.+")){
-					int roomNum = Integer.parseInt(r.getId().replaceAll("^hotel-.+-", ""));
-					File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
-					if(signFile.exists()){
-						new YamlConfiguration();
-						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
-						if(config.get("Sign.renter")==null){
-							free++;
+			if(signConfig.getInt("Sign.time")>0){
+				int extended = signConfig.getInt("Sign.extended");
+				int max = ymlConfig.getInt("settings.max_rent_extend");
+				if(extended<max){
+					double account = HotelsMain.economy.getBalance(p);
+					double price = signConfig.getDouble("Sign.cost");
+					if(account>=price){//If player has enough money
+						HotelsMain.economy.withdrawPlayer(p, price);
+						signConfig.set("Sign.extended", extended+1);
+						try {
+							signConfig.save(signFile);
+						} catch (IOException e1) {
+							e1.printStackTrace();
 						}
+						long expiryDate = signConfig.getLong("Sign.expiryDate");
+						long deftime = signConfig.getLong("Sign.time");
+						signConfig.set("Sign.expiryDate", expiryDate+deftime);
+						try {
+							signConfig.save(signFile);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+						s.setLine(2, TimeFormatter(signConfig.getLong("Sign.expiryDate")-(System.currentTimeMillis()/1000/60) ));
+						s.update();
+						extended+=1;
+						if(max-extended>0)
+							p.sendMessage(prefix+locale.getString("chat.sign.use.extensionSuccess").replaceAll("%tot%", String.valueOf(extended)).replaceAll("%left%", String.valueOf(max-extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						else
+							p.sendMessage(prefix+locale.getString("chat.sign.use.extensionSuccessNoMore").replaceAll("%tot%", String.valueOf(extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					}
+					else{
+						double topay = price-account;
+						p.sendMessage(prefix+locale.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					}
+				}
+				else
+					p.sendMessage(prefix+locale.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			}
+	}
+	else
+		p.sendMessage(prefix+locale.getString("chat.commands.rent.invalidLocation").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+}
+
+public int totalRooms(String hotelName,World w){
+	hotelName = hotelName.toLowerCase();
+	//Finds total amount of rooms in given hotel
+	int tot = 0;
+	Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
+	regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
+	ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
+	for(ProtectedRegion r:rlist){
+		if(r.getId().startsWith("hotel-"+hotelName)){
+			if(r.getId().matches("^hotel-"+hotelName+"-.+")){
+				tot++;
+			}
+		}
+	}
+	return tot;
+}
+
+public int freeRooms(String hotelName,World w){
+	hotelName = hotelName.toLowerCase();
+	//Finds total amount of free rooms in given hotel
+	int free = 0;
+	Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
+	regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
+	ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
+	for(ProtectedRegion r:rlist){
+		if(r.getId().startsWith("hotel-"+hotelName)){
+			if(r.getId().matches("^hotel-"+hotelName+"-.+")){
+				int roomNum = Integer.parseInt(r.getId().replaceAll("^hotel-.+-", ""));
+				File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+				if(signFile.exists()){
+					new YamlConfiguration();
+					YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
+					if(config.get("Sign.renter")==null){
+						free++;
 					}
 				}
 			}
 		}
-		return free;
 	}
+	return free;
+}
 
-	public boolean updateReceptionSign(Location l){
-		//Updates the reception sign at given location
-		Block b = l.getBlock();
-		if(b.getType().equals(Material.WALL_SIGN)||b.getType().equals(Material.SIGN)||l.getBlock().getType().equals(Material.SIGN_POST)){
-			Sign s = (Sign) b.getState();
-			String Line1 = ChatColor.stripColor(s.getLine(0));
-			String Line2 = ChatColor.stripColor(s.getLine(1));
-			if(Line1.equals("Reception")){ //First line is "Reception"
-				if(Line2!=null){
-					String[] Line2split = Line2.split(" ");
-					String hotelname = Line2split[0].toLowerCase();
-					if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
-						int tot = totalRooms(hotelname,b.getWorld());
-						int free = freeRooms(hotelname,b.getWorld());
-						s.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-						s.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-						s.update();
-						return false;
-					}
-					return true;
+public boolean updateReceptionSign(Location l){
+	//Updates the reception sign at given location
+	Block b = l.getBlock();
+	if(b.getType().equals(Material.WALL_SIGN)||b.getType().equals(Material.SIGN)||l.getBlock().getType().equals(Material.SIGN_POST)){
+		Sign s = (Sign) b.getState();
+		String Line1 = ChatColor.stripColor(s.getLine(0));
+		String Line2 = ChatColor.stripColor(s.getLine(1));
+		if(Line1.equals("Reception")){ //First line is "Reception"
+			if(Line2!=null){
+				String[] Line2split = Line2.split(" ");
+				String hotelname = Line2split[0].toLowerCase();
+				if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
+					int tot = totalRooms(hotelname,b.getWorld());
+					int free = freeRooms(hotelname,b.getWorld());
+					s.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					s.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					s.update();
+					return false;
 				}
 				return true;
 			}
@@ -493,73 +514,75 @@ public class SignManager {
 		}
 		return true;
 	}
-	public long TimeConverter(String immutedtime){
-		final Pattern p = Pattern.compile("(\\d+)([hmd])");
-		final Matcher m = p.matcher(immutedtime);
-		long totalMins = 0;
-		while (m.find())
-		{
-			final int duration = Integer.parseInt(m.group(1));
-			final TimeUnit interval = toTimeUnit(m.group(2));
-			final long l = interval.toMinutes(duration);
-			totalMins = totalMins + l;
-		}
-		return totalMins;
-	}
-
-	public TimeUnit toTimeUnit(@Nonnull final String c){
-		switch (c)
-		{
-		case "m": return TimeUnit.MINUTES;
-		case "h": return TimeUnit.HOURS;
-		case "d": return TimeUnit.DAYS;
-		default: throw new IllegalArgumentException(String.format("%s is not a valid time code [mhd]", c));
-		}
-	}
-	public double CostConverter(String immutedcost)
+	return true;
+}
+public long TimeConverter(String immutedtime){
+	final Pattern p = Pattern.compile("(\\d+)([hmd])");
+	final Matcher m = p.matcher(immutedtime);
+	long totalMins = 0;
+	while (m.find())
 	{
-		final Pattern p = Pattern.compile("(\\d+)([thkmb]||)");
-		final Matcher m = p.matcher(immutedcost);
-		double totalCost = 0;
-		while (m.find())
-		{
-			final double duration = Double.parseDouble(m.group(1));
-			final double interval = toCost(m.group(2));
-			final double l = interval*duration;
-			totalCost += l;
-		}
-		return totalCost;
+		final int duration = Integer.parseInt(m.group(1));
+		final TimeUnit interval = toTimeUnit(m.group(2));
+		final long l = interval.toMinutes(duration);
+		totalMins = totalMins + l;
 	}
+	return totalMins;
+}
 
-	public double toCost(@Nonnull final String c){
-		switch (c){
-		case "t": return 10;
-		case "h": return 100;
-		case "k": return 1000;
-		case "m": return 1000000;
-		case "b": return 1000000000;
-		case "": return 1;
+public TimeUnit toTimeUnit(@Nonnull final String c){
+	switch (c)
+	{
+	case "m": return TimeUnit.MINUTES;
+	case "h": return TimeUnit.HOURS;
+	case "d": return TimeUnit.DAYS;
+	default: throw new IllegalArgumentException(String.format("%s is not a valid time code [mhd]", c));
+	}
+}
+public double CostConverter(String immutedcost)
+{
+	final Pattern p = Pattern.compile("(\\d+)([thkmb]||)");
+	final Matcher m = p.matcher(immutedcost);
+	double totalCost = 0;
+	while (m.find())
+	{
+		final double duration = Double.parseDouble(m.group(1));
+		final double interval = toCost(m.group(2));
+		final double l = interval*duration;
+		totalCost += l;
+	}
+	return totalCost;
+}
 
-		default: throw new IllegalArgumentException(String.format("%s is not a valid cost code [thkmb]", c));
-		}
+public double toCost(@Nonnull final String c){
+	switch (c){
+	case "t": return 10;
+	case "h": return 100;
+	case "k": return 1000;
+	case "m": return 1000000;
+	case "b": return 1000000000;
+	case "": return 1;
+
+	default: throw new IllegalArgumentException(String.format("%s is not a valid cost code [thkmb]", c));
 	}
-	public String TimeFormatter(long input){
-		if(input>0){
-			//Formats time in minutes to days, hours and minutes
-			long[] ftime = new long[3];
-			ftime[0] = TimeUnit.MINUTES.toDays(input); //Days
-			ftime[1] = TimeUnit.MINUTES.toHours(input) - TimeUnit.DAYS.toHours(ftime[0]); //Hours
-			ftime[2] = input - TimeUnit.DAYS.toMinutes(ftime[0]) - TimeUnit.HOURS.toMinutes(ftime[1]); //Minutes
-			String line2 = "";
-			if(ftime[0]>0)
-				line2 = line2+ftime[0]+"d";
-			if(ftime[1]>0)
-				line2 = line2+ftime[1]+"h";
-			if(ftime[2]>0)
-				line2 = line2+ftime[2]+"m";
-			return line2;
-		}
-		else
-			return locale.getString("sign.permanent");
+}
+public String TimeFormatter(long input){
+	if(input>0){
+		//Formats time in minutes to days, hours and minutes
+		long[] ftime = new long[3];
+		ftime[0] = TimeUnit.MINUTES.toDays(input); //Days
+		ftime[1] = TimeUnit.MINUTES.toHours(input) - TimeUnit.DAYS.toHours(ftime[0]); //Hours
+		ftime[2] = input - TimeUnit.DAYS.toMinutes(ftime[0]) - TimeUnit.HOURS.toMinutes(ftime[1]); //Minutes
+		String line2 = "";
+		if(ftime[0]>0)
+			line2 = line2+ftime[0]+"d";
+		if(ftime[1]>0)
+			line2 = line2+ftime[1]+"h";
+		if(ftime[2]>0)
+			line2 = line2+ftime[2]+"m";
+		return line2;
 	}
+	else
+		return locale.getString("sign.permanent");
+}
 }

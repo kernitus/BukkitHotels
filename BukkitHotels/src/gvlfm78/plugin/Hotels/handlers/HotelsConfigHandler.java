@@ -83,6 +83,10 @@ public class HotelsConfigHandler {
 		return new File("plugins"+File.separator+"Hotels"+File.separator+filepath);
 	}
 	
+	public YamlConfiguration getyml(File file){
+		return YamlConfiguration.loadConfiguration(file);
+	}
+	
 	public YamlConfiguration getyml(String filepath){
 		return YamlConfiguration.loadConfiguration(getFile(filepath));
 	}
@@ -190,6 +194,7 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.creationMode.hotelCreationSuccessful", String.valueOf("&2You have successfully created the %hotel% hotel"));
 		locale.addDefault("chat.creationMode.noSelection", String.valueOf("&4Please select an area using the WE wand"));
 		locale.addDefault("chat.creationMode.selectionInvalid", String.valueOf("&4Invalid selection. Please select the are again"));
+		locale.addDefault("chat.creationMode.invalidChar", String.valueOf("&4Name must not contain the character &6&l-"));
 		locale.addDefault("chat.creationMode.rooms.notInHotel", String.valueOf("&4The room is not in the specified hotel!"));
 		locale.addDefault("chat.creationMode.rooms.fail", String.valueOf("&4Could not create room!"));
 		locale.addDefault("chat.creationMode.inventory.storeFail", String.valueOf("&4Could not store your inventory"));
@@ -219,6 +224,10 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.commands.hotelNonExistant", String.valueOf("&4Specified hotel does not exist"));
 		locale.addDefault("chat.commands.worldNonExistant", String.valueOf("&4Specified world does not exist"));
 		locale.addDefault("chat.commands.reload.success", String.valueOf("&aConfiguration files successfully reloaded!"));
+		locale.addDefault("chat.commands.rent.consoleRejected", String.valueOf("The console can't rent rooms!"));
+		locale.addDefault("chat.commands.rent.usage", String.valueOf("&4Correct usage: &6&o/ht rent hotelname roomnum"));
+		locale.addDefault("chat.commands.rent.invalidLocation", String.valueOf("&4Sign location in sign file does not resolve to a sign!"));
+		locale.addDefault("chat.commands.rent.invalidData", String.valueOf("&4Hotel name or room number entered are not valid"));
 		locale.addDefault("chat.commands.creationMode.enter", String.valueOf("&aYou have entered hotel creation mode."));
 		locale.addDefault("chat.commands.creationMode.exit", String.valueOf("&aYou have exited hotel creation mode."));
 		locale.addDefault("chat.commands.creationMode.reset", String.valueOf("&2The inventory files have been reset."));

@@ -53,6 +53,7 @@ public class HotelsCreationMode {
 	public void hotelSetup(String hotelName, CommandSender s,Plugin plugin){
 		hotelName = hotelName.toLowerCase();
 		Player p = (Player) s;
+		if(!hotelName.contains("-")){
 		if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.commands")||p.hasPermission("hotels.*")))){
 			Selection sel = getWorldEdit().getSelection(p);
 			if(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
@@ -84,6 +85,9 @@ public class HotelsCreationMode {
 		else
 			p.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 	}
+		else
+			p.sendMessage(prefix+locale.getString("chat.creationMode.invalidChar").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+}
 
 	public void createHotelRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName){
 		World world = p.getWorld();
