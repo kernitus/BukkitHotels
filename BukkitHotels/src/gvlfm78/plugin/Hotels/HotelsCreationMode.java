@@ -59,6 +59,7 @@ public class HotelsCreationMode {
 				p.sendMessage(prefix+locale.getString("chat.creationMode.hotelCreationFailed").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				return;}
 			else if(sel!=null){
+				//Creating hotel region
 				if(sel instanceof CuboidSelection){
 					ProtectedRegion r = new ProtectedCuboidRegion(
 							"Hotel-"+hotelName, 
