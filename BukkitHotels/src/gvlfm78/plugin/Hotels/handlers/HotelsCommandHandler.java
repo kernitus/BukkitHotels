@@ -437,7 +437,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 							if(args.length!=4){
 								Player p = (Player) sender;
 								World world = p.getWorld();
-								String hotelname = args[1];
+								String hotelname = args[1].toLowerCase();
 								String roomnum = args[2];
 								if(WGM.hasRegion(world, "hotel-"+hotelname)){
 									if(WGM.hasRegion(world, "hotel-"+hotelname+"-"+roomnum)){

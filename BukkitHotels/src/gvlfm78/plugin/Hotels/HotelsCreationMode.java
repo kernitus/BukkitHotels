@@ -51,6 +51,7 @@ public class HotelsCreationMode {
 	}
 
 	public void hotelSetup(String hotelName, CommandSender s,Plugin plugin){
+		hotelName = hotelName.toLowerCase();
 		Player p = (Player) s;
 		if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.commands")||p.hasPermission("hotels.*")))){
 			Selection sel = getWorldEdit().getSelection(p);
@@ -102,6 +103,7 @@ public class HotelsCreationMode {
 	}
 
 	public void roomSetup(String hotelName,int roomNum,CommandSender s,Plugin plugin){
+		hotelName = hotelName.toLowerCase();
 		Player p = (Player) s;
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();

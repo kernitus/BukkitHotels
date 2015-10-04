@@ -89,7 +89,7 @@ public class GameLoop extends BukkitRunnable {
 							if(config.get("Sign.expiryDate")!=null){
 								long expirydate = config.getLong("Sign.expiryDate");
 								if(expirydate!=0){
-									if(expirydate<((System.currentTimeMillis())/1000/60)){//If rent has expired
+									if(expirydate<=((System.currentTimeMillis())/1000/60)){//If rent has expired
 										String r = config.getString("Sign.region");
 										ProtectedCuboidRegion region = (ProtectedCuboidRegion) WGM.getWorldGuard().getRegionManager(world).getRegion(r);
 										if(config.getString("Sign.renter")!=null){
