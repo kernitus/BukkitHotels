@@ -26,6 +26,7 @@ permissions:
        hotels.rename: true
        hotels.renumber: true
        hotels.remove: true
+       hotels.rent: true
        hotels.check: true
        hotels.check.others: true
        hotels.sign.create: true
@@ -54,6 +55,9 @@ permissions:
    hotels.remove:
      description: Allows you to remove a player as a renter of a room
      default: op
+   hotels.rent:
+     description: Allows you to rent rooms through command
+     default: true
    hotels.check:
      description: Allows you to see stats about your rented rooms
      default: true

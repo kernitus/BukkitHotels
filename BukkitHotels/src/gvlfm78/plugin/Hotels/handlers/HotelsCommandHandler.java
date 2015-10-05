@@ -164,9 +164,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 					sender.sendMessage(prefix+locale.getString("chat.commands.creationMode.noarg").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				}
-				else if(args.length>0&&args[0].equalsIgnoreCase("rent")){//TODO
+				else if(args.length>0&&args[0].equalsIgnoreCase("rent")){
 					if(sender instanceof Player){
 						Player p = ((Player) sender).getPlayer();
+						if(sender.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(sender.hasPermission("hotels.createmode")||sender.hasPermission("hotels.*")))){
 						if(args.length<3)
 							sender.sendMessage(prefix+locale.getString("chat.commands.rent.usage").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						else{
@@ -181,6 +182,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 							else
 								sender.sendMessage(prefix+locale.getString("chat.commands.rent.invalidData").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						}
+					}
+					else
+						sender.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", ""));
 					}
 					else
 						sender.sendMessage(prefix+locale.getString("chat.commands.rent.consoleRejected").replaceAll("(?i)&([a-fk-r0-9])", ""));
