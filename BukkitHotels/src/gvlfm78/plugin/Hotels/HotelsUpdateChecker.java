@@ -6,6 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.HotelsMessageManager;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -22,7 +23,7 @@ public class HotelsUpdateChecker {
 	{
 		this.plugin = Huc;
 	}
-
+	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 	YamlConfiguration locale = HConH.getLocale();
 	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "")+" ");
@@ -57,7 +58,7 @@ public class HotelsUpdateChecker {
 				return true;
 			}
 		} catch (UnknownHostException uhe){
-			plugin.getServer().getLogger().severe(prefix+locale.getString("main.noConnection"));
+			plugin.getServer().getLogger().severe(HMM.mes("main.noConnection"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

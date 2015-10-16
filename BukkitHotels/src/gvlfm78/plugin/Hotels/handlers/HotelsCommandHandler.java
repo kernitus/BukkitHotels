@@ -2,36 +2,15 @@ package kernitus.plugin.Hotels.handlers;
 
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.managers.GameLoop;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
+import kernitus.plugin.Hotels.managers.HotelsMessageManager;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.apache.commons.lang3.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.managers.storage.StorageException;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HotelsCommandHandler implements CommandExecutor {
 	private HotelsMain plugin;
@@ -39,6 +18,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 	{
 		this.plugin = instance;
 	}
+	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
 	SignManager SM = new SignManager(plugin);
 	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
 	WorldGuardManager WGM = new WorldGuardManager(plugin);

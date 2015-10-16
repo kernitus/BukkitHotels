@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.HotelsMessageManager;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
@@ -37,6 +38,7 @@ public class HotelsListener implements Listener {
 	public HotelsListener(HotelsMain instance){
 		this.plugin = instance;
 	}
+	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
 	SignManager SM = new SignManager(plugin);
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
@@ -66,7 +68,7 @@ public class HotelsListener implements Listener {
 				}
 			}
 			else{
-				p.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+				p.sendMessage(HMM.mes("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 				e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 				//No permissions
 			}
@@ -84,7 +86,7 @@ public class HotelsListener implements Listener {
 					SM.useRoomSign(e,plugin);
 				}
 				else
-					p.sendMessage(prefix+locale.getString("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+					p.sendMessage(HMM.mes("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 			}
 		}
 	}

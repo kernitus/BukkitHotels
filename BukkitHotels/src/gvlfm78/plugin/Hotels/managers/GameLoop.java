@@ -33,6 +33,7 @@ public class GameLoop extends BukkitRunnable {
 	public GameLoop(HotelsMain instance) {
 		this.plugin = instance;
 	}
+	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
 	SignManager SM = new SignManager(plugin);
 	HotelsFileFinder HFF = new HotelsFileFinder(plugin);
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
@@ -108,7 +109,7 @@ public class GameLoop extends BukkitRunnable {
 											plugin.getLogger().info(locale.getString("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
 											if(p.isOnline()){
 												Player op = Bukkit.getServer().getPlayer(UUID.fromString(config.getString("Sign.renter")));
-												op.sendMessage(prefix+locale.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+												op.sendMessage(HMM.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 											}
 											else{
 												YamlConfiguration queue = HConH.getMessageQueue();
