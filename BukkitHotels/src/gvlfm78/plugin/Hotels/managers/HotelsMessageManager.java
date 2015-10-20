@@ -23,7 +23,7 @@ public class HotelsMessageManager {
 	public String mes(String path){
 		String mes = locale.getString(path);
 		if(mes!=null){
-		mes = prefix+mes;
+		mes = (prefix+mes).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
 		}
 		else
 			mes = ChatColor.DARK_RED + "Message is null!";

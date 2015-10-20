@@ -49,14 +49,15 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info("[Hotels] Generating config file...");
 		config.options().header("Hotels Plugin by kernitus");
 		config.addDefault("settings.language", String.valueOf("en"));
+		config.addDefault("settings.commands.onlyDisplayAllowed", Boolean.FALSE);
 		config.addDefault("settings.max_rooms_owned", Integer.valueOf(3));
 		config.addDefault("settings.max_rent_extend", Integer.valueOf(3));
-		config.addDefault("settings.use-permissions", Boolean.valueOf(true));
-		config.addDefault("settings.checkForUpdates", Boolean.valueOf(true));
-		config.addDefault("settings.use-hotel_enter_message", Boolean.valueOf(true));
-		config.addDefault("settings.use-hotel_exit_message", Boolean.valueOf(true));
-		config.addDefault("settings.use-room_enter_message", Boolean.valueOf(true));
-		config.addDefault("settings.use-room_exit_message", Boolean.valueOf(true));
+		config.addDefault("settings.use-permissions", Boolean.TRUE);
+		config.addDefault("settings.checkForUpdates", Boolean.TRUE);
+		config.addDefault("settings.use-hotel_enter_message", Boolean.TRUE);
+		config.addDefault("settings.use-hotel_exit_message", Boolean.TRUE);
+		config.addDefault("settings.use-room_enter_message", Boolean.TRUE);
+		config.addDefault("settings.use-room_exit_message", Boolean.TRUE);
 
 		config.options().copyDefaults(true);
 		plugin.saveConfig();
@@ -215,6 +216,63 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.creationMode.items.sign.lore1", String.valueOf("R-click to place"));
 		locale.addDefault("chat.creationMode.items.sign.lore2", String.valueOf("First Line: &9[Hotels]"));
 
+		locale.addDefault("chat.commands.commands.header", String.valueOf("&4================================"));
+		locale.addDefault("chat.commands.commands.subheader", String.valueOf("&5--Hotels plugin command help page--"));
+		locale.addDefault("chat.commands.commands.footer", String.valueOf("&4================================"));
+		locale.addDefault("chat.commands.commands.help", String.valueOf("&6/ht help - &aDisplays help page"));
+		
+		locale.addDefault("chat.commands.commands.creationMode", String.valueOf("&6/ht [creationmode|cm] [enter/exit] - &aEnter/exit creation mode"));
+		locale.addDefault("chat.commands.commands.create", String.valueOf("&6/ht [create|c] [hotelname] - &aCreate a hotel with current selection"));
+		locale.addDefault("chat.commands.commands.room", String.valueOf("&6/ht room [hotelname] <roomnum> - &aCreate room with current selection within specified hotel"));
+		locale.addDefault("chat.commands.commands.renum", String.valueOf("&6/ht renum [hotel] [oldnum] [newnum] - &aRenumbers specified room"));
+		locale.addDefault("chat.commands.commands.rename", String.valueOf("&6/ht rename [oldname] [newname] - &aRenames specified hotel"));
+		
+		locale.addDefault("chat.commands.commands.check", String.valueOf("&6/ht check <player> - &aLists all rooms rented by you/specified player"));
+		locale.addDefault("chat.commands.commands.list", String.valueOf("&6/ht list <world> - &aLists all hotels in current/specified world"));
+		locale.addDefault("chat.commands.commands.rlist", String.valueOf("&6/ht rlist [hotel] <world> - &aLists all rooms in specified hotel in current/specified world"));
+		
+		locale.addDefault("chat.commands.commands.friend", String.valueOf("&6/ht friend [add/remove] [hotel] [room] [player] - &aAdds/removes a player from the list of friends that can access the specified room"));
+		locale.addDefault("chat.commands.commands.friendList", String.valueOf("&6/ht friend list [hotel] [room] - &aLists players in friend list of specified hotel room"));
+		
+		locale.addDefault("chat.commands.commands.remove", String.valueOf("&6/ht remove [player] [hotel] [room] - &aRemoves player from his rented room"));
+		locale.addDefault("chat.commands.commands.delr", String.valueOf("&6/ht delr [hotelname] [roomnum] - &aDeletes specified room"));
+		locale.addDefault("chat.commands.commands.delete", String.valueOf("&6/ht delete [hotelname] - &aDelete specified hotel"));
+		
+		locale.addDefault("chat.commands.help.header", String.valueOf("&4================================"));
+		locale.addDefault("chat.commands.help.subheader", String.valueOf("&5--Hotels plugin help page--"));
+		locale.addDefault("chat.commands.help.prefooter", String.valueOf("&4Type &3&o/ht help %num%&r&4 to get to page %num%"));
+		locale.addDefault("chat.commands.help.footer", String.valueOf("&4================================"));
+		
+		locale.addDefault("chat.commands.help.page1.1", String.valueOf("&4-Page 1- &9Selection of hotel cuboid"));
+		locale.addDefault("chat.commands.help.page1.2", String.valueOf("&e1. Type &3&o/ht [creationmode&r&3|&3&ocm] enter"));
+		locale.addDefault("chat.commands.help.page1.3", String.valueOf("&e2. Take your WorldEdit wand in hand"));
+		locale.addDefault("chat.commands.help.page1.4", String.valueOf("&e3. Left click and right click opposing corners of your hotel"));
+		
+		locale.addDefault("chat.commands.help.page2.1", String.valueOf("&4-Page 2- &9Creation of the hotel"));
+		locale.addDefault("chat.commands.help.page2.2", String.valueOf("&e1. Type &3&o/ht [create&r&3|&oc] [nameofhotel]"));
+		
+		locale.addDefault("chat.commands.help.page3.1", String.valueOf("&4-Page 3- &9Creation of a room"));
+		locale.addDefault("chat.commands.help.page3.2", String.valueOf("&e1. Get out your WorldEdit wand again"));
+		locale.addDefault("chat.commands.help.page3.3", String.valueOf("&e2. Left click and right click opposing corners of the room"));
+		locale.addDefault("chat.commands.help.page3.4", String.valueOf("&e3. Type &3&o/ht room [hotel] [roomnum]"));
+		
+		locale.addDefault("chat.commands.help.page4.1", String.valueOf("&4-Page 4- &9Adding a sign"));
+		locale.addDefault("chat.commands.help.page4.2", String.valueOf("&e1. Grab a sign and place it outside of the room"));
+		locale.addDefault("chat.commands.help.page4.3", String.valueOf("&e2. Type on the sign:"));
+		locale.addDefault("chat.commands.help.page4.4", String.valueOf("&e    [Hotels]"));
+		locale.addDefault("chat.commands.help.page4.5", String.valueOf("&e    hotelname"));
+		locale.addDefault("chat.commands.help.page4.6", String.valueOf("&e    roomnum:cost"));
+		locale.addDefault("chat.commands.help.page4.7", String.valueOf("&e    time"));
+		
+		locale.addDefault("chat.commands.help.page5.1", String.valueOf("&4-Page 5- &9Example of a sign"));
+		locale.addDefault("chat.commands.help.page5.2", String.valueOf("&e1. Example of a sign:"));
+		locale.addDefault("chat.commands.help.page5.3", String.valueOf("&e    [Hotels]"));
+		locale.addDefault("chat.commands.help.page5.4", String.valueOf("&e    TheBestHotel"));
+		locale.addDefault("chat.commands.help.page5.5", String.valueOf("&e    15:1m3k"));
+		locale.addDefault("chat.commands.help.page5.6", String.valueOf("&e    3d 6m 2s"));
+		locale.addDefault("chat.commands.help.page5.7", String.valueOf("&9&oYou can use &20 &9&oas a time to make the rent infinite"));
+		locale.addDefault("chat.commands.help.page5.8", String.valueOf("&9&oIn cost, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2billion (1000 million)"));
+		
 		locale.addDefault("chat.commands.unknownArg", String.valueOf("&4Unknown argument. Try &3&o/hotels"));
 		locale.addDefault("chat.commands.noWorld", String.valueOf("&cPlease specify world"));
 		locale.addDefault("chat.commands.noHotel", String.valueOf("&cPlease specify hotel"));
@@ -266,6 +324,7 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.commands.listRooms.footer", String.valueOf("&c==End of room list for %hotel% hotel=="));
 		locale.addDefault("chat.commands.listRooms.line", String.valueOf("&6Room n: &c%room%%space%%state%"));
 		locale.addDefault("chat.commands.listRooms.noRooms", String.valueOf("&cThere are no rooms in that hotel"));
+		locale.addDefault("chat.commands.listRooms.usage", String.valueOf("&4Correct usage: /ht rlist [hotel] <world>"));
 		locale.addDefault("chat.commands.removeSigns.success", String.valueOf("&aSuccessfully removed all signs"));
 		locale.addDefault("chat.commands.friend.usage", String.valueOf("&4Correct usage: /hotels friend [add/remove/list] [hotel] [room] <friendname>"));
 		locale.addDefault("chat.commands.friend.wrongData", String.valueOf("&4The hotel or room number entered do not match any existing location"));
