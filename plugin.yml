@@ -12,8 +12,6 @@ commands:
   Hotels:
    description: Hotels's main command
    aliases: ht
-   permission: hotels.*
-   permission-message: You do not have permission!
 
 permissions:
    hotels.*:

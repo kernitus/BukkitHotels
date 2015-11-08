@@ -49,7 +49,7 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info("[Hotels] Generating config file...");
 		config.options().header("Hotels Plugin by kernitus");
 		config.addDefault("settings.language", String.valueOf("en"));
-		config.addDefault("settings.commands.onlyDisplayAllowed", Boolean.FALSE);
+		config.addDefault("settings.commands.onlyDisplayAllowed", Boolean.TRUE);
 		config.addDefault("settings.max_rooms_owned", Integer.valueOf(3));
 		config.addDefault("settings.max_rent_extend", Integer.valueOf(3));
 		config.addDefault("settings.use-permissions", Boolean.TRUE);
@@ -92,12 +92,21 @@ public class HotelsConfigHandler {
 		return YamlConfiguration.loadConfiguration(getFile(filepath));
 	}
 	
+	public File getconfigymlFile(){
+		return new File("plugins//Hotels//config.yml");
+	}
+	
 	public File getLocaleFile(){
 		return new File("plugins//Hotels//locale.yml");
 	}
 	
 	public File getMessageQueueFile(){
 		return new File("plugins//Hotels//queuedMessages.yml");
+	}
+	
+	public YamlConfiguration getconfigyml(){
+		File file = getconfigymlFile();
+		return YamlConfiguration.loadConfiguration(file);
 	}
 	
 	public YamlConfiguration getLocale(){
@@ -151,7 +160,7 @@ public class HotelsConfigHandler {
 		locale.addDefault("message.room.exit", String.valueOf("&aCome back soon to Room %room%"));
 
 		locale.addDefault("sign.permanent", String.valueOf("Permanent"));
-		locale.addDefault("sign.room", String.valueOf("&aRoom"));
+		locale.addDefault("sign.room.name", String.valueOf("&2Room"));
 		locale.addDefault("sign.room.free", String.valueOf("Free Rooms"));
 		locale.addDefault("sign.room.total", String.valueOf("Total Rooms"));
 		locale.addDefault("sign.reception", String.valueOf("Reception"));

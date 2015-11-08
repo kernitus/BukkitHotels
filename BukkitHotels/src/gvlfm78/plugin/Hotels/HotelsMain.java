@@ -2,27 +2,27 @@ package kernitus.plugin.Hotels;
 
 import java.io.IOException;
 
-import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.GameLoop;
-import net.milkbowl.vault.economy.Economy;
-
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.GameLoop;
+import net.milkbowl.vault.economy.Economy;
+
 public class HotelsMain extends JavaPlugin{
 
 	public static Economy economy = null; //Creating economy variable
-	
+
 	HotelsConfigHandler HConH = new HotelsConfigHandler(this);
 	GameLoop gameloop;
 	protected HotelsUpdateChecker updateChecker;
-	
+
 	YamlConfiguration locale = HConH.getLocale();
 	YamlConfiguration queue = HConH.getMessageQueue();
-	
+
 	@Override
 	public void onEnable(){
 		setupConfig();

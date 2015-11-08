@@ -110,7 +110,7 @@ public class WorldGuardManager {
 		}
 	}
 	public void hotelFlags(ProtectedRegion r,String hotelName,Plugin plugin){
-		hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
+		hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1).toLowerCase();
 		//r.setFlag(DefaultFlag.PASSTHROUGH, State.ALLOW);
 		//r.setFlag(DefaultFlag.BUILD, State.DENY);
 		r.setFlag(DefaultFlag.PVP, State.DENY);

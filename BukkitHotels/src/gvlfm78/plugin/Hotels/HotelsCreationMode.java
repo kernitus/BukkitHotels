@@ -41,10 +41,6 @@ public class HotelsCreationMode {
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 
-	//Prefix
-	YamlConfiguration locale = HConH.getLocale();
-	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
-
 	public void checkFolder(){
 		File file = HConH.getFile("Inventories");
 		if(!file.exists()){
@@ -59,7 +55,7 @@ public class HotelsCreationMode {
 		if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.commands")||p.hasPermission("hotels.*")))){
 			Selection sel = getWorldEdit().getSelection(p);
 			if(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
-				p.sendMessage(HMM.mes("chat.creationMode.hotelCreationFailed").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				p.sendMessage(HMM.mes("chat.creationMode.hotelCreationFailed"));
 				return;}
 			else if(sel!=null){
 				//Creating hotel region
@@ -79,16 +75,16 @@ public class HotelsCreationMode {
 					createHotelRegion(plugin, p,r,hotelName);
 				}
 				else
-					p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
 			}
 			else
-				p.sendMessage(HMM.mes("chat.creationMode.noSelection").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				p.sendMessage(HMM.mes("chat.creationMode.noSelection"));
 		}
 		else
-			p.sendMessage(HMM.mes("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.noPermission"));
 	}
 		else
-			p.sendMessage(HMM.mes("chat.creationMode.invalidChar").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.creationMode.invalidChar"));
 }
 
 	public void createHotelRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName){
@@ -98,8 +94,8 @@ public class HotelsCreationMode {
 		WGM.saveRegions(world);
 		String idHotelName =region.getId();
 		String[] partsofhotelName = idHotelName.split("-");
-		String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1);
-		p.sendMessage(HMM.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", fromIdhotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+		String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1).toLowerCase();
+		p.sendMessage(HMM.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", fromIdhotelName));
 	}
 
 	public void createRoomRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName, int roomNum){
@@ -136,16 +132,16 @@ public class HotelsCreationMode {
 						createRoomRegion(plugin,p,r,hotelName,roomNum);
 					}
 					else
-						p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
 				}
 				else
-					p.sendMessage(HMM.mes("chat.creationMode.rooms.notInHotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					p.sendMessage(HMM.mes("chat.creationMode.rooms.notInHotel"));
 			}
 			else
-				p.sendMessage(HMM.mes("chat.creationMode.noSelection").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				p.sendMessage(HMM.mes("chat.creationMode.noSelection"));
 		}
 		else
-			p.sendMessage(HMM.mes("chat.creationMode.rooms.fail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.creationMode.rooms.fail"));
 	}
 
 	public void resetInventoryFiles(CommandSender s){
@@ -173,7 +169,7 @@ public class HotelsCreationMode {
 			try {
 				file.createNewFile();
 			} catch (IOException e){
-				p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail"));
 			}
 			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
 			ItemStack[] contents = p.getInventory().getContents();
@@ -187,12 +183,12 @@ public class HotelsCreationMode {
 			try {
 				inv.save(file);
 			} catch (IOException e) {
-				p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail"));
 			}
 			p.getInventory().clear();
-			p.sendMessage(HMM.mes("chat.creationMode.inventory.storeSuccess").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.creationMode.inventory.storeSuccess"));
 		}else{
-			p.sendMessage(prefix+HMM.mes("chat.creationMode.inventory.storeFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail"));
 		}
 	}
 
@@ -206,7 +202,7 @@ public class HotelsCreationMode {
 			try {
 				file.createNewFile();
 			} catch (IOException e){
-				p.sendMessage(HMM.mes("chat.creationMode.armour.storeFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				p.sendMessage(HMM.mes("chat.creationMode.armour.storeFail"));
 			}
 			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
 			ItemStack[] contents = p.getInventory().getArmorContents();
@@ -220,12 +216,12 @@ public class HotelsCreationMode {
 			try {
 				inv.save(file);
 			} catch (IOException e) {
-				p.sendMessage(HMM.mes("chat.creationMode.armour.storeFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				p.sendMessage(HMM.mes("chat.creationMode.armour.storeFail"));
 			}
 			p.getInventory().setArmorContents(null);;
-			p.sendMessage(HMM.mes("chat.creationMode.armour.storeSuccess").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.creationMode.armour.storeSuccess"));
 		}else{
-			p.sendMessage(HMM.mes("chat.creationMode.armour.storeFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.creationMode.armour.storeFail"));
 		}
 	}
 
@@ -244,11 +240,11 @@ public class HotelsCreationMode {
 				contents[i] = (ItemStack) list.get(i);
 			}
 			p.getInventory().setArmorContents(contents);
-			p.sendMessage(HMM.mes("chat.creationMode.armour.restoreSuccess").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.creationMode.armour.restoreSuccess"));
 			file.delete();
 
 		}else{
-			p.sendMessage(HMM.mes("chat.creationMode.armour.restoreFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.creationMode.armour.restoreFail"));
 		}
 	}
 
@@ -267,11 +263,11 @@ public class HotelsCreationMode {
 				contents[i] = (ItemStack) list.get(i);
 			}
 			p.getInventory().setContents(contents);
-			p.sendMessage(HMM.mes("chat.creationMode.inventory.restoreSuccess").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.creationMode.inventory.restoreSuccess"));
 			file.delete();
 
 		}else{
-			p.sendMessage(HMM.mes("chat.creationMode.inventory.restoreFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.creationMode.inventory.restoreFail"));
 		}
 	}
 
@@ -299,10 +295,10 @@ public class HotelsCreationMode {
 				@SuppressWarnings("deprecation")
 				ItemStack wand = new ItemStack(wanditem, 1);
 				ItemMeta im = wand.getItemMeta();
-				im.setDisplayName(locale.getString("chat.creationMode.items.wand.name").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				im.setDisplayName(HMM.mesnopre("chat.creationMode.items.wand.name"));
 				List<String> loreList = new ArrayList<String>();
-				loreList.add(locale.getString("chat.creationMode.items.wand.lore1").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				loreList.add(locale.getString("chat.creationMode.items.wand.lore2").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				loreList.add(HMM.mesnopre("chat.creationMode.items.wand.lore1"));
+				loreList.add(HMM.mesnopre("chat.creationMode.items.wand.lore2"));
 				im.setLore(loreList);
 				wand.setItemMeta(im);
 				pi.setItem(1, wand);
@@ -311,19 +307,19 @@ public class HotelsCreationMode {
 		}
 		ItemStack compass = new ItemStack(Material.COMPASS, 1);
 		ItemMeta cim = compass.getItemMeta();
-		cim.setDisplayName(locale.getString("chat.creationMode.items.compass.name").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+		cim.setDisplayName(HMM.mesnopre("chat.creationMode.items.compass.name"));
 		List<String> compassLoreList = new ArrayList<String>();
-		compassLoreList.add(locale.getString("chat.creationMode.items.compass.lore1").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-		compassLoreList.add(locale.getString("chat.creationMode.items.compass.lore2").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+		compassLoreList.add(HMM.mesnopre("chat.creationMode.items.compass.lore1"));
+		compassLoreList.add(HMM.mesnopre("chat.creationMode.items.compass.lore2"));
 		cim.setLore(compassLoreList);
 		compass.setItemMeta(cim);
 		pi.setItem(0, compass);
 		ItemStack sign = new ItemStack(Material.SIGN, 1);
 		ItemMeta sim = sign.getItemMeta();
-		sim.setDisplayName(locale.getString("chat.creationMode.items.sign.name").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+		sim.setDisplayName(HMM.mesnopre("chat.creationMode.items.sign.name"));
 		List<String> signLoreList = new ArrayList<String>();
-		signLoreList.add(locale.getString("chat.creationMode.items.sign.lore1").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-		signLoreList.add(locale.getString("chat.creationMode.items.sign.lore2").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+		signLoreList.add(HMM.mesnopre("chat.creationMode.items.sign.lore1"));
+		signLoreList.add(HMM.mesnopre("chat.creationMode.items.sign.lore2"));
 		sim.setLore(signLoreList);
 		sign.setItemMeta(sim);
 		pi.setItem(2, sign);

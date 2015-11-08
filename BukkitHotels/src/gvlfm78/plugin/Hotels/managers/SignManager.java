@@ -49,7 +49,7 @@ public class SignManager {
 
 	//Prefix
 	YamlConfiguration locale = HConH.getLocale();
-	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
+	String prefix = (locale.getString("chat.prefix")+" ");
 
 	public void placeReceptionSign(SignChangeEvent e){
 		Player p = e.getPlayer();
@@ -60,12 +60,12 @@ public class SignManager {
 				int tot = totalRooms(Line2,p.getWorld()); //Getting total amount of rooms in hotel
 				int free = freeRooms(Line2,p.getWorld()); //Getting amount of free rooms in hotel
 				Line2 = Line2.toLowerCase();
-				String hotelName = Line2.substring(0, 1).toUpperCase() + Line2.substring(1); //Beautifying hotel name
+				String hotelName = Line2.substring(0, 1).toUpperCase() + Line2.substring(1).toLowerCase(); //Beautifying hotel name
 				//Setting all sign lines
-				e.setLine(0, ("&a"+locale.getString("sign.reception")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				e.setLine(1, ("&1"+hotelName+" Hotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				e.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				e.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				e.setLine(0, ("&a"+locale.getString("sign.reception")));
+				e.setLine(1, ("&1"+hotelName+" Hotel"));
+				e.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")));
+				e.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")));
 				//Updating sign file
 				File signFile = HConH.getFile("Signs"+File.separator+"Reception-"+Line2+"-1.yml");
 				for(int i = 1; signFile.exists(); i++){
@@ -75,7 +75,7 @@ public class SignManager {
 					try {
 						signFile.createNewFile();
 					} catch (IOException e1){
-						p.sendMessage(HMM.mes("chat.sign.place.fileFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						p.sendMessage(HMM.mes("chat.sign.place.fileFail"));
 						e1.printStackTrace();
 					}
 					new YamlConfiguration();
@@ -89,19 +89,19 @@ public class SignManager {
 					try {
 						config.save(signFile);
 					} catch (IOException e1) {
-						p.sendMessage(HMM.mes("chat.sign.place.fileFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						p.sendMessage(HMM.mes("chat.sign.place.fileFail"));
 						e1.printStackTrace();
 					}
 				}		
 			}
 			else{
 				e.setLine(0, "&4[Hotels]");
-				p.sendMessage(HMM.mes("chat.sign.place.noHotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				p.sendMessage(HMM.mes("chat.sign.place.noHotel"));
 			}
 		}
 		else{
 			e.setLine(0, "&4[Hotels]");
-			p.sendMessage(HMM.mes("chat.sign.place.emptySign").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.sign.place.emptySign"));
 		}
 		return;
 	}
@@ -133,7 +133,7 @@ public class SignManager {
 								try {
 									signFile.createNewFile();
 								} catch (IOException e2){
-									p.sendMessage(HMM.mes("chat.sign.place.fileFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+									p.sendMessage(HMM.mes("chat.sign.place.fileFail"));
 								}
 							}
 
@@ -165,45 +165,45 @@ public class SignManager {
 							try {
 								signConfig.save(signFile);
 							} catch (IOException e1) {
-								p.sendMessage(HMM.mes("chat.sign.place.fileFail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+								p.sendMessage(HMM.mes("chat.sign.place.fileFail"));
 								e1.printStackTrace();}
 
 							Line2 = Line2.toLowerCase();
-							String output = Line2.substring(0, 1).toUpperCase() + Line2.substring(1);
+							String output = Line2.substring(0, 1).toUpperCase() + Line2.substring(1).toLowerCase();
 							e.setLine(0, ChatColor.DARK_BLUE+output); //Hotel Name
 							e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost.toUpperCase()+"$"); //Room Number + Cost
 							if(immutedtime.matches("0"))
-								e.setLine(2,locale.getString("sign.permanent").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+								e.setLine(2,locale.getString("sign.permanent"));
 							else{
 								long ktimeinminutes = TimeConverter(immutedtime);
 								//Time
 								e.setLine(2, TimeFormatter(ktimeinminutes));
 							}
 							e.setLine(3,ChatColor.GREEN+"Vacant"); //Renter
-							p.sendMessage(HMM.mes("chat.sign.place.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							p.sendMessage(HMM.mes("chat.sign.place.success"));
 
 						} else{
-							p.sendMessage(HMM.mes("chat.sign.place.noRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+							p.sendMessage(HMM.mes("chat.sign.place.noRegion")); 
 							//Specified hotel does not exist
 						}
 					} else{
-						p.sendMessage(HMM.mes("chat.sign.place.outOfRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));       		
+						p.sendMessage(HMM.mes("chat.sign.place.outOfRegion"));       		
 						e.setLine(0, "&4[Hotels]");
 						//Sign not in hotel borders
 					}
 				}else{
-					p.sendMessage(HMM.mes("chat.sign.place.alreadyExists").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					p.sendMessage(HMM.mes("chat.sign.place.alreadyExists"));
 					e.setLine(0, "&4[Hotels]");
 					//Sign for specified room already exists
 				}
 			}
 			else{
-				p.sendMessage(HMM.mes("chat.sign.place.tooLong").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));				
+				p.sendMessage(HMM.mes("chat.sign.place.tooLong"));				
 				e.setLine(0, "&4[Hotels]");
 				//Room num of price too big
 			}
 		}else{
-			p.sendMessage(HMM.mes("chat.sign.place.noSeparator").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));  				
+			p.sendMessage(HMM.mes("chat.sign.place.noSeparator"));  				
 			e.setLine(0, "&4[Hotels]");
 			//Line 3 does not contain separator
 		}
@@ -238,21 +238,21 @@ public class SignManager {
 							rentRoom(signConfig,pluginstance,signFile,p,hotelName,stringroomNum);
 						}
 						else
-							p.sendMessage(HMM.mes("chat.sign.use.differentRoomNums").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							p.sendMessage(HMM.mes("chat.sign.use.differentRoomNums"));
 					}
 					else
-						p.sendMessage(HMM.mes("chat.sign.use.differentHotelNames").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+						p.sendMessage(HMM.mes("chat.sign.use.differentHotelNames")); 
 				}
 				else
-					p.sendMessage(HMM.mes("chat.sign.use.fileNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+					p.sendMessage(HMM.mes("chat.sign.use.fileNonExistant")); 
 			}
 			else
-				p.sendMessage(HMM.mes("chat.sign.use.signOutOfRegion").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+				p.sendMessage(HMM.mes("chat.sign.use.signOutOfRegion")); 
 		}
 	}
-	public void rentRoom(YamlConfiguration signConfig,HotelsMain pluginstance,File signFile,Player p,String hotelName,String roomNum){
+	public void rentRoom(YamlConfiguration signConfig,HotelsMain pluginstance,File signFile,Player p,String inputHotelName,String roomNum){
+		String hotelName = inputHotelName.substring(0, 1).toUpperCase() + inputHotelName.substring(1).toLowerCase(); //Beautifying hotel name
 		//If region exists
-		System.out.println("Region: "+signConfig.getString("Sign.region"));
 		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion(signConfig.getString("Sign.region"))){
 			String cRenter = signConfig.getString("Sign.renter");
 			if(cRenter==null){ //If there is no renter
@@ -306,32 +306,32 @@ public class SignManager {
 								s.update();
 								DecimalFormat df = new DecimalFormat("#.##");
 								p.sendMessage(HMM.mes("chat.sign.use.success").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName)
-										.replaceAll("%price%", String.valueOf(df.format(price))).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+										.replaceAll("%price%", String.valueOf(df.format(price))));
 								//Successfully rented room
 							}
 							else
-								p.sendMessage(HMM.mes("chat.commands.rent.invalidLocation").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+								p.sendMessage(HMM.mes("chat.commands.rent.invalidLocation")); 
 						}
 						else
-							p.sendMessage(HMM.mes("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(pluginstance.getConfig().getInt("settings.max_rooms_owned"))).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							p.sendMessage(HMM.mes("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(pluginstance.getConfig().getInt("settings.max_rooms_owned"))));
 					}
 					else{
 						double topay = price-account;
-						p.sendMessage(HMM.mes("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+						p.sendMessage(HMM.mes("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay))); 
 					}
 				}
 				else
-					p.sendMessage(HMM.mes("chat.sign.use.noAccount").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+					p.sendMessage(HMM.mes("chat.sign.use.noAccount")); 
 			}
 			else if(Bukkit.getServer().getOfflinePlayer(UUID.fromString(cRenter)).equals(p)){
 				//Renter is same player that right clicked
 				rentExtend(p,signConfig,signFile,pluginstance);
 			}
 			else
-				p.sendMessage(HMM.mes("chat.sign.use.taken").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+				p.sendMessage(HMM.mes("chat.sign.use.taken")); 
 		}
 		else
-			p.sendMessage(HMM.mes("chat.sign.use.nonExistantRoom").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+			p.sendMessage(HMM.mes("chat.sign.use.nonExistantRoom")); 
 	}
 	public void breakRoomSign(BlockBreakEvent e){
 		Block b = e.getBlock();
@@ -431,21 +431,21 @@ public class SignManager {
 						s.update();
 						extended+=1;
 						if(max-extended>0)
-							p.sendMessage(HMM.mes("chat.sign.use.extensionSuccess").replaceAll("%tot%", String.valueOf(extended)).replaceAll("%left%", String.valueOf(max-extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							p.sendMessage(HMM.mes("chat.sign.use.extensionSuccess").replaceAll("%tot%", String.valueOf(extended)).replaceAll("%left%", String.valueOf(max-extended)));
 						else
-							p.sendMessage(HMM.mes("chat.sign.use.extensionSuccessNoMore").replaceAll("%tot%", String.valueOf(extended)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							p.sendMessage(HMM.mes("chat.sign.use.extensionSuccessNoMore").replaceAll("%tot%", String.valueOf(extended)));
 					}
 					else{
 						double topay = price-account;
-						p.sendMessage(HMM.mes("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						p.sendMessage(HMM.mes("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)));
 					}
 				}
 				else
-					p.sendMessage(HMM.mes("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					p.sendMessage(HMM.mes("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max)));
 			}
 	}
 	else
-		p.sendMessage(HMM.mes("chat.commands.rent.invalidLocation").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+		p.sendMessage(HMM.mes("chat.commands.rent.invalidLocation")); 
 }
 
 public int totalRooms(String hotelName,World w){
@@ -504,8 +504,8 @@ public boolean updateReceptionSign(Location l){
 				if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
 					int tot = totalRooms(hotelname,b.getWorld());
 					int free = freeRooms(hotelname,b.getWorld());
-					s.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-					s.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					s.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")));
+					s.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")));
 					s.update();
 					return false;
 				}

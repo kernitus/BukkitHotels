@@ -73,7 +73,7 @@ public class GameLoop extends BukkitRunnable {
 				//Room sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 				String hotelName = config.getString("Sign.hotel");
-				hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1);
+				hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1).toLowerCase();
 				World world = Bukkit.getWorld(config.getString("Sign.location.world").trim());
 				int roomNum = config.getInt("Sign.room");
 				int locx = config.getInt("Sign.location.coords.x");

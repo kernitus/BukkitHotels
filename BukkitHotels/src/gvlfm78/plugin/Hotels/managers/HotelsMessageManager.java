@@ -1,10 +1,11 @@
 package kernitus.plugin.Hotels.managers;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public class HotelsMessageManager {
 
@@ -28,5 +29,28 @@ public class HotelsMessageManager {
 		else
 			mes = ChatColor.DARK_RED + "Message is null!";
 		return mes;
+	}
+	
+	public String mesnopre(String path){
+		String mes = locale.getString(path);
+		if(mes!=null){
+		mes = mes.replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
+		}
+		else
+			mes = ChatColor.DARK_RED + "Message is null!";
+		return mes;
+	}
+	public boolean hasPerm(CommandSender sender, String perm){
+		if(sender.isOp())
+			return true;
+		if(HConH.getconfigyml().getBoolean("settings.use-permissions")==false)
+			return true;
+		else{
+			if(sender.hasPermission("hotels.*"))
+				return true;
+			else if(sender.hasPermission(perm))
+				return true;
+		}
+		return false;
 	}
 }
