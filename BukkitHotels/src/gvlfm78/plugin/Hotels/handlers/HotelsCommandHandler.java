@@ -162,6 +162,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(sender instanceof Player){
 					Player p = (Player) sender;
 					if(HMM.hasPerm(p, "hotels.friend")){
+						if(args.length>1){
 						if(args[1].equalsIgnoreCase("add")){
 							if(args.length>4)
 								HCE.cmdFriendAdd(sender,args[2],args[3],args[4]);
@@ -180,6 +181,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 							else
 								sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
 						}
+						else
+							sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
+					}
 						else
 							sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
 					}

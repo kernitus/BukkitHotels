@@ -50,7 +50,7 @@ public class HotelsCommandExecutor {
 
 	//Prefix
 	YamlConfiguration locale = HConH.getLocale();
-	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
+	String prefix = (locale.getString("chat.prefix")+" ");
 
 	public void cmdCreate(Plugin plugin, Player p,String hotelName){//Hotel creation command{
 		UUID playerUUID = p.getUniqueId();
@@ -240,22 +240,22 @@ public class HotelsCommandExecutor {
 								e.printStackTrace();
 							}
 							//Friend /name/ added successfully
-							s.sendMessage(HMM.mes("chat.commands.friend.addSuccess").replaceAll("%friend%", friend.getName()).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							s.sendMessage(HMM.mes("chat.commands.friend.addSuccess").replaceAll("%friend%", friend.getName()));
 						}
 						else
-							s.sendMessage(HMM.mes("chat.commands.friend.addYourself").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							s.sendMessage(HMM.mes("chat.commands.friend.addYourself"));
 					}
 					else
-						s.sendMessage(HMM.mes("chat.commands.friend.nonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.sendMessage(HMM.mes("chat.commands.friend.nonExistant"));
 				}
 				else
-					s.sendMessage(HMM.mes("chat.commands.friend.notRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					s.sendMessage(HMM.mes("chat.commands.friend.notRenter"));
 			}
 			else
-				s.sendMessage(HMM.mes("chat.commands.friend.noRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));	
+				s.sendMessage(HMM.mes("chat.commands.friend.noRenter"));	
 		}
 		else
-			s.sendMessage(HMM.mes("chat.commands.friend.wrongData").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			s.sendMessage(HMM.mes("chat.commands.friend.wrongData"));
 	}
 	public void cmdFriendRemove(CommandSender s, String hotel, String room, String friendName){
 		File signFile = HConH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
@@ -284,19 +284,19 @@ public class HotelsCommandExecutor {
 							e.printStackTrace();
 						}
 						//Friend /name/ removed successfully
-						s.sendMessage(HMM.mes("chat.commands.friend.removeSuccess").replaceAll("%friend%", friend.getName()).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.sendMessage(HMM.mes("chat.commands.friend.removeSuccess").replaceAll("%friend%", friend.getName()));
 					}
 					else
-						s.sendMessage(HMM.mes("chat.commands.friend.friendNotInList").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.sendMessage(HMM.mes("chat.commands.friend.friendNotInList"));
 				}
 				else
-					s.sendMessage(HMM.mes("chat.commands.friend.notRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					s.sendMessage(HMM.mes("chat.commands.friend.notRenter"));
 			}
 			else
-				s.sendMessage(HMM.mes("chat.commands.friend.noRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				s.sendMessage(HMM.mes("chat.commands.friend.noRenter"));
 		}
 		else
-			s.sendMessage(HMM.mes("chat.commands.friend.wrongData").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			s.sendMessage(HMM.mes("chat.commands.friend.wrongData"));
 	}
 	public void cmdFriendList(CommandSender s, String hotel, String room){
 		File signFile = HConH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
@@ -309,31 +309,31 @@ public class HotelsCommandExecutor {
 					List<String> stringList = signConfig.getStringList("Sign.friends");
 					if(!stringList.isEmpty()){
 						hotel = hotel.substring(0, 1).toUpperCase() + hotel.substring(1).toLowerCase();
-						s.sendMessage(HMM.mes("chat.commands.friend.list.heading").replaceAll("%room%", room).replaceAll("%hotel%", hotel).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.sendMessage(HMM.mes("chat.commands.friend.list.heading").replaceAll("%room%", room).replaceAll("%hotel%", hotel));
 						for(String currentFriend : stringList){
 							OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
 							String friendName = friend.getName();
-							s.sendMessage(HMM.mes("chat.commands.friend.list.line").replaceAll("%name%", friendName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							s.sendMessage(HMM.mes("chat.commands.friend.list.line").replaceAll("%name%", friendName));
 						}
-						s.sendMessage(HMM.mes("chat.commands.friend.list.footer").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.sendMessage(HMM.mes("chat.commands.friend.list.footer"));
 					}
 					else
-						s.sendMessage(HMM.mes("chat.commands.friend.noFriends").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));	
+						s.sendMessage(HMM.mes("chat.commands.friend.noFriends"));	
 				}
 				else
-					s.sendMessage(HMM.mes("chat.commands.friend.notRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));	
+					s.sendMessage(HMM.mes("chat.commands.friend.notRenter"));	
 			}
 			else
-				s.sendMessage(HMM.mes("chat.commands.friend.noRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				s.sendMessage(HMM.mes("chat.commands.friend.noRenter"));
 		}
 		else
-			s.sendMessage(HMM.mes("chat.commands.friend.wrongData").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			s.sendMessage(HMM.mes("chat.commands.friend.wrongData"));
 	}
 	public void cmdRoomListPlayer(Player p, String hotel, World w){
 		if(WGM.hasRegion(w, "hotel-"+hotel))
 			listRooms(hotel,w,p);
 		else
-			p.sendMessage(HMM.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			p.sendMessage(HMM.mes("chat.commands.hotelNonExistant"));
 	}
 	public void cmdRoomListPlayer(CommandSender s, String hotel, World w){
 		if(WGM.hasRegion(w, "hotel-"+hotel)){
@@ -366,10 +366,10 @@ else
 }
 }*/
 	public void renumber(Plugin pluginstance, String hotel,String oldnum,String newnum, World world,CommandSender sender){
+		hotel = hotel.toLowerCase();
 		if(Integer.parseInt(newnum)<100000){
 			if(WGM.hasRegion(world, "Hotel-"+hotel)){
 				if(WGM.hasRegion(world, "Hotel-"+hotel+"-"+oldnum)){
-					WGM.renameRegion("Hotel-"+hotel+"-"+oldnum, "Hotel-"+hotel+"-"+newnum, world);
 
 					File file = HConH.getFile("Signs"+File.separator+hotel+"-"+oldnum+".yml");
 					if(file.exists()){
@@ -431,7 +431,7 @@ else
 							b.setType(Material.AIR);
 							file.delete();
 						}
-						ProtectedRegion r = WGM.getRegion(world, "Hotel-"+hotel+"-"+newnum);
+						ProtectedRegion r = WGM.getRegion(signworld, "hotel-"+hotel+"-"+oldnum);
 						String idHotelName = r.getId();
 						String[] partsofhotelName = idHotelName.split("-");
 						String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1).toLowerCase();
@@ -439,28 +439,32 @@ else
 							r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.room.enter").replaceAll("%room%", String.valueOf(newnum))));
 						if(pluginstance.getConfig().getBoolean("settings.use-room_exit_message"))
 							r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.room.exit").replaceAll("%room%", String.valueOf(newnum))));
+						WGM.renameRegion("Hotel-"+hotel+"-"+oldnum, "Hotel-"+hotel+"-"+newnum, world);
 						try {
 							WGM.getWorldGuard().getRegionManager(world).save();
-							sender.sendMessage(HMM.mes("chat.commands.renumber.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%oldnum%", oldnum).replaceAll("%newnum%", partsofhotelName[2]).replaceAll("%hotel%", fromIdhotelName));
+							sender.sendMessage(HMM.mes("chat.commands.renumber.success").replaceAll("%oldnum%", oldnum).replaceAll("%newnum%", newnum).replaceAll("%hotel%", fromIdhotelName));
 						} catch (StorageException e) {
-							sender.sendMessage(HMM.mes("chat.commands.renumber.fail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%oldnum%", oldnum));
+							sender.sendMessage(HMM.mes("chat.commands.renumber.fail").replaceAll("%oldnum%", oldnum));
 							e.printStackTrace();
 						}
 					}
 					else
-						sender.sendMessage(HMM.mes("chat.commands.renumber.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%oldnum%", oldnum).replaceAll("%newnum%", newnum).replaceAll("%hotel%", hotel));
+						sender.sendMessage(HMM.mes("chat.commands.renumber.success").replaceAll("%oldnum%", oldnum).replaceAll("%newnum%", newnum).replaceAll("%hotel%", hotel));
 				}
 				else
-					sender.sendMessage(HMM.mes("chat.commands.roomNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(HMM.mes("chat.commands.roomNonExistant"));
 			}
 			else
-				sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant"));
 		}
 		else
-			sender.sendMessage(HMM.mes("chat.commands.renumber.newNumTooBig").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			sender.sendMessage(HMM.mes("chat.commands.renumber.newNumTooBig"));
 	}
 
 	public void renameHotel(Plugin pluginstance, String oldname,String newname, World world,CommandSender sender){
+		oldname = oldname.toLowerCase();
+		newname = newname.toLowerCase();
+		String coolnewname = newname.substring(0, 1).toUpperCase() + newname.substring(1).toLowerCase();
 		if(WGM.hasRegion(world, "Hotel-"+oldname)){
 			WGM.renameRegion("Hotel-"+oldname, "Hotel-"+newname, world);
 			ProtectedRegion r = WGM.getRegion(world, "Hotel-"+newname);
@@ -471,7 +475,7 @@ else
 				r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.hotel.enter").replaceAll("%hotel%", fromIdhotelName)));
 			if(pluginstance.getConfig().getBoolean("settings.use-hotel_exit_message"))
 				r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.hotel.exit").replaceAll("%hotel%", fromIdhotelName)));
-			sender.sendMessage(HMM.mes("chat.commands.rename.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotel%" , fromIdhotelName));
+			sender.sendMessage(HMM.mes("chat.commands.rename.success").replaceAll("%hotel%" , fromIdhotelName));
 			Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(world).getRegions();
 			//Rename rooms
 			for(int i = regionlist.size(); i>0; i--){
@@ -491,10 +495,10 @@ else
 							String Line1 = ChatColor.stripColor(s.getLine(0));
 							if(Line1.toLowerCase().matches(oldname.toLowerCase())){
 									if(WGM.getRegion(signworld, "Hotel-"+newname).contains(signx, signy, signz)){
-										String coolnewname = newname.substring(0, 1).toUpperCase() + newname.substring(1).toLowerCase();
 										s.setLine(0, ChatColor.BLUE+coolnewname);
 										s.update();
-										config.set("Sign.hotel", newname);
+										config.set("Sign.hotel", coolnewname);
+										config.set("Sign.region", "hotel-"+newname+"-"+i);
 										try {
 											config.save(file);
 										} catch (IOException e) {
@@ -511,21 +515,21 @@ else
 			try {
 				WGM.getWorldGuard().getRegionManager(world).save();
 			} catch (StorageException e) {
-				sender.sendMessage(HMM.mes("chat.commands.rename.failRooms").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				sender.sendMessage(HMM.mes("chat.commands.rename.failRooms"));
 				e.printStackTrace();
 			}
 		}
 		else
-			sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant"));
 	}
 	public void removeRoom(String hotelName,String roomNum,World world,CommandSender sender){
 		if(WGM.hasRegion(world, "Hotel-"+hotelName+"-"+roomNum)){//If region exists
 			WGM.getWorldGuard().getRegionManager(world).removeRegion("Hotel-"+hotelName+"-"+roomNum);//Delete region
 			try {
 				WGM.getWorldGuard().getRegionManager(world).save();
-				sender.sendMessage(HMM.mes("chat.commands.removeRoom.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				sender.sendMessage(HMM.mes("chat.commands.removeRoom.success"));
 			} catch (StorageException e) {
-				sender.sendMessage(HMM.mes("chat.commands.removeRoom.fail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				sender.sendMessage(HMM.mes("chat.commands.removeRoom.fail"));
 				e.printStackTrace();
 			}
 
@@ -545,15 +549,15 @@ else
 
 			try {
 				WGM.getWorldGuard().getRegionManager(world).save();
-				sender.sendMessage(HMM.mes("chat.commands.removeRegions.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				sender.sendMessage(HMM.mes("chat.commands.removeRegions.success"));
 			} catch (StorageException e) {
-				sender.sendMessage(HMM.mes("chat.commands.removeRegions.fail").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				sender.sendMessage(HMM.mes("chat.commands.removeRegions.fail"));
 				e.printStackTrace();
 			}
 		}
 		else{
 			if(sender instanceof Player)
-				sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant"));
 			else
 				sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 		}
@@ -588,25 +592,25 @@ else
 								GameLoop gameloop = new GameLoop(plugin);
 								gameloop.run();
 								sender.sendMessage(HMM.mes("chat.commands.remove.success").replaceAll("%player%", player.getName()).replaceAll("%room%", room)
-										.replaceAll("%hotel%", hotel).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+										.replaceAll("%hotel%", hotel));
 							}
 							else
-								sender.sendMessage(HMM.mes("chat.commands.remove.playerNotRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));	
+								sender.sendMessage(HMM.mes("chat.commands.remove.playerNotRenter"));	
 						}
 						else
-							sender.sendMessage(HMM.mes("chat.commands.remove.noRenter").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+							sender.sendMessage(HMM.mes("chat.commands.remove.noRenter"));
 					}
 					else
-						sender.sendMessage(HMM.mes("chat.commands.userNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						sender.sendMessage(HMM.mes("chat.commands.userNonExistant"));
 				}
 				else
-					sender.sendMessage(HMM.mes("chat.commands.roomNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+					sender.sendMessage(HMM.mes("chat.commands.roomNonExistant"));
 			}
 			else
-				sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant"));
 		}
 		else
-			sender.sendMessage(HMM.mes("chat.commands.worldNonExistant").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			sender.sendMessage(HMM.mes("chat.commands.worldNonExistant"));
 	}
 	public void check(String playername, CommandSender sender){
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
@@ -614,7 +618,7 @@ else
 		@SuppressWarnings("deprecation")
 		OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
 		if(p!=null&&p.hasPlayedBefore()){
-			sender.sendMessage(HMM.mes("chat.commands.check.heading").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%player%", playername));
+			sender.sendMessage(HMM.mes("chat.commands.check.heading").replaceAll("%player%", playername));
 			for(World w:worlds){
 				regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 				ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
@@ -633,11 +637,11 @@ else
 									if(expiryDate>0){
 										long currentmins = System.currentTimeMillis()/1000/60;
 										String timeleft = SM.TimeFormatter(expiryDate-currentmins);
-										sender.sendMessage(HMM.mes("chat.commands.check.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")
+										sender.sendMessage(HMM.mes("chat.commands.check.line")
 												.replaceAll("%hotel%", hotelname).replaceAll("%room%", roomnum).replaceAll("%timeleft%", String.valueOf(timeleft)));
 									}
 									else{
-										sender.sendMessage(HMM.mes("chat.commands.check.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")
+										sender.sendMessage(HMM.mes("chat.commands.check.line")
 												.replaceAll("%hotel%", hotelname).replaceAll("%room%", roomnum).replaceAll("%timeleft%", locale.getString("sign.permanent")));
 									}
 
@@ -653,7 +657,7 @@ else
 			sender.sendMessage(HMM.mes("chat.commands.userNonExistant"));
 	}
 	public void listHotels(World w, CommandSender sender){
-		sender.sendMessage(HMM.mes("chat.commands.listHotels.heading").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+		sender.sendMessage(HMM.mes("chat.commands.listHotels.heading"));
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
@@ -666,7 +670,7 @@ else
 					int spaceamount = 10-hotelName.length();
 					String space = " ";
 					String rep = StringUtils.repeat(space, spaceamount);
-					sender.sendMessage(HMM.mes("chat.commands.listHotels.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotel%", hotelName)
+					sender.sendMessage(HMM.mes("chat.commands.listHotels.line").replaceAll("%hotel%", hotelName)
 							.replaceAll("%total%", String.valueOf(SM.totalRooms(hotelName, w)))
 							.replaceAll("%free%", String.valueOf(SM.freeRooms(hotelName, w)))
 							.replaceAll("%space%", rep)
@@ -674,11 +678,11 @@ else
 				}
 			}
 		}
-		sender.sendMessage(HMM.mes("chat.commands.listHotels.footer").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+		sender.sendMessage(HMM.mes("chat.commands.listHotels.footer"));
 	}
 	public void listRooms(String hotel, World w, CommandSender sender){
 		String hotelName = hotel.substring(0, 1).toUpperCase() + hotel.substring(1).toLowerCase();
-		sender.sendMessage(HMM.mes("chat.commands.listRooms.heading").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotel%", hotelName));
+		sender.sendMessage(HMM.mes("chat.commands.listRooms.heading").replaceAll("%hotel%", hotelName));
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
@@ -704,7 +708,7 @@ else
 								//Occupied
 								state = ChatColor.BLUE+locale.getString("sign.occupied");
 							}
-							sender.sendMessage(HMM.mes("chat.commands.listRooms.line").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")
+							sender.sendMessage(HMM.mes("chat.commands.listRooms.line")
 									.replaceAll("%room%", roomnum)
 									.replaceAll("%state%", state)
 									.replaceAll("%space%", rep)
@@ -715,15 +719,15 @@ else
 			}
 		}
 		else
-			sender.sendMessage(HMM.mes("chat.commands.listRooms.noRooms").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-		sender.sendMessage(HMM.mes("chat.commands.listRooms.footer").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1").replaceAll("%hotel%", hotelName));
+			sender.sendMessage(HMM.mes("chat.commands.listRooms.noRooms"));
+		sender.sendMessage(HMM.mes("chat.commands.listRooms.footer").replaceAll("%hotel%", hotelName));
 	}
 	public void removeSigns(String hotelName,World world,CommandSender sender){
 		if(WGM.hasRegion(world, "Hotel-"+hotelName)){
 			ArrayList<String> fileslist = HFF.listFiles("plugins//Hotels//Signs");
 			for(String x: fileslist){
 				File file = HConH.getFile("Signs"+File.separator+x);
-				String receptionLoc = locale.getString("sign.reception").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
+				String receptionLoc = locale.getString("sign.reception");
 				if(file.getName().matches("^"+receptionLoc+"-.+-.+")){
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 					World worldsign = Bukkit.getWorld(config.getString("Reception.location.world").trim());
@@ -775,7 +779,7 @@ else
 					}
 				}
 			}
-			sender.sendMessage(HMM.mes("chat.commands.removeSigns.success").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			sender.sendMessage(HMM.mes("chat.commands.removeSigns.success"));
 		}
 	}
 	public int nextNewRoom(World w, String hotel){
