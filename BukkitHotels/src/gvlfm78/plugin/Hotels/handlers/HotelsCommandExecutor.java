@@ -502,13 +502,13 @@ else
 										s.setLine(0, ChatColor.BLUE+coolnewname);
 										s.update();
 										config.set("Sign.hotel", coolnewname);
-										config.set("Sign.region", "hotel-"+newname+"-"+i);
+										config.set("Sign.region", "hotel-"+newname+"-"+regionIdparts[2]);
 										try {
 											config.save(file);
 										} catch (IOException e) {
 											e.printStackTrace();
 										}
-										File newfile = HConH.getFile("Signs"+File.separator+newname+"-"+i+".yml");
+										File newfile = HConH.getFile("Signs"+File.separator+newname+"-"+regionIdparts[2]+".yml");
 										file.renameTo(newfile);
 									}
 							}
