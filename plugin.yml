@@ -32,6 +32,9 @@ permissions:
        hotels.list.hotels: true
        hotels.list.rooms: true
        hotels.friend: true
+       hotels.sethome: true
+       hotels.home: true
+       hotels.home.others: true
    hotels.createmode:
      description: Allows you to enter hotel creation mode
      default: op
@@ -77,3 +80,12 @@ permissions:
    hotels.friend:
      description: Allows you to add and remove friends from rented rooms
      default: true
+   hotels.sethome:
+     description: Allows you to set hotel homes if in creation mode and user room homes
+     default: true
+   hotels.home:
+     description: Allows you to teleport to hotel and room homes
+     default: true
+   hotels.home.others:
+     description: Allows you to teleport into rooms that you have not rented
+     default: false

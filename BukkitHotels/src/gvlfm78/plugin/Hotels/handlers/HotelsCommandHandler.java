@@ -3,6 +3,7 @@ package kernitus.plugin.Hotels.handlers;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -473,83 +474,210 @@ public class HotelsCommandHandler implements CommandExecutor {
 			else if(args[0].equalsIgnoreCase("sethome")){
 				if(sender instanceof Player){
 					Player p = (Player) sender;
-					String playerUUID = p.getUniqueId().toString();
-					Location loc = p.getLocation();
-					int x = loc.getBlockX();
-					int y = loc.getBlockY();
-					int z = loc.getBlockZ();
-					World w = p.getWorld();
-					ApplicableRegionSet regions = WGM.getWorldGuard().getRegionManager(w).getApplicableRegions(loc);
-					ArrayList<ProtectedRegion> rf = new ArrayList<ProtectedRegion>();
-					for(ProtectedRegion r : regions){
-						//Regions that match player's location
-						rf.add(r);
-					}
-					if(!rf.isEmpty()){
-						File invfile = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
-						for(ProtectedRegion r : rf){
-							String id = r.getId();
-							if(id.startsWith("hotel-")){ //If it's a hotel
-								if(id.matches("^hotel-.+-.+")){ //If it's a room						
-									String hotelandNum = (id.replaceFirst("hotel-", "")).toLowerCase();
-									File signFile = HConH.getFile("Signs"+File.separator+hotelandNum+".yml");
-									YamlConfiguration signConfig = HConH.getyml(signFile);
+					if(HMM.hasPerm(p, "hotels.sethome")){
+						String playerUUID = p.getUniqueId().toString();
+						Location loc = p.getLocation();
+						double x = loc.getX();
+						double y = loc.getY();
+						double z = loc.getZ();
+						World w = p.getWorld();
+						float pitch = loc.getPitch();
+						float yaw = loc.getYaw();
+						ApplicableRegionSet regions = WGM.getWorldGuard().getRegionManager(w).getApplicableRegions(loc);
+						ArrayList<ProtectedRegion> rf = new ArrayList<ProtectedRegion>();
+						for(ProtectedRegion r : regions){
+							//Regions that match player's location
+							rf.add(r);
+						}
+						if(!rf.isEmpty()){
+							File invfile = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
+							for(ProtectedRegion r : rf){
+								String id = r.getId();
+								if(id.startsWith("hotel-")){ //If it's a hotel
+									if(id.matches("^hotel-.+-.+")){ //If it's a room						
+										String hotelandNum = (id.replaceFirst("hotel-", "")).toLowerCase();
+										File signFile = HConH.getFile("Signs"+File.separator+hotelandNum+".yml");
+										YamlConfiguration signConfig = HConH.getyml(signFile);
 
-									if(invfile.exists()){
-										signConfig.set("Sign.defaultHome.x", x);
-										signConfig.set("Sign.defaultHome.y", y);
-										signConfig.set("Sign.defaultHome.z", z);
-										try {
-											signConfig.save(signFile);
-											sender.sendMessage(HMM.mes("chat.commands.sethome.defaultHomeSet"));
-										} catch (IOException e){
-											e.printStackTrace();
-										}
-									}
-									else{ //It's a user doing this
-										if(signConfig.getString("Sign.renter").matches(playerUUID)){
-											signConfig.set("Sign.userHome.x", x);
-											signConfig.set("Sign.userHome.y", y);
-											signConfig.set("Sign.userHome.z", z);
+										if(invfile.exists()){
+											signConfig.set("Sign.defaultHome.x", x);
+											signConfig.set("Sign.defaultHome.y", y);
+											signConfig.set("Sign.defaultHome.z", z);
+											signConfig.set("Sign.defaultHome.pitch", pitch);
+											signConfig.set("Sign.defaultHome.yaw", yaw);
 											try {
 												signConfig.save(signFile);
-												sender.sendMessage(HMM.mes("chat.commands.sethome.userHomeSet"));
+												sender.sendMessage(HMM.mes("chat.commands.sethome.defaultHomeSet"));
+											} catch (IOException e){
+												e.printStackTrace();
+											}
+										}
+										else{ //It's a user doing this
+											if((signConfig.getString("Sign.renter")!=null)&&signConfig.getString("Sign.renter").matches(playerUUID)){
+												signConfig.set("Sign.userHome.x", x);
+												signConfig.set("Sign.userHome.y", y);
+												signConfig.set("Sign.userHome.z", z);
+												signConfig.set("Sign.userHome.pitch", pitch);
+												signConfig.set("Sign.userHome.yaw", yaw);
+												try {
+													signConfig.save(signFile);
+													sender.sendMessage(HMM.mes("chat.commands.sethome.userHomeSet"));
+												} catch (IOException e){
+													e.printStackTrace();
+												}
+											}
+											else
+												sender.sendMessage(HMM.mes("chat.commands.home.notRenterNoPermission"));
+										}
+										break;
+									}
+									else{//It's a hotel warp
+										if(invfile.exists()){
+											String hotelName = (id.replaceFirst("hotel-", "")).toLowerCase();
+											File hotelFile = HConH.getFile("Hotels"+File.separator+hotelName+".yml");
+											YamlConfiguration hotelConfig = HConH.getyml(hotelFile);
+											hotelConfig.set("Hotel.home.x", x);
+											hotelConfig.set("Hotel.home.y", y);
+											hotelConfig.set("Hotel.home.z", z);
+											hotelConfig.set("Hotel.home.pitch", pitch);
+											hotelConfig.set("Hotel.home.yaw", yaw);
+											try {
+												hotelConfig.save(hotelFile);
+												sender.sendMessage(HMM.mes("chat.commands.sethome.hotelHomeSet"));
 											} catch (IOException e){
 												e.printStackTrace();
 											}
 										}
 										else
-											sender.sendMessage(HMM.mes("chat.commands.friend.notRenter"));
+											sender.sendMessage(HMM.mes("chat.commands.sethome.notInCreationMode"));
 									}
 								}
-								else{//It's a hotel warp
-									if(invfile.exists()){
-										String hotelName = (id.replaceFirst("hotel-", "")).toLowerCase();
-										File hotelFile = HConH.getFile("Hotels"+File.separator+hotelName+".yml");
-										YamlConfiguration hotelConfig = HConH.getyml(hotelFile);
-										hotelConfig.set("Hotel.warp.x", x);
-										hotelConfig.set("Hotel.warp.y", y);
-										hotelConfig.set("Hotel.warp.z", z);
-										try {
-											hotelConfig.save(hotelFile);
-											sender.sendMessage(HMM.mes("chat.commands.sethome.hotelWarpSet"));
-										} catch (IOException e){
-											e.printStackTrace();
-										}
-									}
-									else
-										sender.sendMessage(HMM.mes("chat.commands.sethome.notInCreationMode"));
-								}
+								else
+									sender.sendMessage(HMM.mes("chat.commands.sethome.notInHotelRegion"));
 							}
-							else
-								sender.sendMessage(HMM.mes("chat.commands.sethome.notInHotelRegion"));
 						}
+						else //Player is not in any region
+							sender.sendMessage(HMM.mes("chat.commands.sethome.notInHotelRegion"));
 					}
-					else //Player is not in any region
-						sender.sendMessage(HMM.mes("chat.commands.sethome.notInHotelRegion"));
+					else
+						sender.sendMessage(HMM.mes("chat.noPermission"));
 				}
 				else
 					sender.sendMessage(HMM.mes("chat.commands.sethome.consoleRejected"));
+			}
+			else if(args[0].equalsIgnoreCase("home")||args[0].equalsIgnoreCase("hm")){
+				if(sender instanceof Player){
+					Player p = (Player) sender;
+					World w = p.getWorld();
+					if(HMM.hasPerm(p, "hotels.home")){
+						if(args.length>1){
+							if(args.length>2){
+								String hotelName = args[1].toLowerCase();
+								String roomNum = args[2].toLowerCase();
+								//TODO check if hotel name corresponds to actual region
+								Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(w).getRegions();
+								int regionsFound = 0;
+								for(ProtectedRegion region : regionlist.values()){
+									String regionId = region.getId();
+									if(regionId.matches("hotel-"+hotelName+"-"+roomNum)){
+										regionsFound++;
+										//Room matching command has been found, check if there is user home set
+										File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+										YamlConfiguration signConfig = HConH.getyml(signFile);
+										String uhx = signConfig.getString("Sign.userHome.x");
+										String uhy = signConfig.getString("Sign.userHome.y");
+										String uhz = signConfig.getString("Sign.userHome.z");
+										String uhpitch = signConfig.getString("Sign.userHome.pitch");
+										String uhyaw = signConfig.getString("Sign.userHome.yaw");
+										if(uhx!=null&&uhy!=null&&uhz!=null&&uhpitch!=null&&uhyaw!=null){
+											double x = Double.parseDouble(uhx);
+											double y = Double.parseDouble(uhy);
+											double z = Double.parseDouble(uhz);
+											float pitch = Float.parseFloat(uhpitch);
+											float yaw = Float.parseFloat(uhyaw);
+											//Checking if player is renter or has permission
+											if((HMM.hasPerm(p, "hotels.home.others"))||p.getUniqueId().toString().matches(signConfig.getString("Sign.renter"))){
+												Location daloc = new Location(w, x, y, z);
+												daloc.setPitch(pitch);
+												daloc.setYaw(yaw);
+											p.teleport(daloc);
+											}
+											else
+												sender.sendMessage(HMM.mes("chat.commands.home.notRenterNoPermission"));
+										}
+										else{ //Else check if there is a default home
+											String dhx = signConfig.getString("Sign.defaultHome.x");
+											String dhy = signConfig.getString("Sign.defaultHome.y");
+											String dhz = signConfig.getString("Sign.defaultHome.z");
+											String dhpitch = signConfig.getString("Sign.defaultHome.pitch");
+											String dhyaw = signConfig.getString("Sign.defaultHome.yaw");
+											if(dhx!=null&&dhy!=null&&dhz!=null&&dhpitch!=null&&dhyaw!=null){
+												double x = Double.parseDouble(dhx);
+												double y = Double.parseDouble(dhy);
+												double z = Double.parseDouble(dhz);
+												float pitch = Float.parseFloat(dhpitch);
+												float yaw = Float.parseFloat(dhyaw);
+												if((HMM.hasPerm(p, "hotels.home.others"))||(signConfig.getString("Sign.renter")!=null)&&p.getUniqueId().toString().matches(signConfig.getString("Sign.renter"))){
+													Location daloc = new Location(w, x, y, z);
+													daloc.setPitch(pitch);
+													daloc.setYaw(yaw);
+												p.teleport(daloc);
+												}
+												else
+													sender.sendMessage(HMM.mes("chat.commands.home.notRenterNoPermission"));
+											}
+											else{ //No home is set
+												sender.sendMessage(HMM.mes("chat.commands.home.noHomeSet"));
+												//For future: if set in config, find centre of region and send player there
+											}
+										}
+									}
+								}
+								if(regionsFound<1)
+									sender.sendMessage(HMM.mes("chat.commands.home.regionNotFound"));
+							}//Try hotel home
+							else{
+								String hotelName = args[1].toLowerCase();
+								Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(w).getRegions();
+								int regionsFound = 0;
+								for(ProtectedRegion region : regionlist.values()){
+									String regionId = region.getId();
+									if(regionId.matches("hotel-"+hotelName)){
+										regionsFound++;
+										File hotelFile = HConH.getFile("Hotels"+File.separator+hotelName+".yml");
+										YamlConfiguration hotelConfig = HConH.getyml(hotelFile);
+										String hx = hotelConfig.getString("Hotel.home.x");
+										String hy = hotelConfig.getString("Hotel.home.y");
+										String hz = hotelConfig.getString("Hotel.home.z");
+										String hpitch = hotelConfig.getString("Hotel.home.pitch");
+										String hyaw = hotelConfig.getString("Hotel.home.yaw");
+										if(hx!=null&&hy!=null&&hz!=null&&hpitch!=null&&hyaw!=null){
+											double x = Double.parseDouble(hx);
+											double y = Double.parseDouble(hy);
+											double z = Double.parseDouble(hz);
+											float pitch = Float.parseFloat(hpitch);
+											float yaw = Float.parseFloat(hyaw);
+											Location daloc = new Location(w, x, y, z);
+											daloc.setPitch(pitch);
+											daloc.setYaw(yaw);
+										p.teleport(daloc);
+										}
+										else
+											sender.sendMessage(HMM.mes("chat.commands.home.noHomeSet"));	
+									}
+								}
+								if(regionsFound<1)
+									sender.sendMessage(HMM.mes("chat.commands.home.regionNotFound"));
+							}
+						}
+						else
+							sender.sendMessage(HMM.mes("chat.commands.home.usage"));
+					}
+					else
+						sender.sendMessage(HMM.mes("chat.noPermission"));
+				}
+				else
+					sender.sendMessage(HMM.mes("chat.commands.home.consoleRejected"));
 			}
 			//Other command
 			else {
@@ -557,6 +685,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 		}
 		//Command is not /hotels
-		return false;
-	}
+	return false;
+}
 }

@@ -354,7 +354,12 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.commands.sethome.notInCreationMode", String.valueOf("&4You are not in creation mode!"));
 		locale.addDefault("chat.commands.sethome.defaultHomeSet", String.valueOf("&aDefault home set"));
 		locale.addDefault("chat.commands.sethome.userHomeSet", String.valueOf("&aUser home set"));
-		locale.addDefault("chat.commands.sethome.hotelWarpSet", String.valueOf("&aHotel warp set"));
+		locale.addDefault("chat.commands.sethome.hotelHomeSet", String.valueOf("&aHotel home set"));
+		locale.addDefault("chat.commands.home.consoleRejected", String.valueOf("The console can't teleport home!"));
+		locale.addDefault("chat.commands.home.noHomeSet", String.valueOf("&4No home is set!"));
+		locale.addDefault("chat.commands.home.regionNotFound", String.valueOf("&4Specified hotel or room not found!"));
+		locale.addDefault("chat.commands.home.usage", String.valueOf("&4Correct usage: /ht home [hotel] <room>"));
+		locale.addDefault("chat.commands.home.notRenterNoPermission", String.valueOf("&4You are not the renter or have the permission to do this!"));
 		
 		locale.options().copyDefaults(true);
 		saveLocale(locale);

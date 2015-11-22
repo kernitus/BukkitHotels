@@ -342,10 +342,6 @@ public class HotelsCommandExecutor {
 		else
 			s.sendMessage(HMM.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
-
-	private void setHome(CommandSender sender){
-		
-	}
 	public void renumber(Plugin pluginstance, String hotel,String oldnum,String newnum, World world,CommandSender sender){
 		hotel = hotel.toLowerCase();
 		if(Integer.parseInt(newnum)<100000){
@@ -382,7 +378,6 @@ public class HotelsCommandExecutor {
 												}
 												File newfile = HConH.getFile("Signs"+File.separator+hotel+"-"+newnum+".yml");
 												file.renameTo(newfile);
-												//TODO Rename hotels file too
 											}
 											else{
 												b.setType(Material.AIR);
@@ -459,7 +454,6 @@ public class HotelsCommandExecutor {
 				r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.hotel.exit").replaceAll("%hotel%", fromIdhotelName)));
 			sender.sendMessage(HMM.mes("chat.commands.rename.success").replaceAll("%hotel%" , fromIdhotelName));
 			//Rename rooms
-			//TODO not i but actual room number
 			Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(world).getRegions();
 			
 			for(ProtectedRegion region : regionlist.values()){
