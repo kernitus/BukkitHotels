@@ -349,6 +349,12 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.commands.friend.list.heading", String.valueOf("&a==Friend list for room n. %room% of the %hotel% hotel=="));
 		locale.addDefault("chat.commands.friend.list.footer", String.valueOf("&c==End of friend list=="));
 		locale.addDefault("chat.commands.friend.list.line", String.valueOf("&6Friend: &c%name%"));
+		locale.addDefault("chat.commands.sethome.consoleRejected", String.valueOf("The console can't set a home!"));
+		locale.addDefault("chat.commands.sethome.notInHotelRegion", String.valueOf("&4You are not in a hotel region!"));
+		locale.addDefault("chat.commands.sethome.notInCreationMode", String.valueOf("&4You are not in creation mode!"));
+		locale.addDefault("chat.commands.sethome.defaultHomeSet", String.valueOf("&aDefault home set"));
+		locale.addDefault("chat.commands.sethome.userHomeSet", String.valueOf("&aUser home set"));
+		locale.addDefault("chat.commands.sethome.hotelWarpSet", String.valueOf("&aHotel warp set"));
 		
 		locale.options().copyDefaults(true);
 		saveLocale(locale);

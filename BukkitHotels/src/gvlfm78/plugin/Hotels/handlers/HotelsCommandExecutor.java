@@ -343,28 +343,9 @@ public class HotelsCommandExecutor {
 			s.sendMessage(HMM.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
 
-	/*private void setHome(CommandSender sender){
-if(sender instanceof Player){
-Player p = (Player) sender;
-Location loc = p.getLocation();
-World w = p.getWorld();
-ApplicableRegionSet regions = WGM.getWorldGuard().getRegionManager(w).getApplicableRegions(loc);
-ArrayList<ProtectedRegion> rf = null;
-for(ProtectedRegion r : regions) {
-    //Regions that match player's location
-	rf.add(r);
-}
-if(rf!=null){
-	rf.contains(o)
-	for(ProtectedRegion r : rf){
-
+	private void setHome(CommandSender sender){
+		
 	}
-}
-else
-	//Player is not in any region
-
-}
-}*/
 	public void renumber(Plugin pluginstance, String hotel,String oldnum,String newnum, World world,CommandSender sender){
 		hotel = hotel.toLowerCase();
 		if(Integer.parseInt(newnum)<100000){
@@ -401,6 +382,7 @@ else
 												}
 												File newfile = HConH.getFile("Signs"+File.separator+hotel+"-"+newnum+".yml");
 												file.renameTo(newfile);
+												//TODO Rename hotels file too
 											}
 											else{
 												b.setType(Material.AIR);
@@ -494,19 +476,24 @@ else
 							Sign s = (Sign) b.getState();
 							String Line1 = ChatColor.stripColor(s.getLine(0));
 							if(Line1.toLowerCase().matches(oldname.toLowerCase())){
-									if(WGM.getRegion(signworld, "Hotel-"+newname).contains(signx, signy, signz)){
-										s.setLine(0, ChatColor.BLUE+coolnewname);
-										s.update();
-										config.set("Sign.hotel", coolnewname);
-										config.set("Sign.region", "hotel-"+newname+"-"+i);
-										try {
-											config.save(file);
-										} catch (IOException e) {
-											e.printStackTrace();
-										}
-										File newfile = HConH.getFile("Signs"+File.separator+newname+"-"+i+".yml");
-										file.renameTo(newfile);
+								if(WGM.getRegion(signworld, "Hotel-"+newname).contains(signx, signy, signz)){
+									s.setLine(0, ChatColor.BLUE+coolnewname);
+									s.update();
+									config.set("Sign.hotel", newname);
+									config.set("Sign.region", "hotel-"+newname+"-"+i);
+									try {
+										config.save(file);
+									} catch (IOException e) {
+										e.printStackTrace();
 									}
+									File newfile = HConH.getFile("Signs"+File.separator+newname+"-"+i+".yml");
+									file.renameTo(newfile);
+									
+									//Renaming
+									File hotelsFile = HConH.getFile("Hotels"+File.separator+oldname+".yml");
+									File newHotelsfile = HConH.getFile("Signs"+File.separator+newname+".yml");
+									hotelsFile.renameTo(newHotelsfile);
+								}
 							}
 						}
 					}

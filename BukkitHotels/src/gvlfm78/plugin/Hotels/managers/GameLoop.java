@@ -72,8 +72,8 @@ public class GameLoop extends BukkitRunnable {
 			else{
 				//Room sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-				String hotelName = config.getString("Sign.hotel");
-				hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1).toLowerCase();
+				String confhotelName = config.getString("Sign.hotel");
+				String hotelName = confhotelName.substring(0, 1).toUpperCase() + confhotelName.substring(1).toLowerCase();
 				World world = Bukkit.getWorld(config.getString("Sign.location.world").trim());
 				int roomNum = config.getInt("Sign.room");
 				int locx = config.getInt("Sign.location.coords.x");
@@ -129,6 +129,9 @@ public class GameLoop extends BukkitRunnable {
 											config.set("Sign.expiryDate", null);
 											config.set("Sign.friends", null);
 											config.set("Sign.extended", null);
+											config.set("Sign.userHome.x", null);
+											config.set("Sign.userHome.y", null);
+											config.set("Sign.userHome.z", null);
 											try {
 												config.save(file);
 											} catch (IOException e) {

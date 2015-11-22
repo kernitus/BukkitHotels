@@ -1,13 +1,11 @@
 package kernitus.plugin.Hotels.handlers;
 
-import kernitus.plugin.Hotels.HotelsCreationMode;
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.managers.HotelsFileFinder;
-import kernitus.plugin.Hotels.managers.HotelsMessageManager;
-import kernitus.plugin.Hotels.managers.SignManager;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,14 +13,24 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import kernitus.plugin.Hotels.HotelsCreationMode;
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.managers.HotelsFileFinder;
+import kernitus.plugin.Hotels.managers.HotelsMessageManager;
+import kernitus.plugin.Hotels.managers.SignManager;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
+
 public class HotelsCommandHandler implements CommandExecutor {
-	
+
 	private HotelsMain plugin;
 	public HotelsCommandHandler(HotelsMain instance)
 	{
 		this.plugin = instance;
 	}
-	
+
 	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
 	SignManager SM = new SignManager(plugin);
 	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
@@ -72,26 +80,26 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 			else if(args[0].equalsIgnoreCase("help")){//Help pages
 				if(HMM.hasPerm(sender, "hotels.create")){
-				if(args.length>1){
-				if(args[1].equalsIgnoreCase("1"))
-					HCE.cmdHelp1(sender);
-				else if(args[1].equalsIgnoreCase("2"))
-					HCE.cmdHelp2(sender);
-				else if(args[1].equalsIgnoreCase("3"))
-					HCE.cmdHelp3(sender);
-				else if(args[1].equalsIgnoreCase("4"))
-					HCE.cmdHelp4(sender);
-				else if(args[1].equalsIgnoreCase("5"))
-					HCE.cmdHelp5(sender);
-				else
-					HCE.cmdHelp1(sender);
+					if(args.length>1){
+						if(args[1].equalsIgnoreCase("1"))
+							HCE.cmdHelp1(sender);
+						else if(args[1].equalsIgnoreCase("2"))
+							HCE.cmdHelp2(sender);
+						else if(args[1].equalsIgnoreCase("3"))
+							HCE.cmdHelp3(sender);
+						else if(args[1].equalsIgnoreCase("4"))
+							HCE.cmdHelp4(sender);
+						else if(args[1].equalsIgnoreCase("5"))
+							HCE.cmdHelp5(sender);
+						else
+							HCE.cmdHelp1(sender);
+					}
+					else
+						HCE.cmdHelp1(sender);
 				}
 				else
-					HCE.cmdHelp1(sender);
-			}
-				else
 					sender.sendMessage(HMM.mes("chat.noPermission"));
-		}
+			}
 			else if((args[0].equalsIgnoreCase("createmode"))||(args[0].equalsIgnoreCase("cm"))){
 				if(sender instanceof Player){
 					Player p = (Player) sender;
@@ -163,27 +171,27 @@ public class HotelsCommandHandler implements CommandExecutor {
 					Player p = (Player) sender;
 					if(HMM.hasPerm(p, "hotels.friend")){
 						if(args.length>1){
-						if(args[1].equalsIgnoreCase("add")){
-							if(args.length>4)
-								HCE.cmdFriendAdd(sender,args[2],args[3],args[4]);
+							if(args[1].equalsIgnoreCase("add")){
+								if(args.length>4)
+									HCE.cmdFriendAdd(sender,args[2],args[3],args[4]);
+								else
+									sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
+							}
+							else if(args[1].equalsIgnoreCase("remove")){
+								if(args.length>4)
+									HCE.cmdFriendRemove(sender,args[2],args[3],args[4]);
+								else
+									sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
+							}
+							else if(args[1].equalsIgnoreCase("list")){
+								if(args.length>3)
+									HCE.cmdFriendList(sender,args[2],args[3]);
+								else
+									sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
+							}
 							else
 								sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
 						}
-						else if(args[1].equalsIgnoreCase("remove")){
-							if(args.length>4)
-								HCE.cmdFriendRemove(sender,args[2],args[3],args[4]);
-							else
-								sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
-						}
-						else if(args[1].equalsIgnoreCase("list")){
-							if(args.length>3)
-								HCE.cmdFriendList(sender,args[2],args[3]);
-							else
-								sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
-						}
-						else
-							sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
-					}
 						else
 							sender.sendMessage(HMM.mes("chat.commands.friend.usage"));
 					}
@@ -462,10 +470,91 @@ public class HotelsCommandHandler implements CommandExecutor {
 				else
 					sender.sendMessage(HMM.mes("chat.commands.room.usage"));
 			}
+			else if(args[0].equalsIgnoreCase("sethome")){
+				if(sender instanceof Player){
+					Player p = (Player) sender;
+					String playerUUID = p.getUniqueId().toString();
+					Location loc = p.getLocation();
+					int x = loc.getBlockX();
+					int y = loc.getBlockY();
+					int z = loc.getBlockZ();
+					World w = p.getWorld();
+					ApplicableRegionSet regions = WGM.getWorldGuard().getRegionManager(w).getApplicableRegions(loc);
+					ArrayList<ProtectedRegion> rf = new ArrayList<ProtectedRegion>();
+					for(ProtectedRegion r : regions){
+						//Regions that match player's location
+						rf.add(r);
+					}
+					if(!rf.isEmpty()){
+						File invfile = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
+						for(ProtectedRegion r : rf){
+							String id = r.getId();
+							if(id.startsWith("hotel-")){ //If it's a hotel
+								if(id.matches("^hotel-.+-.+")){ //If it's a room						
+									String hotelandNum = (id.replaceFirst("hotel-", "")).toLowerCase();
+									File signFile = HConH.getFile("Signs"+File.separator+hotelandNum+".yml");
+									YamlConfiguration signConfig = HConH.getyml(signFile);
+
+									if(invfile.exists()){
+										signConfig.set("Sign.defaultHome.x", x);
+										signConfig.set("Sign.defaultHome.y", y);
+										signConfig.set("Sign.defaultHome.z", z);
+										try {
+											signConfig.save(signFile);
+											sender.sendMessage(HMM.mes("chat.commands.sethome.defaultHomeSet"));
+										} catch (IOException e){
+											e.printStackTrace();
+										}
+									}
+									else{ //It's a user doing this
+										if(signConfig.getString("Sign.renter").matches(playerUUID)){
+											signConfig.set("Sign.userHome.x", x);
+											signConfig.set("Sign.userHome.y", y);
+											signConfig.set("Sign.userHome.z", z);
+											try {
+												signConfig.save(signFile);
+												sender.sendMessage(HMM.mes("chat.commands.sethome.userHomeSet"));
+											} catch (IOException e){
+												e.printStackTrace();
+											}
+										}
+										else
+											sender.sendMessage(HMM.mes("chat.commands.friend.notRenter"));
+									}
+								}
+								else{//It's a hotel warp
+									if(invfile.exists()){
+										String hotelName = (id.replaceFirst("hotel-", "")).toLowerCase();
+										File hotelFile = HConH.getFile("Hotels"+File.separator+hotelName+".yml");
+										YamlConfiguration hotelConfig = HConH.getyml(hotelFile);
+										hotelConfig.set("Hotel.warp.x", x);
+										hotelConfig.set("Hotel.warp.y", y);
+										hotelConfig.set("Hotel.warp.z", z);
+										try {
+											hotelConfig.save(hotelFile);
+											sender.sendMessage(HMM.mes("chat.commands.sethome.hotelWarpSet"));
+										} catch (IOException e){
+											e.printStackTrace();
+										}
+									}
+									else
+										sender.sendMessage(HMM.mes("chat.commands.sethome.notInCreationMode"));
+								}
+							}
+							else
+								sender.sendMessage(HMM.mes("chat.commands.sethome.notInHotelRegion"));
+						}
+					}
+					else //Player is not in any region
+						sender.sendMessage(HMM.mes("chat.commands.sethome.notInHotelRegion"));
+				}
+				else
+					sender.sendMessage(HMM.mes("chat.commands.sethome.consoleRejected"));
+			}
+			//Other command
 			else {
 				sender.sendMessage(HMM.mes("chat.commands.unknownArg"));
 			}
-			//Other commands
 		}
 		//Command is not /hotels
 		return false;
