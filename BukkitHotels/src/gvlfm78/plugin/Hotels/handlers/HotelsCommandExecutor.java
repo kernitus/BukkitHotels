@@ -458,13 +458,17 @@ public class HotelsCommandExecutor {
 			if(pluginstance.getConfig().getBoolean("settings.use-hotel_exit_message"))
 				r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.hotel.exit").replaceAll("%hotel%", fromIdhotelName)));
 			sender.sendMessage(HMM.mes("chat.commands.rename.success").replaceAll("%hotel%" , fromIdhotelName));
-			Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(world).getRegions();
 			//Rename rooms
-			for(int i = regionlist.size(); i>0; i--){
-				if(WGM.hasRegion(world, "Hotel-"+oldname+"-"+i)){
-					WGM.renameRegion("Hotel-"+oldname+"-"+i, "Hotel-"+newname+"-"+i, world);
+			//TODO not i but actual room number
+			Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(world).getRegions();
+			
+			for(ProtectedRegion region : regionlist.values()){
+				String regionId = region.getId();
+				if(regionId.matches("hotel-"+oldname+"-"+"[0-9]+")){
+					String regionIdparts[] = regionId.split("-");
+					WGM.renameRegion(regionId, "Hotel-"+newname+"-"+regionIdparts[2], world);
 					//Rename sign file
-					File file = HConH.getFile("Signs"+File.separator+oldname+"-"+i+".yml");
+					File file = HConH.getFile("Signs"+File.separator+regionIdparts[1]+"-"+regionIdparts[2]+".yml");
 					if(file.exists()){
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 						World signworld = Bukkit.getWorld(config.getString("Sign.location.world").trim());
@@ -480,13 +484,12 @@ public class HotelsCommandExecutor {
 									s.setLine(0, ChatColor.BLUE+coolnewname);
 									s.update();
 									config.set("Sign.hotel", newname);
-									config.set("Sign.region", "hotel-"+newname+"-"+i);
+									config.set("Sign.region", "hotel-"+newname+"-"+regionIdparts[2]);
 									try {
 										config.save(file);
 									} catch (IOException e) {
 										e.printStackTrace();
-									}
-									File newfile = HConH.getFile("Signs"+File.separator+newname+"-"+i+".yml");
+									File newfile = HConH.getFile("Signs"+File.separator+newname+"-"+regionIdparts[2]+".yml");
 									file.renameTo(newfile);
 									
 									//Renaming
@@ -504,6 +507,7 @@ public class HotelsCommandExecutor {
 			} catch (StorageException e) {
 				sender.sendMessage(HMM.mes("chat.commands.rename.failRooms"));
 				e.printStackTrace();
+			}
 			}
 		}
 		else
