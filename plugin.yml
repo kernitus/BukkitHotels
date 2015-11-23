@@ -35,6 +35,7 @@ permissions:
        hotels.sethome: true
        hotels.home: true
        hotels.home.others: true
+       hotels.reload: true
    hotels.createmode:
      description: Allows you to enter hotel creation mode
      default: op
@@ -88,4 +89,7 @@ permissions:
      default: true
    hotels.home.others:
      description: Allows you to teleport into rooms that you have not rented
+     default: false
+   hotels.reload:
+     description: Allows you to reload all configuration files
      default: false

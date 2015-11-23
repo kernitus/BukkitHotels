@@ -2,7 +2,6 @@ package kernitus.plugin.Hotels.managers;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
@@ -18,11 +17,10 @@ public class HotelsMessageManager {
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 	
 	//Prefix
-		YamlConfiguration locale = HConH.getLocale();
-		String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
+		String prefix = (HConH.getLocale().getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
 		
 	public String mes(String path){
-		String mes = locale.getString(path);
+		String mes = HConH.getLocale().getString(path);
 		if(mes!=null){
 		mes = (prefix+mes).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
 		}
@@ -32,7 +30,7 @@ public class HotelsMessageManager {
 	}
 	
 	public String mesnopre(String path){
-		String mes = locale.getString(path);
+		String mes = HConH.getLocale().getString(path);
 		if(mes!=null){
 		mes = mes.replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
 		}

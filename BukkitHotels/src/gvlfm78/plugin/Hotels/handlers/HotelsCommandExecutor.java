@@ -71,6 +71,9 @@ public class HotelsCommandExecutor {
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.room"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.renum"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.rename"));
+		
+		s.sendMessage(HMM.mesnopre("chat.commands.commands.sethome"));
+		s.sendMessage(HMM.mesnopre("chat.commands.commands.home"));
 
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.check"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.list"));
@@ -79,6 +82,7 @@ public class HotelsCommandExecutor {
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.friend"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.friendList"));
 
+		s.sendMessage(HMM.mesnopre("chat.commands.commands.reload"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.remove"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.delete"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.delr"));
@@ -102,6 +106,11 @@ public class HotelsCommandExecutor {
 		if(HMM.hasPerm(s,"hotels.rename"))
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.rename"));
 
+		if(HMM.hasPerm(s, "hotels.sethome"))
+			s.sendMessage(HMM.mesnopre("chat.commands.commands.sethome"));
+		if(HMM.hasPerm(s, "hotels.home"))
+			s.sendMessage(HMM.mesnopre("chat.commands.commands.home"));
+		
 		if(HMM.hasPerm(s,"hotels.check"))
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.check"));
 		if(HMM.hasPerm(s,"hotels.list.hotels"))
@@ -113,6 +122,9 @@ public class HotelsCommandExecutor {
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.friend"));
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.friendList"));}
 
+		if(HMM.hasPerm(s,"hotels.reload"))
+		s.sendMessage(HMM.mesnopre("chat.commands.commands.reload"));
+		
 		if(HMM.hasPerm(s,"hotels.remove"))
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.remove"));
 		if(HMM.hasPerm(s,"hotels.delete.rooms"))
@@ -194,8 +206,8 @@ public class HotelsCommandExecutor {
 		HCM.resetInventoryFiles(p);
 		p.sendMessage(HMM.mes("chat.commands.creationMode.reset"));
 	}
-	public void cmdReload(CommandSender s){
-		HConH.reloadConfigs(plugin);
+	public void cmdReload(CommandSender s,Plugin pluginstance){
+		HConH.reloadConfigs(pluginstance);
 		s.sendMessage(HMM.mes("chat.commands.reload.success"));
 	}
 	public void cmdRent(CommandSender s,String hotelName, String roomNum){

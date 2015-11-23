@@ -149,7 +149,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 			else if(args[0].equalsIgnoreCase("reload")){
 				if(HMM.hasPerm(sender, "hotels.reload"))
-					HCE.cmdReload(sender);
+					HCE.cmdReload(sender,plugin);
 				else
 					sender.sendMessage(HMM.mes("chat.noPermission"));
 			}
