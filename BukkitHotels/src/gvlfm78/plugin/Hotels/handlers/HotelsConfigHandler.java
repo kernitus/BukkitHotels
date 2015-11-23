@@ -19,14 +19,17 @@ public class HotelsConfigHandler {
 	YamlConfiguration locale = getLocale();
 
 	public void setupConfigs(Plugin plugin){
-		if(!getMessageQueueFile().exists()){
-			setupQueuedMessages(plugin);
-		}
-		if (!new File(plugin.getDataFolder(), "config.yml").exists()) { //Checking if config file exists
-			setupConfig(plugin);
-		}
+		//Message Queue
+		if(!getMessageQueueFile().exists())
+			setupMessageQueue();
+		//Config.yml
+		if (!getconfigymlFile().exists())
+			setupConfigyml(plugin);
+		
+		//Locale
 		String lang = plugin.getConfig().getString("settings.language"); //From config.yml
-			if(getLocale().contains("language")){
+			
+		if(getLocale().contains("language")){
 			/*YamlConfiguration config = YamlConfiguration.loadConfiguration(locale);
 			String loclang = config.getString("language"); //From already-generated locale.yml
 			if(!lang.equalsIgnoreCase(loclang)){
@@ -44,7 +47,7 @@ public class HotelsConfigHandler {
 		}
 	}
 
-	public void setupConfig(Plugin plugin){
+	public void setupConfigyml(Plugin plugin){
 		FileConfiguration config = plugin.getConfig();
 		plugin.getLogger().info("[Hotels] Generating config file...");
 		config.options().header("Hotels Plugin by kernitus");
@@ -64,7 +67,7 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info("[Hotels] Config file generated");
 	}
 	
-	public void setupQueuedMessages(Plugin plugin){
+	public void setupMessageQueue(){
 		saveMessageQueue(getMessageQueue());
 	}
 
@@ -74,7 +77,8 @@ public class HotelsConfigHandler {
 			setupLanguageEnglish(plugin);
 		else if(lang.equalsIgnoreCase("it"))
 			setupLanguageItalian(plugin);
-		else if(lang.equalsIgnoreCase("custom")){}
+		else if(lang.equalsIgnoreCase("custom"))
+			return;
 		else
 			setupLanguageEnglish(plugin);
 
@@ -92,16 +96,25 @@ public class HotelsConfigHandler {
 		return YamlConfiguration.loadConfiguration(getFile(filepath));
 	}
 	
+	public File getconfigFile(String configName){
+		return new File("plugins"+File.separator+"Hotels"+File.separator+configName+".yml");
+	}
+	
 	public File getconfigymlFile(){
-		return new File("plugins//Hotels//config.yml");
+		return new File("plugins"+File.separator+"Hotels"+File.separator+"config.yml");
 	}
 	
 	public File getLocaleFile(){
-		return new File("plugins//Hotels//locale.yml");
+		return new File("plugins"+File.separator+"Hotels"+File.separator+"locale.yml");
 	}
 	
 	public File getMessageQueueFile(){
-		return new File("plugins//Hotels//queuedMessages.yml");
+		return new File("plugins"+File.separator+"Hotels"+File.separator+"queuedMessages.yml");
+	}
+	
+	public YamlConfiguration getconfig(String configName){
+		File file = getconfigFile(configName);
+		return YamlConfiguration.loadConfiguration(file);
 	}
 	
 	public YamlConfiguration getconfigyml(){
@@ -117,6 +130,15 @@ public class HotelsConfigHandler {
 	public YamlConfiguration getMessageQueue(){
 		File file = getMessageQueueFile();
 		return YamlConfiguration.loadConfiguration(file);
+	}
+	
+	public void saveConfiguration(String configName, YamlConfiguration config){
+		File file = getFile(configName);
+		try {
+			config.save(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void saveLocale(YamlConfiguration config){
@@ -137,13 +159,42 @@ public class HotelsConfigHandler {
 		}
 	}
 	
-	public void reloadConfigs(Plugin plugin){
+	public void saveconfigyml(YamlConfiguration config){
+		File file = getconfigymlFile();
+		try {
+			config.save(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void reloadLocale(Plugin pluginstance){
+		if(!getLocaleFile().exists()){
+			localeLanguageSelector(pluginstance);//Setup locale file from scratch
+		}
+		else{
+			YamlConfiguration locale = getLocale();
+			saveLocale(locale);
+		}
+	}
+	
+	public void reloadMessageQueue(){
+		if(!getMessageQueueFile().exists()){
+			setupMessageQueue();//Setup message queue
+		}
+		else{
+			YamlConfiguration mq = getMessageQueue();
+			saveMessageQueue(mq);
+		}
+	}
+	
+	public void reloadConfigs(Plugin pluginstance){
 		//Reload config.yml
-		plugin.reloadConfig();
+		pluginstance.reloadConfig();
 		//Reload locale.yml
-		getLocale();
+		reloadLocale(pluginstance);
 		//Reload queuedMessages.yml
-		getMessageQueue();
+		reloadMessageQueue();
 	}
 
 	public void setupLanguageEnglish(Plugin plugin){
@@ -360,6 +411,7 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.commands.home.regionNotFound", String.valueOf("&4Specified hotel or room not found!"));
 		locale.addDefault("chat.commands.home.usage", String.valueOf("&4Correct usage: /ht home [hotel] <room>"));
 		locale.addDefault("chat.commands.home.notRenterNoPermission", String.valueOf("&4You are not the renter or have the permission to do this!"));
+		locale.addDefault("chat.commands.reload.success", String.valueOf("&aConfiguration files reloaded"));
 		
 		locale.options().copyDefaults(true);
 		saveLocale(locale);
@@ -367,35 +419,26 @@ public class HotelsConfigHandler {
 	}
 
 	/*public void setupLanguageChinese(Plugin plugin){
-		        if (this.IPconfigFile == null)
-		            this.IPconfigFile = new File(getDataFolder(), "IPs.yml");
+		        if (this.CLconfigFile == null)
+		            this.CLconfigFile = new File(getDataFolder(), "CLs.yml");
 		       
-		        this.IPconfig = YamlConfiguration.loadConfiguration(this.IPconfigFile);
-		        if(!IPconfig.contains("Allowed"))
-		            IPconfig.createSection("Allowed");
-		        if(!IPconfig.contains("Attempted"))
-		            IPconfig.createSection("Attempted");
-		        IPconfig.options().copyHeader(true);
-		        saveIPconfig();
+		        this.CLconfig = YamlConfiguration.loadConfiguration(this.CLconfigFile);
+		        if(!CLconfig.contains("Allowed"))
+		            CLconfig.createSection("Allowed");
+		        if(!CLconfig.contains("Attempted"))
+		            CLconfig.createSection("Attempted");
+		        CLconfig.options().copyHeader(true);
+		        saveCLconfig();
 	}
 	*/
 	public void setupLanguageItalian(Plugin plugin){
-		locale.addDefault("language", String.valueOf("en"));
-		locale.addDefault("settings.chat.firstLine", String.valueOf("hotels"));
-		locale.addDefault("settings.chat.prefix", String.valueOf("[Hotels]"));
-		locale.addDefault("settings.chat.creationMode.hotelCreationFailed", String.valueOf("&4Could not create Hotel, hotel already exists"));
-
-		locale.options().copyDefaults(true);
-		saveLocale(locale);
-		plugin.getLogger().info("[Hotels] Language strings generated");
+		File italianLocaleFile = new File(plugin.getDataFolder(),"italian.yml");
+		YamlConfiguration italianLocale = YamlConfiguration.loadConfiguration(italianLocaleFile);
+		italianLocale.options().copyHeader(true);
+		italianLocale.options().copyDefaults(true);
+		saveConfiguration("locale",italianLocale);
+		plugin.getLogger().info("[Hotels] Italian Language strings generated");
 	}
-	
-    public void saveDefaultLocale(Plugin plugin) {
-    	File localeFile = getLocaleFile();
-        if (!localeFile.exists()) {            
-             plugin.saveResource("locale_zh.yml", false);
-         }
-    }
 
 	/*public void setupFlagsFile(Plugin plugin){
 		Map<String, String> flags = new HashMap<String, String>(66);

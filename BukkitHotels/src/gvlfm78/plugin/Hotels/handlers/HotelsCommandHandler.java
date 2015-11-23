@@ -679,6 +679,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 				else
 					sender.sendMessage(HMM.mes("chat.commands.home.consoleRejected"));
 			}
+			else if(args[0].equalsIgnoreCase("reload")){
+				HConH.reloadConfigs(plugin);
+				sender.sendMessage(HMM.mes("chat.commands.reload.success"));
+			}
 			//Other command
 			else {
 				sender.sendMessage(HMM.mes("chat.commands.unknownArg"));
