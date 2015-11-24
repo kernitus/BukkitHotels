@@ -287,6 +287,9 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.commands.commands.renum", String.valueOf("&6/ht renum [hotel] [oldnum] [newnum] - &aRenumbers specified room"));
 		locale.addDefault("chat.commands.commands.rename", String.valueOf("&6/ht rename [oldname] [newname] - &aRenames specified hotel"));
 		
+		locale.addDefault("chat.commands.commands.sethome", String.valueOf("&6/ht sethome - &aSets a hotel/room home"));
+		locale.addDefault("chat.commands.commands.home", String.valueOf("&6/ht home [hotel] <room> - &aTeleports you to a hotel/room home"));
+		
 		locale.addDefault("chat.commands.commands.check", String.valueOf("&6/ht check <player> - &aLists all rooms rented by you/specified player"));
 		locale.addDefault("chat.commands.commands.list", String.valueOf("&6/ht list <world> - &aLists all hotels in current/specified world"));
 		locale.addDefault("chat.commands.commands.rlist", String.valueOf("&6/ht rlist [hotel] <world> - &aLists all rooms in specified hotel in current/specified world"));
@@ -294,6 +297,7 @@ public class HotelsConfigHandler {
 		locale.addDefault("chat.commands.commands.friend", String.valueOf("&6/ht friend [add/remove] [hotel] [room] [player] - &aAdds/removes a player from the list of friends that can access the specified room"));
 		locale.addDefault("chat.commands.commands.friendList", String.valueOf("&6/ht friend list [hotel] [room] - &aLists players in friend list of specified hotel room"));
 		
+		locale.addDefault("chat.commands.commands.reload", String.valueOf("&6/ht reload - &aReloads all configuration files"));
 		locale.addDefault("chat.commands.commands.remove", String.valueOf("&6/ht remove [player] [hotel] [room] - &aRemoves player from his rented room"));
 		locale.addDefault("chat.commands.commands.delr", String.valueOf("&6/ht delr [hotelname] [roomnum] - &aDeletes specified room"));
 		locale.addDefault("chat.commands.commands.delete", String.valueOf("&6/ht delete [hotelname] - &aDelete specified hotel"));
