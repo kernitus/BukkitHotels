@@ -1,6 +1,6 @@
 main: kernitus.plugin.Hotels.HotelsMain
 name: Hotels
-version: 0.5
+version: 0.5.1
 author: kernitus
 description: Allows the making of hotels and renting of rooms.
 website: http://www.spigotmc.org/resources/hotels.2047/
