@@ -453,7 +453,6 @@ public class HotelsCommandExecutor {
 	public void renameHotel(Plugin pluginstance, String oldname,String newname, World world,CommandSender sender){
 		oldname = oldname.toLowerCase();
 		newname = newname.toLowerCase();
-		String coolnewname = newname.substring(0, 1).toUpperCase() + newname.substring(1).toLowerCase();
 		if(WGM.hasRegion(world, "Hotel-"+oldname)){
 			WGM.renameRegion("Hotel-"+oldname, "Hotel-"+newname, world);
 			ProtectedRegion r = WGM.getRegion(world, "Hotel-"+newname);
@@ -487,7 +486,7 @@ public class HotelsCommandExecutor {
 							String Line1 = ChatColor.stripColor(s.getLine(0));
 							if(Line1.toLowerCase().matches(oldname.toLowerCase())){
 								if(WGM.getRegion(signworld, "Hotel-"+newname).contains(signx, signy, signz)){
-									s.setLine(0, ChatColor.BLUE+coolnewname);
+									s.setLine(0, ChatColor.BLUE+newname);
 									s.update();
 									config.set("Sign.hotel", newname);
 									config.set("Sign.region", "hotel-"+newname+"-"+regionIdparts[2]);
@@ -495,12 +494,12 @@ public class HotelsCommandExecutor {
 										config.save(file);
 									} catch (IOException e) {
 										e.printStackTrace();
-									File newfile = HConH.getFile("Signs"+File.separator+newname+"-"+regionIdparts[2]+".yml");
+									File newfile = HConH.getFile("Signs"+File.separator+newname.toLowerCase()+"-"+regionIdparts[2]+".yml");
 									file.renameTo(newfile);
 									
 									//Renaming
-									File hotelsFile = HConH.getFile("Hotels"+File.separator+oldname+".yml");
-									File newHotelsfile = HConH.getFile("Signs"+File.separator+newname+".yml");
+									File hotelsFile = HConH.getFile("Hotels"+File.separator+oldname.toLowerCase()+".yml");
+									File newHotelsfile = HConH.getFile("Hotels"+File.separator+newname.toLowerCase()+".yml");
 									hotelsFile.renameTo(newHotelsfile);
 								}
 							}
@@ -630,7 +629,6 @@ public class HotelsCommandExecutor {
 									File file = HConH.getFile("Signs"+File.separator+hotelname+"-"+roomnum+".yml");
 									YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 									long expiryDate = config.getLong("Sign.expiryDate");
-									hotelname = hotelname.substring(0, 1).toUpperCase() + hotelname.substring(1).toLowerCase();
 									if(expiryDate>0){
 										long currentmins = System.currentTimeMillis()/1000/60;
 										String timeleft = SM.TimeFormatter(expiryDate-currentmins);

@@ -49,25 +49,25 @@ public class WorldGuardManager {
 	}
 
 	public void addOwner(OfflinePlayer p, ProtectedRegion r){
-		DefaultDomain owners = new DefaultDomain();
+		DefaultDomain owners = r.getOwners();
 		owners.addPlayer(p.getName());
 		r.setOwners(owners);
 	}
 
 	public void addMember(OfflinePlayer p, ProtectedRegion r){
-		DefaultDomain members = new DefaultDomain();
+		DefaultDomain members = r.getMembers();
 		members.addPlayer(p.getName());
 		r.setMembers(members);
 	}
 
 	public void removeOwner(OfflinePlayer p, ProtectedRegion r){
-		DefaultDomain owners = new DefaultDomain();
+		DefaultDomain owners = r.getOwners();
 		owners.removePlayer(p.getName());
 		r.setOwners(owners);
 	}
 
 	public void removeMember(OfflinePlayer p, ProtectedRegion r){
-		DefaultDomain members = new DefaultDomain();
+		DefaultDomain members = r.getMembers();
 		members.removePlayer(p.getName());
 		r.setMembers(members);
 	}
@@ -110,7 +110,6 @@ public class WorldGuardManager {
 		}
 	}
 	public void hotelFlags(ProtectedRegion r,String hotelName,Plugin plugin){
-		hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1).toLowerCase();
 		//r.setFlag(DefaultFlag.PASSTHROUGH, State.ALLOW);
 		//r.setFlag(DefaultFlag.BUILD, State.DENY);
 		r.setFlag(DefaultFlag.PVP, State.DENY);

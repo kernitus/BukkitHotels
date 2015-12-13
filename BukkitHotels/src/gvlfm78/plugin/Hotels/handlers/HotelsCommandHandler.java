@@ -442,7 +442,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 								try{
 									int roomNum = Integer.parseInt(args[2]);
 									HCM.roomSetup(hotelName, roomNum, sender,plugin);
-									hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1).toLowerCase();
 									String roomNums = String.valueOf(roomNum);
 									roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1).toLowerCase();
 									sender.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(roomNum))
@@ -456,7 +455,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 								int roomNum = HCE.nextNewRoom(p.getWorld(),hotelName);
 								if(roomNum!=0){
 									HCM.roomSetup(hotelName, roomNum, sender,plugin);
-									hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1).toLowerCase();
 									String roomNums = String.valueOf(roomNum);
 									roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1).toLowerCase();
 									sender.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(roomNum))
@@ -574,7 +572,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 							if(args.length>2){
 								String hotelName = args[1].toLowerCase();
 								String roomNum = args[2].toLowerCase();
-								//TODO check if hotel name corresponds to actual region
 								Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(w).getRegions();
 								int regionsFound = 0;
 								for(ProtectedRegion region : regionlist.values()){

@@ -180,13 +180,12 @@ public class HotelsListener implements Listener {
 			if(Line1.equals("Reception")){ //First line is "Reception"
 				if(Line2!=null){
 					String[] Line2split = Line2.split(" ");
-					String hotelname = Line2split[0].toLowerCase();
+					String hotelname = Line2split[0];
 					if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
 						int tot = totalRooms(hotelname,b.getWorld());
 						int free = freeRooms(hotelname,b.getWorld());
-						YamlConfiguration locale = HConH.getLocale();
-						s.setLine(2, locale.getString("chat.sign.reception.total").replaceAll("%tot%", String.valueOf(tot)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-						s.setLine(3, locale.getString("chat.sign.reception.free").replaceAll("%tot%", String.valueOf(free)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.setLine(2, HMM.mesnopre("chat.sign.reception.total").replaceAll("%tot%", String.valueOf(tot)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+						s.setLine(3, HMM.mesnopre("chat.sign.reception.free").replaceAll("%tot%", String.valueOf(free)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 						s.update();
 						return false;
 					}

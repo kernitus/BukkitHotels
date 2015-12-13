@@ -59,17 +59,15 @@ public class SignManager {
 			if ((!(Line2.isEmpty()))&&(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))){ //Hotel region exists
 				int tot = totalRooms(Line2,p.getWorld()); //Getting total amount of rooms in hotel
 				int free = freeRooms(Line2,p.getWorld()); //Getting amount of free rooms in hotel
-				Line2 = Line2.toLowerCase();
-				String hotelName = Line2.substring(0, 1).toUpperCase() + Line2.substring(1).toLowerCase(); //Beautifying hotel name
 				//Setting all sign lines
 				e.setLine(0, ("&a"+locale.getString("sign.reception")));
-				e.setLine(1, ("&1"+hotelName+" Hotel"));
+				e.setLine(1, ("&1"+Line2+" Hotel"));
 				e.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")));
 				e.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")));
 				//Updating sign file
-				File signFile = HConH.getFile("Signs"+File.separator+"Reception-"+Line2+"-1.yml");
+				File signFile = HConH.getFile("Signs"+File.separator+"Reception-"+Line2.toLowerCase()+"-1.yml");
 				for(int i = 1; signFile.exists(); i++){
-					signFile = HConH.getFile("Signs"+File.separator+"Reception-"+Line2+"-"+i+".yml");
+					signFile = HConH.getFile("Signs"+File.separator+"Reception-"+Line2.toLowerCase()+"-"+i+".yml");
 				}
 				if(!signFile.exists()){
 					try {
@@ -80,7 +78,7 @@ public class SignManager {
 					}
 					new YamlConfiguration();
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
-					config.addDefault("Reception.hotel", hotelName);
+					config.addDefault("Reception.hotel", Line2);
 					config.addDefault("Reception.location.world", e.getBlock().getWorld().getName());
 					config.addDefault("Reception.location.x", e.getBlock().getX());
 					config.addDefault("Reception.location.y", e.getBlock().getY());
@@ -109,7 +107,7 @@ public class SignManager {
 	public void placeRoomSign(SignChangeEvent e){
 		Player p = e.getPlayer();
 		//Sign Lines
-		String Line2 = (ChatColor.stripColor(e.getLine(1)).trim()).toLowerCase();
+		String Line2 = (ChatColor.stripColor(e.getLine(1)).trim());
 		String Line3 = ChatColor.stripColor(e.getLine(2)).trim();
 		String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
 
@@ -122,7 +120,7 @@ public class SignManager {
 			String roomnumb = String.valueOf(roomnum);
 			String cost = Line3parts[1]; //Cost
 			if((roomnumb.length()+cost.length()+9)<22){
-				File signFile = HConH.getFile("Signs"+File.separator+Line2+"-"+roomnum+".yml");
+				File signFile = HConH.getFile("Signs"+File.separator+Line2.toLowerCase()+"-"+roomnum+".yml");
 				if(!signFile.exists()){ //Sign for room doesn't already exist
 					if ((!(Line2.isEmpty()))&&(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&& //Hotel region exists
 							(WGM.getWorldGuard().getRegionManager(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ()))){
@@ -153,7 +151,7 @@ public class SignManager {
 							//Calculating accurate cost
 							double acccost = CostConverter(cost);
 
-							signConfig.set("Sign.hotel", Line2.toLowerCase());
+							signConfig.set("Sign.hotel", Line2);
 							signConfig.set("Sign.room", roomnum);
 							signConfig.set("Sign.cost", acccost);
 
@@ -168,9 +166,7 @@ public class SignManager {
 								p.sendMessage(HMM.mes("chat.sign.place.fileFail"));
 								e1.printStackTrace();}
 
-							Line2 = Line2.toLowerCase();
-							String output = Line2.substring(0, 1).toUpperCase() + Line2.substring(1).toLowerCase();
-							e.setLine(0, ChatColor.DARK_BLUE+output); //Hotel Name
+							e.setLine(0, ChatColor.DARK_BLUE+Line2); //Hotel Name
 							e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost.toUpperCase()+"$"); //Room Number + Cost
 							if(immutedtime.matches("0"))
 								e.setLine(2,locale.getString("sign.permanent"));
@@ -214,7 +210,7 @@ public class SignManager {
 		Sign s = (Sign) e.getClickedBlock().getState();
 		String Line1 = ChatColor.stripColor(s.getLine(0)); //Line1
 		String Line2 = ChatColor.stripColor(s.getLine(1)); //Line2
-		String hotelName = (ChatColor.stripColor(Line1)).toLowerCase(); //Hotel name
+		String hotelName = (ChatColor.stripColor(Line1)); //Hotel name
 
 		//If Hotel region exists
 		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("Hotel-"+hotelName)){
@@ -250,8 +246,7 @@ public class SignManager {
 				p.sendMessage(HMM.mes("chat.sign.use.signOutOfRegion")); 
 		}
 	}
-	public void rentRoom(YamlConfiguration signConfig,HotelsMain pluginstance,File signFile,Player p,String inputHotelName,String roomNum){
-		String hotelName = inputHotelName.substring(0, 1).toUpperCase() + inputHotelName.substring(1).toLowerCase(); //Beautifying hotel name
+	public void rentRoom(YamlConfiguration signConfig,HotelsMain pluginstance,File signFile,Player p,String hotelName,String roomNum){
 		//If region exists
 		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion(signConfig.getString("Sign.region"))){
 			String cRenter = signConfig.getString("Sign.renter");
@@ -336,7 +331,7 @@ public class SignManager {
 	public void breakRoomSign(BlockBreakEvent e){
 		Block b = e.getBlock();
 		Sign s = (Sign) b.getState();
-		String Line1 = (ChatColor.stripColor(s.getLine(0))).toLowerCase();
+		String Line1 = (ChatColor.stripColor(s.getLine(0)));
 		World w = b.getWorld();
 		if(WGM.hasRegion(w, "Hotel-"+Line1)){
 			//Room sign has been broken?
@@ -345,7 +340,7 @@ public class SignManager {
 				String[] Line2split = Line2.split(" ");
 				int roomnum = Integer.parseInt(Line2split[1]);
 				if(WGM.hasRegion(w, "Hotel-"+Line1+"-"+roomnum)){
-					File signFile = HConH.getFile("Signs"+File.separator+Line1+"-"+roomnum+".yml");
+					File signFile = HConH.getFile("Signs"+File.separator+Line1.toLowerCase()+"-"+roomnum+".yml");
 					if(signFile.exists()){
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
 						if(config.getString("Sign.hotel").equalsIgnoreCase(Line1)){
@@ -449,8 +444,8 @@ public class SignManager {
 }
 
 public int totalRooms(String hotelName,World w){
-	hotelName = hotelName.toLowerCase();
 	//Finds total amount of rooms in given hotel
+	hotelName = hotelName.toLowerCase();
 	int tot = 0;
 	Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 	regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
@@ -466,8 +461,8 @@ public int totalRooms(String hotelName,World w){
 }
 
 public int freeRooms(String hotelName,World w){
-	hotelName = hotelName.toLowerCase();
 	//Finds total amount of free rooms in given hotel
+	hotelName = hotelName.toLowerCase();
 	int free = 0;
 	Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 	regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
@@ -476,7 +471,7 @@ public int freeRooms(String hotelName,World w){
 		if(r.getId().startsWith("hotel-"+hotelName)){
 			if(r.getId().matches("^hotel-"+hotelName+"-.+")){
 				int roomNum = Integer.parseInt(r.getId().replaceAll("^hotel-.+-", ""));
-				File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+				File signFile = HConH.getFile("Signs"+File.separator+hotelName.toLowerCase()+"-"+roomNum+".yml");
 				if(signFile.exists()){
 					new YamlConfiguration();
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
@@ -500,7 +495,7 @@ public boolean updateReceptionSign(Location l){
 		if(Line1.equals("Reception")){ //First line is "Reception"
 			if(Line2!=null){
 				String[] Line2split = Line2.split(" ");
-				String hotelname = Line2split[0].toLowerCase();
+				String hotelname = Line2split[0];
 				if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
 					int tot = totalRooms(hotelname,b.getWorld());
 					int free = freeRooms(hotelname,b.getWorld());
