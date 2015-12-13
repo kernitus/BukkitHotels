@@ -17,7 +17,7 @@ public class HotelsMessageManager {
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 	
 	//Prefix
-		String prefix = (HConH.getLocale().getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
+		String prefix = (HConH.getLocale().getString("chat.prefix")+" ");
 		
 	public String mes(String path){
 		String mes = HConH.getLocale().getString(path);

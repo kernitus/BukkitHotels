@@ -1,0 +1,251 @@
+##漢化 By NOBUTS
+language: zhTW
+main:
+  enable:
+    success: '%pluginname% v%version% 現已啟用'
+  disable:
+    success: '%pluginname% v%version% 現已停用'
+  updateAvailable: 插件 Hotels v%version% 現在可以被下載供妳更新了!
+  updateAvailableLink: 想要更新嗎！？點擊這裏的鏈接 %link%
+  noConnection: 無法連接到更新地址!
+message:
+  hotel:
+    enter: '&b歡迎來到 %hotel% 旅館'
+    exit: '&a離開了 %hotel% 旅館'
+  room:
+    enter: '&b歡迎來到房間 %room%'
+    exit: '&a離開了房間 %room%'
+sign:
+  permanent: 永久
+  room:
+    name: '&2房間'
+    free: 空閑的房間
+    total: 房間數總計
+  reception: 前臺
+  vacant: 空閑中
+  occupied: 已被租用
+  rentExpiredConsole: '%player%在 %hotel% 旅館租住的 %room% 已經過期'
+  rentExpiredPlayer: '&9您在 %hotel%租住的%room% 已經過期'
+  delete:
+    reception: 前臺的文件 %filename% 不符合遊戲的特征，已刪除
+    roomNum: 牌子文件 %filename% 不匹配遊戲中的房間號碼，已刪除
+    hotelName: 牌子文件 %filename% 不匹配遊戲中的旅館名稱，已刪除
+    location: 牌子文件 %filename% 不匹配遊戲中的旅館位置，已刪除
+chat:
+  prefix: '&9[旅館]&r'
+  noPermission: '&4妳沒有權限這樣做!'
+  sign:
+    place:
+      fileFail: '&4無法保存文件'
+      outOfRegion: '&4牌子不在旅館區域!'
+      noHotel: '&4旅館不存在'
+      emptySign: '&4牌子未填寫內容'
+      success: '&2旅館信息牌已成功創建!'
+      noRegion: '&4指定的酒店或房間不存在!'
+      alreadyExists: '&4這家酒店的標誌已經存在!'
+      tooLong: '&4房間號碼太大或者價格太高!'
+      noSeparator: '&4第三行必須包含分隔符 &3:'
+    use:
+      success: '&a妳已經在%hotel% 旅館以$%price%租下了%room%房間'
+      notEnoughMoney: '&4竹影幣不足! 妳還需要 %missingmoney%'
+      noAccount: '&4妳沒有壹個經濟賬戶!'
+      taken: '&4這個房間已被租用'
+      nonExistantRoom: '&4房間不存在!'
+      differentRoomNums: '&4房間號碼不匹配!'
+      differentHotelNames: '&4房間名字不匹配!'
+      fileNonExistant: '&4文件不存在!'
+      signOutOfRegion: '&4沒有在指定的房間區域'
+      maxEntendReached: '&4您已達到%max%次續租的極限!'
+      maxRoomsReached: '&4您已經擁有了最多 %max% 個房間'
+      extensionSuccess: '&a房租已經漲到最高 %tot% 倍. 妳還可以再續租 %left%.'
+      extensionSuccessNoMore: '&a房租已經漲到最高 %tot% 倍.妳不能再續租了'
+  creationMode:
+    hotelCreationFailed: '&4旅館已存在，不能創建'
+    hotelCreationSuccessful: '&2妳已經成功創建%hotel% 旅館'
+    noSelection: '&4請使用WE魔杖(默認是木斧)選擇壹個區域'
+    selectionInvalid: '&4無效的選區!請重新選擇!'
+    invalidChar: '&4名稱中不能包含字符 &6&l-'
+    rooms:
+      notInHotel: '&4此房間不在指定的旅館中!'
+      fail: '&4失敗!無法創建房間!'
+    inventory:
+      storeFail: '&4妳的背包保存失敗!'
+      storeSuccess: '&a成功保存了妳背包中的物品!'
+      restoreFail: '&4無法恢復您背包中的物品'
+      restoreSuccess: '&a成功恢復背包'
+    armour:
+      storeFail: '&4無法保存妳的盔甲裝備信息'
+      storeSuccess: '&a成功保存了妳的盔甲裝備信息'
+      restoreFail: '&4妳的盔甲裝備恢復失敗'
+      restoreSuccess: '&a成功恢復了妳的盔甲裝備'
+    items:
+      wand:
+        name: '&bWE魔杖'
+        lore1: '左鍵區域角落1'
+        lore2: '右鍵區域角落2'
+      compass:
+        name: '&bWE傳送工具'
+        lore1: '左鍵傳送到鼠標準星指向的位置'
+        lore2: '右鍵穿墻'
+      sign:
+        name: '&b旅館信息牌'
+        lore1: '右鍵點擊放置'
+        lore2: '第壹行寫上: &9[Hotels]'
+  commands:
+    commands:
+      header: '&4================================'
+      subheader: '&5--Hotels 插件指令幫助頁面--'
+      footer: '&4================================'
+      help: '&6/ht help - &a提供幫助界面'
+      creationMode: '&6/ht [creationmode|cm] [enter/exit] - &a進入/離開 創建模式
+        mode'
+      create: '&6/ht [create|c] [旅館名稱] - &a將目前的選區創建為妳指定名稱的旅館'
+      room: '&6/ht room [旅館名稱] <房間號> - &a將目前的選區創建為指定旅館中指定號碼的房間'
+      renum: '&6/ht renum [旅館名稱] [舊編號] [新編號] - &a將指定房間重新編號'
+      rename: '&6/ht rename [舊名稱] [新名稱] - &a重命名指定的旅館'
+      sethome: '&6/ht sethome - &a設置指定 旅館|房間 的傳送點'
+      home: '&6/ht home [旅館名] <房間號> - &a將妳傳送至 旅館|房間 的傳送點'
+      check: '&6/ht check <玩家名> - &a列出由 妳|指定玩家 租借的所有房間'
+      list: '&6/ht list <世界名> - &a列出所有目前在妳 所在|指定 世界中的旅館'
+      rlist: '&6/ht rlist [旅館名] <世界名> - &a列出所有目前在妳 所在|指定 世界中旅館的所有房間'
+      friend: '&6/ht friend [add/remove] [旅館名] [房間名] [玩家名] - &a添加/移除
+        壹名可以在妳指定旅館的指定房間中打開、使用物品的玩家'
+      friendList: '&6/ht friend list [旅館名] [房間名] - &a列出所有在指定旅館的指定房間中有權限的好友列表'
+      reload: '&6/ht reload - &a重載配置文件'
+      remove: '&6/ht remove [玩家名] [旅館名] [房間名] - &a將指定旅館指定房間中的租客強制逐出'
+      delr: '&6/ht delr [旅館名] [房間號] - &a刪除指定名稱的房間'
+      delete: '&6/ht delete [旅館名] - &a刪除指定名稱的旅館'
+    help:
+      header: '&4================================'
+      subheader: '&5--Hotels 插件幫助界面--'
+      prefooter: '&4輸入 &3&o/ht help %num%&r&4 來查看 %num%頁 的內容'
+      footer: '&4================================'
+      page1:
+        '1': '&4-第1頁- &9矩形旅館區域的選擇方法'
+        '2': '&e1. 輸入指令 &3&o/ht [creationmode&r&3|&3&ocm] enter'
+        '3': '&e2. 將妳的WorldEdit魔杖(默認木斧) 拿在在手中'
+        '4': '&e3. 手持木斧左鍵和右鍵選取選區的對角線2個頂點'
+      page2:
+        '1': '&4-第2頁- &9創建壹所旅館'
+        '2': '&e1. 輸入指令 &3&o/ht [create&r&3|&oc] [旅館名稱]'
+      page3:
+        '1': '&4-第3頁- &9創建旅館房間'
+        '2': '&e1. 再次拿出WE魔杖'
+        '3': '&e2. 手持木斧左鍵和右鍵選取房間空間的對角線2個頂點'
+        '4': '&e3. 輸入指令 &3&o/ht room [旅館名稱] [房間號]'
+      page4:
+        '1': '&4-第4頁- &9添加標牌'
+        '2': '&e1. 在房間門口顯眼的位置貼上壹個牌子'
+        '3': '&e2. 在牌子上按從上到下輸入以下內容:'
+        '4': '&e    [Hotels]'
+        '5': '&e    旅館名稱'
+        '6': '&e    房間號碼&c&l:&e價格'
+        '7': '&e    租期時長'
+      page5:
+        '1': '&4-第5頁- &9牌子示例'
+        '2': '&e1. 壹個房間牌子的示例:'
+        '3': '&e    [Hotels]'
+        '4': '&e    TheBestHotel   &7(旅館名稱)'
+        '5': '&e    15:1m3k     &7(15號房間價格100萬零3千)'
+        '6': '&e    3d 6m 2s     &7(3天零6分2秒)'
+        '7': '&9&o妳可以設置 &20 &9&o這等效於無限時間'
+        '8': '&9&o關於價格設置: &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9
+          = &2百萬&9 &5b&9 = &2十億'
+    unknownArg: '&4未知參數. 使用 &3&o/hotels 尋找解決方案'
+    noWorld: '&c請指定世界名'
+    noHotel: '&c請指定旅館名稱'
+    noPlayer: '&c請指定玩家名'
+    userNonExistant: '&4指定用戶不存在'
+    roomNonExistant: '&4指定房間不存在'
+    hotelNonExistant: '&4指定旅館不存在'
+    worldNonExistant: '&4指定世界不存在'
+    reload:
+      success: '&a配置文件成功重載'
+    rent:
+      consoleRejected: 控制臺無法租借房間!
+      usage: '&4正確用法: &6&o/ht rent 旅館名稱 房間編號'
+      invalidLocation: '&4記錄牌子信息文件中的牌子位置上沒有牌子!'
+      invalidData: '&4輸入的旅館名稱或房間號無效'
+    creationMode:
+      enter: '&a妳已經進入旅館的創建模式.'
+      exit: '&a妳已經退出旅館的創建模式.'
+      reset: '&2該背包文件已被重置'
+      noarg: '&4請指定 &6&oenter(進入) &4或者 &6&oexit(離開) &4模式'
+      consoleRejected: 控制臺不能使用旅館的創建模式!
+    create:
+      fail: '&4無法創建旅館?請確認是否進入了旅館創建模式? (&3&o輸入指令：/hotels
+         cm enter&r&4)'
+      consoleRejected: '控制臺不能創建壹個旅館!'
+      noName: '&4給妳的旅館起個響亮的名字吧!'
+    room:
+      success: '&a妳已經創建了 %hotel% 旅館的 %room% 房間'
+      roomNumInvalid: '&4房間號碼必須為整數哦!'
+      nextNewRoomFail: '&4無法找到下壹個可用房間! 試試手動指定房間號碼吧'
+      usage: '&4正確格式: &6&o/hotels room 旅館名字 房間號碼'
+    deleteRoom:
+      usage: '&4正確格式: /hotels delr [旅館名字] [房間號碼] <世界>'
+    renumber:
+      usage: '&4正確格式: /hotels renum [旅館名字] [舊號碼] [新號碼] <世界>'
+      success: '&2妳成功將 %hotel% 旅館的 %oldnum% 房間換成了 %newnum% 房間'
+      fail: '&4不能重新編號%oldnum%房間'
+      newNumTooBig: '&4新號碼太大了!'
+    rename:
+      usage: '&2妳成功將 %hotel% 旅館的 %oldnum% 房間換成了 %newnum% 房間'
+      success: '&2妳已經成功重命名%hotel%旅館'
+      failRooms: '&4不能重命名房間'
+    removeRoom:
+      success: '&a成功刪除房間'
+      fail: '&4無法刪除房間'
+    removeRegions:
+      success: '&a成功刪除旅館區域'
+      fail: '&4無法刪除旅館區域'
+    remove:
+      playerNotRenter: '&4指定的玩家並沒有租住在指定的房間中!'
+      noRenter: '&4指定房間並沒有被租出去!'
+      success: '&a成功將 %hotel% 旅館 %room% 房間的玩家移除'
+      usage: '&4正確格式: /hotels remove [玩家] [旅館] [房間] <世界>'
+    check:
+      heading: '&a==%player%出租列表=='
+      footer: '&c== %player%出租列表最末=='
+      line: '&6旅館: &c%hotel%    &6房間: &c%room%    &6到期: &c%timeleft%'
+    listHotels:
+      heading: '&a==旅館列表=='
+      footer: '&c==旅館列表最末=='
+      line: '&6旅館: &c%hotel%%space%&9總數: &r%total%   &a空閑: &r%free%'
+    listRooms:
+      heading: '&a==%hotel% 旅館的房間列表=='
+      footer: '&c==%hotel% 旅館的房間列表最末=='
+      line: '&6房間 n: &c%room%%space%%state%'
+      noRooms: '&c旅館裏沒有房間'
+      usage: '&4正確用法: /ht rlist [旅館名稱] <世界>'
+    removeSigns:
+      success: '&a成功移除所有牌子'
+    friend:
+      usage: '&4正確格式: /hotels friend [add/remove/list] [旅館] [房間] <好友ID>'
+      wrongData: '&4輸入的旅館或者房間數量不匹配現有的位置'
+      noRenter: '&4指定的房間沒有租客!'
+      notRenter: '&4妳不是指定房間的租客!'
+      consoleRejected: 控制臺不能 添加/移除房間裏的好友!
+      addYourself: '&4妳不能把妳自己加入好友列表!'
+      nonExistant: '&4不能添加假想的好友到好友列表!'
+      friendNotInList: '&4指定的用戶不在好友列表中!'
+      addSuccess: '&a成功將 %friend% 添加至好友列表'
+      removeSuccess: '&a成功將 %friend% 移出好友列表'
+      noFriends: '&2妳沒有在指定房間添加任何好友'
+      list:
+        heading: '&a==.  %hotel%旅館%room% 房間的好友列表=='
+        footer: '&c==好友列表末端=='
+        line: '&6好友: &c%name%'
+    sethome:
+      consoleRejected: '控制臺不能設置傳送點'
+      notInHotelRegion: '&4妳沒有在壹個旅館區域內!'
+      notInCreationMode: '&4妳沒有進入創建模式!'
+      defaultHomeSet: '&a默認傳送點已被設置'
+      userHomeSet: '&a用戶傳送點已被設置'
+      hotelHomeSet: '&a旅館傳送點已被設置'
+    home:
+      consoleRejected: 控制臺不能傳送!
+      noHomeSet: '&4為設置傳送點!'
+      regionNotFound: '&4指定旅館或房間未被找到!'
+      usage: '&4正確用法: /ht home [旅館名] <房間>'
+      notRenterNoPermission: '&4妳無法這麽做,因為妳沒有權限或者妳不是租客!'

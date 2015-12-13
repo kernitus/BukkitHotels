@@ -1,19 +1,18 @@
 package kernitus.plugin.Hotels;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.HotelsMessageManager;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
 
 public class HotelsUpdateChecker {
 	
@@ -25,8 +24,6 @@ public class HotelsUpdateChecker {
 	}
 	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	YamlConfiguration locale = HConH.getLocale();
-	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "")+" ");
 	
 	private URL filesFeed;
 

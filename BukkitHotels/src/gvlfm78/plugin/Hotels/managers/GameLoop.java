@@ -39,10 +39,6 @@ public class GameLoop extends BukkitRunnable {
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 
-	//Prefix
-	YamlConfiguration locale = HConH.getLocale();
-	String prefix = (locale.getString("chat.prefix").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")+" ");
-
 	public GameLoop(HotelsCommandHandler hotelsCommandHandler) {}
 
 	@Override
@@ -53,6 +49,7 @@ public class GameLoop extends BukkitRunnable {
 
 		ArrayList<String> fileslist = HFF.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
 		for(String x: fileslist){
+			YamlConfiguration locale = HConH.getLocale();
 			File file = HConH.getFile("Signs"+File.separator+x);
 			if(file.getName().matches("^"+locale.getString("sign.reception")+"-.+-.+")){
 				//It's a reception sign
