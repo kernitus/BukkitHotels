@@ -43,7 +43,7 @@ public class GameLoop extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		File dir = new File("plugins//Hotels//Signs");
+		File dir = new File("plugins"+File.separator+"Hotels"+File.separator+"Signs");
 		if(!(dir.exists()))
 			dir.mkdir();
 
