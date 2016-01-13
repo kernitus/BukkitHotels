@@ -1,13 +1,17 @@
 package kernitus.plugin.Hotels.handlers;
 
+import kernitus.plugin.Hotels.HotelsMain;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-
-import kernitus.plugin.Hotels.HotelsMain;
 
 public class HotelsConfigHandler {
 	@SuppressWarnings("unused")
@@ -77,7 +81,10 @@ public class HotelsConfigHandler {
 	}
 
 	public YamlConfiguration getyml(File file){
-		return YamlConfiguration.loadConfiguration(file);
+		FileInputStream fileinputstream = new FileInputStream(file);
+		YamlConfiguration config = new YamlConfiguration();
+		YamlConfiguration obconfig = config.load(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")));
+		return obconfig;
 	}
 
 	public YamlConfiguration getyml(String filepath){
@@ -194,8 +201,8 @@ public class HotelsConfigHandler {
 		itLoc.renameTo(loc);
 		plugin.getLogger().info(langCode+" Language strings generated");
 	}
-
-	/*public void setupFlagsFile(Plugin plugin){
+	
+/*public void setupFlagsFile(Plugin plugin){
 		Map<String, String> flags = new HashMap<String, String>(66);
 
 		File configFile = new File("plugins//Hotels//flags.yml");
