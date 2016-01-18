@@ -2,13 +2,17 @@ package kernitus.plugin.Hotels.handlers;
 
 import kernitus.plugin.Hotels.HotelsMain;
 
-import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
 
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -81,14 +85,31 @@ public class HotelsConfigHandler {
 	}
 
 	public YamlConfiguration getyml(File file){
-		FileInputStream fileinputstream = new FileInputStream(file);
+		/*InputStream inputstream;
 		YamlConfiguration config = new YamlConfiguration();
-		YamlConfiguration obconfig = config.load(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8")));
-		return obconfig;
+		try {
+			inputstream = new FileInputStream(file);
+			config.load(new InputStreamReader(inputstream, Charset.forName("UTF-16")));
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+		}
+		return config;*/
+		
+		// Load configuration
+		YamlConfiguration config = new YamlConfiguration();
+		
+		try {
+		FileInputStream fileinputstream = new FileInputStream(file);
+		config.load(new InputStreamReader(fileinputstream, Charset.forName("UTF-16BE")));
+		} catch (IOException|InvalidConfigurationException e){
+		e.printStackTrace();
+		}
+		
+		return config;
 	}
 
 	public YamlConfiguration getyml(String filepath){
-		return YamlConfiguration.loadConfiguration(getFile(filepath));
+		return getyml(getFile(filepath));
 	}
 
 	public File getconfigFile(String configName){
@@ -109,57 +130,65 @@ public class HotelsConfigHandler {
 
 	public YamlConfiguration getconfig(String configName){
 		File file = getconfigFile(configName);
-		return YamlConfiguration.loadConfiguration(file);
+		return getyml(file);
 	}
 
 	public YamlConfiguration getconfigyml(){
 		File file = getconfigymlFile();
-		return YamlConfiguration.loadConfiguration(file);
+		return getyml(file);
 	}
 
 	public YamlConfiguration getLocale(){
 		File file = getLocaleFile();
-		return YamlConfiguration.loadConfiguration(file);
+		return getyml(file);
 	}
 
 	public YamlConfiguration getMessageQueue(){
 		File file = getMessageQueueFile();
-		return YamlConfiguration.loadConfiguration(file);
+		return getyml(file);
 	}
 
 	public void saveConfiguration(File file, YamlConfiguration config){
-		try {
-			config.save(file);
-		} catch (IOException e) {
+		try{
+		Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
+			fileWriter.write(config.saveToString());
+		fileWriter.close();}
+		catch(IOException e){
 			e.printStackTrace();
 		}
 	}
 
 	public void saveLocale(YamlConfiguration config){
 		File file = getLocaleFile();
-		try {
-			config.save(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		try{
+			Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
+				fileWriter.write(config.saveToString());
+			fileWriter.close();}
+			catch(IOException e){
+				e.printStackTrace();
+			}
 	}
 
 	public void saveMessageQueue(YamlConfiguration config){
 		File file = getMessageQueueFile();
-		try {
-			config.save(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		try{
+			Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
+				fileWriter.write(config.saveToString());
+			fileWriter.close();}
+			catch(IOException e){
+				e.printStackTrace();
+			}
 	}
 
 	public void saveconfigyml(YamlConfiguration config){
 		File file = getconfigymlFile();
-		try {
-			config.save(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		try{
+			Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
+				fileWriter.write(config.saveToString());
+			fileWriter.close();}
+			catch(IOException e){
+				e.printStackTrace();
+			}
 	}
 
 	public void reloadLocale(Plugin pluginstance){
