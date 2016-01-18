@@ -60,10 +60,10 @@ public class SignManager {
 				int tot = totalRooms(Line2,p.getWorld()); //Getting total amount of rooms in hotel
 				int free = freeRooms(Line2,p.getWorld()); //Getting amount of free rooms in hotel
 				//Setting all sign lines
-				e.setLine(0, ("&a"+locale.getString("sign.reception")));
-				e.setLine(1, ("&1"+Line2+" Hotel"));
-				e.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")));
-				e.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")));
+				e.setLine(0, (ChatColor.GREEN+locale.getString("sign.reception")));
+				e.setLine(1, (ChatColor.DARK_BLUE+Line2+" Hotel"));
+				e.setLine(2, (ChatColor.DARK_BLUE+String.valueOf(tot)+ChatColor.BLACK+" "+locale.getString("sign.room.total")));
+				e.setLine(3, (ChatColor.GREEN+String.valueOf(free)+ChatColor.BLACK+" "+locale.getString("sign.room.free")));
 				//Updating sign file
 				File signFile = HConH.getFile("Signs"+File.separator+"Reception-"+Line2.toLowerCase()+"-1.yml");
 				for(int i = 1; signFile.exists(); i++){
@@ -184,23 +184,23 @@ public class SignManager {
 						}
 					} else{
 						p.sendMessage(HMM.mes("chat.sign.place.outOfRegion"));       		
-						e.setLine(0, "&4[Hotels]");
+						e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 						//Sign not in hotel borders
 					}
 				}else{
 					p.sendMessage(HMM.mes("chat.sign.place.alreadyExists"));
-					e.setLine(0, "&4[Hotels]");
+					e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 					//Sign for specified room already exists
 				}
 			}
 			else{
 				p.sendMessage(HMM.mes("chat.sign.place.tooLong"));				
-				e.setLine(0, "&4[Hotels]");
+				e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 				//Room num of price too big
 			}
 		}else{
 			p.sendMessage(HMM.mes("chat.sign.place.noSeparator"));  				
-			e.setLine(0, "&4[Hotels]");
+			e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 			//Line 3 does not contain separator
 		}
 	}
@@ -499,8 +499,8 @@ public boolean updateReceptionSign(Location l){
 				if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
 					int tot = totalRooms(hotelname,b.getWorld());
 					int free = freeRooms(hotelname,b.getWorld());
-					s.setLine(2, ("&1"+tot+"&0 "+locale.getString("sign.room.total")));
-					s.setLine(3, ("&a"+free+"&0 "+locale.getString("sign.room.free")));
+					s.setLine(2, (ChatColor.DARK_BLUE+String.valueOf(tot)+ChatColor.BLACK+" "+locale.getString("sign.room.total")));
+					s.setLine(3, (ChatColor.GREEN+String.valueOf(free)+ChatColor.BLACK+" "+locale.getString("sign.room.free")));
 					s.update();
 					return false;
 				}

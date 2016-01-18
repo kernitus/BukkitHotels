@@ -51,7 +51,7 @@ public class GameLoop extends BukkitRunnable {
 		for(String x: fileslist){
 			YamlConfiguration locale = HConH.getLocale();
 			File file = HConH.getFile("Signs"+File.separator+x);
-			if(file.getName().matches("^"+locale.getString("sign.reception")+"-.+-.+")){
+			if(file.getName().matches("Reception-.+-.+")){
 				//It's a reception sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 				World world = Bukkit.getWorld(config.getString("Reception.location.world").trim());

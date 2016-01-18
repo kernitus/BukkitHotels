@@ -5,6 +5,7 @@ import kernitus.plugin.Hotels.HotelsMain;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -85,26 +86,19 @@ public class HotelsConfigHandler {
 	}
 
 	public YamlConfiguration getyml(File file){
-		/*InputStream inputstream;
 		YamlConfiguration config = new YamlConfiguration();
+		FileInputStream fileinputstream;
+
 		try {
-			inputstream = new FileInputStream(file);
-			config.load(new InputStreamReader(inputstream, Charset.forName("UTF-16")));
-		} catch (IOException | InvalidConfigurationException e) {
+			fileinputstream = new FileInputStream(file);
+			config.load(new InputStreamReader(fileinputstream, Charset.forName("UTF-8")));
+		} catch (FileNotFoundException e){
+			System.out.print("");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
-		return config;*/
-		
-		// Load configuration
-		YamlConfiguration config = new YamlConfiguration();
-		
-		try {
-		FileInputStream fileinputstream = new FileInputStream(file);
-		config.load(new InputStreamReader(fileinputstream, Charset.forName("UTF-16BE")));
-		} catch (IOException|InvalidConfigurationException e){
-		e.printStackTrace();
-		}
-		
 		return config;
 	}
 
@@ -149,46 +143,31 @@ public class HotelsConfigHandler {
 	}
 
 	public void saveConfiguration(File file, YamlConfiguration config){
+
 		try{
-		Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
+			Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
 			fileWriter.write(config.saveToString());
-		fileWriter.close();}
+			fileWriter.close();
+		}
 		catch(IOException e){
 			e.printStackTrace();
 		}
+
 	}
 
 	public void saveLocale(YamlConfiguration config){
 		File file = getLocaleFile();
-		try{
-			Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
-				fileWriter.write(config.saveToString());
-			fileWriter.close();}
-			catch(IOException e){
-				e.printStackTrace();
-			}
+		saveConfiguration(file,config);
 	}
 
 	public void saveMessageQueue(YamlConfiguration config){
 		File file = getMessageQueueFile();
-		try{
-			Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
-				fileWriter.write(config.saveToString());
-			fileWriter.close();}
-			catch(IOException e){
-				e.printStackTrace();
-			}
+		saveConfiguration(file,config);
 	}
 
 	public void saveconfigyml(YamlConfiguration config){
 		File file = getconfigymlFile();
-		try{
-			Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
-				fileWriter.write(config.saveToString());
-			fileWriter.close();}
-			catch(IOException e){
-				e.printStackTrace();
-			}
+		saveConfiguration(file,config);
 	}
 
 	public void reloadLocale(Plugin pluginstance){
@@ -196,7 +175,7 @@ public class HotelsConfigHandler {
 			localeLanguageSelector(pluginstance);//Setup locale file from scratch
 		}
 		else{
-			YamlConfiguration locale = getLocale();
+			YamlConfiguration locale = getLocale();//TODO AIDS
 			saveLocale(locale);
 			getLocale();
 		}
@@ -230,8 +209,8 @@ public class HotelsConfigHandler {
 		itLoc.renameTo(loc);
 		plugin.getLogger().info(langCode+" Language strings generated");
 	}
-	
-/*public void setupFlagsFile(Plugin plugin){
+
+	/*public void setupFlagsFile(Plugin plugin){
 		Map<String, String> flags = new HashMap<String, String>(66);
 
 		File configFile = new File("plugins//Hotels//flags.yml");
