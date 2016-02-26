@@ -175,7 +175,7 @@ public class HotelsConfigHandler {
 			localeLanguageSelector(pluginstance);//Setup locale file from scratch
 		}
 		else{
-			YamlConfiguration locale = getLocale();//TODO AIDS
+			YamlConfiguration locale = getLocale();
 			saveLocale(locale);
 			getLocale();
 		}
@@ -210,96 +210,94 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info(langCode+" Language strings generated");
 	}
 
-	/*public void setupFlagsFile(Plugin plugin){
-		Map<String, String> flags = new HashMap<String, String>(66);
+	public void setupFlagsFile(Plugin plugin){
 
-		File configFile = new File("plugins//Hotels//flags.yml");
-		if(!configFile.exists())
+		File flagsFile = new File(plugin.getDataFolder()+"flags.yml");
+		if(!flagsFile.exists())
 			try {
-				configFile.createNewFile();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+				flagsFile.createNewFile();
+			} catch (IOException e) {
 				plugin.getLogger().severe("Could not create new flags.yml file");
+				e.printStackTrace();
 			}
 
-		YamlConfiguration cf = YamlConfiguration.loadConfiguration(configFile);
+		YamlConfiguration flagsConfig = YamlConfiguration.loadConfiguration(flagsFile);
 
-		flags.put("PASSTHROUGH", "DENY");
-		flags.put("BUILD", "DENY");
-		flags.put("CONSTRUCT", "DENY");
-		flags.put("PVP", "DENY");
-		flags.put("CHEST_ACCESS", "DENY");
-		flags.put("PISTONS", "DENY");
-		flags.put("TNT", "DENY");
-		flags.put("LIGHTER", "DENY");
-		flags.put("USE", "DENY");
-		flags.put("PLACE_VEHICLE", "DENY");
-		flags.put("DESTROY_VEHICLE", "DENY");
-		flags.put("SLEEP", "DENY");
-		flags.put("MOB_DAMAGE", "DENY");
-		flags.put("MOB_SPAWNING", "DENY");
-		flags.put("DENY_SPAWN", "DENY");
-		flags.put("INVINCIBILITY", "DENY");
-		flags.put("EXP_DROPS", "DENY");
-		flags.put("CREEPER_EXPLOSION", "DENY");
-		flags.put("OTHER_EXPLOSION", "DENY");
-		flags.put("ENDERDRAGON_BLOCK_DAMAGE", "DENY");
-		flags.put("GHAST_FIREBALL", "DENY");
-		flags.put("ENDER_BUILD", "DENY");
-		flags.put("GREET_MESSAGE", "DENY");
-		flags.put("FAREWELL_MESSAGE", "DENY");
-		flags.put("NOTIFY_ENTER", "DENY");
-		flags.put("NOTIFY_LEAVE", "DENY");
-		flags.put("EXIT", "DENY");
-		flags.put("ENTRY", "DENY");
-		flags.put("LIGHTNING", "DENY");
-		flags.put("ENTITY_PAINTING_DESTROY", "DENY");
-		flags.put("ENDERPEARL", "DENY");
-		flags.put("ENTITY_ITEM_FRAME_DESTROY", "DENY");
-		flags.put("ITEM_DROP", "DENY");
-		flags.put("HEAL_AMOUNT", "DENY");
-		flags.put("HEAL_DELAY", "DENY");
-		flags.put("MIN_HEAL", "DENY");
-		flags.put("MAX_HEAL", "DENY");
-		flags.put("FEED_DELAY", "DENY");
-		flags.put("FEED_AMOUNT", "DENY");
-		flags.put("MIN_FOOD", "DENY");
-		flags.put("MAX_FOOD", "DENY");
-		flags.put("SNOW_FALL", "DENY");
-		flags.put("SNOW_MELT", "DENY");
-		flags.put("ICE_FORM", "DENY");
-		flags.put("ICE_MELT", "DENY");
-		flags.put("SOIL_DRY", "DENY");
-		flags.put("GAME_MODE", "DENY");
-		flags.put("MUSHROOMS", "DENY");
-		flags.put("LEAF_DECAY", "DENY");
-		flags.put("GRASS_SPREAD", "DENY");
-		flags.put("MYCELIUM_SPREAD", "DENY");
-		flags.put("VINE_GROWTH", "DENY");
-		flags.put("SEND_CHAT", "DENY");
-		flags.put("RECEIVE_CHAT", "DENY");
-		flags.put("FIRE_SPREAD", "DENY");
-		flags.put("LAVA_FIRE", "DENY");
-		flags.put("LAVA_FLOW", "DENY");
-		flags.put("WATER_FLOW", "DENY");
-		flags.put("TELE_LOC", "DENY");
-		flags.put("SPAWN_LOC", "DENY");
-		flags.put("POTION_SPLASH", "DENY");
-		flags.put("BLOCKED_CMDS", "DENY");
-		flags.put("ALLOWED_CMDS", "DENY");
-		flags.put("PRICE", "DENY");
-		flags.put("BUYABLE", "DENY");
-		//flags.put(");
-		//flags.put("DefaultFlag);
+		
+		flagsConfig.addDefault("PASSTHROUGH", Boolean.valueOf(false));
+		flagsConfig.addDefault("BUILD", Boolean.valueOf(false));
+		flagsConfig.addDefault("CONSTRUCT", Boolean.valueOf(false));
+		flagsConfig.addDefault("PVP", Boolean.valueOf(false));
+		flagsConfig.addDefault("CHEST_ACCESS", Boolean.valueOf(false));
+		flagsConfig.addDefault("PISTONS", Boolean.valueOf(false));
+		flagsConfig.addDefault("TNT", Boolean.valueOf(false));
+		flagsConfig.addDefault("LIGHTER", Boolean.valueOf(false));
+		flagsConfig.addDefault("USE", Boolean.valueOf(false));
+		flagsConfig.addDefault("PLACE_VEHICLE", Boolean.valueOf(false));
+		flagsConfig.addDefault("DESTROY_VEHICLE", Boolean.valueOf(false));
+		flagsConfig.addDefault("SLEEP", Boolean.valueOf(false));
+		flagsConfig.addDefault("MOB_DAMAGE", Boolean.valueOf(false));
+		flagsConfig.addDefault("MOB_SPAWNING", Boolean.valueOf(false));
+		flagsConfig.addDefault("DENY_SPAWN", Boolean.valueOf(false));
+		flagsConfig.addDefault("INVINCIBILITY", Boolean.valueOf(false));
+		flagsConfig.addDefault("EXP_DROPS", Boolean.valueOf(false));
+		flagsConfig.addDefault("CREEPER_EXPLOSION", Boolean.valueOf(false));
+		flagsConfig.addDefault("OTHER_EXPLOSION", Boolean.valueOf(false));
+		flagsConfig.addDefault("ENDERDRAGON_BLOCK_DAMAGE", Boolean.valueOf(false));
+		flagsConfig.addDefault("GHAST_FIREBALL", Boolean.valueOf(false));
+		flagsConfig.addDefault("ENDER_BUILD", Boolean.valueOf(false));
+		flagsConfig.addDefault("GREET_MESSAGE", Boolean.valueOf(false));
+		flagsConfig.addDefault("FAREWELL_MESSAGE", Boolean.valueOf(false));
+		flagsConfig.addDefault("NOTIFY_ENTER", Boolean.valueOf(false));
+		flagsConfig.addDefault("NOTIFY_LEAVE", Boolean.valueOf(false));
+		flagsConfig.addDefault("EXIT", Boolean.valueOf(false));
+		flagsConfig.addDefault("ENTRY", Boolean.valueOf(false));
+		flagsConfig.addDefault("LIGHTNING", Boolean.valueOf(false));
+		flagsConfig.addDefault("ENTITY_PAINTING_DESTROY", Boolean.valueOf(false));
+		flagsConfig.addDefault("ENDERPEARL", Boolean.valueOf(false));
+		flagsConfig.addDefault("ENTITY_ITEM_FRAME_DESTROY", Boolean.valueOf(false));
+		flagsConfig.addDefault("ITEM_DROP", Boolean.valueOf(false));
+		flagsConfig.addDefault("HEAL_AMOUNT", Boolean.valueOf(false));
+		flagsConfig.addDefault("HEAL_DELAY", Boolean.valueOf(false));
+		flagsConfig.addDefault("MIN_HEAL", Boolean.valueOf(false));
+		flagsConfig.addDefault("MAX_HEAL", Boolean.valueOf(false));
+		flagsConfig.addDefault("FEED_DELAY", Boolean.valueOf(false));
+		flagsConfig.addDefault("FEED_AMOUNT", Boolean.valueOf(false));
+		flagsConfig.addDefault("MIN_FOOD", Boolean.valueOf(false));
+		flagsConfig.addDefault("MAX_FOOD", Boolean.valueOf(false));
+		flagsConfig.addDefault("SNOW_FALL", Boolean.valueOf(false));
+		flagsConfig.addDefault("SNOW_MELT", Boolean.valueOf(false));
+		flagsConfig.addDefault("ICE_FORM", Boolean.valueOf(false));
+		flagsConfig.addDefault("ICE_MELT", Boolean.valueOf(false));
+		flagsConfig.addDefault("SOIL_DRY", Boolean.valueOf(false));
+		flagsConfig.addDefault("GAME_MODE", Boolean.valueOf(false));
+		flagsConfig.addDefault("MUSHROOMS", Boolean.valueOf(false));
+		flagsConfig.addDefault("LEAF_DECAY", Boolean.valueOf(false));
+		flagsConfig.addDefault("GRASS_SPREAD", Boolean.valueOf(false));
+		flagsConfig.addDefault("MYCELIUM_SPREAD", Boolean.valueOf(false));
+		flagsConfig.addDefault("VINE_GROWTH", Boolean.valueOf(false));
+		flagsConfig.addDefault("SEND_CHAT", Boolean.valueOf(false));
+		flagsConfig.addDefault("RECEIVE_CHAT", Boolean.valueOf(false));
+		flagsConfig.addDefault("FIRE_SPREAD", Boolean.valueOf(false));
+		flagsConfig.addDefault("LAVA_FIRE", Boolean.valueOf(false));
+		flagsConfig.addDefault("LAVA_FLOW", Boolean.valueOf(false));
+		flagsConfig.addDefault("WATER_FLOW", Boolean.valueOf(false));
+		flagsConfig.addDefault("TELE_LOC", Boolean.valueOf(false));
+		flagsConfig.addDefault("SPAWN_LOC", Boolean.valueOf(false));
+		flagsConfig.addDefault("POTION_SPLASH", Boolean.valueOf(false));
+		flagsConfig.addDefault("BLOCKED_CMDS", Boolean.valueOf(false));
+		flagsConfig.addDefault("ALLOWED_CMDS", Boolean.valueOf(false));
+		flagsConfig.addDefault("PRICE", Boolean.valueOf(false));
+		flagsConfig.addDefault("BUYABLE", Boolean.valueOf(false));
 
-		cf.set("Flags", flags);
+		flagsConfig.options().copyDefaults(true);
 
 		try {
-			cf.save(configFile);
+			flagsConfig.save(flagsFile);
 			plugin.getLogger().info("&2Flags file has been created");
 		} catch (IOException e) {
+			plugin.getLogger().severe("&4Could not save flags file");
 			e.printStackTrace();
-			plugin.getLogger().severe("&4Could not save Flags file");
 		}
-	}*/
+	}
 }
