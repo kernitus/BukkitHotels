@@ -18,6 +18,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
+import com.sk89q.worldguard.protection.flags.StateFlag.State;
+
 public class HotelsConfigHandler {
 	@SuppressWarnings("unused")
 	private HotelsMain plugin;
@@ -25,16 +27,20 @@ public class HotelsConfigHandler {
 		this.plugin = instance;
 	}
 
-	public void setupConfigs(Plugin pluginstance){
+	public void setupConfigs(Plugin plugin){
 		//Message Queue
 		if(!getMessageQueueFile().exists())
 			setupMessageQueue();
 		//Config.yml
 		if (!getconfigymlFile().exists())
-			setupConfigyml(pluginstance);
+			setupConfigyml(plugin);
+
+		//Flags.yml
+		if(!getFlagsFile().exists())
+			setupFlags(plugin);
 
 		//Locale
-		localeLanguageSelector(pluginstance);
+		localeLanguageSelector(plugin);
 	}
 
 	public void setupConfigyml(Plugin plugin){
@@ -122,6 +128,10 @@ public class HotelsConfigHandler {
 		return new File("plugins"+File.separator+"Hotels"+File.separator+"queuedMessages.yml");
 	}
 
+	public File getFlagsFile(){
+		return new File("plugins"+File.separator+"Hotels"+File.separator+"flags.yml");
+	}
+
 	public YamlConfiguration getconfig(String configName){
 		File file = getconfigFile(configName);
 		return getyml(file);
@@ -139,6 +149,11 @@ public class HotelsConfigHandler {
 
 	public YamlConfiguration getMessageQueue(){
 		File file = getMessageQueueFile();
+		return getyml(file);
+	}
+
+	public YamlConfiguration getFlags(){
+		File file = getFlagsFile();
 		return getyml(file);
 	}
 
@@ -162,6 +177,11 @@ public class HotelsConfigHandler {
 
 	public void saveMessageQueue(YamlConfiguration config){
 		File file = getMessageQueueFile();
+		saveConfiguration(file,config);
+	}
+
+	public void saveFlags(YamlConfiguration config){
+		File file = getFlagsFile();
 		saveConfiguration(file,config);
 	}
 
@@ -192,13 +212,26 @@ public class HotelsConfigHandler {
 		}
 	}
 
-	public void reloadConfigs(Plugin pluginstance){
+	public void reloadFlags(Plugin plugin){
+		if(!getFlagsFile().exists()){
+			setupFlags(plugin);//Setup message queue
+		}
+		else{
+			YamlConfiguration f = getFlags();
+			saveFlags(f);
+			getFlags();
+		}
+	}
+
+	public void reloadConfigs(Plugin plugin){
 		//Reload config.yml
-		pluginstance.reloadConfig();
+		plugin.reloadConfig();
 		//Reload locale.yml
-		reloadLocale(pluginstance);
+		reloadLocale(plugin);
 		//Reload queuedMessages.yml
 		reloadMessageQueue();
+		//Reload flags.yml
+		reloadFlags(plugin);
 	}
 
 	public void setupLanguage(String langCode, Plugin plugin){
@@ -210,9 +243,9 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info(langCode+" Language strings generated");
 	}
 
-	public void setupFlagsFile(Plugin plugin){
+	public void setupFlags(Plugin plugin){
 
-		File flagsFile = new File(plugin.getDataFolder()+"flags.yml");
+		File flagsFile = getFlagsFile();
 		if(!flagsFile.exists())
 			try {
 				flagsFile.createNewFile();
@@ -221,74 +254,173 @@ public class HotelsConfigHandler {
 				e.printStackTrace();
 			}
 
-		YamlConfiguration flagsConfig = YamlConfiguration.loadConfiguration(flagsFile);
+		YamlConfiguration flagsConfig = getyml(flagsFile);
 
-		
-		flagsConfig.addDefault("PASSTHROUGH", Boolean.valueOf(false));
-		flagsConfig.addDefault("BUILD", Boolean.valueOf(false));
-		flagsConfig.addDefault("CONSTRUCT", Boolean.valueOf(false));
-		flagsConfig.addDefault("PVP", Boolean.valueOf(false));
-		flagsConfig.addDefault("CHEST_ACCESS", Boolean.valueOf(false));
-		flagsConfig.addDefault("PISTONS", Boolean.valueOf(false));
-		flagsConfig.addDefault("TNT", Boolean.valueOf(false));
-		flagsConfig.addDefault("LIGHTER", Boolean.valueOf(false));
-		flagsConfig.addDefault("USE", Boolean.valueOf(false));
-		flagsConfig.addDefault("PLACE_VEHICLE", Boolean.valueOf(false));
-		flagsConfig.addDefault("DESTROY_VEHICLE", Boolean.valueOf(false));
-		flagsConfig.addDefault("SLEEP", Boolean.valueOf(false));
-		flagsConfig.addDefault("MOB_DAMAGE", Boolean.valueOf(false));
-		flagsConfig.addDefault("MOB_SPAWNING", Boolean.valueOf(false));
-		flagsConfig.addDefault("DENY_SPAWN", Boolean.valueOf(false));
-		flagsConfig.addDefault("INVINCIBILITY", Boolean.valueOf(false));
-		flagsConfig.addDefault("EXP_DROPS", Boolean.valueOf(false));
-		flagsConfig.addDefault("CREEPER_EXPLOSION", Boolean.valueOf(false));
-		flagsConfig.addDefault("OTHER_EXPLOSION", Boolean.valueOf(false));
-		flagsConfig.addDefault("ENDERDRAGON_BLOCK_DAMAGE", Boolean.valueOf(false));
-		flagsConfig.addDefault("GHAST_FIREBALL", Boolean.valueOf(false));
-		flagsConfig.addDefault("ENDER_BUILD", Boolean.valueOf(false));
-		flagsConfig.addDefault("GREET_MESSAGE", Boolean.valueOf(false));
-		flagsConfig.addDefault("FAREWELL_MESSAGE", Boolean.valueOf(false));
-		flagsConfig.addDefault("NOTIFY_ENTER", Boolean.valueOf(false));
-		flagsConfig.addDefault("NOTIFY_LEAVE", Boolean.valueOf(false));
-		flagsConfig.addDefault("EXIT", Boolean.valueOf(false));
-		flagsConfig.addDefault("ENTRY", Boolean.valueOf(false));
-		flagsConfig.addDefault("LIGHTNING", Boolean.valueOf(false));
-		flagsConfig.addDefault("ENTITY_PAINTING_DESTROY", Boolean.valueOf(false));
-		flagsConfig.addDefault("ENDERPEARL", Boolean.valueOf(false));
-		flagsConfig.addDefault("ENTITY_ITEM_FRAME_DESTROY", Boolean.valueOf(false));
-		flagsConfig.addDefault("ITEM_DROP", Boolean.valueOf(false));
-		flagsConfig.addDefault("HEAL_AMOUNT", Boolean.valueOf(false));
-		flagsConfig.addDefault("HEAL_DELAY", Boolean.valueOf(false));
-		flagsConfig.addDefault("MIN_HEAL", Boolean.valueOf(false));
-		flagsConfig.addDefault("MAX_HEAL", Boolean.valueOf(false));
-		flagsConfig.addDefault("FEED_DELAY", Boolean.valueOf(false));
-		flagsConfig.addDefault("FEED_AMOUNT", Boolean.valueOf(false));
-		flagsConfig.addDefault("MIN_FOOD", Boolean.valueOf(false));
-		flagsConfig.addDefault("MAX_FOOD", Boolean.valueOf(false));
-		flagsConfig.addDefault("SNOW_FALL", Boolean.valueOf(false));
-		flagsConfig.addDefault("SNOW_MELT", Boolean.valueOf(false));
-		flagsConfig.addDefault("ICE_FORM", Boolean.valueOf(false));
-		flagsConfig.addDefault("ICE_MELT", Boolean.valueOf(false));
-		flagsConfig.addDefault("SOIL_DRY", Boolean.valueOf(false));
-		flagsConfig.addDefault("GAME_MODE", Boolean.valueOf(false));
-		flagsConfig.addDefault("MUSHROOMS", Boolean.valueOf(false));
-		flagsConfig.addDefault("LEAF_DECAY", Boolean.valueOf(false));
-		flagsConfig.addDefault("GRASS_SPREAD", Boolean.valueOf(false));
-		flagsConfig.addDefault("MYCELIUM_SPREAD", Boolean.valueOf(false));
-		flagsConfig.addDefault("VINE_GROWTH", Boolean.valueOf(false));
-		flagsConfig.addDefault("SEND_CHAT", Boolean.valueOf(false));
-		flagsConfig.addDefault("RECEIVE_CHAT", Boolean.valueOf(false));
-		flagsConfig.addDefault("FIRE_SPREAD", Boolean.valueOf(false));
-		flagsConfig.addDefault("LAVA_FIRE", Boolean.valueOf(false));
-		flagsConfig.addDefault("LAVA_FLOW", Boolean.valueOf(false));
-		flagsConfig.addDefault("WATER_FLOW", Boolean.valueOf(false));
-		flagsConfig.addDefault("TELE_LOC", Boolean.valueOf(false));
-		flagsConfig.addDefault("SPAWN_LOC", Boolean.valueOf(false));
-		flagsConfig.addDefault("POTION_SPLASH", Boolean.valueOf(false));
-		flagsConfig.addDefault("BLOCKED_CMDS", Boolean.valueOf(false));
-		flagsConfig.addDefault("ALLOWED_CMDS", Boolean.valueOf(false));
-		flagsConfig.addDefault("PRICE", Boolean.valueOf(false));
-		flagsConfig.addDefault("BUYABLE", Boolean.valueOf(false));
+		//Hotel flags
+		//Ovverrides
+		flagsConfig.addDefault("hotel.overrides.PASSTHROUGH", "none");
+		//Protection-Related
+		flagsConfig.addDefault("hotel.protection.BUILD", "none");
+		flagsConfig.addDefault("hotel.protection.INTERACT", "none");
+		flagsConfig.addDefault("hotel.protection.BLOCK-BREAK", "none");
+		flagsConfig.addDefault("hotel.protection.BLOCK-PLACE", "none");
+		flagsConfig.addDefault("hotel.protection.USE", "none");
+		flagsConfig.addDefault("hotel.protection.DAMAGE_ANIMALS", "none");
+		flagsConfig.addDefault("hotel.protection.CHEST_ACCESS", "none");
+		flagsConfig.addDefault("hotel.protection.RIDE", "none");
+		flagsConfig.addDefault("hotel.protection.PVP", State.DENY);
+		flagsConfig.addDefault("hotel.protection.SLEEP", "none");
+		flagsConfig.addDefault("hotel.protection.TNT", State.DENY);
+		flagsConfig.addDefault("hotel.protection.VEHICLE_PLACE", "none");
+		flagsConfig.addDefault("hotel.protection.VEHICLE_DESTROY", "none");
+		flagsConfig.addDefault("hotel.protection.LIGHTER", State.DENY);
+		//Mobs, fire, explosions
+		flagsConfig.addDefault("hotel.mobs.CREEPER_EXPLOSION", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.ENDERDRAGON_BLOCK_DAMAGE", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.GHAST_FIREBALL", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.OTHER_EXPLOSION", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.FIRE_SPREAD", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.ENDERMAN_GRIEF", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.MOB_DAMAGE", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.MOB_SPAWNING", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.DENY_SPAWN", "none");
+		flagsConfig.addDefault("hotel.mobs.ENTITY_PAINTING_DESTROY", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.ENTITY_ITEM_FRAME_DESTROY", State.DENY);
+		//Natural Events
+		flagsConfig.addDefault("hotel.nature.LAVA_FIRE", State.DENY);
+		flagsConfig.addDefault("hotel.nature.LIGHTNING", State.DENY);
+		flagsConfig.addDefault("hotel.nature.WATER_FLOW", "none");
+		flagsConfig.addDefault("hotel.nature.LAVA_FLOW", "none");
+		flagsConfig.addDefault("hotel.nature.SNOW_FALL", State.DENY);
+		flagsConfig.addDefault("hotel.nature.SNOW_MELT", State.DENY);
+		flagsConfig.addDefault("hotel.nature.ICE_FORM", State.DENY);
+		flagsConfig.addDefault("hotel.nature.ICE_MELT", State.DENY);
+		flagsConfig.addDefault("hotel.nature.MUSHROOM_GROWTH", State.DENY);
+		flagsConfig.addDefault("hotel.nature.LEAF_DECAY", State.DENY);
+		flagsConfig.addDefault("hotel.nature.GRASS_GROWTH", State.DENY);
+		flagsConfig.addDefault("hotel.nature.MYCELIUM_SPREAD", State.DENY);
+		flagsConfig.addDefault("hotel.nature.VINE_GROWTH", State.DENY);
+		flagsConfig.addDefault("hotel.nature.SOIL_DRY", State.DENY);
+		//Map-making
+		flagsConfig.addDefault("hotel.map-making.ITEM_PICKUP", "none");
+		flagsConfig.addDefault("hotel.map-making.ITEM_DROP", "none");
+		flagsConfig.addDefault("hotel.map-making.EXP_DROPS", "none");
+		flagsConfig.addDefault("hotel.map-making.DENY_MESSAGE", "You aren't allowed!");
+		flagsConfig.addDefault("hotel.map-making.ENTRY", "none");
+		flagsConfig.addDefault("hotel.map-making.EXIT", "none");
+		flagsConfig.addDefault("hotel.map-making.GREETING", "&bWelcome to the %hotel% hotel");
+		flagsConfig.addDefault("hotel.map-making.FAREWELL", "&aCome back soon to the %hotel% hotel");
+		flagsConfig.addDefault("hotel.map-making.ENDERPEARL", State.DENY);
+		flagsConfig.addDefault("hotel.map-making.INVICIBLE", "none");
+		flagsConfig.addDefault("hotel.map-making.GAME_MODE", "none");
+		flagsConfig.addDefault("hotel.map-making.TIME_LOCK", "none");
+		flagsConfig.addDefault("hotel.map-making.WEATHER_LOCK", "none");
+		flagsConfig.addDefault("hotel.map-making.HEAL_DELAY", "none");
+		flagsConfig.addDefault("hotel.map-making.HEAL_AMOUNT", "none");
+		flagsConfig.addDefault("hotel.map-making.HEAL_MIN_HEALTH", "none");
+		flagsConfig.addDefault("hotel.map-making.HEAL_MAX_HEALTH", "none");
+		flagsConfig.addDefault("hotel.map-making.FEED_DELAY", "none");
+		flagsConfig.addDefault("hotel.map-making.FEED_AMOUNT", "none");
+		flagsConfig.addDefault("hotel.map-making.FEED_MIN_HUNGER", "none");
+		flagsConfig.addDefault("hotel.map-making.FEED_MAX_HUNGER", "none");
+		flagsConfig.addDefault("hotel.map-making.TELEPORT", "none");
+		flagsConfig.addDefault("hotel.map-making.SPAWN", "none");
+		flagsConfig.addDefault("hotel.map-making.BLOCKED_CMDS", "none");
+		flagsConfig.addDefault("hotel.map-making.ALLOWED_CMDS", "none");
+		//Miscellaneous
+		flagsConfig.addDefault("hotel.miscellaneous.PISTONS", "none");
+		flagsConfig.addDefault("hotel.miscellaneous.SEND_CHAT", "none");
+		flagsConfig.addDefault("hotel.miscellaneous.RECEIVE_CHAT", "none");
+		flagsConfig.addDefault("hotel.miscellaneous.POTION_SPLASH", State.DENY);
+		flagsConfig.addDefault("hotel.miscellaneous.NOTIFY_ENTER", "none");
+		flagsConfig.addDefault("hotel.miscellaneous.NOTIFY_LEAVE", "none");
+		//Unused (by WorldGuard)
+		flagsConfig.addDefault("hotel.unused.ALLOW-SHOP", "none");
+		flagsConfig.addDefault("hotel.unused.BUYABLE", "none");
+		flagsConfig.addDefault("hotel.unused.PRICE", "none");
+
+		//Room flags
+		//Ovverrides
+		flagsConfig.addDefault("room.overrides.PASSTHROUGH", "none");
+		//Protection-Related
+		flagsConfig.addDefault("room.protection.BUILD", "none");
+		flagsConfig.addDefault("room.protection.INTERACT", State.ALLOW);
+		flagsConfig.addDefault("room.protection.BLOCK-BREAK", "none");
+		flagsConfig.addDefault("room.protection.BLOCK-PLACE", "none");
+		flagsConfig.addDefault("room.protection.USE", State.ALLOW);
+		flagsConfig.addDefault("room.protection.DAMAGE_ANIMALS", "none");
+		flagsConfig.addDefault("room.protection.CHEST_ACCESS", State.ALLOW);
+		flagsConfig.addDefault("room.protection.RIDE", State.ALLOW);
+		flagsConfig.addDefault("room.protection.PVP", State.DENY);
+		flagsConfig.addDefault("room.protection.SLEEP", State.ALLOW);
+		flagsConfig.addDefault("room.protection.TNT", State.DENY);
+		flagsConfig.addDefault("room.protection.VEHICLE_PLACE", State.ALLOW);
+		flagsConfig.addDefault("room.protection.VEHICLE_DESTROY", State.ALLOW);
+		flagsConfig.addDefault("room.protection.LIGHTER", State.DENY);
+		//Mobs, fire, explosions
+		flagsConfig.addDefault("room.mobs.CREEPER_EXPLOSION", State.DENY);
+		flagsConfig.addDefault("room.mobs.ENDERDRAGON_BLOCK_DAMAGE", State.DENY);
+		flagsConfig.addDefault("room.mobs.GHAST_FIREBALL", State.DENY);
+		flagsConfig.addDefault("room.mobs.OTHER_EXPLOSION", State.DENY);
+		flagsConfig.addDefault("room.mobs.FIRE_SPREAD", State.DENY);
+		flagsConfig.addDefault("room.mobs.ENDERMAN_GRIEF", State.DENY);
+		flagsConfig.addDefault("room.mobs.MOB_DAMAGE", State.DENY);
+		flagsConfig.addDefault("room.mobs.MOB_SPAWNING", State.DENY);
+		flagsConfig.addDefault("room.mobs.DENY_SPAWN", "none");
+		flagsConfig.addDefault("room.mobs.ENTITY_PAINTING_DESTROY", State.DENY);
+		flagsConfig.addDefault("room.mobs.ENTITY_ITEM_FRAME_DESTROY", State.DENY);
+		//Natural Events
+		flagsConfig.addDefault("room.nature.LAVA_FIRE", State.DENY);
+		flagsConfig.addDefault("room.nature.LIGHTNING", State.DENY);
+		flagsConfig.addDefault("room.nature.WATER_FLOW", "none");
+		flagsConfig.addDefault("room.nature.LAVA_FLOW", "none");
+		flagsConfig.addDefault("room.nature.SNOW_FALL", State.DENY);
+		flagsConfig.addDefault("room.nature.SNOW_MELT", State.DENY);
+		flagsConfig.addDefault("room.nature.ICE_FORM", State.DENY);
+		flagsConfig.addDefault("room.nature.ICE_MELT", State.DENY);
+		flagsConfig.addDefault("room.nature.MUSHROOM_GROWTH", State.DENY);
+		flagsConfig.addDefault("room.nature.LEAF_DECAY", State.DENY);
+		flagsConfig.addDefault("room.nature.GRASS_GROWTH", State.DENY);
+		flagsConfig.addDefault("room.nature.MYCELIUM_SPREAD", State.DENY);
+		flagsConfig.addDefault("room.nature.VINE_GROWTH", State.DENY);
+		flagsConfig.addDefault("room.nature.SOIL_DRY", State.DENY);
+		//Map-making
+		flagsConfig.addDefault("room.map-making.ITEM_PICKUP", "none");
+		flagsConfig.addDefault("room.map-making.ITEM_DROP", "none");
+		flagsConfig.addDefault("room.map-making.EXP_DROPS", "none");
+		flagsConfig.addDefault("room.map-making.DENY_MESSAGE", "You aren't allowed!");
+		flagsConfig.addDefault("room.map-making.ENTRY", "none");
+		flagsConfig.addDefault("room.map-making.EXIT", "none");
+		flagsConfig.addDefault("room.map-making.GREETING", "&&bWelcome to room %room%");
+		flagsConfig.addDefault("room.map-making.FAREWELL", "&aCome back soon to Room %room%");
+		flagsConfig.addDefault("room.map-making.ENDERPEARL", State.DENY);
+		flagsConfig.addDefault("room.map-making.INVICIBLE", "none");
+		flagsConfig.addDefault("room.map-making.GAME_MODE", "none");
+		flagsConfig.addDefault("room.map-making.TIME_LOCK", "none");
+		flagsConfig.addDefault("room.map-making.WEATHER_LOCK", "none");
+		flagsConfig.addDefault("room.map-making.HEAL_DELAY", "none");
+		flagsConfig.addDefault("room.map-making.HEAL_AMOUNT", "none");
+		flagsConfig.addDefault("room.map-making.HEAL_MIN_HEALTH", "none");
+		flagsConfig.addDefault("room.map-making.HEAL_MAX_HEALTH", "none");
+		flagsConfig.addDefault("room.map-making.FEED_DELAY", "none");
+		flagsConfig.addDefault("room.map-making.FEED_AMOUNT", "none");
+		flagsConfig.addDefault("room.map-making.FEED_MIN_HUNGER", "none");
+		flagsConfig.addDefault("room.map-making.FEED_MAX_HUNGER", "none");
+		flagsConfig.addDefault("room.map-making.TELEPORT", "none");
+		flagsConfig.addDefault("room.map-making.SPAWN", "none");
+		flagsConfig.addDefault("room.map-making.BLOCKED_CMDS", "none");
+		flagsConfig.addDefault("room.map-making.ALLOWED_CMDS", "none");
+		//Miscellaneous
+		flagsConfig.addDefault("room.miscellaneous.PISTONS", "none");
+		flagsConfig.addDefault("room.miscellaneous.SEND_CHAT", "none");
+		flagsConfig.addDefault("room.miscellaneous.RECEIVE_CHAT", "none");
+		flagsConfig.addDefault("room.miscellaneous.POTION_SPLASH", State.ALLOW);
+		flagsConfig.addDefault("room.miscellaneous.NOTIFY_ENTER", "none");
+		flagsConfig.addDefault("room.miscellaneous.NOTIFY_LEAVE", "none");
+		//Unused (by WorldGuard)
+		flagsConfig.addDefault("room.unused.ALLOW-SHOP", "none");
+		flagsConfig.addDefault("room.unused.BUYABLE", "none");
+		flagsConfig.addDefault("room.unused.PRICE", "none");
 
 		flagsConfig.options().copyDefaults(true);
 
