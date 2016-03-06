@@ -1,7 +1,5 @@
 package kernitus.plugin.Hotels.handlers;
 
-import kernitus.plugin.Hotels.HotelsMain;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-import com.sk89q.worldguard.protection.flags.StateFlag.State;
+import kernitus.plugin.Hotels.HotelsMain;
 
 public class HotelsConfigHandler {
 	@SuppressWarnings("unused")
@@ -256,6 +254,7 @@ public class HotelsConfigHandler {
 
 		YamlConfiguration flagsConfig = getyml(flagsFile);
 
+		flagsConfig.options().header("These are the flag values the hotel and room regions will have set to upon creation. Refer here for what each does and the data type http://docs.enginehub.org/manual/worldguard/latest/regions/flags/");
 		//Hotel flags
 		//Ovverrides
 		flagsConfig.addDefault("hotel.overrides.PASSTHROUGH", "none");
@@ -268,39 +267,39 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.protection.DAMAGE_ANIMALS", "none");
 		flagsConfig.addDefault("hotel.protection.CHEST_ACCESS", "none");
 		flagsConfig.addDefault("hotel.protection.RIDE", "none");
-		flagsConfig.addDefault("hotel.protection.PVP", State.DENY);
+		flagsConfig.addDefault("hotel.protection.PVP", "deny");
 		flagsConfig.addDefault("hotel.protection.SLEEP", "none");
-		flagsConfig.addDefault("hotel.protection.TNT", State.DENY);
+		flagsConfig.addDefault("hotel.protection.TNT", "deny");
 		flagsConfig.addDefault("hotel.protection.VEHICLE_PLACE", "none");
 		flagsConfig.addDefault("hotel.protection.VEHICLE_DESTROY", "none");
-		flagsConfig.addDefault("hotel.protection.LIGHTER", State.DENY);
+		flagsConfig.addDefault("hotel.protection.LIGHTER", "deny");
 		//Mobs, fire, explosions
-		flagsConfig.addDefault("hotel.mobs.CREEPER_EXPLOSION", State.DENY);
-		flagsConfig.addDefault("hotel.mobs.ENDERDRAGON_BLOCK_DAMAGE", State.DENY);
-		flagsConfig.addDefault("hotel.mobs.GHAST_FIREBALL", State.DENY);
-		flagsConfig.addDefault("hotel.mobs.OTHER_EXPLOSION", State.DENY);
-		flagsConfig.addDefault("hotel.mobs.FIRE_SPREAD", State.DENY);
-		flagsConfig.addDefault("hotel.mobs.ENDERMAN_GRIEF", State.DENY);
-		flagsConfig.addDefault("hotel.mobs.MOB_DAMAGE", State.DENY);
-		flagsConfig.addDefault("hotel.mobs.MOB_SPAWNING", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.CREEPER_EXPLOSION", "deny");
+		flagsConfig.addDefault("hotel.mobs.ENDERDRAGON_BLOCK_DAMAGE", "deny");
+		flagsConfig.addDefault("hotel.mobs.GHAST_FIREBALL", "deny");
+		flagsConfig.addDefault("hotel.mobs.OTHER_EXPLOSION", "deny");
+		flagsConfig.addDefault("hotel.mobs.FIRE_SPREAD", "deny");
+		flagsConfig.addDefault("hotel.mobs.ENDERMAN_GRIEF", "deny");
+		flagsConfig.addDefault("hotel.mobs.MOB_DAMAGE", "deny");
+		flagsConfig.addDefault("hotel.mobs.MOB_SPAWNING", "deny");
 		flagsConfig.addDefault("hotel.mobs.DENY_SPAWN", "none");
-		flagsConfig.addDefault("hotel.mobs.ENTITY_PAINTING_DESTROY", State.DENY);
-		flagsConfig.addDefault("hotel.mobs.ENTITY_ITEM_FRAME_DESTROY", State.DENY);
+		flagsConfig.addDefault("hotel.mobs.ENTITY_PAINTING_DESTROY", "deny");
+		flagsConfig.addDefault("hotel.mobs.ENTITY_ITEM_FRAME_DESTROY", "deny");
 		//Natural Events
-		flagsConfig.addDefault("hotel.nature.LAVA_FIRE", State.DENY);
-		flagsConfig.addDefault("hotel.nature.LIGHTNING", State.DENY);
+		flagsConfig.addDefault("hotel.nature.LAVA_FIRE", "deny");
+		flagsConfig.addDefault("hotel.nature.LIGHTNING", "deny");
 		flagsConfig.addDefault("hotel.nature.WATER_FLOW", "none");
 		flagsConfig.addDefault("hotel.nature.LAVA_FLOW", "none");
-		flagsConfig.addDefault("hotel.nature.SNOW_FALL", State.DENY);
-		flagsConfig.addDefault("hotel.nature.SNOW_MELT", State.DENY);
-		flagsConfig.addDefault("hotel.nature.ICE_FORM", State.DENY);
-		flagsConfig.addDefault("hotel.nature.ICE_MELT", State.DENY);
-		flagsConfig.addDefault("hotel.nature.MUSHROOM_GROWTH", State.DENY);
-		flagsConfig.addDefault("hotel.nature.LEAF_DECAY", State.DENY);
-		flagsConfig.addDefault("hotel.nature.GRASS_GROWTH", State.DENY);
-		flagsConfig.addDefault("hotel.nature.MYCELIUM_SPREAD", State.DENY);
-		flagsConfig.addDefault("hotel.nature.VINE_GROWTH", State.DENY);
-		flagsConfig.addDefault("hotel.nature.SOIL_DRY", State.DENY);
+		flagsConfig.addDefault("hotel.nature.SNOW_FALL", "deny");
+		flagsConfig.addDefault("hotel.nature.SNOW_MELT", "deny");
+		flagsConfig.addDefault("hotel.nature.ICE_FORM", "deny");
+		flagsConfig.addDefault("hotel.nature.ICE_MELT", "deny");
+		flagsConfig.addDefault("hotel.nature.MUSHROOM_GROWTH", "deny");
+		flagsConfig.addDefault("hotel.nature.LEAF_DECAY", "deny");
+		flagsConfig.addDefault("hotel.nature.GRASS_GROWTH", "deny");
+		flagsConfig.addDefault("hotel.nature.MYCELIUM_SPREAD", "deny");
+		flagsConfig.addDefault("hotel.nature.VINE_GROWTH", "deny");
+		flagsConfig.addDefault("hotel.nature.SOIL_DRY", "deny");
 		//Map-making
 		flagsConfig.addDefault("hotel.map-making.ITEM_PICKUP", "none");
 		flagsConfig.addDefault("hotel.map-making.ITEM_DROP", "none");
@@ -310,7 +309,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.map-making.EXIT", "none");
 		flagsConfig.addDefault("hotel.map-making.GREETING", "&bWelcome to the %hotel% hotel");
 		flagsConfig.addDefault("hotel.map-making.FAREWELL", "&aCome back soon to the %hotel% hotel");
-		flagsConfig.addDefault("hotel.map-making.ENDERPEARL", State.DENY);
+		flagsConfig.addDefault("hotel.map-making.ENDERPEARL", "deny");
 		flagsConfig.addDefault("hotel.map-making.INVICIBLE", "none");
 		flagsConfig.addDefault("hotel.map-making.GAME_MODE", "none");
 		flagsConfig.addDefault("hotel.map-making.TIME_LOCK", "none");
@@ -331,7 +330,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.miscellaneous.PISTONS", "none");
 		flagsConfig.addDefault("hotel.miscellaneous.SEND_CHAT", "none");
 		flagsConfig.addDefault("hotel.miscellaneous.RECEIVE_CHAT", "none");
-		flagsConfig.addDefault("hotel.miscellaneous.POTION_SPLASH", State.DENY);
+		flagsConfig.addDefault("hotel.miscellaneous.POTION_SPLASH", "deny");
 		flagsConfig.addDefault("hotel.miscellaneous.NOTIFY_ENTER", "none");
 		flagsConfig.addDefault("hotel.miscellaneous.NOTIFY_LEAVE", "none");
 		//Unused (by WorldGuard)
@@ -344,46 +343,46 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.overrides.PASSTHROUGH", "none");
 		//Protection-Related
 		flagsConfig.addDefault("room.protection.BUILD", "none");
-		flagsConfig.addDefault("room.protection.INTERACT", State.ALLOW);
+		flagsConfig.addDefault("room.protection.INTERACT", "allow");
 		flagsConfig.addDefault("room.protection.BLOCK-BREAK", "none");
 		flagsConfig.addDefault("room.protection.BLOCK-PLACE", "none");
-		flagsConfig.addDefault("room.protection.USE", State.ALLOW);
+		flagsConfig.addDefault("room.protection.USE", "allow");
 		flagsConfig.addDefault("room.protection.DAMAGE_ANIMALS", "none");
-		flagsConfig.addDefault("room.protection.CHEST_ACCESS", State.ALLOW);
-		flagsConfig.addDefault("room.protection.RIDE", State.ALLOW);
-		flagsConfig.addDefault("room.protection.PVP", State.DENY);
-		flagsConfig.addDefault("room.protection.SLEEP", State.ALLOW);
-		flagsConfig.addDefault("room.protection.TNT", State.DENY);
-		flagsConfig.addDefault("room.protection.VEHICLE_PLACE", State.ALLOW);
-		flagsConfig.addDefault("room.protection.VEHICLE_DESTROY", State.ALLOW);
-		flagsConfig.addDefault("room.protection.LIGHTER", State.DENY);
+		flagsConfig.addDefault("room.protection.CHEST_ACCESS", "allow");
+		flagsConfig.addDefault("room.protection.RIDE", "allow");
+		flagsConfig.addDefault("room.protection.PVP", "deny");
+		flagsConfig.addDefault("room.protection.SLEEP", "allow");
+		flagsConfig.addDefault("room.protection.TNT", "deny");
+		flagsConfig.addDefault("room.protection.VEHICLE_PLACE", "allow");
+		flagsConfig.addDefault("room.protection.VEHICLE_DESTROY", "allow");
+		flagsConfig.addDefault("room.protection.LIGHTER", "deny");
 		//Mobs, fire, explosions
-		flagsConfig.addDefault("room.mobs.CREEPER_EXPLOSION", State.DENY);
-		flagsConfig.addDefault("room.mobs.ENDERDRAGON_BLOCK_DAMAGE", State.DENY);
-		flagsConfig.addDefault("room.mobs.GHAST_FIREBALL", State.DENY);
-		flagsConfig.addDefault("room.mobs.OTHER_EXPLOSION", State.DENY);
-		flagsConfig.addDefault("room.mobs.FIRE_SPREAD", State.DENY);
-		flagsConfig.addDefault("room.mobs.ENDERMAN_GRIEF", State.DENY);
-		flagsConfig.addDefault("room.mobs.MOB_DAMAGE", State.DENY);
-		flagsConfig.addDefault("room.mobs.MOB_SPAWNING", State.DENY);
+		flagsConfig.addDefault("room.mobs.CREEPER_EXPLOSION", "deny");
+		flagsConfig.addDefault("room.mobs.ENDERDRAGON_BLOCK_DAMAGE", "deny");
+		flagsConfig.addDefault("room.mobs.GHAST_FIREBALL", "deny");
+		flagsConfig.addDefault("room.mobs.OTHER_EXPLOSION", "deny");
+		flagsConfig.addDefault("room.mobs.FIRE_SPREAD", "deny");
+		flagsConfig.addDefault("room.mobs.ENDERMAN_GRIEF", "deny");
+		flagsConfig.addDefault("room.mobs.MOB_DAMAGE", "deny");
+		flagsConfig.addDefault("room.mobs.MOB_SPAWNING", "deny");
 		flagsConfig.addDefault("room.mobs.DENY_SPAWN", "none");
-		flagsConfig.addDefault("room.mobs.ENTITY_PAINTING_DESTROY", State.DENY);
-		flagsConfig.addDefault("room.mobs.ENTITY_ITEM_FRAME_DESTROY", State.DENY);
+		flagsConfig.addDefault("room.mobs.ENTITY_PAINTING_DESTROY", "deny");
+		flagsConfig.addDefault("room.mobs.ENTITY_ITEM_FRAME_DESTROY", "deny");
 		//Natural Events
-		flagsConfig.addDefault("room.nature.LAVA_FIRE", State.DENY);
-		flagsConfig.addDefault("room.nature.LIGHTNING", State.DENY);
+		flagsConfig.addDefault("room.nature.LAVA_FIRE", "deny");
+		flagsConfig.addDefault("room.nature.LIGHTNING", "deny");
 		flagsConfig.addDefault("room.nature.WATER_FLOW", "none");
 		flagsConfig.addDefault("room.nature.LAVA_FLOW", "none");
-		flagsConfig.addDefault("room.nature.SNOW_FALL", State.DENY);
-		flagsConfig.addDefault("room.nature.SNOW_MELT", State.DENY);
-		flagsConfig.addDefault("room.nature.ICE_FORM", State.DENY);
-		flagsConfig.addDefault("room.nature.ICE_MELT", State.DENY);
-		flagsConfig.addDefault("room.nature.MUSHROOM_GROWTH", State.DENY);
-		flagsConfig.addDefault("room.nature.LEAF_DECAY", State.DENY);
-		flagsConfig.addDefault("room.nature.GRASS_GROWTH", State.DENY);
-		flagsConfig.addDefault("room.nature.MYCELIUM_SPREAD", State.DENY);
-		flagsConfig.addDefault("room.nature.VINE_GROWTH", State.DENY);
-		flagsConfig.addDefault("room.nature.SOIL_DRY", State.DENY);
+		flagsConfig.addDefault("room.nature.SNOW_FALL", "deny");
+		flagsConfig.addDefault("room.nature.SNOW_MELT", "deny");
+		flagsConfig.addDefault("room.nature.ICE_FORM", "deny");
+		flagsConfig.addDefault("room.nature.ICE_MELT", "deny");
+		flagsConfig.addDefault("room.nature.MUSHROOM_GROWTH", "deny");
+		flagsConfig.addDefault("room.nature.LEAF_DECAY", "deny");
+		flagsConfig.addDefault("room.nature.GRASS_GROWTH", "deny");
+		flagsConfig.addDefault("room.nature.MYCELIUM_SPREAD", "deny");
+		flagsConfig.addDefault("room.nature.VINE_GROWTH", "deny");
+		flagsConfig.addDefault("room.nature.SOIL_DRY", "deny");
 		//Map-making
 		flagsConfig.addDefault("room.map-making.ITEM_PICKUP", "none");
 		flagsConfig.addDefault("room.map-making.ITEM_DROP", "none");
@@ -393,7 +392,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.map-making.EXIT", "none");
 		flagsConfig.addDefault("room.map-making.GREETING", "&&bWelcome to room %room%");
 		flagsConfig.addDefault("room.map-making.FAREWELL", "&aCome back soon to Room %room%");
-		flagsConfig.addDefault("room.map-making.ENDERPEARL", State.DENY);
+		flagsConfig.addDefault("room.map-making.ENDERPEARL", "deny");
 		flagsConfig.addDefault("room.map-making.INVICIBLE", "none");
 		flagsConfig.addDefault("room.map-making.GAME_MODE", "none");
 		flagsConfig.addDefault("room.map-making.TIME_LOCK", "none");
@@ -414,7 +413,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.miscellaneous.PISTONS", "none");
 		flagsConfig.addDefault("room.miscellaneous.SEND_CHAT", "none");
 		flagsConfig.addDefault("room.miscellaneous.RECEIVE_CHAT", "none");
-		flagsConfig.addDefault("room.miscellaneous.POTION_SPLASH", State.ALLOW);
+		flagsConfig.addDefault("room.miscellaneous.POTION_SPLASH", "allow");
 		flagsConfig.addDefault("room.miscellaneous.NOTIFY_ENTER", "none");
 		flagsConfig.addDefault("room.miscellaneous.NOTIFY_LEAVE", "none");
 		//Unused (by WorldGuard)

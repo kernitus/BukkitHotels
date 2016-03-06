@@ -1,13 +1,12 @@
 package kernitus.plugin.Hotels.managers;
 
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-
+import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -27,6 +26,9 @@ import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+
 
 public class WorldGuardManager {
 	private HotelsMain plugin;
@@ -34,7 +36,7 @@ public class WorldGuardManager {
 		this.plugin = instance;
 	}
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	
+
 	YamlConfiguration locale = HConH.getLocale();
 
 	public WorldGuardPlugin getWorldGuard(){
@@ -110,74 +112,64 @@ public class WorldGuardManager {
 		}
 	}
 	public void hotelFlags(ProtectedRegion r,String hotelName,Plugin plugin){
-		//r.setFlag(DefaultFlag.PASSTHROUGH, State.ALLOW);
-		//r.setFlag(DefaultFlag.BUILD, State.DENY);
-		r.setFlag(DefaultFlag.PVP, State.DENY);
-		//r.setFlag(DefaultFlag.CHEST_ACCESS, State.DENY);
-		//r.setFlag(DefaultFlag.PISTONS, State.DENY);
-		r.setFlag(DefaultFlag.TNT, State.DENY);
-		r.setFlag(DefaultFlag.LIGHTER, State.DENY);
-		//r.setFlag(DefaultFlag.USE, State.DENY);
-		r.setFlag(DefaultFlag.PLACE_VEHICLE, State.DENY);
-		r.setFlag(DefaultFlag.DESTROY_VEHICLE, State.DENY);
-		//r.setFlag(DefaultFlag.SLEEP, State.DENY);
-		r.setFlag(DefaultFlag.MOB_DAMAGE, State.DENY);
-		r.setFlag(DefaultFlag.MOB_SPAWNING, State.DENY);
-		//r.setFlag(DefaultFlag.DENY_SPAWN, State.DENY);
-		//r.setFlag(DefaultFlag.INVINCIBILITY, State.DENY);
-		//r.setFlag(DefaultFlag.EXP_DROPS, State.DENY);
-		r.setFlag(DefaultFlag.CREEPER_EXPLOSION, State.DENY);
-		r.setFlag(DefaultFlag.OTHER_EXPLOSION, State.DENY);
-		r.setFlag(DefaultFlag.ENDERDRAGON_BLOCK_DAMAGE, State.DENY);
-		r.setFlag(DefaultFlag.GHAST_FIREBALL, State.DENY);
-		r.setFlag(DefaultFlag.ENDER_BUILD, State.DENY);
-		if(plugin.getConfig().getBoolean("settings.use-hotel_enter_message"))
+		YamlConfiguration flagsConfig = HConH.getFlags();
+		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
+		Map <Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
+		
+		for(String key : section.getKeys(true)){
+			String pureKey = key.replaceAll(".+\\.", "");
+			if(flagsConfig.get(key)==null||flagsConfig.equals("none"))
+				break;
+			
+			switch(pureKey){
+
+			//String
+			case "DENY_MESSAGE": case "GREETING": case "FAREWELL":
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), flagsConfig.getString(key));
+				break;
+			//Integer
+			case "HEAL_DELAY": case "HEAL_AMOUNT": case "FEED_DELAY": case "FEED_AMOUNT": case "FEED_MIN_HUNGER": 
+				Integer intFlag = flagsConfig.getInt(key);
+				if(intFlag!=null)
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), intFlag);
+				break;
+			//Double
+			case "HEAL_MIN_HEALTH": case "HEAL_MAX_HEALTH":
+				Double doubleFlag = flagsConfig.getDouble(key);
+				if(doubleFlag!=null)
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), doubleFlag);
+				break;
+			//Boolean
+			case "NOTIFY_ENTER": case "NOTIFY_LEAVE":
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), flagsConfig.getBoolean(key));
+				break;
+			case "WEATHER_LOCK":
+				String weatherFlag = flagsConfig.getString(key);
+				if(weatherFlag.equalsIgnoreCase("clear")||weatherFlag.equalsIgnoreCase("downfall"))
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), flagsConfig.getString(key));
+				break;
+			}
+
+			if(key.equalsIgnoreCase("map-making.DENY_MESSAGE")){
+				/*mobs.DENY_SPAWN (set of entity types)
+				  map-making.GAMEMODE (gamemode, survival, creative, adventure)
+
+				  map-making.TIME_LOCK (integer between 0 and 24000)
+
+				  map-making.TELEPORT (Location)
+				  map-making.spawn (Location)
+
+				  map-making.BLOCKED_CMDS (Set of strings)
+				  map-making.ALLOWED_CMDS (Set of strings)
+				 */
+			}
+		}
+
+
+		/*if(plugin.getConfig().getBoolean("settings.use-hotel_enter_message"))
 			r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.hotel.enter").replaceAll("%hotel%", hotelName)));
 		if(plugin.getConfig().getBoolean("settings.use-hotel_exit_message"))
-			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.hotel.exit").replaceAll("%hotel%", hotelName)));
-
-		//r.setFlag(DefaultFlag.NOTIFY_ENTER, Boolean.FALSE);
-		//r.setFlag(DefaultFlag.NOTIFY_LEAVE, Boolean.FALSE);
-		//r.setFlag(DefaultFlag.EXIT, State.ALLOW);
-		//r.setFlag(DefaultFlag.ENTRY, State.ALLOW);
-		r.setFlag(DefaultFlag.LIGHTNING, State.DENY);
-		r.setFlag(DefaultFlag.ENTITY_PAINTING_DESTROY, State.DENY);
-		r.setFlag(DefaultFlag.ENDERPEARL, State.DENY);
-		r.setFlag(DefaultFlag.ENTITY_ITEM_FRAME_DESTROY, State.DENY);
-		/*r.setFlag(DefaultFlag.ITEM_DROP, State.ALLOW);
-		r.setFlag(DefaultFlag.HEAL_AMOUNT, 0);
-		r.setFlag(DefaultFlag.HEAL_DELAY, 0);
-		r.setFlag(DefaultFlag.MIN_HEAL, 0);
-		r.setFlag(DefaultFlag.MAX_HEAL, 20);
-		r.setFlag(DefaultFlag.FEED_DELAY, 0);
-		r.setFlag(DefaultFlag.FEED_AMOUNT, 20);
-		r.setFlag(DefaultFlag.MIN_FOOD, 0);
-		r.setFlag(DefaultFlag.MAX_FOOD, 20);*/
-		r.setFlag(DefaultFlag.SNOW_FALL, State.DENY);
-		r.setFlag(DefaultFlag.SNOW_MELT, State.DENY);
-		r.setFlag(DefaultFlag.ICE_FORM, State.DENY);
-		r.setFlag(DefaultFlag.ICE_MELT, State.DENY);
-		r.setFlag(DefaultFlag.SOIL_DRY, State.DENY);
-		//r.setFlag(DefaultFlag.GAME_MODE, State.DENY);
-		r.setFlag(DefaultFlag.MUSHROOMS, State.DENY);
-		r.setFlag(DefaultFlag.LEAF_DECAY, State.DENY);
-		r.setFlag(DefaultFlag.GRASS_SPREAD, State.DENY);
-		r.setFlag(DefaultFlag.MYCELIUM_SPREAD, State.DENY);
-		r.setFlag(DefaultFlag.VINE_GROWTH, State.DENY);
-		//r.setFlag(DefaultFlag.SEND_CHAT, State.ALLOW);
-		//r.setFlag(DefaultFlag.RECEIVE_CHAT, State.ALLOW);
-		r.setFlag(DefaultFlag.FIRE_SPREAD, State.DENY);
-		r.setFlag(DefaultFlag.LAVA_FIRE, State.DENY);
-		//r.setFlag(DefaultFlag.LAVA_FLOW, State.DENY);
-		//r.setFlag(DefaultFlag.WATER_FLOW, State.DENY);
-		//r.setFlag(DefaultFlag.TELE_LOC, State.DENY);
-		//r.setFlag(DefaultFlag.SPAWN_LOC, State.DENY);
-		//r.setFlag(DefaultFlag.POTION_SPLASH, State.DENY);
-		//r.setFlag(DefaultFlag.BLOCKED_CMDS, SetFlag<T>);
-		//r.setFlag(DefaultFlag.ALLOWED_CMDS, State.DENY);
-		//Double price = 0.0;
-		//r.setFlag(DefaultFlag.PRICE, price);
-		//r.setFlag(DefaultFlag.BUYABLE, Boolean.FALSE);
+			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.hotel.exit").replaceAll("%hotel%", hotelName)));*/
 	}	
 	public void roomFlags(ProtectedRegion region,String hotelName,Player p,int roomNum,Plugin plugin){
 
