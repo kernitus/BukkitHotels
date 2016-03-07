@@ -1,9 +1,16 @@
 package kernitus.plugin.Hotels.managers;
 
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,9 +32,6 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 
 public class WorldGuardManager {
@@ -146,21 +150,36 @@ public class WorldGuardManager {
 			case "WEATHER_LOCK":
 				String weatherFlag = flagsConfig.getString(key);
 				if(weatherFlag.equalsIgnoreCase("clear")||weatherFlag.equalsIgnoreCase("downfall"))
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), flagsConfig.getString(key));
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), weatherFlag);
 				break;
+			case "GAMEMODE":
+				String gamemodeFlag = flagsConfig.getString(key);
+				if(gamemodeFlag.equalsIgnoreCase("survival")||gamemodeFlag.equalsIgnoreCase("creative")||gamemodeFlag.equalsIgnoreCase("adventure"))
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), gamemodeFlag);
+				break;
+			case "TIME_LOCK":
+				int time_lockFlag = flagsConfig.getInt(key);
+				if((time_lockFlag>=0)&&(time_lockFlag<=24000))
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), time_lockFlag);
+				break;
+			case "DENY_SPAWN":
+				Set<String> entitySet = new HashSet<String>();
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet);
+				break;
+			case "BLOCKED_CMDS": case "ALLOWED_CMDS":
+				List<String> cmdsList = flagsConfig.getStringList(key);
+				Set<String> cmdsSet = new HashSet<String>(cmdsList);
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), cmdsSet);
+				break;
+			case "TELEPORT": case "SPAWN":
+				//Location locationFlag = flagsConfig.get
+				r.setFlag(DefaultFlag.TELE_LOC, 13);
 			}
 
 			if(key.equalsIgnoreCase("map-making.DENY_MESSAGE")){
-				/*mobs.DENY_SPAWN (set of entity types)
-				  map-making.GAMEMODE (gamemode, survival, creative, adventure)
-
-				  map-making.TIME_LOCK (integer between 0 and 24000)
-
+				/*
 				  map-making.TELEPORT (Location)
 				  map-making.spawn (Location)
-
-				  map-making.BLOCKED_CMDS (Set of strings)
-				  map-making.ALLOWED_CMDS (Set of strings)
 				 */
 			}
 		}
