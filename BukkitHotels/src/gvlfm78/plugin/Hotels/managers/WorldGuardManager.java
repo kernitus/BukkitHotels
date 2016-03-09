@@ -2,7 +2,6 @@ package kernitus.plugin.Hotels.managers;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -169,9 +168,13 @@ public class WorldGuardManager {
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet);*/
 				break;
 			case "BLOCKED-CMDS": case "ALLOWED-CMDS":
-				List<String> cmdsList = section.getStringList(key);
-				Set<String> cmdsSet = new HashSet<String>(cmdsList);
-				//Letschekkdisaut
+				String cmdsValue = section.getString(key);
+				String[] cmdsValues = cmdsValue.split(",");
+				Set<String> cmdsSet = new HashSet<String>();
+				for(String cmd: cmdsValues){
+					cmd = "/"+cmd;
+					cmdsSet.add(cmd);
+				}
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), cmdsSet);
 				break;
 			case "TELEPORT": case "SPAWN":
