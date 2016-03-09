@@ -261,8 +261,8 @@ public class HotelsConfigHandler {
 		//Protection-Related
 		flagsConfig.addDefault("hotel.protection.BUILD", "none");
 		flagsConfig.addDefault("hotel.protection.INTERACT", "none");
-		flagsConfig.addDefault("hotel.protection.BLOCK-BREAK", "none");
-		flagsConfig.addDefault("hotel.protection.BLOCK-PLACE", "none");
+		flagsConfig.addDefault("hotel.protection.BLOCK_BREAK", "none");
+		flagsConfig.addDefault("hotel.protection.BLOCK_PLACE", "none");
 		flagsConfig.addDefault("hotel.protection.USE", "none");
 		flagsConfig.addDefault("hotel.protection.DAMAGE_ANIMALS", "none");
 		flagsConfig.addDefault("hotel.protection.CHEST_ACCESS", "none");
@@ -270,8 +270,8 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.protection.PVP", "deny");
 		flagsConfig.addDefault("hotel.protection.SLEEP", "none");
 		flagsConfig.addDefault("hotel.protection.TNT", "deny");
-		flagsConfig.addDefault("hotel.protection.VEHICLE_PLACE", "none");
-		flagsConfig.addDefault("hotel.protection.VEHICLE_DESTROY", "none");
+		flagsConfig.addDefault("hotel.protection.PLACE_VEHICLE", "none");
+		flagsConfig.addDefault("hotel.protection.DESTROY_VEHICLE", "none");
 		flagsConfig.addDefault("hotel.protection.LIGHTER", "deny");
 		//Mobs, fire, explosions
 		flagsConfig.addDefault("hotel.mobs.CREEPER_EXPLOSION", "deny");
@@ -294,9 +294,9 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.nature.SNOW_MELT", "deny");
 		flagsConfig.addDefault("hotel.nature.ICE_FORM", "deny");
 		flagsConfig.addDefault("hotel.nature.ICE_MELT", "deny");
-		flagsConfig.addDefault("hotel.nature.MUSHROOM_GROWTH", "deny");
+		flagsConfig.addDefault("hotel.nature.MUSHROOMS", "deny");
 		flagsConfig.addDefault("hotel.nature.LEAF_DECAY", "deny");
-		flagsConfig.addDefault("hotel.nature.GRASS_GROWTH", "deny");
+		flagsConfig.addDefault("hotel.nature.GRASS_SPREAD", "deny");
 		flagsConfig.addDefault("hotel.nature.MYCELIUM_SPREAD", "deny");
 		flagsConfig.addDefault("hotel.nature.VINE_GROWTH", "deny");
 		flagsConfig.addDefault("hotel.nature.SOIL_DRY", "deny");
@@ -306,9 +306,12 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.map-making.EXP_DROPS", "none");
 		flagsConfig.addDefault("hotel.map-making.DENY_MESSAGE", "You aren't allowed!");
 		flagsConfig.addDefault("hotel.map-making.ENTRY", "none");
-		flagsConfig.addDefault("hotel.map-making.EXIT", "none");
-		flagsConfig.addDefault("hotel.map-making.GREETING", "&bWelcome to the %hotel% hotel");
-		flagsConfig.addDefault("hotel.map-making.FAREWELL", "&aCome back soon to the %hotel% hotel");
+		flagsConfig.addDefault("room.map-making.ENTRY_DENY_MESSAGE", "none");
+		flagsConfig.addDefault("room.map-making.EXIT", "none");
+		flagsConfig.addDefault("room.map-making.EXIT_DENY_MESSAGE", "none");
+		flagsConfig.addDefault("room.map-making.EXIT_VIA_TELEPORT", "none");
+		flagsConfig.addDefault("hotel.map-making.GREET_MESSAGE", "&bWelcome to the %hotel% hotel");
+		flagsConfig.addDefault("hotel.map-making.FAREWELL_MESSAGE", "&aCome back soon to the %hotel% hotel");
 		flagsConfig.addDefault("hotel.map-making.ENDERPEARL", "deny");
 		flagsConfig.addDefault("hotel.map-making.INVICIBLE", "none");
 		flagsConfig.addDefault("hotel.map-making.GAME_MODE", "none");
@@ -316,14 +319,16 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.map-making.WEATHER_LOCK", "none");
 		flagsConfig.addDefault("hotel.map-making.HEAL_DELAY", "none");
 		flagsConfig.addDefault("hotel.map-making.HEAL_AMOUNT", "none");
-		flagsConfig.addDefault("hotel.map-making.HEAL_MIN_HEALTH", "none");
-		flagsConfig.addDefault("hotel.map-making.HEAL_MAX_HEALTH", "none");
+		flagsConfig.addDefault("hotel.map-making.MIN_HEAL", "none");
+		flagsConfig.addDefault("hotel.map-making.MAX_HEAL", "none");
+		flagsConfig.addDefault("hotel.map-making.INVINCIBILITY", "none");
+		flagsConfig.addDefault("hotel.map-making.FALL_DAMAGE", "none");
 		flagsConfig.addDefault("hotel.map-making.FEED_DELAY", "none");
 		flagsConfig.addDefault("hotel.map-making.FEED_AMOUNT", "none");
-		flagsConfig.addDefault("hotel.map-making.FEED_MIN_HUNGER", "none");
-		flagsConfig.addDefault("hotel.map-making.FEED_MAX_HUNGER", "none");
-		flagsConfig.addDefault("hotel.map-making.TELEPORT", "none");
-		flagsConfig.addDefault("hotel.map-making.SPAWN", "none");
+		flagsConfig.addDefault("hotel.map-making.MIN_FOOD", "none");
+		flagsConfig.addDefault("hotel.map-making.MAX_FOOD", "none");
+		flagsConfig.addDefault("hotel.map-making.TELE_LOC", "none");
+		flagsConfig.addDefault("hotel.map-making.SPAWN_LOC", "none");
 		flagsConfig.addDefault("hotel.map-making.BLOCKED_CMDS", "none");
 		flagsConfig.addDefault("hotel.map-making.ALLOWED_CMDS", "none");
 		//Miscellaneous
@@ -334,7 +339,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.miscellaneous.NOTIFY_ENTER", "none");
 		flagsConfig.addDefault("hotel.miscellaneous.NOTIFY_LEAVE", "none");
 		//Unused (by WorldGuard)
-		flagsConfig.addDefault("hotel.unused.ALLOW-SHOP", "none");
+		flagsConfig.addDefault("hotel.unused.ENABLE_SHOP", "none");
 		flagsConfig.addDefault("hotel.unused.BUYABLE", "none");
 		flagsConfig.addDefault("hotel.unused.PRICE", "none");
 
@@ -344,8 +349,8 @@ public class HotelsConfigHandler {
 		//Protection-Related
 		flagsConfig.addDefault("room.protection.BUILD", "none");
 		flagsConfig.addDefault("room.protection.INTERACT", "allow");
-		flagsConfig.addDefault("room.protection.BLOCK-BREAK", "none");
-		flagsConfig.addDefault("room.protection.BLOCK-PLACE", "none");
+		flagsConfig.addDefault("room.protection.BLOCK_BREAK", "none");
+		flagsConfig.addDefault("room.protection.BLOCK_PLACE", "none");
 		flagsConfig.addDefault("room.protection.USE", "allow");
 		flagsConfig.addDefault("room.protection.DAMAGE_ANIMALS", "none");
 		flagsConfig.addDefault("room.protection.CHEST_ACCESS", "allow");
@@ -353,8 +358,8 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.protection.PVP", "deny");
 		flagsConfig.addDefault("room.protection.SLEEP", "allow");
 		flagsConfig.addDefault("room.protection.TNT", "deny");
-		flagsConfig.addDefault("room.protection.VEHICLE_PLACE", "allow");
-		flagsConfig.addDefault("room.protection.VEHICLE_DESTROY", "allow");
+		flagsConfig.addDefault("room.protection.PLACE_VEHICLE", "allow");
+		flagsConfig.addDefault("room.protection.DESTROY_VEHICLE", "allow");
 		flagsConfig.addDefault("room.protection.LIGHTER", "deny");
 		//Mobs, fire, explosions
 		flagsConfig.addDefault("room.mobs.CREEPER_EXPLOSION", "deny");
@@ -377,9 +382,9 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.nature.SNOW_MELT", "deny");
 		flagsConfig.addDefault("room.nature.ICE_FORM", "deny");
 		flagsConfig.addDefault("room.nature.ICE_MELT", "deny");
-		flagsConfig.addDefault("room.nature.MUSHROOM_GROWTH", "deny");
+		flagsConfig.addDefault("room.nature.MUSHROOMS", "deny");
 		flagsConfig.addDefault("room.nature.LEAF_DECAY", "deny");
-		flagsConfig.addDefault("room.nature.GRASS_GROWTH", "deny");
+		flagsConfig.addDefault("room.nature.GRASS_SPREAD", "deny");
 		flagsConfig.addDefault("room.nature.MYCELIUM_SPREAD", "deny");
 		flagsConfig.addDefault("room.nature.VINE_GROWTH", "deny");
 		flagsConfig.addDefault("room.nature.SOIL_DRY", "deny");
@@ -389,24 +394,28 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.map-making.EXP_DROPS", "none");
 		flagsConfig.addDefault("room.map-making.DENY_MESSAGE", "You aren't allowed!");
 		flagsConfig.addDefault("room.map-making.ENTRY", "none");
+		flagsConfig.addDefault("room.map-making.ENTRY_DENY_MESSAGE", "none");
 		flagsConfig.addDefault("room.map-making.EXIT", "none");
-		flagsConfig.addDefault("room.map-making.GREETING", "&&bWelcome to room %room%");
-		flagsConfig.addDefault("room.map-making.FAREWELL", "&aCome back soon to Room %room%");
+		flagsConfig.addDefault("room.map-making.EXIT_DENY_MESSAGE", "none");
+		flagsConfig.addDefault("room.map-making.EXIT_VIA_TELEPORT", "none");
+		flagsConfig.addDefault("room.map-making.GREET_MESSAGE", "&&bWelcome to room %room%");
+		flagsConfig.addDefault("room.map-making.FAREWELL_MESSAGE", "&aCome back soon to Room %room%");
 		flagsConfig.addDefault("room.map-making.ENDERPEARL", "deny");
-		flagsConfig.addDefault("room.map-making.INVICIBLE", "none");
+		flagsConfig.addDefault("room.map-making.INVICIBILITY", "none");
 		flagsConfig.addDefault("room.map-making.GAME_MODE", "none");
 		flagsConfig.addDefault("room.map-making.TIME_LOCK", "none");
 		flagsConfig.addDefault("room.map-making.WEATHER_LOCK", "none");
 		flagsConfig.addDefault("room.map-making.HEAL_DELAY", "none");
 		flagsConfig.addDefault("room.map-making.HEAL_AMOUNT", "none");
-		flagsConfig.addDefault("room.map-making.HEAL_MIN_HEALTH", "none");
-		flagsConfig.addDefault("room.map-making.HEAL_MAX_HEALTH", "none");
+		flagsConfig.addDefault("room.map-making.MIN_HEAL", "none");
+		flagsConfig.addDefault("room.map-making.MAX_HEAL", "none");
+		flagsConfig.addDefault("room.map-making.FALL_DAMAGE", "none");
 		flagsConfig.addDefault("room.map-making.FEED_DELAY", "none");
 		flagsConfig.addDefault("room.map-making.FEED_AMOUNT", "none");
-		flagsConfig.addDefault("room.map-making.FEED_MIN_HUNGER", "none");
-		flagsConfig.addDefault("room.map-making.FEED_MAX_HUNGER", "none");
-		flagsConfig.addDefault("room.map-making.TELEPORT", "none");
-		flagsConfig.addDefault("room.map-making.SPAWN", "none");
+		flagsConfig.addDefault("room.map-making.MIN_FOOD", "none");
+		flagsConfig.addDefault("room.map-making.MAX_FOOD", "none");
+		flagsConfig.addDefault("room.map-making.TELE_LOC", "none");
+		flagsConfig.addDefault("room.map-making.SPAWN_LOC", "none");
 		flagsConfig.addDefault("room.map-making.BLOCKED_CMDS", "none");
 		flagsConfig.addDefault("room.map-making.ALLOWED_CMDS", "none");
 		//Miscellaneous
@@ -417,7 +426,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.miscellaneous.NOTIFY_ENTER", "none");
 		flagsConfig.addDefault("room.miscellaneous.NOTIFY_LEAVE", "none");
 		//Unused (by WorldGuard)
-		flagsConfig.addDefault("room.unused.ALLOW-SHOP", "none");
+		flagsConfig.addDefault("room.unused.ENABLE_SHOP", "none");
 		flagsConfig.addDefault("room.unused.BUYABLE", "none");
 		flagsConfig.addDefault("room.unused.PRICE", "none");
 

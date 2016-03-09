@@ -1,8 +1,5 @@
 package kernitus.plugin.Hotels.managers;
 
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,8 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,6 +30,9 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 
 public class WorldGuardManager {
@@ -115,82 +116,88 @@ public class WorldGuardManager {
 			saveRegions(world);
 		}
 	}
-	public void hotelFlags(ProtectedRegion r,String hotelName,Plugin plugin){
+	public void hotelFlags(World world, ProtectedRegion r,String hotelName,Plugin plugin){
 		YamlConfiguration flagsConfig = HConH.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
 		Map <Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
-		
 		for(String key : section.getKeys(true)){
 			String pureKey = key.replaceAll(".+\\.", "");
-			if(flagsConfig.get(key)==null||flagsConfig.equals("none"))
-				break;
-			
+			if(section.get(key)==null||section.getString(key).equalsIgnoreCase("none")||section.getString(key).startsWith("MemorySection"))
+				continue;
 			switch(pureKey){
-
+			
+			case "GREET_MESSAGE": case "FAREWELL_MESSAGE":
+				r.setFlag(DefaultFlag.GREET_MESSAGE, section.getString(key));
+				Flag<?> flag = DefaultFlag.fuzzyMatchFlag(pureKey);
+				System.out.println("Fuzzy: "+flag.getName());
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), section.getString(key).replaceAll("%hotel%", hotelName));
+				break;
 			//String
-			case "DENY_MESSAGE": case "GREETING": case "FAREWELL":
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), flagsConfig.getString(key));
+			case "DENY_MESSAGE": case "ENTRY_DENY_MESSAGE": case "EXIT_DENY_MESSAGE": case "TIME_LOCK":
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), section.getString(key));
 				break;
 			//Integer
-			case "HEAL_DELAY": case "HEAL_AMOUNT": case "FEED_DELAY": case "FEED_AMOUNT": case "FEED_MIN_HUNGER": 
-				Integer intFlag = flagsConfig.getInt(key);
+			case "HEAL_DELAY": case "HEAL_AMOUNT": case "FEED_DELAY": case "FEED_AMOUNT": case "MIN_FOOD": case "MAX_FOOD": 
+				Integer intFlag = section.getInt(key);
 				if(intFlag!=null)
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), intFlag);
 				break;
 			//Double
-			case "HEAL_MIN_HEALTH": case "HEAL_MAX_HEALTH":
-				Double doubleFlag = flagsConfig.getDouble(key);
+			case "MIN_HEAL": case "MAX_HEAL": case "PRICE":
+				Double doubleFlag = section.getDouble(key);
 				if(doubleFlag!=null)
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), doubleFlag);
 				break;
 			//Boolean
-			case "NOTIFY_ENTER": case "NOTIFY_LEAVE":
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), flagsConfig.getBoolean(key));
+			case "NOTIFY_ENTER": case "NOTIFY_LEAVE": case "BUYABLE":
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), section.getBoolean(key));
 				break;
+			//Weather Type (Clear or downfall)
 			case "WEATHER_LOCK":
-				String weatherFlag = flagsConfig.getString(key);
-				if(weatherFlag.equalsIgnoreCase("clear")||weatherFlag.equalsIgnoreCase("downfall"))
+				WeatherType weatherFlag = WeatherType.valueOf(section.getString(key).toUpperCase());
+				if(weatherFlag!=null)
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), weatherFlag);
 				break;
-			case "GAMEMODE":
-				String gamemodeFlag = flagsConfig.getString(key);
-				if(gamemodeFlag.equalsIgnoreCase("survival")||gamemodeFlag.equalsIgnoreCase("creative")||gamemodeFlag.equalsIgnoreCase("adventure"))
+			//GameMode (Adventure, Creative, Spectator, Survival)
+			case "GAME_MODE":
+				GameMode gamemodeFlag = GameMode.valueOf(section.getString(key).toUpperCase());
+				if(gamemodeFlag!=null)
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), gamemodeFlag);
 				break;
-			case "TIME_LOCK":
-				int time_lockFlag = flagsConfig.getInt(key);
-				if((time_lockFlag>=0)&&(time_lockFlag<=24000))
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), time_lockFlag);
-				break;
+				//Set of entities
 			case "DENY_SPAWN":
-				Set<String> entitySet = new HashSet<String>();
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet);
+				/*Set<EntityType> entitySet = new HashSet<EntityType>();
+				entitySet.add(new EntityType(section.getString(key)));
+				r.setFlag(DefaultFlag.DENY_SPAWN, entitySet);
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet);*/
 				break;
 			case "BLOCKED_CMDS": case "ALLOWED_CMDS":
-				List<String> cmdsList = flagsConfig.getStringList(key);
+				List<String> cmdsList = section.getStringList(key);
 				Set<String> cmdsSet = new HashSet<String>(cmdsList);
+				//Letschekkdisaut
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), cmdsSet);
 				break;
-			case "TELEPORT": case "SPAWN":
-				//Location locationFlag = flagsConfig.get
-				r.setFlag(DefaultFlag.TELE_LOC, 13);
-			}
-
-			if(key.equalsIgnoreCase("map-making.DENY_MESSAGE")){
-				/*
-				  map-making.TELEPORT (Location)
-				  map-making.spawn (Location)
-				 */
+			case "TELE_LOC": case "SPAWN_LOC":
+				/*int x = section.getInt(key+".x");
+				int y = section.getInt(key+".y");
+				int z = section.getInt(key+".z");
+				int yaw = 0;
+				int pitch = 0;
+				Location locationFlag = new Location(world,x,y,z,yaw,pitch);
+				r.setFlag(DefaultFlag.SPAWN_LOC, locationFlag);*/
+				break;
+			default:
+				String flagValue = section.getString(key);
+				System.out.println("FLEGGGG V: "+flagValue);
+				if(flagValue.equalsIgnoreCase("ALLOW"))
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.ALLOW);
+				else if(flagValue.equalsIgnoreCase("DENY"))
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.DENY);
+				break;
 			}
 		}
-
-
-		/*if(plugin.getConfig().getBoolean("settings.use-hotel_enter_message"))
-			r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.hotel.enter").replaceAll("%hotel%", hotelName)));
-		if(plugin.getConfig().getBoolean("settings.use-hotel_exit_message"))
-			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.hotel.exit").replaceAll("%hotel%", hotelName)));*/
 	}	
-	public void roomFlags(ProtectedRegion region,String hotelName,Player p,int roomNum,Plugin plugin){
+	public void roomFlags(World world, ProtectedRegion region,String hotelName,Player p,int roomNum,Plugin plugin){
 
 		groupFlags(region,DefaultFlag.CHEST_ACCESS);
 		groupFlags(region,DefaultFlag.USE);
