@@ -125,59 +125,56 @@ public class WorldGuardManager {
 			if(section.get(key)==null||section.getString(key).equalsIgnoreCase("none")||section.getString(key).startsWith("MemorySection"))
 				continue;
 			switch(pureKey){
-			
-			case "GREET_MESSAGE": case "FAREWELL_MESSAGE":
-				r.setFlag(DefaultFlag.GREET_MESSAGE, section.getString(key));
-				Flag<?> flag = DefaultFlag.fuzzyMatchFlag("ITEM-PICKUP");
-				System.out.println("Fuzzy: "+flag+" Purekey: "+pureKey+" key: "+key+" value: "+section.getString(key));
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), section.getString(key).replaceAll("%hotel%", hotelName));
+			case "GREETING": case "FAREWELL":
+				String value = section.getString(key).replaceAll("%hotel%", hotelName);
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), value);
 				break;
 			//String
-			case "DENY_MESSAGE": case "ENTRY_DENY_MESSAGE": case "EXIT_DENY_MESSAGE": case "TIME_LOCK":
+			case "DENY-MESSAGE": case "ENTRY-DENY-MESSAGE": case "EXIT-DENY-MESSAGE": case "TIME-LOCK":
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), section.getString(key));
 				break;
 			//Integer
-			case "HEAL_DELAY": case "HEAL_AMOUNT": case "FEED_DELAY": case "FEED_AMOUNT": case "MIN_FOOD": case "MAX_FOOD": 
+			case "HEAL-DELAY": case "HEAL-AMOUNT": case "FEED-DELAY": case "FEED-AMOUNT": case "FEED-MIN-HUNGER": case "FEED-MAX-HUNGER": 
 				Integer intFlag = section.getInt(key);
 				if(intFlag!=null)
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), intFlag);
 				break;
 			//Double
-			case "MIN_HEAL": case "MAX_HEAL": case "PRICE":
+			case "HEAL-MIN-HEALTH": case "HEAL-MAX-HEALTH": case "PRICE":
 				Double doubleFlag = section.getDouble(key);
 				if(doubleFlag!=null)
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), doubleFlag);
 				break;
 			//Boolean
-			case "NOTIFY_ENTER": case "NOTIFY_LEAVE": case "BUYABLE":
+			case "NOTIFY-ENTER": case "NOTIFY-LEAVE": case "BUYABLE": case "EXIT-OVERRIDE":
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), section.getBoolean(key));
 				break;
 			//Weather Type (Clear or downfall)
-			case "WEATHER_LOCK":
+			case "WEATHER-LOCK":
 				WeatherType weatherFlag = WeatherType.valueOf(section.getString(key).toUpperCase());
 				if(weatherFlag!=null)
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), weatherFlag);
 				break;
 			//GameMode (Adventure, Creative, Spectator, Survival)
-			case "GAME_MODE":
+			case "GAME-MODE":
 				GameMode gamemodeFlag = GameMode.valueOf(section.getString(key).toUpperCase());
 				if(gamemodeFlag!=null)
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), gamemodeFlag);
 				break;
 				//Set of entities
-			case "DENY_SPAWN":
-				/*Set<EntityType> entitySet = new HashSet<EntityType>();
-				entitySet.add(new EntityType(section.getString(key)));
+			case "DENY-SPAWN":
+				/*List<String> entityList = section.getStringList(key);
+				Set<EntityType> entitySet = new HashSet<EntityType>(entityList);
 				r.setFlag(DefaultFlag.DENY_SPAWN, entitySet);
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet);*/
 				break;
-			case "BLOCKED_CMDS": case "ALLOWED_CMDS":
+			case "BLOCKED-CMDS": case "ALLOWED-CMDS":
 				List<String> cmdsList = section.getStringList(key);
 				Set<String> cmdsSet = new HashSet<String>(cmdsList);
 				//Letschekkdisaut
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), cmdsSet);
 				break;
-			case "TELE_LOC": case "SPAWN_LOC":
+			case "TELEPORT": case "SPAWN":
 				/*int x = section.getInt(key+".x");
 				int y = section.getInt(key+".y");
 				int z = section.getInt(key+".z");
@@ -188,7 +185,6 @@ public class WorldGuardManager {
 				break;
 			default:
 				String flagValue = section.getString(key);
-				System.out.println("FLEGGGG V: "+flagValue);
 				if(flagValue.equalsIgnoreCase("ALLOW"))
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.ALLOW);
 				else if(flagValue.equalsIgnoreCase("DENY"))
@@ -196,6 +192,7 @@ public class WorldGuardManager {
 				break;
 			}
 		}
+		r.setFlags(flags);
 	}	
 	public void roomFlags(World world, ProtectedRegion region,String hotelName,Player p,int roomNum,Plugin plugin){
 
