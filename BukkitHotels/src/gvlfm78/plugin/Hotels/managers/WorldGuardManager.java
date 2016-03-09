@@ -128,8 +128,8 @@ public class WorldGuardManager {
 			
 			case "GREET_MESSAGE": case "FAREWELL_MESSAGE":
 				r.setFlag(DefaultFlag.GREET_MESSAGE, section.getString(key));
-				Flag<?> flag = DefaultFlag.fuzzyMatchFlag(pureKey);
-				System.out.println("Fuzzy: "+flag.getName());
+				Flag<?> flag = DefaultFlag.fuzzyMatchFlag("ITEM-PICKUP");
+				System.out.println("Fuzzy: "+flag+" Purekey: "+pureKey+" key: "+key+" value: "+section.getString(key));
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), section.getString(key).replaceAll("%hotel%", hotelName));
 				break;
 			//String
