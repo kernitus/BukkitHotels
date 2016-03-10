@@ -12,7 +12,6 @@ import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldedit.BlockVector;
@@ -23,7 +22,6 @@ import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.InvalidFlagFormat;
 import com.sk89q.worldguard.protection.flags.RegionGroup;
 import com.sk89q.worldguard.protection.flags.RegionGroupFlag;
-import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
@@ -115,48 +113,59 @@ public class WorldGuardManager {
 			saveRegions(world);
 		}
 	}
-	public void hotelFlags(World world, ProtectedRegion r,String hotelName,Plugin plugin){
-		YamlConfiguration flagsConfig = HConH.getFlags();
-		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
+	public void setFlags(ConfigurationSection section, ProtectedRegion r,String namenum){
 		Map <Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
+		Map <Flag<?>, Object> groupFlags = new HashMap<Flag<?>, Object>();
+		Map <Flag<?>, String> groupFlagValues = new HashMap<Flag<?>, String>();
 		for(String key : section.getKeys(true)){
 			String pureKey = key.replaceAll(".+\\.", "");
-			if(section.get(key)==null||section.getString(key).equalsIgnoreCase("none")||section.getString(key).startsWith("MemorySection"))
+			String keyValue = section.getString(key);
+			if(keyValue==null||keyValue.equalsIgnoreCase("none")||keyValue.startsWith("MemorySection"))
 				continue;
+			if(keyValue.contains(" -g ")){
+				keyValue.replaceAll("\\s-g\\s.+\\s", "");
+				groupFlags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
+				String[] group = keyValue.split("\\s-g\\s.+\\s");
+				for(String groupValue:group){
+					if(groupValue.matches("\\s-g\\s.+\\s"))
+				groupFlagValues.put(DefaultFlag.fuzzyMatchFlag(pureKey), groupValue);
+				}
+			}
 			switch(pureKey){
 			case "GREETING": case "FAREWELL":
-				String value = section.getString(key).replaceAll("%hotel%", hotelName);
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), value);
+				keyValue = keyValue.replaceAll("%hotel%", namenum).replaceAll("%room%", namenum);
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
 				break;
 			//String
 			case "DENY-MESSAGE": case "ENTRY-DENY-MESSAGE": case "EXIT-DENY-MESSAGE": case "TIME-LOCK":
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), section.getString(key));
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
 				break;
 			//Integer
 			case "HEAL-DELAY": case "HEAL-AMOUNT": case "FEED-DELAY": case "FEED-AMOUNT": case "FEED-MIN-HUNGER": case "FEED-MAX-HUNGER": 
-				Integer intFlag = section.getInt(key);
+				Integer intFlag = Integer.valueOf(keyValue);
 				if(intFlag!=null)
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), intFlag);
 				break;
 			//Double
 			case "HEAL-MIN-HEALTH": case "HEAL-MAX-HEALTH": case "PRICE":
-				Double doubleFlag = section.getDouble(key);
+				Double doubleFlag = Double.valueOf(keyValue);
 				if(doubleFlag!=null)
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), doubleFlag);
 				break;
 			//Boolean
 			case "NOTIFY-ENTER": case "NOTIFY-LEAVE": case "BUYABLE": case "EXIT-OVERRIDE":
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), section.getBoolean(key));
+				Boolean booleanFlag = Boolean.valueOf(keyValue);
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), booleanFlag);
 				break;
 			//Weather Type (Clear or downfall)
 			case "WEATHER-LOCK":
-				WeatherType weatherFlag = WeatherType.valueOf(section.getString(key).toUpperCase());
+				WeatherType weatherFlag = WeatherType.valueOf(keyValue.toUpperCase());
 				if(weatherFlag!=null)
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), weatherFlag);
 				break;
 			//GameMode (Adventure, Creative, Spectator, Survival)
 			case "GAME-MODE":
-				GameMode gamemodeFlag = GameMode.valueOf(section.getString(key).toUpperCase());
+				GameMode gamemodeFlag = GameMode.valueOf(keyValue.toUpperCase());
 				if(gamemodeFlag!=null)
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), gamemodeFlag);
 				break;
@@ -168,8 +177,7 @@ public class WorldGuardManager {
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet);*/
 				break;
 			case "BLOCKED-CMDS": case "ALLOWED-CMDS":
-				String cmdsValue = section.getString(key);
-				String[] cmdsValues = cmdsValue.split(",");
+				String[] cmdsValues = keyValue.split(",");
 				Set<String> cmdsSet = new HashSet<String>();
 				for(String cmd: cmdsValues){
 					cmd = "/"+cmd;
@@ -187,17 +195,25 @@ public class WorldGuardManager {
 				r.setFlag(DefaultFlag.SPAWN_LOC, locationFlag);*/
 				break;
 			default:
-				String flagValue = section.getString(key);
-				if(flagValue.equalsIgnoreCase("ALLOW"))
+				if(keyValue.equalsIgnoreCase("ALLOW"))
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.ALLOW);
-				else if(flagValue.equalsIgnoreCase("DENY"))
+				else if(keyValue.equalsIgnoreCase("DENY"))
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.DENY);
 				break;
 			}
 		}
 		r.setFlags(flags);
-	}	
-	public void roomFlags(World world, ProtectedRegion region,String hotelName,Player p,int roomNum,Plugin plugin){
+		for(Flag<?> flag:groupFlags.keySet()){
+			String groupFlagValue = groupFlagValues.get(flag);
+			groupFlags(r,flag,groupFlagValue);
+		}
+	}
+	public void hotelFlags(World world, ProtectedRegion region,String hotelName,Plugin plugin){
+		YamlConfiguration flagsConfig = HConH.getFlags();
+		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
+		setFlags(section,region,hotelName);
+	}
+	/*public void roomFlags(World world, ProtectedRegion region,String hotelName,Player p,int roomNum,Plugin plugin){
 
 		groupFlags(region,DefaultFlag.CHEST_ACCESS);
 		groupFlags(region,DefaultFlag.USE);
@@ -205,25 +221,17 @@ public class WorldGuardManager {
 		groupFlags(region,DefaultFlag.POTION_SPLASH);
 		groupFlags(region,DefaultFlag.ITEM_DROP);
 		groupFlags(region,DefaultFlag.EXP_DROPS);
-
-		region.setFlag(DefaultFlag.BLOCK_BREAK, State.DENY);
-		region.setFlag(DefaultFlag.BLOCK_PLACE, State.DENY);
-		region.setFlag(DefaultFlag.PVP, State.DENY);
-		region.setFlag(DefaultFlag.PISTONS, State.DENY);
-		region.setFlag(DefaultFlag.TNT, State.DENY);
-		region.setFlag(DefaultFlag.LIGHTER, State.DENY);
-		region.setFlag(DefaultFlag.MOB_SPAWNING, State.DENY);
-		if(plugin.getConfig().getBoolean("settings.use-room_enter_message"))
-			region.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.room.enter").replaceAll("%room%", String.valueOf(roomNum))));
-		if(plugin.getConfig().getBoolean("settings.use-room_exit_message"))
-			region.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.room.exit").replaceAll("%room%", String.valueOf(roomNum))));
+	}*/
+	public void roomFlags(World world, ProtectedRegion region,String roomNum){
+		YamlConfiguration flagsConfig = HConH.getFlags();
+		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
+		setFlags(section,region,roomNum);
 	}
-	public void groupFlags(ProtectedRegion region,StateFlag f){
-		region.setFlag(f, State.DENY);
-		RegionGroupFlag gf = f.getRegionGroupFlag();
+	public void groupFlags(ProtectedRegion region,Flag<?> flag,String group){
+		RegionGroupFlag regionGroupFlag = flag.getRegionGroupFlag();
 		try {
-			RegionGroup groupValue = gf.parseInput(getWorldGuard(), null, "non_members");
-			region.setFlag(gf, groupValue);
+			RegionGroup groupValue = regionGroupFlag.parseInput(getWorldGuard(), null, group);
+			region.setFlag(regionGroupFlag, groupValue);
 		} catch (InvalidFlagFormat e) {
 			e.printStackTrace();
 		}
