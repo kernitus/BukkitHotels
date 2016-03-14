@@ -442,7 +442,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 								try{
 									String room = args[2];
 									int roomNum = Integer.parseInt(room);
-									HCM.roomSetup(hotelName, room, plugin,sender);
+									HCM.roomSetup(hotelName, room, plugin,p);
 									String roomNums = String.valueOf(roomNum);
 									roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1).toLowerCase();
 									sender.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(roomNum))
@@ -455,7 +455,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 							else{
 								int roomNum = HCE.nextNewRoom(p.getWorld(),hotelName);
 								if(roomNum!=0){
-									HCM.roomSetup(hotelName, String.valueOf(roomNum),plugin);
+									HCM.roomSetup(hotelName, String.valueOf(roomNum),plugin,p);
 									String roomNums = String.valueOf(roomNum);
 									roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1).toLowerCase();
 									sender.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(roomNum))

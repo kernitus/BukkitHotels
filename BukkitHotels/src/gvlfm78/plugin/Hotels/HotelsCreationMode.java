@@ -97,7 +97,7 @@ public class HotelsCreationMode {
 		p.sendMessage(HMM.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", fromIdhotelName));
 	}
 
-	public void createRoomRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName, int roomNum){
+	public void createRoomRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName, String room){
 		World world = p.getWorld();
 		WGM.addRegion(world, region);
 		WGM.roomFlags(world,region,hotelName);
@@ -105,8 +105,7 @@ public class HotelsCreationMode {
 		WGM.saveRegions(p.getWorld());
 	}
 
-	public void roomSetup(String hotelName,int roomNum,Plugin plugin,CommandSender s){
-		Player p = (Player) s;
+	public void roomSetup(String hotelName,String room,Plugin plugin, Player p){
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
 		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("hotel-"+hotelName)){
@@ -117,18 +116,18 @@ public class HotelsCreationMode {
 					//Creating room region
 					if(sel instanceof CuboidSelection){
 						ProtectedRegion r = new ProtectedCuboidRegion(
-								"Hotel-"+hotelName+"-"+roomNum, 
+								"Hotel-"+hotelName+"-"+room, 
 								new BlockVector(sel.getNativeMinimumPoint()), 
 								new BlockVector(sel.getNativeMaximumPoint())
 								);
-						createRoomRegion(plugin,p,r,hotelName,roomNum);
+						createRoomRegion(plugin,p,r,hotelName,room);
 					}
 					else if(sel instanceof Polygonal2DSelection){
 						int minY = sel.getMinimumPoint().getBlockY();
 						int maxY = sel.getMaximumPoint().getBlockY();
 						List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
-						ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+roomNum, points, minY, maxY);
-						createRoomRegion(plugin,p,r,hotelName,roomNum);
+						ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
+						createRoomRegion(plugin,p,r,hotelName,room);
 					}
 					else
 						p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
