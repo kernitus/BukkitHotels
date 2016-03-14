@@ -1,5 +1,8 @@
 package kernitus.plugin.Hotels.managers;
 
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -19,7 +22,6 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
-import com.sk89q.worldguard.protection.flags.InvalidFlagFormat;
 import com.sk89q.worldguard.protection.flags.RegionGroup;
 import com.sk89q.worldguard.protection.flags.RegionGroupFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
@@ -27,9 +29,6 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 
 public class WorldGuardManager {
@@ -204,6 +203,7 @@ public class WorldGuardManager {
 		}
 		r.setFlags(flags);
 		for(Flag<?> flag:groupFlags.keySet()){
+			System.out.println("Flegh: "+flag.getName());
 			String groupFlagValue = groupFlagValues.get(flag);
 			groupFlags(r,flag,groupFlagValue);
 		}
@@ -229,11 +229,8 @@ public class WorldGuardManager {
 	}
 	public void groupFlags(ProtectedRegion region,Flag<?> flag,String group){
 		RegionGroupFlag regionGroupFlag = flag.getRegionGroupFlag();
-		try {
-			RegionGroup groupValue = regionGroupFlag.parseInput(getWorldGuard(), null, group);
-			region.setFlag(regionGroupFlag, groupValue);
-		} catch (InvalidFlagFormat e) {
-			e.printStackTrace();
-		}
+		System.out.println("Group name: "+group+" Flag name: "+flag.getName());
+			RegionGroup regionGroup = RegionGroup.valueOf(group);
+			region.setFlag(regionGroupFlag, regionGroup);
 	}
 }
