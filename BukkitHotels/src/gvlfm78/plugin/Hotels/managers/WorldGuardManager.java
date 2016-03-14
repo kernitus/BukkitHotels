@@ -113,9 +113,12 @@ public class WorldGuardManager {
 		}
 	}
 	public void setFlags(ConfigurationSection section, ProtectedRegion r,String namenum){
+		
 		Map <Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
+		//Letschekkdisaut
 		Map <Flag<?>, Object> groupFlags = new HashMap<Flag<?>, Object>();
 		Map <Flag<?>, String> groupFlagValues = new HashMap<Flag<?>, String>();
+		
 		for(String key : section.getKeys(true)){
 			String pureKey = key.replaceAll(".+\\.", "");
 			String keyValue = section.getString(key);
