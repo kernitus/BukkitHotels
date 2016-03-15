@@ -51,10 +51,6 @@ public class HotelsConfigHandler {
 		config.addDefault("settings.max_rent_extend", Integer.valueOf(3));
 		config.addDefault("settings.use-permissions", Boolean.TRUE);
 		config.addDefault("settings.checkForUpdates", Boolean.TRUE);
-		config.addDefault("settings.use-hotel_enter_message", Boolean.TRUE);
-		config.addDefault("settings.use-hotel_exit_message", Boolean.TRUE);
-		config.addDefault("settings.use-room_enter_message", Boolean.TRUE);
-		config.addDefault("settings.use-room_exit_message", Boolean.TRUE);
 
 		config.options().copyDefaults(true);
 		plugin.saveConfig();
@@ -398,7 +394,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.map-making.EXIT", "none");
 		flagsConfig.addDefault("room.map-making.EXIT-DENY-MESSAGE", "none");
 		flagsConfig.addDefault("room.map-making.EXIT-VIA-TELEPORT", "none");
-		flagsConfig.addDefault("room.map-making.GREETING", "&&bWelcome to room %room%");
+		flagsConfig.addDefault("room.map-making.GREETING", "&bWelcome to room %room%");
 		flagsConfig.addDefault("room.map-making.FAREWELL", "&aCome back soon to room %room%");
 		flagsConfig.addDefault("room.map-making.ENDERPEARL", "deny");
 		flagsConfig.addDefault("room.map-making.INVICIBLE", "none");

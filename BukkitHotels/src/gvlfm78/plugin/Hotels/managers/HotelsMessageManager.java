@@ -13,26 +13,26 @@ public class HotelsMessageManager {
 	{
 		this.plugin = instance;
 	}
-	
+
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	
+
 	//Prefix
-		String prefix = (HConH.getLocale().getString("chat.prefix")+" ");
-		
+	String prefix = (HConH.getLocale().getString("chat.prefix")+" ");
+
 	public String mes(String path){
 		String mes = HConH.getLocale().getString(path);
 		if(mes!=null){
-		mes = (prefix+mes).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
+			mes = (prefix+mes).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
 		}
 		else
 			mes = ChatColor.DARK_RED + "Message is null!";
 		return mes;
 	}
-	
+
 	public String mesnopre(String path){
 		String mes = HConH.getLocale().getString(path);
 		if(mes!=null){
-		mes = mes.replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
+			mes = mes.replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
 		}
 		else
 			mes = ChatColor.DARK_RED + "Message is null!";
@@ -50,5 +50,11 @@ public class HotelsMessageManager {
 				return true;
 		}
 		return false;
+	}
+	public String flagValue(String path){
+		String mes = HConH.getFlags().getString(path);
+		if(mes==null)
+			mes = ChatColor.DARK_RED + "Message is null!";
+		return mes;
 	}
 }

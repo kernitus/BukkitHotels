@@ -445,8 +445,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 									HCM.roomSetup(hotelName, room, plugin,p);
 									String roomNums = String.valueOf(roomNum);
 									roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1).toLowerCase();
-									sender.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(roomNum))
-											.replaceAll("%hotel%", hotelName));
 								} catch(NumberFormatException e){
 									sender.sendMessage(HMM.mes("chat.commands.room.roomNumInvalid"));
 								}

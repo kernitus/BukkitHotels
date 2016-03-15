@@ -109,6 +109,7 @@ public class HotelsCreationMode {
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
 		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("hotel-"+hotelName)){
+			if(!WGM.getWorldGuard().getRegionManager((p.getWorld())).hasRegion("hotel-"+hotelName+"-"+room)){
 			ProtectedRegion pr = WGM.getWorldGuard().getRegionManager(world).getRegion("hotel-"+hotelName);
 			if(sel!=null){
 				if((sel instanceof Polygonal2DSelection)&&(pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
@@ -121,6 +122,7 @@ public class HotelsCreationMode {
 								new BlockVector(sel.getNativeMaximumPoint())
 								);
 						createRoomRegion(plugin,p,r,hotelName,room);
+						p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
 					}
 					else if(sel instanceof Polygonal2DSelection){
 						int minY = sel.getMinimumPoint().getBlockY();
@@ -128,6 +130,7 @@ public class HotelsCreationMode {
 						List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
 						ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
 						createRoomRegion(plugin,p,r,hotelName,room);
+						p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
 					}
 					else
 						p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
@@ -137,6 +140,9 @@ public class HotelsCreationMode {
 			}
 			else
 				p.sendMessage(HMM.mes("chat.creationMode.noSelection"));
+		}
+		else
+			p.sendMessage(HMM.mes("chat.creationMode.rooms.alreadyExists"));
 		}
 		else
 			p.sendMessage(HMM.mes("chat.creationMode.rooms.fail"));

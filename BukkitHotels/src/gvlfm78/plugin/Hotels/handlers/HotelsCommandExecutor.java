@@ -48,10 +48,6 @@ public class HotelsCommandExecutor {
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 	HotelsFileFinder HFF = new HotelsFileFinder(plugin);
 
-	//Prefix
-	YamlConfiguration locale = HConH.getLocale();
-	String prefix = (locale.getString("chat.prefix")+" ");
-
 	public void cmdCreate(Plugin plugin, Player p,String hotelName){//Hotel creation command{
 		UUID playerUUID = p.getUniqueId();
 		File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
@@ -424,10 +420,10 @@ public class HotelsCommandExecutor {
 						String idHotelName = r.getId();
 						String[] partsofhotelName = idHotelName.split("-");
 						String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1).toLowerCase();
-						if(pluginstance.getConfig().getBoolean("settings.use-room_enter_message"))
-							r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.room.enter").replaceAll("%room%", String.valueOf(newnum))));
-						if(pluginstance.getConfig().getBoolean("settings.use-room_exit_message"))
-							r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.room.exit").replaceAll("%room%", String.valueOf(newnum))));
+						if(HMM.flagValue("room.map-making.GREETING")!=null)
+							r.setFlag(DefaultFlag.GREET_MESSAGE, (HMM.flagValue("room.map-making.GREETING").replaceAll("%room%", String.valueOf(newnum))));
+						if(HMM.flagValue("room.map-making.FAREWELL")!=null)
+							r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (HMM.flagValue("room.map-making.FAREWELL").replaceAll("%room%", String.valueOf(newnum))));
 						WGM.renameRegion("Hotel-"+hotel+"-"+oldnum, "Hotel-"+hotel+"-"+newnum, world);
 						try {
 							WGM.getWorldGuard().getRegionManager(world).save();
@@ -459,10 +455,10 @@ public class HotelsCommandExecutor {
 			String idHotelName = r.getId();
 			String[] partsofhotelName = idHotelName.split("-");
 			String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1).toLowerCase();
-			if(pluginstance.getConfig().getBoolean("settings.use-hotel_enter_message"))
-				r.setFlag(DefaultFlag.GREET_MESSAGE, (locale.getString("message.hotel.enter").replaceAll("%hotel%", fromIdhotelName)));
-			if(pluginstance.getConfig().getBoolean("settings.use-hotel_exit_message"))
-				r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (locale.getString("message.hotel.exit").replaceAll("%hotel%", fromIdhotelName)));
+			if(HMM.flagValue("hotel.map-making.GREETING")!=null)
+				r.setFlag(DefaultFlag.GREET_MESSAGE, (HMM.flagValue("hotel.map-making.GREETING").replaceAll("%hotel%", fromIdhotelName)));
+			if(HMM.flagValue("hotel.map-making.FAREWELL")!=null)
+				r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (HMM.flagValue("hotel.map-making.GREETING").replaceAll("%hotel%", fromIdhotelName)));
 			sender.sendMessage(HMM.mes("chat.commands.rename.success").replaceAll("%hotel%" , fromIdhotelName));
 			//Rename rooms
 			Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(world).getRegions();
@@ -637,7 +633,7 @@ public class HotelsCommandExecutor {
 									}
 									else{
 										sender.sendMessage(HMM.mes("chat.commands.check.line")
-												.replaceAll("%hotel%", hotelname).replaceAll("%room%", roomnum).replaceAll("%timeleft%", locale.getString("sign.permanent")));
+												.replaceAll("%hotel%", hotelname).replaceAll("%room%", roomnum).replaceAll("%timeleft%", HMM.mesnopre("sign.permanent")));
 									}
 
 								}
@@ -697,11 +693,11 @@ public class HotelsCommandExecutor {
 							String renter = config.getString("Sign.renter");
 							if(renter==null){
 								//Vacant
-								state = ChatColor.GREEN+locale.getString("sign.vacant");
+								state = ChatColor.GREEN+HMM.mesnopre("sign.vacant");
 							}
 							else{
 								//Occupied
-								state = ChatColor.BLUE+locale.getString("sign.occupied");
+								state = ChatColor.BLUE+HMM.mesnopre("sign.occupied");
 							}
 							sender.sendMessage(HMM.mes("chat.commands.listRooms.line")
 									.replaceAll("%room%", roomnum)
@@ -722,7 +718,7 @@ public class HotelsCommandExecutor {
 			ArrayList<String> fileslist = HFF.listFiles("plugins//Hotels//Signs");
 			for(String x: fileslist){
 				File file = HConH.getFile("Signs"+File.separator+x);
-				String receptionLoc = locale.getString("sign.reception");
+				String receptionLoc = HMM.mesnopre("sign.reception");
 				if(file.getName().matches("^"+receptionLoc+"-.+-.+")){
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 					World worldsign = Bukkit.getWorld(config.getString("Reception.location.world").trim());

@@ -1,12 +1,11 @@
 package kernitus.plugin.Hotels.managers;
 
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -29,6 +28,9 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 
 public class WorldGuardManager {
@@ -124,16 +126,17 @@ public class WorldGuardManager {
 			String keyValue = section.getString(key);
 			if(keyValue==null||keyValue.equalsIgnoreCase("none")||keyValue.startsWith("MemorySection"))
 				continue;
-			if(keyValue.contains(" -g ")){
-				keyValue.replaceAll("\\s-g\\s.+\\s", "");
-				groupFlags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
-				String[] group = keyValue.split("\\s-g\\s.+\\s");
-				for(String groupValue:group){
-					if(groupValue.matches("\\s-g\\s.+\\s")){
-						System.out.println("Cyka: "+groupValue);
-				groupFlagValues.put(DefaultFlag.fuzzyMatchFlag(pureKey), groupValue);
-					}
+			if(keyValue.contains(" -g ")){			
+				final Pattern pattern = Pattern.compile("(\\s?)(-g\\s)(\\w+)(\\s?)");
+				final Matcher matcher = pattern.matcher(keyValue);
+
+				while (matcher.find()){
+					String pureGroupFlag = matcher.group(3);
+					groupFlags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
+					groupFlagValues.put(DefaultFlag.fuzzyMatchFlag(pureKey), pureGroupFlag);
+					System.out.println("PureKey: "+pureKey+" KeyValue: "+keyValue+" PureGroupFlag: "+pureGroupFlag);
 				}
+			pureKey = pureKey.replaceAll("\\s?-g\\s\\w+\\s?", "");
 			}
 			switch(pureKey){
 			case "GREETING": case "FAREWELL":
@@ -208,7 +211,6 @@ public class WorldGuardManager {
 		}
 		r.setFlags(flags);
 		for(Flag<?> flag:groupFlags.keySet()){
-			System.out.println("Flegh: "+flag.getName());
 			String groupFlagValue = groupFlagValues.get(flag);
 			groupFlags(r,flag,groupFlagValue);
 		}
@@ -235,7 +237,7 @@ public class WorldGuardManager {
 	public void groupFlags(ProtectedRegion region,Flag<?> flag,String group){
 		RegionGroupFlag regionGroupFlag = flag.getRegionGroupFlag();
 		System.out.println("Group name: "+group+" Flag name: "+flag.getName());
-			RegionGroup regionGroup = RegionGroup.valueOf(group);
+			RegionGroup regionGroup = RegionGroup.valueOf(group.toUpperCase());
 			region.setFlag(regionGroupFlag, regionGroup);
 	}
 }
