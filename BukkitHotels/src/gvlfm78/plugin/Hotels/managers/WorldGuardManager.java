@@ -129,8 +129,10 @@ public class WorldGuardManager {
 				groupFlags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
 				String[] group = keyValue.split("\\s-g\\s.+\\s");
 				for(String groupValue:group){
-					if(groupValue.matches("\\s-g\\s.+\\s"))
+					if(groupValue.matches("\\s-g\\s.+\\s")){
+						System.out.println("Cyka: "+groupValue);
 				groupFlagValues.put(DefaultFlag.fuzzyMatchFlag(pureKey), groupValue);
+					}
 				}
 			}
 			switch(pureKey){

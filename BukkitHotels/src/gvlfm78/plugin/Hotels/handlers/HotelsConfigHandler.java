@@ -399,7 +399,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.map-making.EXIT-DENY-MESSAGE", "none");
 		flagsConfig.addDefault("room.map-making.EXIT-VIA-TELEPORT", "none");
 		flagsConfig.addDefault("room.map-making.GREETING", "&&bWelcome to room %room%");
-		flagsConfig.addDefault("room.map-making.FAREWELL", "&aCome back soon to Room %room%");
+		flagsConfig.addDefault("room.map-making.FAREWELL", "&aCome back soon to room %room%");
 		flagsConfig.addDefault("room.map-making.ENDERPEARL", "deny");
 		flagsConfig.addDefault("room.map-making.INVICIBLE", "none");
 		flagsConfig.addDefault("room.map-making.GAME-MODE", "none");

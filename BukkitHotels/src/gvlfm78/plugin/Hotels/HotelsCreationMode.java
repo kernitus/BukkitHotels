@@ -100,7 +100,7 @@ public class HotelsCreationMode {
 	public void createRoomRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName, String room){
 		World world = p.getWorld();
 		WGM.addRegion(world, region);
-		WGM.roomFlags(world,region,hotelName);
+		WGM.roomFlags(world,region,room);
 		region.setPriority(10);
 		WGM.saveRegions(p.getWorld());
 	}
