@@ -93,8 +93,7 @@ public class HotelsCreationMode {
 		WGM.saveRegions(world);
 		String idHotelName =region.getId();
 		String[] partsofhotelName = idHotelName.split("-");
-		String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1).toLowerCase();
-		p.sendMessage(HMM.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", fromIdhotelName));
+		p.sendMessage(HMM.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
 	}
 
 	public void createRoomRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName, String room){

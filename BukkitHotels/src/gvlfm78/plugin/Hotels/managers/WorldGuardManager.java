@@ -115,18 +115,17 @@ public class WorldGuardManager {
 		}
 	}
 	public void setFlags(ConfigurationSection section, ProtectedRegion r,String namenum){
-		
+
 		Map <Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
-		//Letschekkdisaut
 		Map <Flag<?>, Object> groupFlags = new HashMap<Flag<?>, Object>();
 		Map <Flag<?>, String> groupFlagValues = new HashMap<Flag<?>, String>();
-		
+
 		for(String key : section.getKeys(true)){
 			String pureKey = key.replaceAll(".+\\.", "");
 			String keyValue = section.getString(key);
 			if(keyValue==null||keyValue.equalsIgnoreCase("none")||keyValue.startsWith("MemorySection"))
 				continue;
-			if(keyValue.contains(" -g ")){			
+			if(keyValue.contains("-g ")){		
 				final Pattern pattern = Pattern.compile("(\\s?)(-g\\s)(\\w+)(\\s?)");
 				final Matcher matcher = pattern.matcher(keyValue);
 
@@ -134,43 +133,42 @@ public class WorldGuardManager {
 					String pureGroupFlag = matcher.group(3);
 					groupFlags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
 					groupFlagValues.put(DefaultFlag.fuzzyMatchFlag(pureKey), pureGroupFlag);
-					System.out.println("PureKey: "+pureKey+" KeyValue: "+keyValue+" PureGroupFlag: "+pureGroupFlag);
 				}
-			pureKey = pureKey.replaceAll("\\s?-g\\s\\w+\\s?", "");
+				keyValue = keyValue.replaceAll("\\s?-g\\s\\w+\\s?", "");
 			}
 			switch(pureKey){
 			case "GREETING": case "FAREWELL":
 				keyValue = keyValue.replaceAll("%hotel%", namenum).replaceAll("%room%", namenum);
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
 				break;
-			//String
+				//String
 			case "DENY-MESSAGE": case "ENTRY-DENY-MESSAGE": case "EXIT-DENY-MESSAGE": case "TIME-LOCK":
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
 				break;
-			//Integer
+				//Integer
 			case "HEAL-DELAY": case "HEAL-AMOUNT": case "FEED-DELAY": case "FEED-AMOUNT": case "FEED-MIN-HUNGER": case "FEED-MAX-HUNGER": 
 				Integer intFlag = Integer.valueOf(keyValue);
 				if(intFlag!=null)
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), intFlag);
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), intFlag);
 				break;
-			//Double
+				//Double
 			case "HEAL-MIN-HEALTH": case "HEAL-MAX-HEALTH": case "PRICE":
 				Double doubleFlag = Double.valueOf(keyValue);
 				if(doubleFlag!=null)
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), doubleFlag);
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), doubleFlag);
 				break;
-			//Boolean
+				//Boolean
 			case "NOTIFY-ENTER": case "NOTIFY-LEAVE": case "BUYABLE": case "EXIT-OVERRIDE":
 				Boolean booleanFlag = Boolean.valueOf(keyValue);
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), booleanFlag);
 				break;
-			//Weather Type (Clear or downfall)
+				//Weather Type (Clear or downfall)
 			case "WEATHER-LOCK":
 				WeatherType weatherFlag = WeatherType.valueOf(keyValue.toUpperCase());
 				if(weatherFlag!=null)
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), weatherFlag);
 				break;
-			//GameMode (Adventure, Creative, Spectator, Survival)
+				//GameMode (Adventure, Creative, Spectator, Survival)
 			case "GAME-MODE":
 				GameMode gamemodeFlag = GameMode.valueOf(keyValue.toUpperCase());
 				if(gamemodeFlag!=null)
@@ -206,6 +204,9 @@ public class WorldGuardManager {
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.ALLOW);
 				else if(keyValue.equalsIgnoreCase("DENY"))
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.DENY);
+				else{
+					System.out.println("REJECTED: "+pureKey+" veleue: "+keyValue);
+				}
 				break;
 			}
 		}
@@ -220,24 +221,23 @@ public class WorldGuardManager {
 		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
 		setFlags(section,region,hotelName);
 	}
-	/*public void roomFlags(World world, ProtectedRegion region,String hotelName,Player p,int roomNum,Plugin plugin){
-
-		groupFlags(region,DefaultFlag.CHEST_ACCESS);
-		groupFlags(region,DefaultFlag.USE);
-		groupFlags(region,DefaultFlag.SLEEP);
-		groupFlags(region,DefaultFlag.POTION_SPLASH);
-		groupFlags(region,DefaultFlag.ITEM_DROP);
-		groupFlags(region,DefaultFlag.EXP_DROPS);
-	}*/
 	public void roomFlags(World world, ProtectedRegion region,String roomNum){
 		YamlConfiguration flagsConfig = HConH.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
 		setFlags(section,region,roomNum);
 	}
+	/*public void roomFlags(World world, ProtectedRegion region,String hotelName,Player p,int roomNum,Plugin plugin){
+
+	groupFlags(region,DefaultFlag.CHEST_ACCESS);
+	groupFlags(region,DefaultFlag.USE);
+	groupFlags(region,DefaultFlag.SLEEP);
+	groupFlags(region,DefaultFlag.POTION_SPLASH);
+	groupFlags(region,DefaultFlag.ITEM_DROP);
+	groupFlags(region,DefaultFlag.EXP_DROPS);
+}*/
 	public void groupFlags(ProtectedRegion region,Flag<?> flag,String group){
 		RegionGroupFlag regionGroupFlag = flag.getRegionGroupFlag();
-		System.out.println("Group name: "+group+" Flag name: "+flag.getName());
-			RegionGroup regionGroup = RegionGroup.valueOf(group.toUpperCase());
-			region.setFlag(regionGroupFlag, regionGroup);
+		RegionGroup regionGroup = RegionGroup.valueOf(group.toUpperCase());
+		region.setFlag(regionGroupFlag, regionGroup);
 	}
 }

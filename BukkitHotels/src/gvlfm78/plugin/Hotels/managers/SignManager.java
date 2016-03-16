@@ -93,7 +93,7 @@ public class SignManager {
 				}		
 			}
 			else{
-				e.setLine(0, "&4[Hotels]");
+				e.setLine(0, ("&4[Hotels]").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 				p.sendMessage(HMM.mes("chat.sign.place.noHotel"));
 			}
 		}

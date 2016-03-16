@@ -301,7 +301,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.map-making.ITEM-PICKUP", "none");
 		flagsConfig.addDefault("hotel.map-making.ITEM-DROP", "none");
 		flagsConfig.addDefault("hotel.map-making.EXP-DROPS", "none");
-		flagsConfig.addDefault("hotel.map-making.DENY-MESSAGE", "You aren't allowed!");
+		flagsConfig.addDefault("hotel.map-making.DENY-MESSAGE", "none");
 		flagsConfig.addDefault("hotel.map-making.ENTRY", "none");
 		flagsConfig.addDefault("hotel.map-making.ENTRY-DENY-MESSAGE", "none");
 		flagsConfig.addDefault("hotel.map-making.EXIT", "none");
@@ -330,7 +330,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.miscellaneous.PISTONS", "none");
 		flagsConfig.addDefault("hotel.miscellaneous.SEND-CHAT", "none");
 		flagsConfig.addDefault("hotel.miscellaneous.RECEIVE-CHAT", "none");
-		flagsConfig.addDefault("hotel.miscellaneous.POTION-SPLASH", "deny");
+		flagsConfig.addDefault("hotel.miscellaneous.POTION-SPLASH", "none");
 		flagsConfig.addDefault("hotel.miscellaneous.NOTIFY-ENTER", "none");
 		flagsConfig.addDefault("hotel.miscellaneous.NOTIFY-LEAVE", "none");
 		//Unused (by WorldGuard)
@@ -344,18 +344,18 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.overrides.EXIT-OVERRIDE", "none");
 		//Protection-Related
 		flagsConfig.addDefault("room.protection.BUILD", "none");
-		flagsConfig.addDefault("room.protection.INTERACT", "allow");
+		flagsConfig.addDefault("room.protection.INTERACT", "-g non_members deny");
 		flagsConfig.addDefault("room.protection.BLOCK-BREAK", "deny");
 		flagsConfig.addDefault("room.protection.BLOCK-PLACE", "deny");
-		flagsConfig.addDefault("room.protection.USE", "deny -g non_members");
+		flagsConfig.addDefault("room.protection.USE", "-g non_members deny");
 		flagsConfig.addDefault("room.protection.DAMAGE-ANIMALS", "none");
-		flagsConfig.addDefault("room.protection.CHEST-ACCESS", "deny -g non_members");
-		flagsConfig.addDefault("room.protection.RIDE", "deny -g non_members");
+		flagsConfig.addDefault("room.protection.CHEST-ACCESS", "-g non_members deny");
+		flagsConfig.addDefault("room.protection.RIDE", "-g non_members deny");
 		flagsConfig.addDefault("room.protection.PVP", "deny");
-		flagsConfig.addDefault("room.protection.SLEEP", "deny -g non_members");
+		flagsConfig.addDefault("room.protection.SLEEP", "-g non_members deny");
 		flagsConfig.addDefault("room.protection.TNT", "deny");
-		flagsConfig.addDefault("room.protection.VEHICLE-PLACE", "deny -g non_members");
-		flagsConfig.addDefault("room.protection.VEHICLE-DESTROY", "deny -g non_members");
+		flagsConfig.addDefault("room.protection.VEHICLE-PLACE", "-g non_members deny");
+		flagsConfig.addDefault("room.protection.VEHICLE-DESTROY", "-g non_members deny");
 		flagsConfig.addDefault("room.protection.LIGHTER", "deny");
 		//Mobs, fire, explosions
 		flagsConfig.addDefault("room.mobs.CREEPER-EXPLOSION", "deny");
@@ -386,9 +386,9 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.nature.SOIL-DRY", "deny");
 		//Map-making
 		flagsConfig.addDefault("room.map-making.ITEM-PICKUP", "none");
-		flagsConfig.addDefault("room.map-making.ITEM-DROP", "deny -g non_members");
-		flagsConfig.addDefault("room.map-making.EXP-DROPS", "deny -g non_members");
-		flagsConfig.addDefault("room.map-making.DENY-MESSAGE", "You aren't allowed!");
+		flagsConfig.addDefault("room.map-making.ITEM-DROP", "none");
+		flagsConfig.addDefault("room.map-making.EXP-DROPS", "none");
+		flagsConfig.addDefault("room.map-making.DENY-MESSAGE", "none");
 		flagsConfig.addDefault("room.map-making.ENTRY", "none");
 		flagsConfig.addDefault("room.map-making.ENTRY-DENY-MESSAGE", "none");
 		flagsConfig.addDefault("room.map-making.EXIT", "none");
@@ -417,7 +417,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.miscellaneous.PISTONS", "none");
 		flagsConfig.addDefault("room.miscellaneous.SEND-CHAT", "none");
 		flagsConfig.addDefault("room.miscellaneous.RECEIVE-CHAT", "none");
-		flagsConfig.addDefault("room.miscellaneous.POTION-SPLASH", "allow -g non_members");
+		flagsConfig.addDefault("room.miscellaneous.POTION-SPLASH", "-g non_members deny");
 		flagsConfig.addDefault("room.miscellaneous.NOTIFY-ENTER", "none");
 		flagsConfig.addDefault("room.miscellaneous.NOTIFY-LEAVE", "none");
 		//Unused (by WorldGuard)
@@ -429,7 +429,7 @@ public class HotelsConfigHandler {
 
 		try {
 			flagsConfig.save(flagsFile);
-			plugin.getLogger().info("&2Flags file has been created");
+			plugin.getLogger().info(("&2Flags file has been created").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 		} catch (IOException e) {
 			plugin.getLogger().severe("&4Could not save flags file");
 			e.printStackTrace();
