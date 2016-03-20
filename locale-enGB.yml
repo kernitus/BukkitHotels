@@ -87,6 +87,10 @@ chat:
         name: '&bEpic Sign'
         lore1: R-click to place
         lore2: 'First Line: &9[Hotels]'
+      leather:
+        name: '&bPiece O'' leather'
+        lore1: R-click to check current
+        lore2: regions for conflict
   commands:
     commands:
       header: '&4================================'

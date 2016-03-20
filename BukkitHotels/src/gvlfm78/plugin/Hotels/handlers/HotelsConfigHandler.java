@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -429,9 +430,9 @@ public class HotelsConfigHandler {
 
 		try {
 			flagsConfig.save(flagsFile);
-			plugin.getLogger().info(("&2Flags file has been created").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+			plugin.getLogger().info(ChatColor.GREEN+"Flags file has been created");
 		} catch (IOException e) {
-			plugin.getLogger().severe("&4Could not save flags file");
+			plugin.getLogger().severe(ChatColor.DARK_RED+"Could not save flags file");
 			e.printStackTrace();
 		}
 	}

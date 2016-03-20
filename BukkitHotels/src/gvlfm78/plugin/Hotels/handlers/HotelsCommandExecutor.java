@@ -190,13 +190,11 @@ public class HotelsCommandExecutor {
 		p.sendMessage(HMM.mes("chat.commands.creationMode.enter"));
 		HCM.checkFolder();
 		HCM.saveInventory(p);
-		HCM.saveArmour(p);
 		HCM.giveItems(p);
 	}
 	public void cmdCreateModeExit(Player p){
 		p.sendMessage(HMM.mes("chat.commands.creationMode.exit"));
 		HCM.loadInventory(p);
-		HCM.loadArmour(p);
 	}
 	public void cmdCreateModeReset(Player p){
 		HCM.resetInventoryFiles(p);

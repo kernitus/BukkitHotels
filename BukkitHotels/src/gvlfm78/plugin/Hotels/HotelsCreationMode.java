@@ -51,40 +51,40 @@ public class HotelsCreationMode {
 	public void hotelSetup(String hotelName, CommandSender s,Plugin plugin){
 		Player p = (Player) s;
 		if(!hotelName.contains("-")){
-		if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.commands")||p.hasPermission("hotels.*")))){
-			Selection sel = getWorldEdit().getSelection(p);
-			if(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
-				p.sendMessage(HMM.mes("chat.creationMode.hotelCreationFailed"));
-				return;}
-			else if(sel!=null){
-				//Creating hotel region
-				if(sel instanceof CuboidSelection){
-					ProtectedRegion r = new ProtectedCuboidRegion(
-							"Hotel-"+hotelName, 
-							new BlockVector(sel.getNativeMinimumPoint()), 
-							new BlockVector(sel.getNativeMaximumPoint())
-							);
-					createHotelRegion(plugin, p,r,hotelName);
-				}
-				else if(sel instanceof Polygonal2DSelection){
-					int minY = sel.getMinimumPoint().getBlockY();
-					int maxY = sel.getMaximumPoint().getBlockY();
-					List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
-					ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName, points, minY, maxY);
-					createHotelRegion(plugin, p,r,hotelName);
+			if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.commands")||p.hasPermission("hotels.*")))){
+				Selection sel = getWorldEdit().getSelection(p);
+				if(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
+					p.sendMessage(HMM.mes("chat.creationMode.hotelCreationFailed"));
+					return;}
+				else if(sel!=null){
+					//Creating hotel region
+					if(sel instanceof CuboidSelection){
+						ProtectedRegion r = new ProtectedCuboidRegion(
+								"Hotel-"+hotelName, 
+								new BlockVector(sel.getNativeMinimumPoint()), 
+								new BlockVector(sel.getNativeMaximumPoint())
+								);
+						createHotelRegion(plugin, p,r,hotelName);
+					}
+					else if(sel instanceof Polygonal2DSelection){
+						int minY = sel.getMinimumPoint().getBlockY();
+						int maxY = sel.getMaximumPoint().getBlockY();
+						List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
+						ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName, points, minY, maxY);
+						createHotelRegion(plugin, p,r,hotelName);
+					}
+					else
+						p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
 				}
 				else
-					p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
+					p.sendMessage(HMM.mes("chat.creationMode.noSelection"));
 			}
 			else
-				p.sendMessage(HMM.mes("chat.creationMode.noSelection"));
+				p.sendMessage(HMM.mes("chat.noPermission"));
 		}
 		else
-			p.sendMessage(HMM.mes("chat.noPermission"));
-	}
-		else
 			p.sendMessage(HMM.mes("chat.creationMode.invalidChar"));
-}
+	}
 
 	public void createHotelRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName){
 		World world = p.getWorld();
@@ -109,39 +109,39 @@ public class HotelsCreationMode {
 		World world = p.getWorld();
 		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("hotel-"+hotelName)){
 			if(!WGM.getWorldGuard().getRegionManager((p.getWorld())).hasRegion("hotel-"+hotelName+"-"+room)){
-			ProtectedRegion pr = WGM.getWorldGuard().getRegionManager(world).getRegion("hotel-"+hotelName);
-			if(sel!=null){
-				if((sel instanceof Polygonal2DSelection)&&(pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
-				((sel instanceof CuboidSelection)&&(pr.contains(sel.getNativeMinimumPoint())&&pr.contains(sel.getNativeMaximumPoint())))){
-					//Creating room region
-					if(sel instanceof CuboidSelection){
-						ProtectedRegion r = new ProtectedCuboidRegion(
-								"Hotel-"+hotelName+"-"+room, 
-								new BlockVector(sel.getNativeMinimumPoint()), 
-								new BlockVector(sel.getNativeMaximumPoint())
-								);
-						createRoomRegion(plugin,p,r,hotelName,room);
-						p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
-					}
-					else if(sel instanceof Polygonal2DSelection){
-						int minY = sel.getMinimumPoint().getBlockY();
-						int maxY = sel.getMaximumPoint().getBlockY();
-						List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
-						ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
-						createRoomRegion(plugin,p,r,hotelName,room);
-						p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
+				ProtectedRegion pr = WGM.getWorldGuard().getRegionManager(world).getRegion("hotel-"+hotelName);
+				if(sel!=null){
+					if((sel instanceof Polygonal2DSelection)&&(pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
+							((sel instanceof CuboidSelection)&&(pr.contains(sel.getNativeMinimumPoint())&&pr.contains(sel.getNativeMaximumPoint())))){
+						//Creating room region
+						if(sel instanceof CuboidSelection){
+							ProtectedRegion r = new ProtectedCuboidRegion(
+									"Hotel-"+hotelName+"-"+room, 
+									new BlockVector(sel.getNativeMinimumPoint()), 
+									new BlockVector(sel.getNativeMaximumPoint())
+									);
+							createRoomRegion(plugin,p,r,hotelName,room);
+							p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
+						}
+						else if(sel instanceof Polygonal2DSelection){
+							int minY = sel.getMinimumPoint().getBlockY();
+							int maxY = sel.getMaximumPoint().getBlockY();
+							List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
+							ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
+							createRoomRegion(plugin,p,r,hotelName,room);
+							p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
+						}
+						else
+							p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
 					}
 					else
-						p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
+						p.sendMessage(HMM.mes("chat.creationMode.rooms.notInHotel"));
 				}
 				else
-					p.sendMessage(HMM.mes("chat.creationMode.rooms.notInHotel"));
+					p.sendMessage(HMM.mes("chat.creationMode.noSelection"));
 			}
 			else
-				p.sendMessage(HMM.mes("chat.creationMode.noSelection"));
-		}
-		else
-			p.sendMessage(HMM.mes("chat.creationMode.rooms.alreadyExists"));
+				p.sendMessage(HMM.mes("chat.creationMode.rooms.alreadyExists"));
 		}
 		else
 			p.sendMessage(HMM.mes("chat.creationMode.rooms.fail"));
@@ -150,23 +150,15 @@ public class HotelsCreationMode {
 	public void resetInventoryFiles(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
-		File invFile = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
-		File armFile = HConH.getFile("Inventories"+File.separator+"Armour-"+playerUUID+".yml");
-		if(invFile.exists()){
+		File invFile = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
+		if(invFile.exists())
 			invFile.delete();
-		}
-		else return;
-		if(armFile.exists()){
-			armFile.delete();
-		}
-		else return;
 	}
 
 	public void saveInventory(CommandSender s){
 		Player p = ((Player) s);
-		ArrayList<ItemStack> list = new ArrayList<>();
 		UUID playerUUID = p.getUniqueId();
-		File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
+		File file = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
 
 		if(!file.exists()){
 			try {
@@ -174,20 +166,19 @@ public class HotelsCreationMode {
 			} catch (IOException e){
 				p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail"));
 			}
-			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
-			ItemStack[] contents = p.getInventory().getContents();
-			for(int i = 0; i < contents.length; i++){
-				ItemStack item = contents[i];
-				if(!(item == null)){
-					list.add(item);
-				}
-			}
-			inv.set("Inventory", list);
+
+			YamlConfiguration inv = HConH.getconfig("Inventories"+File.separator+playerUUID+".yml");
+
+			inv.set("inventory", p.getInventory().getContents());
+			inv.set("armour", p.getInventory().getArmorContents());
+			inv.set("extra", p.getInventory().getExtraContents());
+
 			try {
 				inv.save(file);
 			} catch (IOException e) {
 				p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail"));
 			}
+
 			p.getInventory().clear();
 			p.sendMessage(HMM.mes("chat.creationMode.inventory.storeSuccess"));
 		}else{
@@ -195,81 +186,30 @@ public class HotelsCreationMode {
 		}
 	}
 
-	public void saveArmour(CommandSender s){
-		Player p = ((Player) s);
-		ArrayList<ItemStack> list = new ArrayList<>();
-		UUID playerUUID = p.getUniqueId();
-		File file = HConH.getFile("Inventories"+File.separator+"Armour-"+playerUUID+".yml");
-
-		if(!file.exists()){
-			try {
-				file.createNewFile();
-			} catch (IOException e){
-				p.sendMessage(HMM.mes("chat.creationMode.armour.storeFail"));
-			}
-			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
-			ItemStack[] contents = p.getInventory().getArmorContents();
-			for(int i = 0; i < contents.length; i++){
-				ItemStack item = contents[i];
-				if(!(item == null)){
-					list.add(item);
-				}
-			}
-			inv.set("Armour", list);
-			try {
-				inv.save(file);
-			} catch (IOException e) {
-				p.sendMessage(HMM.mes("chat.creationMode.armour.storeFail"));
-			}
-			p.getInventory().setArmorContents(null);;
-			p.sendMessage(HMM.mes("chat.creationMode.armour.storeSuccess"));
-		}else{
-			p.sendMessage(HMM.mes("chat.creationMode.armour.storeFail"));
-		}
-	}
-
-	public void loadArmour(CommandSender s){
-		Player p = ((Player) s);
-		UUID playerUUID = p.getUniqueId();
-		File file = HConH.getFile("Inventories"+File.separator+"Armour-"+playerUUID+".yml");
-
-		if(file.exists()){
-			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
-			p.getInventory().setArmorContents(null);
-			ItemStack[] contents = p.getInventory().getArmorContents();
-			List<?> list = inv.getList("Armour");
-
-			for(int i = 0; i < list.size(); i++){
-				contents[i] = (ItemStack) list.get(i);
-			}
-			p.getInventory().setArmorContents(contents);
-			p.sendMessage(HMM.mes("chat.creationMode.armour.restoreSuccess"));
-			file.delete();
-
-		}else{
-			p.sendMessage(HMM.mes("chat.creationMode.armour.restoreFail"));
-		}
-	}
-
+	@SuppressWarnings("unchecked")
 	public void loadInventory(CommandSender s){
-		Player p = ((Player) s);
+		Player p = (Player) s;
 		UUID playerUUID = p.getUniqueId();
-		File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
+		PlayerInventory pinv = p.getInventory();
+		File file = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
 
 		if(file.exists()){
-			YamlConfiguration inv = YamlConfiguration.loadConfiguration(file);
-			p.getInventory().clear();
-			ItemStack[] contents = p.getInventory().getContents();
-			List<?> list = inv.getList("Inventory");
-
-			for(int i = 0; i < list.size(); i++){
-				contents[i] = (ItemStack) list.get(i);
-			}
-			p.getInventory().setContents(contents);
+			YamlConfiguration inv = HConH.getyml(file);
+			
+			List<ItemStack> inventoryItems = (List<ItemStack>) inv.getList("inventory");
+			pinv.setContents(inventoryItems.toArray(new ItemStack[inventoryItems.size()]));
+			
+			List<ItemStack> armourItems = (List<ItemStack>) inv.getList("armour");
+			pinv.setArmorContents(armourItems.toArray(new ItemStack[armourItems.size()]));
+			
+			List<ItemStack> extraItems = (List<ItemStack>) inv.getList("extra");
+			pinv.setExtraContents(extraItems.toArray(new ItemStack[extraItems.size()]));
+			
 			p.sendMessage(HMM.mes("chat.creationMode.inventory.restoreSuccess"));
 			file.delete();
+		}
 
-		}else{
+		else{
 			p.sendMessage(HMM.mes("chat.creationMode.inventory.restoreFail"));
 		}
 	}
@@ -317,6 +257,7 @@ public class HotelsCreationMode {
 		cim.setLore(compassLoreList);
 		compass.setItemMeta(cim);
 		pi.setItem(0, compass);
+
 		ItemStack sign = new ItemStack(Material.SIGN, 1);
 		ItemMeta sim = sign.getItemMeta();
 		sim.setDisplayName(HMM.mesnopre("chat.creationMode.items.sign.name"));
@@ -326,5 +267,15 @@ public class HotelsCreationMode {
 		sim.setLore(signLoreList);
 		sign.setItemMeta(sim);
 		pi.setItem(2, sign);
+
+		ItemStack leather = new ItemStack(Material.LEATHER, 1);
+		ItemMeta lim = leather.getItemMeta();
+		lim.setDisplayName(HMM.mesnopre("chat.creationMode.items.leather.name"));
+		List<String> leatherLoreList = new ArrayList<String>();
+		leatherLoreList.add(HMM.mesnopre("chat.creationMode.items.leather.lore1"));
+		leatherLoreList.add(HMM.mesnopre("chat.creationMode.items.leather.lore2"));
+		lim.setLore(leatherLoreList);
+		leather.setItemMeta(lim);
+		pi.setItem(3, leather);
 	}
 }
