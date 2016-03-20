@@ -44,18 +44,21 @@ public class HotelsConfigHandler {
 
 	public void setupConfigyml(Plugin plugin){
 		FileConfiguration config = plugin.getConfig();
-		plugin.getLogger().info("[Hotels] Generating config file...");
+		plugin.getLogger().info("Generating config file...");
 		config.options().header("Hotels Plugin by kernitus\nAvailable languages: enGB, itIT, zhCN, znTW");
 		config.addDefault("settings.language", String.valueOf("enGB"));
-		config.addDefault("settings.commands.onlyDisplayAllowed", Boolean.TRUE);
 		config.addDefault("settings.max_rooms_owned", Integer.valueOf(3));
 		config.addDefault("settings.max_rent_extend", Integer.valueOf(3));
+		config.addDefault("settings.hotelsLoopTimerMinutes", Integer.valueOf(2));
 		config.addDefault("settings.use-permissions", Boolean.TRUE);
 		config.addDefault("settings.checkForUpdates", Boolean.TRUE);
+		config.addDefault("settings.allowPlayersIntoFreeRooms", Boolean.TRUE);
+		config.addDefault("settings.allowPlayersToOpenContainersInFreeRooms", Boolean.FALSE);
+		config.addDefault("settings.onlyDisplayAllowedCommands", Boolean.TRUE);
 
 		config.options().copyDefaults(true);
 		plugin.saveConfig();
-		plugin.getLogger().info("[Hotels] Config file generated");
+		plugin.getLogger().info("Config file generated");
 	}
 
 	public void setupMessageQueue(){
@@ -185,48 +188,22 @@ public class HotelsConfigHandler {
 		saveConfiguration(file,config);
 	}
 
-	public void reloadLocale(Plugin pluginstance){
-		if(!getLocaleFile().exists()){
-			localeLanguageSelector(pluginstance);//Setup locale file from scratch
-		}
-		else{
-			YamlConfiguration locale = getLocale();
-			saveLocale(locale);
-			getLocale();
-		}
-	}
-
-	public void reloadMessageQueue(){
-		if(!getMessageQueueFile().exists()){
-			setupMessageQueue();//Setup message queue
-		}
-		else{
-			YamlConfiguration mq = getMessageQueue();
-			saveMessageQueue(mq);
-			getMessageQueue();
-		}
-	}
-
-	public void reloadFlags(Plugin plugin){
-		if(!getFlagsFile().exists()){
-			setupFlags(plugin);//Setup message queue
-		}
-		else{
-			YamlConfiguration f = getFlags();
-			saveFlags(f);
-			getFlags();
-		}
-	}
-
 	public void reloadConfigs(Plugin plugin){
 		//Reload config.yml
+		if(getconfigymlFile().exists())
 		plugin.reloadConfig();
-		//Reload locale.yml
-		reloadLocale(plugin);
-		//Reload queuedMessages.yml
-		reloadMessageQueue();
-		//Reload flags.yml
-		reloadFlags(plugin);
+		else
+			setupConfigyml(plugin);
+		
+		//Message Queue
+		if(!getMessageQueueFile().exists())
+			setupMessageQueue();
+		//Flags.yml
+		if(!getFlagsFile().exists())
+			setupFlags(plugin);
+
+		//Locale
+		localeLanguageSelector(plugin);
 	}
 
 	public void setupLanguage(String langCode, Plugin plugin){
@@ -258,15 +235,15 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.overrides.EXIT-OVERRIDE", "none");
 		//Protection-Related
 		flagsConfig.addDefault("hotel.protection.BUILD", "none");
-		flagsConfig.addDefault("hotel.protection.INTERACT", "none");
+		flagsConfig.addDefault("hotel.protection.INTERACT", "allow");
 		flagsConfig.addDefault("hotel.protection.BLOCK-BREAK", "none");
 		flagsConfig.addDefault("hotel.protection.BLOCK-PLACE", "none");
-		flagsConfig.addDefault("hotel.protection.USE", "none");
+		flagsConfig.addDefault("hotel.protection.USE", "allow");
 		flagsConfig.addDefault("hotel.protection.DAMAGE-ANIMALS", "none");
-		flagsConfig.addDefault("hotel.protection.CHEST-ACCESS", "none");
-		flagsConfig.addDefault("hotel.protection.RIDE", "none");
+		flagsConfig.addDefault("hotel.protection.CHEST-ACCESS", "allow");
+		flagsConfig.addDefault("hotel.protection.RIDE", "allow");
 		flagsConfig.addDefault("hotel.protection.PVP", "deny");
-		flagsConfig.addDefault("hotel.protection.SLEEP", "none");
+		flagsConfig.addDefault("hotel.protection.SLEEP", "allow");
 		flagsConfig.addDefault("hotel.protection.TNT", "deny");
 		flagsConfig.addDefault("hotel.protection.VEHICLE-PLACE", "none");
 		flagsConfig.addDefault("hotel.protection.VEHICLE-DESTROY", "none");

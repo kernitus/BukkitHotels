@@ -175,7 +175,7 @@ public class SignManager {
 								//Time
 								e.setLine(2, TimeFormatter(ktimeinminutes));
 							}
-							e.setLine(3,ChatColor.GREEN+"Vacant"); //Renter
+							e.setLine(3,ChatColor.GREEN+locale.getString("sign.vacant")); //Renter
 							p.sendMessage(HMM.mes("chat.sign.place.success"));
 
 						} else{
@@ -279,10 +279,13 @@ public class SignManager {
 							} catch (IOException e1) {
 								e1.printStackTrace();
 							}
-
+							
 							//Adding renter as region member
 							ProtectedRegion r = WGM.getWorldGuard().getRegionManager(p.getWorld()).getRegion("Hotel-"+hotelName+"-"+roomNum);
 							WGM.addMember(p, (ProtectedCuboidRegion) r);
+							
+							//Re-setting room flags in case room was set to allow all players in
+							WGM.roomFlags(r,roomNum);
 
 							try {//Saving WG regions
 								WGM.getWorldGuard().getRegionManager(p.getWorld()).save();

@@ -487,7 +487,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 							rf.add(r);
 						}
 						if(!rf.isEmpty()){
-							File invfile = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
+							File invfile = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
 							for(ProtectedRegion r : rf){
 								String id = r.getId();
 								if(id.startsWith("hotel-")){ //If it's a hotel

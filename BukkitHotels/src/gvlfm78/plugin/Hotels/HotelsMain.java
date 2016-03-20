@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.GameLoop;
+import kernitus.plugin.Hotels.managers.HotelsLoop;
 import net.milkbowl.vault.economy.Economy;
 
 public class HotelsMain extends JavaPlugin{
@@ -17,7 +17,7 @@ public class HotelsMain extends JavaPlugin{
 	public static Economy economy = null; //Creating economy variable
 
 	HotelsConfigHandler HConH = new HotelsConfigHandler(this);
-	GameLoop gameloop;
+	HotelsLoop hotelsloop;
 	protected HotelsUpdateChecker updateChecker;
 
 	YamlConfiguration locale = HConH.getLocale();
@@ -61,9 +61,13 @@ public class HotelsMain extends JavaPlugin{
 				getLogger().severe("No Vault dependency found!");
 		}
 
-		//GameLoop stuff
-		gameloop = new GameLoop(this);
-		gameloop.runTaskTimer(this, 200, 2*60*20);
+		//HotelsLoop stuff
+		hotelsloop = new HotelsLoop(this);
+		int minutes = this.getConfig().getInt("settings.hotelsLoopTimerMinutes");
+		if(minutes>0)
+			hotelsloop.runTaskTimer(this, 200, minutes*60*20);
+		else
+			hotelsloop.runTaskTimer(this, 200, 2*60*20);
 
 		//Logging to console the correct enabling of Hotels
 		String message = locale.getString("main.enable.success");
@@ -82,7 +86,7 @@ public class HotelsMain extends JavaPlugin{
 	}
 	@Override
 	public void onDisable(){
-		gameloop.cancel();
+		hotelsloop.cancel();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Logging to console the disabling of Hotels

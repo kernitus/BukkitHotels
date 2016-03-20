@@ -27,7 +27,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.managers.GameLoop;
+import kernitus.plugin.Hotels.managers.HotelsLoop;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.HotelsMessageManager;
 import kernitus.plugin.Hotels.managers.SignManager;
@@ -50,7 +50,7 @@ public class HotelsCommandExecutor {
 
 	public void cmdCreate(Plugin plugin, Player p,String hotelName){//Hotel creation command{
 		UUID playerUUID = p.getUniqueId();
-		File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
+		File file = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
 		if(file.exists()){
 			HCM.hotelSetup(hotelName, p, plugin);
 		}
@@ -578,11 +578,12 @@ public class HotelsCommandExecutor {
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
-								//Gameloop?
-								GameLoop gameloop = new GameLoop(plugin);
-								gameloop.run();
-								sender.sendMessage(HMM.mes("chat.commands.remove.success").replaceAll("%player%", player.getName()).replaceAll("%room%", room)
-										.replaceAll("%hotel%", hotel));
+								//Hotelsloop
+								HotelsLoop hotelsloop = new HotelsLoop(plugin);
+								hotelsloop.run();
+								//Make free room accessible to all players if set in config
+								WGM.makeRoomAccessible(r);
+								sender.sendMessage(HMM.mes("chat.commands.remove.success").replaceAll("%player%", player.getName()).replaceAll("%room%", room).replaceAll("%hotel%", hotel));
 							}
 							else
 								sender.sendMessage(HMM.mes("chat.commands.remove.playerNotRenter"));	

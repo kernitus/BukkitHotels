@@ -89,7 +89,7 @@ public class HotelsCreationMode {
 	public void createHotelRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName){
 		World world = p.getWorld();
 		WGM.addRegion(world, region);
-		WGM.hotelFlags(world,region,hotelName,plugin);
+		WGM.hotelFlags(region,hotelName);
 		WGM.saveRegions(world);
 		String idHotelName =region.getId();
 		String[] partsofhotelName = idHotelName.split("-");
@@ -99,8 +99,9 @@ public class HotelsCreationMode {
 	public void createRoomRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName, String room){
 		World world = p.getWorld();
 		WGM.addRegion(world, region);
-		WGM.roomFlags(world,region,room);
+		WGM.roomFlags(region,room);
 		region.setPriority(10);
+		WGM.makeRoomAccessible(region);
 		WGM.saveRegions(p.getWorld());
 	}
 

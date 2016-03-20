@@ -216,28 +216,31 @@ public class WorldGuardManager {
 			groupFlags(r,flag,groupFlagValue);
 		}
 	}
-	public void hotelFlags(World world, ProtectedRegion region,String hotelName,Plugin plugin){
+	public void hotelFlags(ProtectedRegion region,String hotelName){
 		YamlConfiguration flagsConfig = HConH.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
 		setFlags(section,region,hotelName);
 	}
-	public void roomFlags(World world, ProtectedRegion region,String roomNum){
+	public void roomFlags(ProtectedRegion region,String roomNum){
 		YamlConfiguration flagsConfig = HConH.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
 		setFlags(section,region,roomNum);
 	}
-	/*public void roomFlags(World world, ProtectedRegion region,String hotelName,Player p,int roomNum,Plugin plugin){
-
-	groupFlags(region,DefaultFlag.CHEST_ACCESS);
-	groupFlags(region,DefaultFlag.USE);
-	groupFlags(region,DefaultFlag.SLEEP);
-	groupFlags(region,DefaultFlag.POTION_SPLASH);
-	groupFlags(region,DefaultFlag.ITEM_DROP);
-	groupFlags(region,DefaultFlag.EXP_DROPS);
-}*/
 	public void groupFlags(ProtectedRegion region,Flag<?> flag,String group){
 		RegionGroupFlag regionGroupFlag = flag.getRegionGroupFlag();
 		RegionGroup regionGroup = RegionGroup.valueOf(group.toUpperCase());
 		region.setFlag(regionGroupFlag, regionGroup);
+	}
+	public void makeRoomAccessible(ProtectedRegion region){
+		if(HConH.getconfigyml().getBoolean("settings.allowPlayersIntoFreeRooms")){
+			region.setFlag(DefaultFlag.INTERACT, null);
+			region.setFlag(DefaultFlag.USE, null);
+			makeRoomContainersAccessible(region);
+		}
+	}
+	public void makeRoomContainersAccessible(ProtectedRegion region){
+		if(HConH.getconfigyml().getBoolean("settings.allowPlayersToOpenContainersInFreeRooms")){
+			region.setFlag(DefaultFlag.CHEST_ACCESS, null);
+		}
 	}
 }

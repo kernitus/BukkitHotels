@@ -8,13 +8,6 @@ main:
   updateAvailable: 插件 Hotels v%version% 現在可以被下載供妳更新了!
   updateAvailableLink: 想要更新嗎！？點擊這裏的鏈接 %link%
   noConnection: 無法連接到更新地址!
-message:
-  hotel:
-    enter: '&b歡迎來到 %hotel% 旅館'
-    exit: '&a離開了 %hotel% 旅館'
-  room:
-    enter: '&b歡迎來到房間 %room%'
-    exit: '&a離開了房間 %room%'
 sign:
   permanent: 永久
   room:
@@ -66,6 +59,7 @@ chat:
     selectionInvalid: '&4無效的選區!請重新選擇!'
     invalidChar: '&4名稱中不能包含字符 &6&l-'
     rooms:
+      alreadyExists: '&4This room already exists!'
       notInHotel: '&4此房間不在指定的旅館中!'
       fail: '&4失敗!無法創建房間!'
     inventory:
@@ -91,6 +85,10 @@ chat:
         name: '&b旅館信息牌'
         lore1: '右鍵點擊放置'
         lore2: '第壹行寫上: &9[Hotels]'
+      leather:
+        name: '&bPiece O'' Leather'
+        lore1: R-click to check for
+        lore2: conflict between regions
   commands:
     commands:
       header: '&4================================'

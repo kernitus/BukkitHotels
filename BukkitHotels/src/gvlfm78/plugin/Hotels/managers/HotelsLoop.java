@@ -1,9 +1,5 @@
 package kernitus.plugin.Hotels.managers;
 
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -24,13 +20,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-public class GameLoop extends BukkitRunnable {
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+
+public class HotelsLoop extends BukkitRunnable {
 
 	FilenameFilter SignFileFilter;
 	HotelsMain plugin;
-	public GameLoop(HotelsMain instance) {
+	public HotelsLoop(HotelsMain instance) {
 		this.plugin = instance;
 	}
 	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
@@ -39,7 +39,7 @@ public class GameLoop extends BukkitRunnable {
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 
-	public GameLoop(HotelsCommandHandler hotelsCommandHandler) {}
+	public HotelsLoop(HotelsCommandHandler hotelsCommandHandler) {}
 
 	@Override
 	public void run() {
@@ -88,7 +88,7 @@ public class GameLoop extends BukkitRunnable {
 								if(expirydate!=0){
 									if(expirydate<=((System.currentTimeMillis())/1000/60)){//If rent has expired
 										String r = config.getString("Sign.region");
-										ProtectedCuboidRegion region = (ProtectedCuboidRegion) WGM.getWorldGuard().getRegionManager(world).getRegion(r);
+										ProtectedRegion region = WGM.getWorldGuard().getRegionManager(world).getRegion(r);
 										if(config.getString("Sign.renter")!=null){
 											OfflinePlayer p = Bukkit.getServer().getOfflinePlayer(UUID.fromString(config.getString("Sign.renter")));
 											WGM.removeMember(p, region);
@@ -98,6 +98,9 @@ public class GameLoop extends BukkitRunnable {
 											for(String currentFriend : stringList){
 												OfflinePlayer cf = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
 												WGM.removeMember(cf, region);
+
+												//If set in config, make room accessible to all players now that it is not rented
+												WGM.makeRoomAccessible(region);
 											}
 
 											sign.setLine(3, ChatColor.GREEN+locale.getString("sign.vacant"));

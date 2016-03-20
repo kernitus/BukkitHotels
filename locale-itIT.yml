@@ -2,19 +2,12 @@
 language: itIT
 main:
   enable:
-    success: '%pluginname% v%version% e'' stato abilitato correttamente'
+    success: '%pluginname% v%version% è stato abilitato correttamente'
   disable:
-    success: '%pluginname% v%version% e'' stato disabilitato'
-  updateAvailable: Hotels v%version% e'' disponibile per il download!
+    success: '%pluginname% v%version% è stato disabilitato'
+  updateAvailable: Hotels v%version% è disponibile per il download!
   updateAvailableLink: Per scaricarlo, vai a %link%
   noConnection: Impossibile connettersi al sito di aggiornameto!
-message:
-  hotel:
-    enter: '&bBenvenuto all''hotel %hotel%'
-    exit: '&aTorna presto all''hotel %hotel%'
-  room:
-    enter: '&bBenvenuto alla stanza %room%'
-    exit: '&aTorna presto alla stanza %room%'
 sign:
   permanent: Permanente
   room:
@@ -24,61 +17,57 @@ sign:
   reception: Reception
   vacant: Libero
   occupied: Occupato
-  rentExpiredConsole: 'L''affitto di %player% della stanza %room% dell''hotel %hotel% e'' scaduto'
-  rentExpiredPlayer: '&9Il tuo affitto dellla stanza %room% dell''hotel %hotel% e'' scaduto'
+  rentExpiredConsole: 'L''affitto di %player% della stanza %room% dell''hotel %hotel% è scaduto'
+  rentExpiredPlayer: '&9Il tuo affitto della stanza %room% dell''hotel %hotel% è scaduto'
   delete:
-    reception: Il file di Reception %filename% non corrispondeva alle caratteristiche nel gioco ed e'' stato cancellato
-    roomNum: Il file di cartello %filename% non corrispondeva al numero di stanza nel gioco ed e'' stato cancellato
-    hotelName: Il file di cartello %filename% non corrispondeva al nome di hotel nel gioco ed e'' stato cancellato
-    location: Il file di cartello %filename% non corrispendeva al luogo nel gioco ed e'' stato cancellato
+    reception: Il file di Reception %filename% non corrispondeva alle caratteristiche nel gioco ed è stato cancellato
+    roomNum: Il file di cartello %filename% non corrispondeva al numero di stanza nel gioco ed è stato cancellato
+    hotelName: Il file di cartello %filename% non corrispondeva al nome di hotel nel gioco ed è stato cancellato
+    location: Il file di cartello %filename% non corrispendeva al luogo nel gioco ed è stato cancellato
 chat:
   prefix: '&9[Hotels]&r'
   noPermission: '&4Non hai il permesso!'
   sign:
     place:
       fileFail: '&4Impossibile salvare il file di cartello'
-      outOfRegion: '&4Il cartello non e'' nella regione dell''hotel!'
+      outOfRegion: '&4Il cartello non è nella regione dell''hotel!'
       noHotel: '&4Hotel inesistente'
       emptySign: '&4Cartello vuoto'
       success: '&2Cartello creato con successo!'
       noRegion: '&4L''hotel o stanza specificata non esiste!'
-      alreadyExists: '&4Il cartello per questa stanza esiste gia''!'
+      alreadyExists: '&4Il cartello per questa stanza esiste già!'
       tooLong: '&4Il numero della stanza o il prezzo sono troppo grandi!'
       noSeparator: '&4La linea 3 deve contenere il separatore &3:'
     use:
       success: '&aHai preso in affitto la stanza %room% dell''hotel %hotel% per $%price%'
       notEnoughMoney: '&Non hai abbastanza soldi! Ti servono altri %missingmoney%'
       noAccount: '&4Non hai un account finanziario!'
-      taken: '&4Questa stanza e'' gia'' stata affittata'
+      taken: '&4Questa stanza è già stata affittata'
       nonExistantRoom: '&4Questa stanza non esiste!'
       differentRoomNums: '&4I numeri di stanza non combaciano!'
       differentHotelNames: '&4I nomi degli hotel non combaciano!'
       fileNonExistant: '&4Il file di cartello non esiste!'
-      signOutOfRegion: '&4Il cartello non e'' all''interno della regione dell''hotel specificato'
-      maxEntendReached: '&4Hai raggiunto il limite di estenzione dell''affitto di %max% volte!'
+      signOutOfRegion: '&4Il cartello non è all''interno della regione dell''hotel specificato'
+      maxEntendReached: '&4Hai raggiunto il limite di estensione dell''affitto di %max% volte!'
       maxRoomsReached: '&4Hai raggiunto il limite di %max% stanze che puoi possedere'
-      extensionSuccess: '&aL''affitto e'' stato esteso %tot% volte. Lo puoi estendere altre
+      extensionSuccess: '&aL''affitto è stato esteso %tot% volte. Lo puoi estendere altre
         %left% volte.'
-      extensionSuccessNoMore: '&aL''affitto e'' stato esteso %tot% volte. Non lo puoi piu'' estendere.'
+      extensionSuccessNoMore: '&aL''affitto è stato esteso %tot% volte. Non lo puoi più estendere.'
   creationMode:
-    hotelCreationFailed: '&4Impossibile creare l''hotel, l''hotel esiste gia'''
+    hotelCreationFailed: '&4Impossibile creare l''hotel, l''hotel esiste già'
     hotelCreationSuccessful: '&2Hai creato con successo l''hotel %hotel%'
     noSelection: '&4Seleziona un''area con la bacchetta di WorldEdit'
     selectionInvalid: '&4Selezione non valida. Seleziona di nuovo l''area'
-    invalidChar: '&4Il nome non puo'' contenere il carattere &6&l-'
+    invalidChar: '&4Il nome non può contenere il carattere &6&l-'
     rooms:
-      notInHotel: '&4la stanza non e'' nell''hotel specificato!'
+      alreadyExists: '&4Questa stanza già esiste!'
+      notInHotel: '&4La stanza non è nell''hotel specificato!'
       fail: '&4Impossibile creare la stanza!'
     inventory:
       storeFail: '&4Impossibile salvare il tuo inventario'
       storeSuccess: '&aInventario salvato correttamente'
       restoreFail: '&4Impossibile trovare il tuo inventario salvato'
       restoreSuccess: '&aInventario ripristinato correttamente'
-    armour:
-      storeFail: '&4Impossibile salvare la tua armatura'
-      storeSuccess: '&aArmatura salvata correttamente'
-      restoreFail: '&4Impossibile trovare armatura salvato'
-      restoreSuccess: '&aArmatura ripristinata correttamente'
     items:
       wand:
         name: '&bBacchetta WorldEdit'
@@ -92,6 +81,10 @@ chat:
         name: '&bCartello magico'
         lore1: Tasto-D per piazzare
         lore2: 'Prima Riga: &9[Hotels]'
+      leather:
+        name: '&bPezzo di cuoio'
+        lore1: Tasto-D per controllare
+        lore2: conflitto fra regioni
   commands:
     commands:
       header: '&4================================'
@@ -99,7 +92,7 @@ chat:
       footer: '&4================================'
       help: '&6/ht help - &aMostra schermata di aiuto
       creationMode: "&6/ht [creationmode|cm] [enter|exit] - &aEntra/esci dalla
-       modalita'' di creazione'
+       modalità di creazione'
       create: '&6/ht [create|c] [nomehotel] - &aCrea un hotel con l''attuale selezione'
       room: '&6/ht room [nomehotel] <numstanza> - &aCrea una stanza con l''attuale selezione
         all''interno dell''hotel specificato'
@@ -140,7 +133,7 @@ chat:
         '4': '&e3. Scrivi &3&o/ht room [nomehotel] [numstanza]'
       page4:
         '1': '&4-Pagina 4- &9Piazzare un cartello'
-        '2': '&e1. Prendi un cartello e piazzalo nell''hotel /fuori dalla stanza va bene)'
+        '2': '&e1. Prendi un cartello e piazzalo nell''hotel (fuori dalla stanza va bene)'
         '3': '&e2. Scrivi sul cartello:'
         '4': '&e    [Hotels]'
         '5': '&e    nomehotel'
@@ -167,24 +160,24 @@ chat:
     reload:
       success: '&aFile di configurazione ricaricati correttamente'
     rent:
-      consoleRejected: La console non puo'' affittare stanze!
+      consoleRejected: La console non puoò affittare stanze!
       usage: '&4Utilizzo corretto: &6&o/ht rent [nomehotel] [numstanza]'
       invalidLocation: '&4Le coordinate nel file del cartello non corrispondono ad un cartello!'
       invalidData: '&4Il nome dell''hotel o stanza immessi non sono validi!'
     creationMode:
-      enter: '&aSei entrato in modalita'' di creazione hotel.'
-      exit: '&aSei uscito dalla odalita'' di creazione hotel.'
+      enter: '&aSei entrato in modalità di creazione hotel.'
+      exit: '&aSei uscito dalla modalità di creazione hotel.'
       reset: '&2I file di inventario sono stati reimpostati.'
       noarg: '&4Perfavore specifica &6&oenter &4o &6&oexit (entra o esci)'
-      consoleRejected: TLa console non puo'' usare la modalita'' di creazione hotel!
+      consoleRejected: La console non può usare la modalità di creazione hotel!
     create:
-      fail: '&4Impossibile creare l''hotel. Sei entrato nella modalita'' di creazione hotel? (&3&o/hotels
+      fail: '&4Impossibile creare l''hotel. Sei entrato nella modalità di creazione hotel? (&3&o/hotels
         cm enter&r&4)'
-      consoleRejected: La console non puo'' creare un hotel!
+      consoleRejected: La console non può creare un hotel!
       noName: '&4Dai un nome al tuo hotel!'
     room:
       success: '&aHai creato la stanza %room% dell''hotel %hotel%'
-      roomNumInvalid: '&4Il humero della stanza non e'' un numero intero!'
+      roomNumInvalid: '&4Il numero della stanza non è un numero intero!'
       nextNewRoomFail: '&4Impossibile trovare la prossima stanza disponibile! Prova a specificare
         la stanza manualmente'
       usage: '&4Utilizzo corretto: &6&o/hotels room [nomehotel] [numstanza]'
@@ -195,7 +188,7 @@ chat:
       success: '&2Hai cambiato la stanza %oldnum% alla stanza %newnum% dell''hotel
          %hotel% con successo'
       fail: '&4Impossibile rinominare la stanza %oldnum%'
-      newNumTooBig: '&4Il nuovo numero e'' troppo grande!'
+      newNumTooBig: '&4Il nuovo numero è troppo grande!'
     rename:
       usage: '&4Utilizzo corretto: /hotels rent [nomevecchio] [nuovonome] <mondo>'
       success: '&2Hai rinominato con successo l''hotel %hotel%'
@@ -208,12 +201,12 @@ chat:
       fail: '&4Impossibile cancellare regioni hotel'
     remove:
       playerNotRenter: '&4Il giocatore specificato non ha affittato la stanza specificata'
-      noRenter: '&4La stanza specificata non e'' stata affitata!'
-      success: '&aIl giocatore %player% e'' stato rimosso dalla stanza %room% dell''hotel %hotel%'
+      noRenter: '&4La stanza specificata non è stata affitata!'
+      success: '&aIl giocatore %player% è stato rimosso dalla stanza %room% dell''hotel %hotel%'
       usage: '&4Utilizzo corretto: /hotels remove [nomegiocatore] [nomehotel] [numstanza] <nomemondo>'
     check:
-      heading: '&a==Lista stanze affittate per %player%=='
-      footer: '&c==Fine lista stanze affittate per %player%=='
+      heading: '&a==Lista stanze affittate da %player%=='
+      footer: '&c==Fine lista stanze affittate da %player%=='
       line: '&6Hotel: &c%hotel%    &6Stanza: &c%room%    &6Scade tra: &c%timeleft%'
     listHotels:
       heading: '&a==Lista hotel=='
@@ -229,30 +222,30 @@ chat:
       success: '&aTutti i cartelli sono stati rimossi'
     friend:
       usage: '&4Utilizzo corretto: /hotels friend [add|remove|list] [nomehotel] [numstanza] <nomeamico>'
-      wrongData: '&4L''hotel o la stanza immessi non corrispondono a nessun luogo esistente'
+      wrongData: '&4L''hotel o la stanza immessi non corrispondono ad alcun luogo esistente'
       noRenter: '&4La stanza specificata non ha un affittuario!'
       notRenter: '&4Non sei l''affittuario della stanza specificata!'
-      consoleRejected: La console non puo'' aggiungere/rimuovere amici da una stanza!
+      consoleRejected: La console non può aggiungere/rimuovere amici da una stanza!
       addYourself: '&4Non puoi aggiungerti alla lista di amici!'
-      nonExistant: '&4Non puoi aggiungere amici immagginari alla tua lista di amici!'
-      friendNotInList: '&4L''utente specificato non e'' nella tua lista di amici!'
-      addSuccess: '&aIl giocatore %friend% e'' stato aggiunto alla tua lista di amici con successo'
-      removeSuccess: '&aIl giocatore %friend% e'' stato rimosso alla tua lista di amici con successo'
+      nonExistant: '&4Non puoi aggiungere amici immaginari alla tua lista di amici!'
+      friendNotInList: '&4L''utente specificato non è nella tua lista di amici!'
+      addSuccess: '&aIl giocatore %friend% è stato aggiunto alla tua lista di amici con successo'
+      removeSuccess: '&aIl giocatore %friend% è stato rimosso alla tua lista di amici con successo'
       noFriends: '&2Non hai aggiunto alcun amico alla stanza specificata'
       list:
         heading: '&a==Lista amici per la stanza n. %room% dell''hotel %hotel%=='
         footer: '&c==Fine lista amici=='
         line: '&6Amico: &c%name%'
     sethome:
-      consoleRejected: La console non puo'' impostare una home!
+      consoleRejected: La console non può impostare una home!
       notInHotelRegion: '&4Non sei in una regione di hotel!'
-      notInCreationMode: '&4Non sei in modalita'' di creazione!'
+      notInCreationMode: '&4Non sei in modalità di creazione!'
       defaultHomeSet: '&aHome di default impostata'
       userHomeSet: '&aHome d''utente impostata'
       hotelHomeSet: '&aHome di hotel impostata'
     home:
       consoleRejected: La console non puo'' teletrasportarsi a casa!
-      noHomeSet: '&4nessuna home impostata!'
+      noHomeSet: '&4Nessuna home impostata!'
       regionNotFound: '&4L''hotel o la stanza specificata non sono stati trovati!'
       usage: '&4Utilizzo corretto: /ht home [nomehotel] <numstanza>'
-      notRenterNoPermission: '&4Non sei l''affituario o non hai il permesso per fare cio'''
+      notRenterNoPermission: '&4Non sei l''affituario o non hai il permesso per fare ciò'
