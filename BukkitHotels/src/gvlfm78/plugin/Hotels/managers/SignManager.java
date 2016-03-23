@@ -204,7 +204,7 @@ public class SignManager {
 			//Line 3 does not contain separator
 		}
 	}
-	public void useRoomSign(PlayerInteractEvent e, HotelsMain pluginstance){
+	public void useRoomSign(PlayerInteractEvent e){
 		Player p = e.getPlayer();
 		//Sign lines
 		Sign s = (Sign) e.getClickedBlock().getState();
@@ -231,7 +231,7 @@ public class SignManager {
 					if(hotelName.equalsIgnoreCase(cHotelName)){ //If hotel names match
 						if(roomNum==cRoomNum){ //If room nums match
 							String stringroomNum = String.valueOf(roomNum);
-							rentRoom(signConfig,pluginstance,signFile,p,hotelName,stringroomNum);
+							rentRoom(signConfig,signFile,p,hotelName,stringroomNum);
 						}
 						else
 							p.sendMessage(HMM.mes("chat.sign.use.differentRoomNums"));
@@ -246,7 +246,8 @@ public class SignManager {
 				p.sendMessage(HMM.mes("chat.sign.use.signOutOfRegion")); 
 		}
 	}
-	public void rentRoom(YamlConfiguration signConfig,HotelsMain pluginstance,File signFile,Player p,String hotelName,String roomNum){
+	public void rentRoom(YamlConfiguration signConfig,File signFile,Player p,String hotelName,String roomNum){
+		YamlConfiguration configyml = HConH.getconfigyml();
 		//If region exists
 		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion(signConfig.getString("Sign.region"))){
 			String cRenter = signConfig.getString("Sign.renter");
@@ -256,7 +257,7 @@ public class SignManager {
 					double price = signConfig.getDouble("Sign.cost");
 					if(account>=price){//If player has enough money
 						//If player is under max owned rooms limit
-						if(getTimesRented(p.getUniqueId(),pluginstance)<pluginstance.getConfig().getInt("settings.max_rooms_owned")){
+						if(getTimesRented(p.getUniqueId())<configyml.getInt("settings.max_rooms_owned")){
 							//Renter has passed all conditions and is able to rent this room
 							HotelsMain.economy.withdrawPlayer(p, price);
 							//Setting time rented at
@@ -311,7 +312,7 @@ public class SignManager {
 								p.sendMessage(HMM.mes("chat.commands.rent.invalidLocation")); 
 						}
 						else
-							p.sendMessage(HMM.mes("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(pluginstance.getConfig().getInt("settings.max_rooms_owned"))));
+							p.sendMessage(HMM.mes("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(configyml.getInt("settings.max_rooms_owned"))));
 					}
 					else{
 						double topay = price-account;
@@ -323,7 +324,7 @@ public class SignManager {
 			}
 			else if(Bukkit.getServer().getOfflinePlayer(UUID.fromString(cRenter)).equals(p)){
 				//Renter is same player that right clicked
-				rentExtend(p,signConfig,signFile,pluginstance);
+				rentExtend(p,signConfig,signFile);
 			}
 			else
 				p.sendMessage(HMM.mes("chat.sign.use.taken")); 
@@ -368,7 +369,7 @@ public class SignManager {
 		}
 	}
 
-	public int getTimesRented(UUID ptocheck, HotelsMain pluginstance){
+	public int getTimesRented(UUID ptocheck){
 		File dir = HConH.getFile("Signs");
 		if(!(dir.exists()))
 			dir.mkdir();
@@ -392,8 +393,8 @@ public class SignManager {
 		return rents;
 	}
 
-	public void rentExtend(Player p,YamlConfiguration signConfig,File signFile,HotelsMain pluginstance){
-		FileConfiguration ymlConfig = pluginstance.getConfig();
+	public void rentExtend(Player p,YamlConfiguration signConfig,File signFile){
+		FileConfiguration ymlConfig = HConH.getconfigyml();
 		World w = Bukkit.getWorld(signConfig.getString("Sign.location.world"));
 		int x = signConfig.getInt("Sign.location.coords.x");
 		int y = signConfig.getInt("Sign.location.coords.y");

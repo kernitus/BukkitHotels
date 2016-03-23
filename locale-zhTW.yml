@@ -8,6 +8,13 @@ main:
   updateAvailable: 插件 Hotels v%version% 現在可以被下載供妳更新了!
   updateAvailableLink: 想要更新嗎！？點擊這裏的鏈接 %link%
   noConnection: 無法連接到更新地址!
+message:
+  hotel:
+    enter: '&b歡迎來到 %hotel% 旅館'
+    exit: '&a離開了 %hotel% 旅館'
+  room:
+    enter: '&b歡迎來到房間 %room%'
+    exit: '&a離開了房間 %room%'
 sign:
   permanent: 永久
   room:

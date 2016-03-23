@@ -79,7 +79,7 @@ public class HotelsListener implements Listener {
 				Player p = e.getPlayer();
 				//Permission check
 				if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.use")||p.hasPermission("hotels.*")))){
-					SM.useRoomSign(e,plugin);
+					SM.useRoomSign(e);
 				}
 				else
 					p.sendMessage(HMM.mes("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 

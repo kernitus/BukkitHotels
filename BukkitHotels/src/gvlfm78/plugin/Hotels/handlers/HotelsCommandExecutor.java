@@ -210,7 +210,7 @@ public class HotelsCommandExecutor {
 			YamlConfiguration signConfig = HConH.getyml(signFile);
 			if(s instanceof Player){
 				Player p = (Player) s;
-				SM.rentRoom(signConfig,plugin,signFile,p,hotelName,roomNum);
+				SM.rentRoom(signConfig,signFile,p,hotelName,roomNum);
 			}
 			else
 				s.sendMessage(HMM.mes("chat.commands.rent.consoleRejected"));

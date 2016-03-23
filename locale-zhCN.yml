@@ -8,6 +8,13 @@ main:
   updateAvailable: 插件 Hotels v%version% 现在可以被下载供你更新了!
   updateAvailableLink: 想要更新吗！？点击这里的链接 %link%
   noConnection: 无法连接到更新地址!
+message:
+  hotel:
+    enter: '&b欢迎来到 %hotel% 旅馆'
+    exit: '&a离开了 %hotel% 旅馆'
+  room:
+    enter: '&b欢迎来到房间 %room%'
+    exit: '&a离开了房间 %room%'
 sign:
   permanent: 永久
   room:

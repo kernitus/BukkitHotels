@@ -285,8 +285,8 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.map-making.EXIT", "none");
 		flagsConfig.addDefault("hotel.map-making.EXIT-DENY-MESSAGE", "none");
 		flagsConfig.addDefault("hotel.map-making.EXIT-VIA-TELEPORT", "none");
-		flagsConfig.addDefault("hotel.map-making.GREETING", "&bWelcome to the %hotel% hotel");
-		flagsConfig.addDefault("hotel.map-making.FAREWELL", "&aCome back soon to the %hotel% hotel");
+		flagsConfig.addDefault("hotel.map-making.GREETING", "true");
+		flagsConfig.addDefault("hotel.map-making.FAREWELL", "true");
 		flagsConfig.addDefault("hotel.map-making.ENDERPEARL", "deny");
 		flagsConfig.addDefault("hotel.map-making.INVICIBLE", "none");
 		flagsConfig.addDefault("hotel.map-making.GAME-MODE", "none");
@@ -372,8 +372,8 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("room.map-making.EXIT", "none");
 		flagsConfig.addDefault("room.map-making.EXIT-DENY-MESSAGE", "none");
 		flagsConfig.addDefault("room.map-making.EXIT-VIA-TELEPORT", "none");
-		flagsConfig.addDefault("room.map-making.GREETING", "&bWelcome to room %room%");
-		flagsConfig.addDefault("room.map-making.FAREWELL", "&aCome back soon to room %room%");
+		flagsConfig.addDefault("room.map-making.GREETING", "true");
+		flagsConfig.addDefault("room.map-making.FAREWELL", "true");
 		flagsConfig.addDefault("room.map-making.ENDERPEARL", "deny");
 		flagsConfig.addDefault("room.map-making.INVICIBLE", "none");
 		flagsConfig.addDefault("room.map-making.GAME-MODE", "none");

@@ -7,7 +7,14 @@ main:
     success: '%pluginname% v%version% è stato disabilitato'
   updateAvailable: Hotels v%version% è disponibile per il download!
   updateAvailableLink: Per scaricarlo, vai a %link%
-  noConnection: Impossibile connettersi al sito di aggiornameto!
+  noConnection: Impossibile connettersi al sito di aggiornamento!
+message:
+  hotel:
+    enter: '&bBenvenuto all''hotel %hotel%'
+    exit: '&aTorna presto all''hotel %hotel%'
+  room:
+    enter: '&bBenvenuto alla stanza %room%'
+    exit: '&aTorna presto alla stanza %room%'
 sign:
   permanent: Permanente
   room:
@@ -23,7 +30,7 @@ sign:
     reception: Il file di Reception %filename% non corrispondeva alle caratteristiche nel gioco ed è stato cancellato
     roomNum: Il file di cartello %filename% non corrispondeva al numero di stanza nel gioco ed è stato cancellato
     hotelName: Il file di cartello %filename% non corrispondeva al nome di hotel nel gioco ed è stato cancellato
-    location: Il file di cartello %filename% non corrispendeva al luogo nel gioco ed è stato cancellato
+    location: Il file di cartello %filename% non corrispondeva al luogo nel gioco ed è stato cancellato
 chat:
   prefix: '&9[Hotels]&r'
   noPermission: '&4Non hai il permesso!'
@@ -40,7 +47,7 @@ chat:
       noSeparator: '&4La linea 3 deve contenere il separatore &3:'
     use:
       success: '&aHai preso in affitto la stanza %room% dell''hotel %hotel% per $%price%'
-      notEnoughMoney: '&Non hai abbastanza soldi! Ti servono altri %missingmoney%'
+      notEnoughMoney: '&4Non hai abbastanza soldi! Ti servono altri $%missingmoney%'
       noAccount: '&4Non hai un account finanziario!'
       taken: '&4Questa stanza è già stata affittata'
       nonExistantRoom: '&4Questa stanza non esiste!'
@@ -150,9 +157,9 @@ chat:
         '8': '&9&oNel costo, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9
           = &2milione&9 &5b&9 = &2miliardo'
     unknownArg: '&4Argomento sconosciuto. Prova &3&o/hotels'
-    noWorld: '&cPerfavore specifica un mondo'
-    noHotel: '&cPerfavore specifica un hotel'
-    noPlayer: '&cPerfavore specifica un giocatore'
+    noWorld: '&cDevi specificare un mondo'
+    noHotel: '&cDevi specificare un hotel'
+    noPlayer: '&cDevi specificare un giocatore'
     userNonExistant: '&4L''utente specificato non esiste'
     roomNonExistant: '&4La stanza specificata non esiste'
     hotelNonExistant: '&4L''hotel specificato non esiste'
@@ -160,7 +167,7 @@ chat:
     reload:
       success: '&aFile di configurazione ricaricati correttamente'
     rent:
-      consoleRejected: La console non puoò affittare stanze!
+      consoleRejected: La console non può affittare stanze!
       usage: '&4Utilizzo corretto: &6&o/ht rent [nomehotel] [numstanza]'
       invalidLocation: '&4Le coordinate nel file del cartello non corrispondono ad un cartello!'
       invalidData: '&4Il nome dell''hotel o stanza immessi non sono validi!'
@@ -244,7 +251,7 @@ chat:
       userHomeSet: '&aHome d''utente impostata'
       hotelHomeSet: '&aHome di hotel impostata'
     home:
-      consoleRejected: La console non puo'' teletrasportarsi a casa!
+      consoleRejected: La console non può teletrasportarsi a casa!
       noHomeSet: '&4Nessuna home impostata!'
       regionNotFound: '&4L''hotel o la stanza specificata non sono stati trovati!'
       usage: '&4Utilizzo corretto: /ht home [nomehotel] <numstanza>'

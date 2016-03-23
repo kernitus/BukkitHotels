@@ -115,6 +115,11 @@ public class WorldGuardManager {
 		}
 	}
 	public void setFlags(ConfigurationSection section, ProtectedRegion r,String namenum){
+		boolean isHotel;
+		if(r.getId().matches("hotel-.+-\\d+"))
+			isHotel = false;
+		else
+			isHotel = true;
 
 		Map <Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
 		Map <Flag<?>, Object> groupFlags = new HashMap<Flag<?>, Object>();
@@ -137,9 +142,27 @@ public class WorldGuardManager {
 				keyValue = keyValue.replaceAll("\\s?-g\\s\\w+\\s?", "");
 			}
 			switch(pureKey){
-			case "GREETING": case "FAREWELL":
-				keyValue = keyValue.replaceAll("%hotel%", namenum).replaceAll("%room%", namenum);
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
+			case "GREETING":
+				if(Boolean.valueOf(keyValue)){//TODO get correct message from locale depending on if it's a room or hotel; can also separate greeting and farewell cases
+					if(isHotel){
+						String message = locale.getString("message.hotel.enter").replaceAll("%hotel%", namenum);
+						flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
+					}
+					else{
+						String message = locale.getString("message.room.enter").replaceAll("%room%", namenum);
+						flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
+					}
+				}
+				break;
+			case "FAREWELL":
+				if(isHotel){
+					String message = locale.getString("message.hotel.exit").replaceAll("%hotel%", namenum);
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
+				}
+				else{
+					String message = locale.getString("message.room.exit").replaceAll("%room%", namenum);
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
+				}
 				break;
 				//String
 			case "DENY-MESSAGE": case "ENTRY-DENY-MESSAGE": case "EXIT-DENY-MESSAGE": case "TIME-LOCK":

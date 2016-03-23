@@ -8,6 +8,13 @@ main:
   updateAvailable: Hotels v%version% is available for download!
   updateAvailableLink: To download it, go to %link%
   noConnection: Could not connect to update site!
+message:
+  hotel:
+    enter: '&bWelcome to the %hotel% hotel'
+    exit: '&aCome back soon to the %hotel% hotel'
+  room:
+    enter: '&bWelcome to room %room%'
+    exit: '&aCome back soon to Room %room%'
 sign:
   permanent: Permanent
   room:
