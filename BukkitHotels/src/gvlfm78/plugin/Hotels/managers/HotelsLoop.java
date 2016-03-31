@@ -88,7 +88,7 @@ public class HotelsLoop extends BukkitRunnable {
 								if(expirydate!=0){
 									if(expirydate<=((System.currentTimeMillis())/1000/60)){//If rent has expired
 										String r = config.getString("Sign.region");
-										ProtectedRegion region = WGM.getWorldGuard().getRegionManager(world).getRegion(r);
+										ProtectedRegion region = WGM.getRM(world).getRegion(r);
 										if(config.getString("Sign.renter")!=null){
 											OfflinePlayer p = Bukkit.getServer().getOfflinePlayer(UUID.fromString(config.getString("Sign.renter")));
 											WGM.removeMember(p, region);
@@ -98,10 +98,9 @@ public class HotelsLoop extends BukkitRunnable {
 											for(String currentFriend : stringList){
 												OfflinePlayer cf = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
 												WGM.removeMember(cf, region);
-
-												//If set in config, make room accessible to all players now that it is not rented
-												WGM.makeRoomAccessible(region);
 											}
+											//If set in config, make room accessible to all players now that it is not rented
+											WGM.makeRoomAccessible(region);
 
 											sign.setLine(3, ChatColor.GREEN+locale.getString("sign.vacant"));
 											sign.update();

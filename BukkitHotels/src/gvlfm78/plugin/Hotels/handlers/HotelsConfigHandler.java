@@ -47,7 +47,9 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info("Generating config file...");
 		config.options().header("Hotels Plugin by kernitus\nAvailable languages: enGB, itIT, zhCN, znTW");
 		config.addDefault("settings.language", String.valueOf("enGB"));
+		config.addDefault("settings.max_hotels_owned", Integer.valueOf(3));
 		config.addDefault("settings.max_rooms_owned", Integer.valueOf(3));
+		config.addDefault("settings.max_rooms_owned_per_hotel", Integer.valueOf(2));
 		config.addDefault("settings.max_rent_extend", Integer.valueOf(3));
 		config.addDefault("settings.hotelsLoopTimerMinutes", Integer.valueOf(2));
 		config.addDefault("settings.use-permissions", Boolean.TRUE);

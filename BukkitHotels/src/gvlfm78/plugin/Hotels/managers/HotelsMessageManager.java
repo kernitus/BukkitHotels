@@ -25,7 +25,7 @@ public class HotelsMessageManager {
 			mes = (prefix+mes).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
 		}
 		else
-			mes = ChatColor.DARK_RED + "Message is null!";
+			mes = ChatColor.DARK_RED + "Message "+path+" is null!";
 		return mes;
 	}
 
@@ -35,7 +35,7 @@ public class HotelsMessageManager {
 			mes = mes.replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
 		}
 		else
-			mes = ChatColor.DARK_RED + "Message is null!";
+			mes = ChatColor.DARK_RED + "Message "+path+" is null!";
 		return mes;
 	}
 	public boolean hasPerm(CommandSender sender, String perm){
@@ -54,7 +54,7 @@ public class HotelsMessageManager {
 	public String flagValue(String path){
 		String mes = HConH.getFlags().getString(path);
 		if(mes==null)
-			mes = ChatColor.DARK_RED + "Message is null!";
+			mes = ChatColor.DARK_RED + "Message "+path+" is null!";
 		return mes;
 	}
 }

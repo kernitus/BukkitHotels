@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -47,34 +48,60 @@ public class HotelsCreationMode {
 			file.mkdir();
 		}
 	}
-
+	public boolean isInCreationMode(String uuid){
+		File file = HConH.getFile("Inventories"+File.separator+uuid+".yml");
+		if(file.exists())
+			return true;
+		else
+			return false;
+	}
+	public int ownedHotels(Player p){
+		Map<String, ProtectedRegion> rgs = WGM.getRM(p.getWorld()).getRegions();
+		int count=0;
+		for(ProtectedRegion reg : rgs.values()){
+			if(reg.getOwners().contains(p.getUniqueId())||reg.getOwners().contains(p.getName())){
+				String name = reg.getId();
+				if(name.matches("hotel-\\w+")){
+					//It's a hotel region and this player is an owner
+					count++;
+				}
+			}
+		}
+		return count;
+	}
 	public void hotelSetup(String hotelName, CommandSender s,Plugin plugin){
 		Player p = (Player) s;
 		if(!hotelName.contains("-")){
-			if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.commands")||p.hasPermission("hotels.*")))){
+			if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.create")||p.hasPermission("hotels.*")))){
 				Selection sel = getWorldEdit().getSelection(p);
 				if(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
 					p.sendMessage(HMM.mes("chat.creationMode.hotelCreationFailed"));
 					return;}
 				else if(sel!=null){
-					//Creating hotel region
-					if(sel instanceof CuboidSelection){
-						ProtectedRegion r = new ProtectedCuboidRegion(
-								"Hotel-"+hotelName, 
-								new BlockVector(sel.getNativeMinimumPoint()), 
-								new BlockVector(sel.getNativeMaximumPoint())
-								);
-						createHotelRegion(plugin, p,r,hotelName);
-					}
-					else if(sel instanceof Polygonal2DSelection){
-						int minY = sel.getMinimumPoint().getBlockY();
-						int maxY = sel.getMaximumPoint().getBlockY();
-						List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
-						ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName, points, minY, maxY);
-						createHotelRegion(plugin, p,r,hotelName);
+					int ownedHotels = ownedHotels(p);
+					int maxHotels = HConH.getconfigyml().getInt("settings.max_hotels_owned");
+					if(ownedHotels<maxHotels){
+						//Creating hotel region
+						if(sel instanceof CuboidSelection){
+							ProtectedRegion r = new ProtectedCuboidRegion(
+									"Hotel-"+hotelName, 
+									new BlockVector(sel.getNativeMinimumPoint()), 
+									new BlockVector(sel.getNativeMaximumPoint())
+									);
+							createHotelRegion(p,r,hotelName);
+						}
+						else if(sel instanceof Polygonal2DSelection){
+							int minY = sel.getMinimumPoint().getBlockY();
+							int maxY = sel.getMaximumPoint().getBlockY();
+							List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
+							ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName, points, minY, maxY);
+							createHotelRegion(p,r,hotelName);
+						}
+						else
+							p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
 					}
 					else
-						p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
+						p.sendMessage((HMM.mes("chat.commands.create.maxHotelsReached")).replaceAll("%max%", String.valueOf(maxHotels)));
 				}
 				else
 					p.sendMessage(HMM.mes("chat.creationMode.noSelection"));
@@ -86,31 +113,49 @@ public class HotelsCreationMode {
 			p.sendMessage(HMM.mes("chat.creationMode.invalidChar"));
 	}
 
-	public void createHotelRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName){
+	public boolean createHotelRegion(Player p, ProtectedRegion region, String hotelName){
 		World world = p.getWorld();
-		WGM.addRegion(world, region);
-		WGM.hotelFlags(region,hotelName);
-		WGM.saveRegions(world);
-		String idHotelName =region.getId();
-		String[] partsofhotelName = idHotelName.split("-");
-		p.sendMessage(HMM.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
+		if(!WGM.doHotelRegionsOverlap(region, world)){
+
+			WGM.addRegion(world, region);
+			WGM.hotelFlags(region,hotelName);
+			WGM.addOwner(p, region);
+			WGM.saveRegions(world);
+			String idHotelName =region.getId();
+			String[] partsofhotelName = idHotelName.split("-");
+			p.sendMessage(HMM.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
+			int ownedHotels = ownedHotels(p);
+			int maxHotels = HConH.getconfigyml().getInt("settings.max_hotels_owned");
+			int hotelsLeft = maxHotels-ownedHotels;
+			p.sendMessage(HMM.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
+			return true;
+		}
+		else{
+			p.sendMessage(HMM.mes("chat.commands.create.hotelAlreadyPresent"));
+			return false;
+		}
 	}
 
-	public void createRoomRegion(Plugin plugin, Player p, ProtectedRegion region, String hotelName, String room){
+	public void createRoomRegion(Player p, ProtectedRegion region, String hotelName, String room){
 		World world = p.getWorld();
-		WGM.addRegion(world, region);
-		WGM.roomFlags(region,room);
-		region.setPriority(10);
-		WGM.makeRoomAccessible(region);
-		WGM.saveRegions(p.getWorld());
+		if(!WGM.doHotelRegionsOverlap(region, world)){
+			WGM.addRegion(world, region);
+			WGM.roomFlags(region,room);
+			region.setPriority(10);
+			WGM.makeRoomAccessible(region);
+			WGM.saveRegions(p.getWorld());
+			p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
+		}
+		else
+			p.sendMessage(HMM.mes("chat.commands.create.roomAlreadyPresent"));
 	}
 
-	public void roomSetup(String hotelName,String room,Plugin plugin, Player p){
+	public void roomSetup(String hotelName,String room,Player p){
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
-		if(WGM.getWorldGuard().getRegionManager(p.getWorld()).hasRegion("hotel-"+hotelName)){
-			if(!WGM.getWorldGuard().getRegionManager((p.getWorld())).hasRegion("hotel-"+hotelName+"-"+room)){
-				ProtectedRegion pr = WGM.getWorldGuard().getRegionManager(world).getRegion("hotel-"+hotelName);
+		if(WGM.getRM(p.getWorld()).hasRegion("hotel-"+hotelName)){
+			if(!WGM.getRM((p.getWorld())).hasRegion("hotel-"+hotelName+"-"+room)){
+				ProtectedRegion pr = WGM.getRM(world).getRegion("hotel-"+hotelName);
 				if(sel!=null){
 					if((sel instanceof Polygonal2DSelection)&&(pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
 							((sel instanceof CuboidSelection)&&(pr.contains(sel.getNativeMinimumPoint())&&pr.contains(sel.getNativeMaximumPoint())))){
@@ -121,16 +166,14 @@ public class HotelsCreationMode {
 									new BlockVector(sel.getNativeMinimumPoint()), 
 									new BlockVector(sel.getNativeMaximumPoint())
 									);
-							createRoomRegion(plugin,p,r,hotelName,room);
-							p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
+							createRoomRegion(p,r,hotelName,room);
 						}
 						else if(sel instanceof Polygonal2DSelection){
 							int minY = sel.getMinimumPoint().getBlockY();
 							int maxY = sel.getMaximumPoint().getBlockY();
 							List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
 							ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
-							createRoomRegion(plugin,p,r,hotelName,room);
-							p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
+							createRoomRegion(p,r,hotelName,room);
 						}
 						else
 							p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
@@ -196,16 +239,16 @@ public class HotelsCreationMode {
 
 		if(file.exists()){
 			YamlConfiguration inv = HConH.getyml(file);
-			
+
 			List<ItemStack> inventoryItems = (List<ItemStack>) inv.getList("inventory");
 			pinv.setContents(inventoryItems.toArray(new ItemStack[inventoryItems.size()]));
-			
+
 			List<ItemStack> armourItems = (List<ItemStack>) inv.getList("armour");
 			pinv.setArmorContents(armourItems.toArray(new ItemStack[armourItems.size()]));
-			
+
 			List<ItemStack> extraItems = (List<ItemStack>) inv.getList("extra");
 			pinv.setExtraContents(extraItems.toArray(new ItemStack[extraItems.size()]));
-			
+
 			p.sendMessage(HMM.mes("chat.creationMode.inventory.restoreSuccess"));
 			file.delete();
 		}
@@ -232,6 +275,7 @@ public class HotelsCreationMode {
 		File file = new File("plugins"+File.separator+"Worldedit"+File.separator+"config.yml");
 		PlayerInventory pi = p.getInventory();
 
+		//Wand
 		if(file.exists()){
 			YamlConfiguration weconfig = YamlConfiguration.loadConfiguration(file);
 			if(!(weconfig == null)&&(weconfig.contains("wand-item"))&&!(weconfig.get("wand-item") == null)){
@@ -245,20 +289,11 @@ public class HotelsCreationMode {
 				loreList.add(HMM.mesnopre("chat.creationMode.items.wand.lore2"));
 				im.setLore(loreList);
 				wand.setItemMeta(im);
-				pi.setItem(1, wand);
+				pi.setItem(0, wand);
 
 			}
 		}
-		ItemStack compass = new ItemStack(Material.COMPASS, 1);
-		ItemMeta cim = compass.getItemMeta();
-		cim.setDisplayName(HMM.mesnopre("chat.creationMode.items.compass.name"));
-		List<String> compassLoreList = new ArrayList<String>();
-		compassLoreList.add(HMM.mesnopre("chat.creationMode.items.compass.lore1"));
-		compassLoreList.add(HMM.mesnopre("chat.creationMode.items.compass.lore2"));
-		cim.setLore(compassLoreList);
-		compass.setItemMeta(cim);
-		pi.setItem(0, compass);
-
+		//Sign
 		ItemStack sign = new ItemStack(Material.SIGN, 1);
 		ItemMeta sim = sign.getItemMeta();
 		sim.setDisplayName(HMM.mesnopre("chat.creationMode.items.sign.name"));
@@ -267,16 +302,30 @@ public class HotelsCreationMode {
 		signLoreList.add(HMM.mesnopre("chat.creationMode.items.sign.lore2"));
 		sim.setLore(signLoreList);
 		sign.setItemMeta(sim);
-		pi.setItem(2, sign);
-
-		ItemStack leather = new ItemStack(Material.LEATHER, 1);
-		ItemMeta lim = leather.getItemMeta();
-		lim.setDisplayName(HMM.mesnopre("chat.creationMode.items.leather.name"));
-		List<String> leatherLoreList = new ArrayList<String>();
-		leatherLoreList.add(HMM.mesnopre("chat.creationMode.items.leather.lore1"));
-		leatherLoreList.add(HMM.mesnopre("chat.creationMode.items.leather.lore2"));
-		lim.setLore(leatherLoreList);
-		leather.setItemMeta(lim);
-		pi.setItem(3, leather);
+		pi.setItem(1, sign);
+		//Compass
+		if(p.hasPermission("worldedit.navigation")){
+			ItemStack compass = new ItemStack(Material.COMPASS, 1);
+			ItemMeta cim = compass.getItemMeta();
+			cim.setDisplayName(HMM.mesnopre("chat.creationMode.items.compass.name"));
+			List<String> compassLoreList = new ArrayList<String>();
+			compassLoreList.add(HMM.mesnopre("chat.creationMode.items.compass.lore1"));
+			compassLoreList.add(HMM.mesnopre("chat.creationMode.items.compass.lore2"));
+			cim.setLore(compassLoreList);
+			compass.setItemMeta(cim);
+			pi.setItem(2, compass);
+		}
+		//Leather
+		if(p.hasPermission("worldguard.region.wand")){
+			ItemStack leather = new ItemStack(Material.LEATHER, 1);
+			ItemMeta lim = leather.getItemMeta();
+			lim.setDisplayName(HMM.mesnopre("chat.creationMode.items.leather.name"));
+			List<String> leatherLoreList = new ArrayList<String>();
+			leatherLoreList.add(HMM.mesnopre("chat.creationMode.items.leather.lore1"));
+			leatherLoreList.add(HMM.mesnopre("chat.creationMode.items.leather.lore2"));
+			lim.setLore(leatherLoreList);
+			leather.setItemMeta(lim);
+			pi.setItem(3, leather);
+		}
 	}
 }

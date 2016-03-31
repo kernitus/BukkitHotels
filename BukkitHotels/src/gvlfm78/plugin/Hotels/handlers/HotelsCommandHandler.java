@@ -442,7 +442,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 								try{
 									String room = args[2];
 									int roomNum = Integer.parseInt(room);
-									HCM.roomSetup(hotelName, room, plugin,p);
+									HCM.roomSetup(hotelName, room,p);
 									String roomNums = String.valueOf(roomNum);
 									roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1).toLowerCase();
 								} catch(NumberFormatException e){
@@ -453,7 +453,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 							else{
 								int roomNum = HCE.nextNewRoom(p.getWorld(),hotelName);
 								if(roomNum!=0){
-									HCM.roomSetup(hotelName, String.valueOf(roomNum),plugin,p);
+									HCM.roomSetup(hotelName, String.valueOf(roomNum),p);
 									String roomNums = String.valueOf(roomNum);
 									roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1).toLowerCase();
 									sender.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(roomNum))
@@ -480,7 +480,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						World w = p.getWorld();
 						float pitch = loc.getPitch();
 						float yaw = loc.getYaw();
-						ApplicableRegionSet regions = WGM.getWorldGuard().getRegionManager(w).getApplicableRegions(loc);
+						ApplicableRegionSet regions = WGM.getRM(w).getApplicableRegions(loc);
 						ArrayList<ProtectedRegion> rf = new ArrayList<ProtectedRegion>();
 						for(ProtectedRegion r : regions){
 							//Regions that match player's location
@@ -571,7 +571,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 							if(args.length>2){
 								String hotelName = args[1].toLowerCase();
 								String roomNum = args[2].toLowerCase();
-								Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(w).getRegions();
+								Map<String, ProtectedRegion> regionlist = WGM.getRM(w).getRegions();
 								int regionsFound = 0;
 								for(ProtectedRegion region : regionlist.values()){
 									String regionId = region.getId();
@@ -634,7 +634,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 							}//Try hotel home
 							else{
 								String hotelName = args[1].toLowerCase();
-								Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(w).getRegions();
+								Map<String, ProtectedRegion> regionlist = WGM.getRM(w).getRegions();
 								int regionsFound = 0;
 								for(ProtectedRegion region : regionlist.values()){
 									String regionId = region.getId();

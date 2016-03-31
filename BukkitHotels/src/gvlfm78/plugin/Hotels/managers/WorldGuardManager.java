@@ -2,6 +2,7 @@ package kernitus.plugin.Hotels.managers;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -17,6 +18,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -50,7 +52,7 @@ public class WorldGuardManager {
 	}
 
 	public ProtectedRegion getRegion(World world, String string) {
-		return getWorldGuard().getRegionManager(world).getRegion(string);
+		return getRM(world).getRegion(string);
 	}
 
 	public void addOwner(OfflinePlayer p, ProtectedRegion r){
@@ -78,25 +80,25 @@ public class WorldGuardManager {
 	}
 
 	public void addRegion(World w, ProtectedRegion r){
-		getWorldGuard().getRegionManager(w).addRegion(r);
+		getRM(w).addRegion(r);
 	}
 	public void removeRegion(World w, String r){
-		getWorldGuard().getRegionManager(w).removeRegion(r);
-	}
-	public boolean hasRegion(World w, String r){
-		if(getWorldGuard().getRegionManager(w).hasRegion(r))
-			return true;
-		else
-			return false;
+		getRM(w).removeRegion(r);
 	}
 
 	public void saveRegions(World world){
-		RegionManager regionManager = getWorldGuard().getRegionManager(world);
+		RegionManager regionManager = getRM(world);
 		try {
 			regionManager.save();
 		} catch (StorageException e) {
 			e.printStackTrace();
 		}
+	}
+	public RegionManager getRM(World world){
+		return getWorldGuard().getRegionManager(world);
+	}
+	public boolean hasRegion(World world, String regionName){
+		return getRM(world).hasRegion(regionName);
 	}
 	public void renameRegion(String oldname, String newname,World world){
 		if(hasRegion(world, oldname)){//If old hotel exists
@@ -113,6 +115,33 @@ public class WorldGuardManager {
 			removeRegion(world, oldr.getId());
 			saveRegions(world);
 		}
+	}
+	public boolean doTwoRegionsOverlap(ProtectedRegion r1, ProtectedRegion r2){
+		List<BlockVector2D> points = r1.getPoints();
+		if(r2.containsAny(points))
+			return true;
+		else
+			return false;
+	}
+	public boolean doHotelRegionsOverlap(ProtectedRegion region, World world){
+		Map<String, ProtectedRegion> regions = getRM(world).getRegions();
+		for(ProtectedRegion reg : regions.values()){
+			if(reg.getId().startsWith("hotel-")){
+				if(doTwoRegionsOverlap(reg,region))
+					return true;
+			}
+		}
+		return false;
+	}
+	public boolean doesRoomRegionOverlap(ProtectedRegion region, World world){
+		Map<String, ProtectedRegion> regions = getRM(world).getRegions();
+		for(ProtectedRegion reg : regions.values()){
+			if(reg.getId().matches("hotel-\\w+-\\d+")){//It's a room region
+				if(doTwoRegionsOverlap(reg,region))
+					return true;
+			}
+		}
+		return false;
 	}
 	public void setFlags(ConfigurationSection section, ProtectedRegion r,String namenum){
 		boolean isHotel;

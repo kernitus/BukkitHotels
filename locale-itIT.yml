@@ -174,6 +174,8 @@ chat:
     creationMode:
       enter: '&aSei entrato in modalità di creazione hotel.'
       exit: '&aSei uscito dalla modalità di creazione hotel.'
+      alreadyIn: '&4Sei già in modalità di creazione!'
+      notAlreadyIn: '&4Non sei in modalità di creazione!'
       reset: '&2I file di inventario sono stati reimpostati.'
       noarg: '&4Perfavore specifica &6&oenter &4o &6&oexit (entra o esci)'
       consoleRejected: La console non può usare la modalità di creazione hotel!

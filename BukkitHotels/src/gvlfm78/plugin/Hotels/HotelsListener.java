@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -79,7 +78,11 @@ public class HotelsListener implements Listener {
 				Player p = e.getPlayer();
 				//Permission check
 				if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.use")||p.hasPermission("hotels.*")))){
-					SM.useRoomSign(e);
+					Sign s = (Sign) e.getClickedBlock().getState();
+					if(SM.isReceptionSign(s))
+						SM.useReceptionSign(e);
+					else
+						SM.useRoomSign(e);
 				}
 				else
 					p.sendMessage(HMM.mes("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
@@ -134,7 +137,7 @@ public class HotelsListener implements Listener {
 	public int totalRooms(String hotelName,World w){
 		int tot = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
+		regions = WGM.getRM(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
 		for(int i=0; i<rlist.length; i++){
 			ProtectedRegion r = rlist[i];
@@ -150,7 +153,7 @@ public class HotelsListener implements Listener {
 	public int freeRooms(String hotelName,World w){
 		int free = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
+		regions = WGM.getRM(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
 		for(int i=0; i<rlist.length; i++){
 			ProtectedRegion r = rlist[i];
@@ -170,34 +173,6 @@ public class HotelsListener implements Listener {
 		}
 		return free;
 	}
-
-	public boolean updateReceptionSign(Location l){
-		Block b = l.getBlock();
-		if(b.getType().equals(Material.WALL_SIGN)||b.getType().equals(Material.SIGN)||l.getBlock().getType().equals(Material.SIGN_POST)){
-			Sign s = (Sign) b.getState();
-			String Line1 = ChatColor.stripColor(s.getLine(0));
-			String Line2 = ChatColor.stripColor(s.getLine(1));
-			if(Line1.equals("Reception")){ //First line is "Reception"
-				if(Line2!=null){
-					String[] Line2split = Line2.split(" ");
-					String hotelname = Line2split[0];
-					if(WGM.getWorldGuard().getRegionManager(b.getWorld()).hasRegion("hotel-"+hotelname)){ //Hotel region exists
-						int tot = totalRooms(hotelname,b.getWorld());
-						int free = freeRooms(hotelname,b.getWorld());
-						s.setLine(2, HMM.mesnopre("chat.sign.reception.total").replaceAll("%tot%", String.valueOf(tot)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-						s.setLine(3, HMM.mesnopre("chat.sign.reception.free").replaceAll("%tot%", String.valueOf(free)).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-						s.update();
-						return false;
-					}
-					return true;
-				}
-				return true;
-			}
-			return true;
-		}
-		return true;
-	}
-
 	//When a player tries to drop an item/block
 	@EventHandler
 	public void avoidDrop(PlayerDropItemEvent e) {

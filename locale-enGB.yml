@@ -178,10 +178,16 @@ chat:
     creationMode:
       enter: '&aYou have entered hotel creation mode.'
       exit: '&aYou have exited hotel creation mode.'
+      alreadyIn: '&4You are already in creation mode!'
+      notAlreadyIn: '&4You are not in creation mode!'
       reset: '&2The inventory files have been reset.'
       noarg: '&4Please specify &6&oenter &4or &6&oexit &4mode'
       consoleRejected: The console can't use hotel creation mode!
     create:
+      maxHotelsReached: '&4You have reached the limit of %max% hotels you can own'
+      creationSuccess: '&aYou currently own %tot% hotels. You can own another %left%.'
+      hotelAlreadyPresent: '&4There is already a hotel present here'
+      roomAlreadyPresent: '&4There is already a room present here'
       fail: '&4Could not create hotel. Did you enter Hotel Creation Mode? (&3&o/hotels
         cm enter&r&4)'
       consoleRejected: The console can't create a hotel!

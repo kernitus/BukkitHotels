@@ -187,14 +187,22 @@ public class HotelsCommandExecutor {
 	}
 
 	public void cmdCreateModeEnter(Player p){
-		p.sendMessage(HMM.mes("chat.commands.creationMode.enter"));
 		HCM.checkFolder();
+		if(!HCM.isInCreationMode(p.getUniqueId().toString())){
 		HCM.saveInventory(p);
 		HCM.giveItems(p);
+		p.sendMessage(HMM.mes("chat.commands.creationMode.enter"));
+		}
+		else
+			p.sendMessage(HMM.mes("chat.commands.creationMode.alreadyIn"));
 	}
 	public void cmdCreateModeExit(Player p){
+		if(HCM.isInCreationMode(p.getUniqueId().toString())){
 		p.sendMessage(HMM.mes("chat.commands.creationMode.exit"));
 		HCM.loadInventory(p);
+		}
+		else
+			p.sendMessage(HMM.mes("chat.commands.creationMode.notAlreadyIn"));
 	}
 	public void cmdCreateModeReset(Player p){
 		HCM.resetInventoryFiles(p);
@@ -424,7 +432,7 @@ public class HotelsCommandExecutor {
 							r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (HMM.flagValue("room.map-making.FAREWELL").replaceAll("%room%", String.valueOf(newnum))));
 						WGM.renameRegion("Hotel-"+hotel+"-"+oldnum, "Hotel-"+hotel+"-"+newnum, world);
 						try {
-							WGM.getWorldGuard().getRegionManager(world).save();
+							WGM.getRM(world).save();
 							sender.sendMessage(HMM.mes("chat.commands.renumber.success").replaceAll("%oldnum%", oldnum).replaceAll("%newnum%", newnum).replaceAll("%hotel%", fromIdhotelName));
 						} catch (StorageException e) {
 							sender.sendMessage(HMM.mes("chat.commands.renumber.fail").replaceAll("%oldnum%", oldnum));
@@ -459,7 +467,7 @@ public class HotelsCommandExecutor {
 				r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (HMM.flagValue("hotel.map-making.GREETING").replaceAll("%hotel%", fromIdhotelName)));
 			sender.sendMessage(HMM.mes("chat.commands.rename.success").replaceAll("%hotel%" , fromIdhotelName));
 			//Rename rooms
-			Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(world).getRegions();
+			Map<String, ProtectedRegion> regionlist = WGM.getRM(world).getRegions();
 			
 			for(ProtectedRegion region : regionlist.values()){
 				String regionId = region.getId();
@@ -502,7 +510,7 @@ public class HotelsCommandExecutor {
 				}
 			}
 			try {
-				WGM.getWorldGuard().getRegionManager(world).save();
+				WGM.getRM(world).save();
 			} catch (StorageException e) {
 				sender.sendMessage(HMM.mes("chat.commands.rename.failRooms"));
 				e.printStackTrace();
@@ -514,9 +522,9 @@ public class HotelsCommandExecutor {
 	}
 	public void removeRoom(String hotelName,String roomNum,World world,CommandSender sender){
 		if(WGM.hasRegion(world, "Hotel-"+hotelName+"-"+roomNum)){//If region exists
-			WGM.getWorldGuard().getRegionManager(world).removeRegion("Hotel-"+hotelName+"-"+roomNum);//Delete region
+			WGM.getRM(world).removeRegion("Hotel-"+hotelName+"-"+roomNum);//Delete region
 			try {
-				WGM.getWorldGuard().getRegionManager(world).save();
+				WGM.getRM(world).save();
 				sender.sendMessage(HMM.mes("chat.commands.removeRoom.success"));
 			} catch (StorageException e) {
 				sender.sendMessage(HMM.mes("chat.commands.removeRoom.fail"));
@@ -527,18 +535,18 @@ public class HotelsCommandExecutor {
 	}
 	public void removeRegions(String hotelName,World world,CommandSender sender){
 		if(WGM.hasRegion(world, "Hotel-"+hotelName)){
-			WGM.getWorldGuard().getRegionManager(world).removeRegion("Hotel-"+hotelName);
-			Map<String, ProtectedRegion> regionlist = WGM.getWorldGuard().getRegionManager(world).getRegions();
+			WGM.getRM(world).removeRegion("Hotel-"+hotelName);
+			Map<String, ProtectedRegion> regionlist = WGM.getRM(world).getRegions();
 
 			for(ProtectedRegion values : regionlist.values()){
 				if(values.getId().matches("hotel-"+hotelName+"-"+"[0-9]+")){
 					ProtectedRegion goodregion = values;
-					WGM.getWorldGuard().getRegionManager(world).removeRegion(goodregion.getId());
+					WGM.getRM(world).removeRegion(goodregion.getId());
 				}
 			}
 
 			try {
-				WGM.getWorldGuard().getRegionManager(world).save();
+				WGM.getRM(world).save();
 				sender.sendMessage(HMM.mes("chat.commands.removeRegions.success"));
 			} catch (StorageException e) {
 				sender.sendMessage(HMM.mes("chat.commands.removeRegions.fail"));
@@ -565,7 +573,7 @@ public class HotelsCommandExecutor {
 						if(renter!=null){
 							Player pfromfile = Bukkit.getOfflinePlayer(UUID.fromString(renter)).getPlayer();
 							if(player.equals(pfromfile)){
-								ProtectedRegion r = WGM.getWorldGuard().getRegionManager(w).getRegion("hotel-"+hotel+"-"+room);
+								ProtectedRegion r = WGM.getRM(w).getRegion("hotel-"+hotel+"-"+room);
 								WGM.removeMember(player, r);
 								//Config stuff
 								config.set("Sign.renter", null);
@@ -611,7 +619,7 @@ public class HotelsCommandExecutor {
 		if(p!=null&&p.hasPlayedBefore()){
 			sender.sendMessage(HMM.mes("chat.commands.check.heading").replaceAll("%player%", playername));
 			for(World w:worlds){
-				regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
+				regions = WGM.getRM(w).getRegions();
 				ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
 				if(rlist.length>0){
 					for(ProtectedRegion r:rlist){
@@ -649,7 +657,7 @@ public class HotelsCommandExecutor {
 	public void listHotels(World w, CommandSender sender){
 		sender.sendMessage(HMM.mes("chat.commands.listHotels.heading"));
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
+		regions = WGM.getRM(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
 		for(ProtectedRegion r:rlist){
 			String id = r.getId();
@@ -674,7 +682,7 @@ public class HotelsCommandExecutor {
 		String hotelName = hotel.substring(0, 1).toUpperCase() + hotel.substring(1).toLowerCase();
 		sender.sendMessage(HMM.mes("chat.commands.listRooms.heading").replaceAll("%hotel%", hotelName));
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
+		regions = WGM.getRM(w).getRegions();
 		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
 		if(rlist.length>0){
 			for(ProtectedRegion r : rlist){
@@ -734,7 +742,7 @@ public class HotelsCommandExecutor {
 								String[] Line1split = Line2.split(" ");
 								String hotelname = Line1split[0];
 								if(WGM.hasRegion(worldsign, "Hotel-"+hotelname)){
-									if(WGM.getWorldGuard().getRegionManager(worldsign).getRegion("Hotel-"+hotelname).contains(locx, locy, locz)){
+									if(WGM.getRM(worldsign).getRegion("Hotel-"+hotelname).contains(locx, locy, locz)){
 										b.setType(Material.AIR);
 										file.delete();
 									}
@@ -775,7 +783,7 @@ public class HotelsCommandExecutor {
 	public int nextNewRoom(World w, String hotel){
 		if(WGM.hasRegion(w, "Hotel-"+hotel)){
 			Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-			regions = WGM.getWorldGuard().getRegionManager(w).getRegions();
+			regions = WGM.getRM(w).getRegions();
 			for(int i=0; i<regions.size(); i++){
 				if(!WGM.hasRegion(w, "Hotel-"+hotel+"-"+(i+1)))
 					return i+1;
