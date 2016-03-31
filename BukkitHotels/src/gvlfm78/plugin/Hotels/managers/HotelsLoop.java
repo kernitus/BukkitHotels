@@ -70,7 +70,7 @@ public class HotelsLoop extends BukkitRunnable {
 				//Room sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 				String hotelName = config.getString("Sign.hotel");
-				World world = Bukkit.getWorld(config.getString("Sign.location.world").trim());
+				World world = Bukkit.getWorld(config.getString("Sign.location.world"));
 				int roomNum = config.getInt("Sign.room");
 				int locx = config.getInt("Sign.location.coords.x");
 				int locy = config.getInt("Sign.location.coords.y");

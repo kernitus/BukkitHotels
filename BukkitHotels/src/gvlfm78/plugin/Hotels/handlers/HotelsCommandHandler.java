@@ -27,8 +27,7 @@ import kernitus.plugin.Hotels.managers.WorldGuardManager;
 public class HotelsCommandHandler implements CommandExecutor {
 
 	private HotelsMain plugin;
-	public HotelsCommandHandler(HotelsMain instance)
-	{
+	public HotelsCommandHandler(HotelsMain instance){
 		this.plugin = instance;
 	}
 
@@ -266,11 +265,15 @@ public class HotelsCommandHandler implements CommandExecutor {
 								String hotelname = args[1].toLowerCase();
 								String roomnum = args[2];
 								if(WGM.hasRegion(world, "hotel-"+hotelname)){
-									if(WGM.hasRegion(world, "hotel-"+hotelname+"-"+roomnum)){
-										HCE.removeRoom(args[1],roomnum, world,sender);
+									if(WGM.isOwner(p, "hotel-"+hotelname, p.getWorld())||HMM.hasPerm(p, "hotels.delete.room.admin")){
+										if(WGM.hasRegion(world, "hotel-"+hotelname+"-"+roomnum)){
+											HCE.removeRoom(args[1],roomnum, world,sender);
+										}
+										else
+											sender.sendMessage(HMM.mes("chat.commands.roomNonExistant"));
 									}
 									else
-										sender.sendMessage(HMM.mes("chat.commands.roomNonExistant"));
+										sender.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
 								}
 								else
 									sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant"));
@@ -293,7 +296,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						else
 							sender.sendMessage(HMM.mes("chat.commands.deleteRoom.usage"));
 					}
-					else if(!(sender instanceof Player)){
+					else{
 						if(args.length>=4){
 							World world = Bukkit.getWorld(args[3]);
 							String hotelname = args[1];
@@ -321,12 +324,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 						if(args.length==3){
 							Player p = (Player) sender;
 							World world = p.getWorld();
-							HCE.renameHotel(plugin,args[1],args[2],world,sender);
+							HCE.renameHotel(args[1],args[2],world,sender);
 						}
 						else if(args.length>3){
 							World world = Bukkit.getWorld(args[3]);
 							if(world!=null){
-								HCE.renameHotel(plugin,args[1],args[2],world,sender);
+								HCE.renameHotel(args[1],args[2],world,sender);
 							}
 							else
 								sender.sendMessage(HMM.mes("chat.commands.worldNonExistant"));
@@ -338,7 +341,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						if(args.length>3){
 							World world = Bukkit.getWorld(args[3]);
 							if(world!=null){
-								HCE.renameHotel(plugin,args[1],args[2],world,sender);
+								HCE.renameHotel(args[1],args[2],world,sender);
 							}
 							else
 								sender.sendMessage(HMM.mes("chat.commands.worldNonExistant"));
@@ -391,8 +394,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 						if(sender instanceof Player){
 							Player p = (Player) sender;
 							World world = p.getWorld();
-							HCE.removeSigns(args[1],world,sender);
-							HCE.removeRegions(args[1],world,sender);
+							if(WGM.isOwner(p, "hotel-"+args[1], world)||HMM.hasPerm(p, "hotels.delete.admin")){
+								HCE.removeSigns(args[1],world,sender);
+								HCE.removeRegions(args[1],world,sender);
+							}
+							else
+								p.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
 						}
 						else if((args.length == 3)){
 							World world = Bukkit.getWorld(args[2]);
@@ -434,36 +441,35 @@ public class HotelsCommandHandler implements CommandExecutor {
 					if(HMM.hasPerm(sender, "hotels.sign.create")){
 						String hotelName = args[1];
 						Player p = (Player) sender;
-
-						if(!(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)))
-							sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant"));
-						else{
-							if(args.length>2){
-								try{
-									String room = args[2];
-									int roomNum = Integer.parseInt(room);
-									HCM.roomSetup(hotelName, room,p);
-									String roomNums = String.valueOf(roomNum);
-									roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1).toLowerCase();
-								} catch(NumberFormatException e){
-									sender.sendMessage(HMM.mes("chat.commands.room.roomNumInvalid"));
-								}
-							}
-							//Player did not specify room number
+						if(HCM.isInCreationMode(p.getUniqueId().toString())){
+							if(!(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)))
+								sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant"));
 							else{
-								int roomNum = HCE.nextNewRoom(p.getWorld(),hotelName);
-								if(roomNum!=0){
-									HCM.roomSetup(hotelName, String.valueOf(roomNum),p);
-									String roomNums = String.valueOf(roomNum);
-									roomNums = roomNums.substring(0, 1).toUpperCase() + roomNums.substring(1).toLowerCase();
-									sender.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(roomNum))
-											.replaceAll("%hotel%", hotelName));
+								if(args.length>2){
+									try{
+										String room = args[2];
+										int roomNum = Integer.parseInt(room);
+										HCM.roomSetup(hotelName, String.valueOf(roomNum),p);
+									} catch(NumberFormatException e){
+										sender.sendMessage(HMM.mes("chat.commands.room.roomNumInvalid"));
+									}
 								}
-								else
-									sender.sendMessage(HMM.mes("chat.commands.room.nextNewRoomFail"));
+								//Player did not specify room number
+								else{
+									int roomNum = HCE.nextNewRoom(p.getWorld(),hotelName);
+									if(roomNum!=0){
+										HCM.roomSetup(hotelName, String.valueOf(roomNum),p);
+									}
+									else
+										sender.sendMessage(HMM.mes("chat.commands.room.nextNewRoomFail"));
+								}
 							}
 						}
+						else
+							sender.sendMessage(HMM.mes("chat.commands.creationMode.notAlreadyIn"));
 					}
+					else
+						sender.sendMessage(HMM.mes("chat.noPermission"));
 				}
 				else
 					sender.sendMessage(HMM.mes("chat.commands.room.usage"));
@@ -487,63 +493,74 @@ public class HotelsCommandHandler implements CommandExecutor {
 							rf.add(r);
 						}
 						if(!rf.isEmpty()){
-							File invfile = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
 							for(ProtectedRegion r : rf){
 								String id = r.getId();
 								if(id.startsWith("hotel-")){ //If it's a hotel
 									if(id.matches("^hotel-.+-.+")){ //If it's a room						
 										String hotelandNum = (id.replaceFirst("hotel-", "")).toLowerCase();
+										String num = hotelandNum.replaceFirst("\\w+-", "");
+										String hotelName = hotelandNum.replaceFirst("-"+num, "");
 										File signFile = HConH.getFile("Signs"+File.separator+hotelandNum+".yml");
 										YamlConfiguration signConfig = HConH.getyml(signFile);
 
-										if(invfile.exists()){
-											signConfig.set("Sign.defaultHome.x", x);
-											signConfig.set("Sign.defaultHome.y", y);
-											signConfig.set("Sign.defaultHome.z", z);
-											signConfig.set("Sign.defaultHome.pitch", pitch);
-											signConfig.set("Sign.defaultHome.yaw", yaw);
-											try {
-												signConfig.save(signFile);
-												sender.sendMessage(HMM.mes("chat.commands.sethome.defaultHomeSet"));
-											} catch (IOException e){
-												e.printStackTrace();
-											}
-										}
-										else{ //It's a user doing this
-											if((signConfig.getString("Sign.renter")!=null)&&signConfig.getString("Sign.renter").matches(playerUUID)){
-												signConfig.set("Sign.userHome.x", x);
-												signConfig.set("Sign.userHome.y", y);
-												signConfig.set("Sign.userHome.z", z);
-												signConfig.set("Sign.userHome.pitch", pitch);
-												signConfig.set("Sign.userHome.yaw", yaw);
+										//Either admin or hotel owner doing this
+										if(HCM.isInCreationMode(p.getUniqueId().toString())){
+											if((HMM.hasPerm(p, "hotels.sethome.admin"))||WGM.isOwner(p, "hotel-"+hotelName, w)){
+												signConfig.set("Sign.defaultHome.x", x);
+												signConfig.set("Sign.defaultHome.y", y);
+												signConfig.set("Sign.defaultHome.z", z);
+												signConfig.set("Sign.defaultHome.pitch", pitch);
+												signConfig.set("Sign.defaultHome.yaw", yaw);
 												try {
 													signConfig.save(signFile);
-													sender.sendMessage(HMM.mes("chat.commands.sethome.userHomeSet"));
+													sender.sendMessage(HMM.mes("chat.commands.sethome.defaultHomeSet"));
+												} catch (IOException e){
+													e.printStackTrace();
+												}
+											}
+											else{ //It's a user doing this
+												if((signConfig.getString("Sign.renter")!=null)&&signConfig.getString("Sign.renter").matches(playerUUID)){
+													signConfig.set("Sign.userHome.x", x);
+													signConfig.set("Sign.userHome.y", y);
+													signConfig.set("Sign.userHome.z", z);
+													signConfig.set("Sign.userHome.pitch", pitch);
+													signConfig.set("Sign.userHome.yaw", yaw);
+													try {
+														signConfig.save(signFile);
+														sender.sendMessage(HMM.mes("chat.commands.sethome.userHomeSet"));
+													} catch (IOException e){
+														e.printStackTrace();
+													}
+												}
+												else
+													sender.sendMessage(HMM.mes("chat.commands.home.notRenterNoPermission"));
+											}
+										}
+										else
+											sender.sendMessage(HMM.mes("chat.commands.sethome.notInCreationMode"));
+										break;
+									}
+									else{//It's a hotel warp
+										String hotelName = (id.replaceFirst("hotel-", "")).toLowerCase();
+										if(HCM.isInCreationMode(p.getUniqueId().toString())){
+											if(HMM.hasPerm(p, "hotels.sethome.admin")||WGM.isOwner(p, "hotel-"+hotelName, w)){
+
+												File hotelFile = HConH.getFile("Hotels"+File.separator+hotelName+".yml");
+												YamlConfiguration hotelConfig = HConH.getyml(hotelFile);
+												hotelConfig.set("Hotel.home.x", x);
+												hotelConfig.set("Hotel.home.y", y);
+												hotelConfig.set("Hotel.home.z", z);
+												hotelConfig.set("Hotel.home.pitch", pitch);
+												hotelConfig.set("Hotel.home.yaw", yaw);
+												try {
+													hotelConfig.save(hotelFile);
+													sender.sendMessage(HMM.mes("chat.commands.sethome.hotelHomeSet"));
 												} catch (IOException e){
 													e.printStackTrace();
 												}
 											}
 											else
-												sender.sendMessage(HMM.mes("chat.commands.home.notRenterNoPermission"));
-										}
-										break;
-									}
-									else{//It's a hotel warp
-										if(invfile.exists()){
-											String hotelName = (id.replaceFirst("hotel-", "")).toLowerCase();
-											File hotelFile = HConH.getFile("Hotels"+File.separator+hotelName+".yml");
-											YamlConfiguration hotelConfig = HConH.getyml(hotelFile);
-											hotelConfig.set("Hotel.home.x", x);
-											hotelConfig.set("Hotel.home.y", y);
-											hotelConfig.set("Hotel.home.z", z);
-											hotelConfig.set("Hotel.home.pitch", pitch);
-											hotelConfig.set("Hotel.home.yaw", yaw);
-											try {
-												hotelConfig.save(hotelFile);
-												sender.sendMessage(HMM.mes("chat.commands.sethome.hotelHomeSet"));
-											} catch (IOException e){
-												e.printStackTrace();
-											}
+												sender.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
 										}
 										else
 											sender.sendMessage(HMM.mes("chat.commands.sethome.notInCreationMode"));
@@ -592,11 +609,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 											float pitch = Float.parseFloat(uhpitch);
 											float yaw = Float.parseFloat(uhyaw);
 											//Checking if player is renter or has permission
-											if((HMM.hasPerm(p, "hotels.home.others"))||p.getUniqueId().toString().matches(signConfig.getString("Sign.renter"))){
-												Location daloc = new Location(w, x, y, z);
-												daloc.setPitch(pitch);
-												daloc.setYaw(yaw);
-											p.teleport(daloc);
+											if((HMM.hasPerm(p, "hotels.home.admin"))||p.getUniqueId().toString().matches(signConfig.getString("Sign.renter"))){
+												Location daloc = new Location(w, x, y, z, yaw, pitch);
+												p.teleport(daloc);
 											}
 											else
 												sender.sendMessage(HMM.mes("chat.commands.home.notRenterNoPermission"));
@@ -613,11 +628,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 												double z = Double.parseDouble(dhz);
 												float pitch = Float.parseFloat(dhpitch);
 												float yaw = Float.parseFloat(dhyaw);
-												if((HMM.hasPerm(p, "hotels.home.others"))||(signConfig.getString("Sign.renter")!=null)&&p.getUniqueId().toString().matches(signConfig.getString("Sign.renter"))){
-													Location daloc = new Location(w, x, y, z);
-													daloc.setPitch(pitch);
-													daloc.setYaw(yaw);
-												p.teleport(daloc);
+												if(HMM.hasPerm(p, "hotels.home.admin")||signConfig.getString("Sign.renter")==null||p.getUniqueId().toString().matches(signConfig.getString("Sign.renter"))){
+													Location daloc = new Location(w, x, y, z, yaw, pitch);
+													p.teleport(daloc);
 												}
 												else
 													sender.sendMessage(HMM.mes("chat.commands.home.notRenterNoPermission"));
@@ -656,7 +669,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 											Location daloc = new Location(w, x, y, z);
 											daloc.setPitch(pitch);
 											daloc.setYaw(yaw);
-										p.teleport(daloc);
+											p.teleport(daloc);
 										}
 										else
 											sender.sendMessage(HMM.mes("chat.commands.home.noHomeSet"));	
@@ -685,6 +698,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 		}
 		//Command is not /hotels
-	return false;
-}
+		return false;
+	}
 }

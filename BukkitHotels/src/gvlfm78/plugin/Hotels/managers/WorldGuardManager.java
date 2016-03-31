@@ -1,5 +1,7 @@
 package kernitus.plugin.Hotels.managers;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,9 +17,9 @@ import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
@@ -29,6 +31,7 @@ import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.HotelsMain;
@@ -101,20 +104,44 @@ public class WorldGuardManager {
 		return getRM(world).hasRegion(regionName);
 	}
 	public void renameRegion(String oldname, String newname,World world){
-		if(hasRegion(world, oldname)){//If old hotel exists
+		if(hasRegion(world, oldname)){//If old region exists
 			ProtectedRegion oldr = getRegion(world, oldname);//Get old region
-			ProtectedCuboidRegion newr2 = new ProtectedCuboidRegion(
-					newname, 
-					new BlockVector(oldr.getMinimumPoint()), 
-					new BlockVector(oldr.getMaximumPoint())
-					);
+			ProtectedRegion newr2;
+			if(oldr instanceof ProtectedCuboidRegion){
+			newr2 = new ProtectedCuboidRegion(newname, oldr.getMinimumPoint(), oldr.getMaximumPoint());
+			}
+			else if(oldr instanceof ProtectedPolygonalRegion){
+				newr2 = new ProtectedPolygonalRegion(newname, oldr.getPoints(), oldr.getMinimumPoint().getBlockY(), oldr.getMaximumPoint().getBlockY());
+			}
+			else{
+				System.out.println("There was a problem renaming the region "+oldname);
+				return;
+			}
 			addRegion(world, newr2);
 			ProtectedRegion newr = getRegion(world, newname);
 			Map<Flag<?>, Object> flags = oldr.getFlags();
 			newr.setFlags(flags);
+			DefaultDomain owners = oldr.getOwners();
+			DefaultDomain members = oldr.getMembers();
+			newr.setOwners(owners);
+			newr.setMembers(members);
 			removeRegion(world, oldr.getId());
 			saveRegions(world);
 		}
+	}
+	public boolean isOwner(Player p,ProtectedRegion r){
+		if(r.getOwners().contains(p.getName())||r.getOwners().contains(p.getUniqueId()))
+			return true;
+		else
+			return false;
+	}
+	public boolean isOwner(Player p, String id,World w){
+		if(hasRegion(w,id)){
+			ProtectedRegion r = getRegion(w, id);
+			return isOwner(p,r);
+		}
+		else
+			return false;
 	}
 	public boolean doTwoRegionsOverlap(ProtectedRegion r1, ProtectedRegion r2){
 		List<BlockVector2D> points = r1.getPoints();
@@ -125,9 +152,10 @@ public class WorldGuardManager {
 	}
 	public boolean doHotelRegionsOverlap(ProtectedRegion region, World world){
 		Map<String, ProtectedRegion> regions = getRM(world).getRegions();
-		for(ProtectedRegion reg : regions.values()){
+		Collection<ProtectedRegion> reegions = new ArrayList<ProtectedRegion>(regions.values());
+		List<ProtectedRegion> inter = region.getIntersectingRegions(reegions);
+		for(ProtectedRegion reg : inter){
 			if(reg.getId().startsWith("hotel-")){
-				if(doTwoRegionsOverlap(reg,region))
 					return true;
 			}
 		}
@@ -135,9 +163,10 @@ public class WorldGuardManager {
 	}
 	public boolean doesRoomRegionOverlap(ProtectedRegion region, World world){
 		Map<String, ProtectedRegion> regions = getRM(world).getRegions();
-		for(ProtectedRegion reg : regions.values()){
+		Collection<ProtectedRegion> reegions = new ArrayList<ProtectedRegion>(regions.values());
+		List<ProtectedRegion> inter = region.getIntersectingRegions(reegions);
+		for(ProtectedRegion reg : inter){
 			if(reg.getId().matches("hotel-\\w+-\\d+")){//It's a room region
-				if(doTwoRegionsOverlap(reg,region))
 					return true;
 			}
 		}

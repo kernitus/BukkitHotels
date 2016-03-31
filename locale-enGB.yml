@@ -62,7 +62,7 @@ chat:
       extensionSuccessNoMore: '&aRent has been extended %tot% times. You can''t extend
         it any more.'
   creationMode:
-    hotelCreationFailed: '&4Could not create Hotel, hotel already exists'
+    hotelCreationFailed: '&4Could not create hotel, hotel already exists'
     hotelCreationSuccessful: '&2You have successfully created the %hotel% hotel'
     noSelection: '&4Please select an area using the WE wand'
     selectionInvalid: '&4Invalid selection. Please select the area again'
@@ -99,6 +99,7 @@ chat:
         lore1: R-click to check for
         lore2: conflict between regions
   commands:
+    youDoNotOwnThat: '&4You do not own that!'
     commands:
       header: '&4================================'
       subheader: '&5--Hotels plugin command help page--'

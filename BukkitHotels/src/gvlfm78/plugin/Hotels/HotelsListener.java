@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -38,6 +39,7 @@ public class HotelsListener implements Listener {
 		this.plugin = instance;
 	}
 	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
+	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
 	SignManager SM = new SignManager(plugin);
 	WorldGuardManager WGM = new WorldGuardManager(plugin);
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
@@ -48,7 +50,7 @@ public class HotelsListener implements Listener {
 		Player p = e.getPlayer();
 		//If sign is a hotels sign
 		if(e.getLine(0).toLowerCase().contains("[hotels]")) {
-			if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.create")||p.hasPermission("hotels.*")))){
+			if(HMM.hasPerm(p,"hotels.sign.create")){
 				//Sign lines
 				String Line3 = ChatColor.stripColor(e.getLine(2)).trim();
 				String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
@@ -178,9 +180,7 @@ public class HotelsListener implements Listener {
 	public void avoidDrop(PlayerDropItemEvent e) {
 		Player p = e.getPlayer();
 		UUID playerUUID = p.getUniqueId();
-		File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
-
-		if(file.exists())
+		if(HCM.isInCreationMode(playerUUID.toString()))
 			e.setCancelled(true);
 	}
 	//When a player tries to pickup an item/block
@@ -188,9 +188,16 @@ public class HotelsListener implements Listener {
 	public void avoidPickup(PlayerPickupItemEvent e) {
 		Player p = e.getPlayer();
 		UUID playerUUID = p.getUniqueId();
-		File file = HConH.getFile("Inventories"+File.separator+"Inventory-"+playerUUID+".yml");
-
-		if(file.exists())
+		if(HCM.isInCreationMode(playerUUID.toString()))
 			e.setCancelled(true);
+	}
+	@EventHandler
+	public void avoidChestInteraction(InventoryClickEvent e){
+		Player p = (Player) e.getWhoClicked();
+		if(!p.hasPermission("hotels.createmode.admin")){
+			UUID playerUUID = p.getUniqueId();
+			if(HCM.isInCreationMode(playerUUID.toString()))
+				e.setCancelled(true);
+		}
 	}
 }

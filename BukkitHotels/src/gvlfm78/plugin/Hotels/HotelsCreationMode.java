@@ -72,7 +72,7 @@ public class HotelsCreationMode {
 	public void hotelSetup(String hotelName, CommandSender s,Plugin plugin){
 		Player p = (Player) s;
 		if(!hotelName.contains("-")){
-			if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.create")||p.hasPermission("hotels.*")))){
+			if(HMM.hasPerm(p, "hotels.create")){
 				Selection sel = getWorldEdit().getSelection(p);
 				if(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
 					p.sendMessage(HMM.mes("chat.creationMode.hotelCreationFailed"));
@@ -80,7 +80,7 @@ public class HotelsCreationMode {
 				else if(sel!=null){
 					int ownedHotels = ownedHotels(p);
 					int maxHotels = HConH.getconfigyml().getInt("settings.max_hotels_owned");
-					if(ownedHotels<maxHotels){
+					if(ownedHotels<maxHotels||HMM.hasPerm(p, "hotels.create.admin")){
 						//Creating hotel region
 						if(sel instanceof CuboidSelection){
 							ProtectedRegion r = new ProtectedCuboidRegion(
@@ -138,7 +138,10 @@ public class HotelsCreationMode {
 
 	public void createRoomRegion(Player p, ProtectedRegion region, String hotelName, String room){
 		World world = p.getWorld();
-		if(!WGM.doHotelRegionsOverlap(region, world)){
+		ProtectedRegion hotelRegion = WGM.getRegion(world, "hotel-"+hotelName);
+		if(HMM.hasPerm(p, "hotels.create")){
+		if(!WGM.doesRoomRegionOverlap(region, world)){
+			if(WGM.isOwner(p, hotelRegion)||HMM.hasPerm(p, "hotels.create.admin")){
 			WGM.addRegion(world, region);
 			WGM.roomFlags(region,room);
 			region.setPriority(10);
@@ -146,10 +149,15 @@ public class HotelsCreationMode {
 			WGM.saveRegions(p.getWorld());
 			p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
 		}
+			else
+				p.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
+		}
 		else
 			p.sendMessage(HMM.mes("chat.commands.create.roomAlreadyPresent"));
 	}
-
+		else
+			p.sendMessage(HMM.mes("chat.noPermission"));
+	}
 	public void roomSetup(String hotelName,String room,Player p){
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();

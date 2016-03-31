@@ -102,102 +102,116 @@ public class SignManager {
 
 	public void placeRoomSign(SignChangeEvent e){
 		Player p = e.getPlayer();
+		World world = p.getWorld();
 		//Sign Lines
-		String Line2 = (ChatColor.stripColor(e.getLine(1)).trim());
+		String Line2 = ChatColor.stripColor(e.getLine(1)).trim();
 		String Line3 = ChatColor.stripColor(e.getLine(2)).trim();
 		String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
+		if(WGM.hasRegion(world, "hotel-"+Line2)){
+			ProtectedRegion reegion = WGM.getRegion(world, "hotel-"+Line2);
+			if(reegion.getOwners().contains(p.getName())||reegion.getOwners().contains(p.getUniqueId())||HMM.hasPerm(p, "hotels.sign.create.admin")){
 
-		File directory = HConH.getFile("Signs");
-		if(!directory.exists()){
-			directory.mkdir();}
-		if(Line3.contains(":")){
-			String[] Line3parts = Line3.split(":");
-			int roomnum = Integer.parseInt(Line3parts[0]); //Room Number
-			String roomnumb = String.valueOf(roomnum);
-			String cost = Line3parts[1]; //Cost
-			if((roomnumb.length()+cost.length()+9)<22){
-				File signFile = HConH.getFile("Signs"+File.separator+Line2.toLowerCase()+"-"+roomnum+".yml");
-				if(!signFile.exists()){ //Sign for room doesn't already exist
-					if ((!(Line2.isEmpty()))&&(WGM.getRM(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2))&& //Hotel region exists
-							(WGM.getRM(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ()))){
-						//Sign is within hotel region
-						if((WGM.getRM(e.getPlayer().getWorld()).hasRegion("Hotel-"+Line2+"-"+roomnum))){ //Room region exists
-							//Successful Sign
-							if(!signFile.exists()){
-								try {
-									signFile.createNewFile();
-								} catch (IOException e2){
-									p.sendMessage(HMM.mes("chat.sign.place.fileFail"));
+				File directory = HConH.getFile("Signs");
+				if(!directory.exists()){
+					directory.mkdir();}
+				if(Line3.contains(":")){
+					String[] Line3parts = Line3.split(":");
+					int roomnum = Integer.parseInt(Line3parts[0]); //Room Number
+					String roomnumb = String.valueOf(roomnum);
+					String cost = Line3parts[1]; //Cost
+					if((roomnumb.length()+cost.length()+9)<22){
+						File signFile = HConH.getFile("Signs"+File.separator+Line2.toLowerCase()+"-"+roomnum+".yml");
+						if(!signFile.exists()){ //Sign for room doesn't already exist
+							if ((!(Line2.isEmpty()))&&(WGM.hasRegion(world,"Hotel-"+Line2))&& //Hotel region exists
+									(WGM.getRM(world).getRegion("Hotel-"+Line2).contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ()))){
+								//Sign is within hotel region
+								if((WGM.hasRegion(world,"Hotel-"+Line2+"-"+roomnum))){ //Room region exists
+									//Successful Sign
+									if(!signFile.exists()){
+										try {
+											signFile.createNewFile();
+										} catch (IOException e2){
+											p.sendMessage(HMM.mes("chat.sign.place.fileFail"));
+										}
+									}
+
+									//Creating sign config file:
+									YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
+
+									String immutedtime = Line4.trim(); //Time
+
+									if(immutedtime.equals(0)){//Checking if time is set to infinite
+										signConfig.set("Sign.time", 0);
+									}
+									else{
+										long timeinminutes = TimeConverter(immutedtime);
+										signConfig.set("Sign.time", Long.valueOf(timeinminutes));
+									}
+
+									//Calculating accurate cost
+									double acccost = CostConverter(cost);
+
+									signConfig.set("Sign.hotel", Line2);
+									signConfig.set("Sign.room", roomnum);
+									signConfig.set("Sign.cost", acccost);
+
+									signConfig.set("Sign.region", WGM.getRM(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2+"-"+roomnum).getId().toString());
+									signConfig.set("Sign.location.world", String.valueOf(e.getBlock().getWorld().getName()));
+									signConfig.set("Sign.location.coords.x", Integer.valueOf(e.getBlock().getLocation().getBlockX()));
+									signConfig.set("Sign.location.coords.y", Integer.valueOf(e.getBlock().getLocation().getBlockY()));
+									signConfig.set("Sign.location.coords.z", Integer.valueOf(e.getBlock().getLocation().getBlockZ()));
+									try {
+										signConfig.save(signFile);
+									} catch (IOException e1) {
+										p.sendMessage(HMM.mes("chat.sign.place.fileFail"));
+										e1.printStackTrace();}
+
+									e.setLine(0, ChatColor.DARK_BLUE+Line2); //Hotel Name
+									e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost.toUpperCase()+"$"); //Room Number + Cost
+									if(immutedtime.matches("0"))
+										e.setLine(2,HMM.mesnopre("sign.permanent"));
+									else{
+										long ktimeinminutes = TimeConverter(immutedtime);
+										//Time
+										e.setLine(2, TimeFormatter(ktimeinminutes));
+									}
+									e.setLine(3,ChatColor.GREEN+HMM.mesnopre("sign.vacant")); //Renter
+									p.sendMessage(HMM.mes("chat.sign.place.success"));
+
+								} else{
+									p.sendMessage(HMM.mes("chat.sign.place.noRegion")); 
+									//Specified hotel does not exist
 								}
+							} else{
+								p.sendMessage(HMM.mes("chat.sign.place.outOfRegion"));       		
+								e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
+								//Sign not in hotel borders
 							}
-
-							//Creating sign config file:
-							YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
-
-							String immutedtime = Line4.trim(); //Time
-
-							if(immutedtime.equals(0)){//Checking if time is set to infinite
-								signConfig.set("Sign.time", 0);
-							}
-							else{
-								long timeinminutes = TimeConverter(immutedtime);
-								signConfig.set("Sign.time", Long.valueOf(timeinminutes));
-							}
-
-							//Calculating accurate cost
-							double acccost = CostConverter(cost);
-
-							signConfig.set("Sign.hotel", Line2);
-							signConfig.set("Sign.room", roomnum);
-							signConfig.set("Sign.cost", acccost);
-
-							signConfig.set("Sign.region", WGM.getRM(e.getPlayer().getWorld()).getRegion("Hotel-"+Line2+"-"+roomnum).getId().toString());
-							signConfig.set("Sign.location.world", String.valueOf(e.getBlock().getWorld().getName()));
-							signConfig.set("Sign.location.coords.x", Integer.valueOf(e.getBlock().getLocation().getBlockX()));
-							signConfig.set("Sign.location.coords.y", Integer.valueOf(e.getBlock().getLocation().getBlockY()));
-							signConfig.set("Sign.location.coords.z", Integer.valueOf(e.getBlock().getLocation().getBlockZ()));
-							try {
-								signConfig.save(signFile);
-							} catch (IOException e1) {
-								p.sendMessage(HMM.mes("chat.sign.place.fileFail"));
-								e1.printStackTrace();}
-
-							e.setLine(0, ChatColor.DARK_BLUE+Line2); //Hotel Name
-							e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost.toUpperCase()+"$"); //Room Number + Cost
-							if(immutedtime.matches("0"))
-								e.setLine(2,HMM.mesnopre("sign.permanent"));
-							else{
-								long ktimeinminutes = TimeConverter(immutedtime);
-								//Time
-								e.setLine(2, TimeFormatter(ktimeinminutes));
-							}
-							e.setLine(3,ChatColor.GREEN+HMM.mesnopre("sign.vacant")); //Renter
-							p.sendMessage(HMM.mes("chat.sign.place.success"));
-
-						} else{
-							p.sendMessage(HMM.mes("chat.sign.place.noRegion")); 
-							//Specified hotel does not exist
+						}else{
+							p.sendMessage(HMM.mes("chat.sign.place.alreadyExists"));
+							e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
+							//Sign for specified room already exists
 						}
-					} else{
-						p.sendMessage(HMM.mes("chat.sign.place.outOfRegion"));       		
+					}
+					else{
+						p.sendMessage(HMM.mes("chat.sign.place.tooLong"));				
 						e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
-						//Sign not in hotel borders
+						//Room num of price too big
 					}
 				}else{
-					p.sendMessage(HMM.mes("chat.sign.place.alreadyExists"));
+					p.sendMessage(HMM.mes("chat.sign.place.noSeparator"));  				
 					e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
-					//Sign for specified room already exists
+					//Line 3 does not contain separator
 				}
 			}
 			else{
-				p.sendMessage(HMM.mes("chat.sign.place.tooLong"));				
-				e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
-				//Room num of price too big
+				p.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));  
+				e.setCancelled(true);
 			}
-		}else{
-			p.sendMessage(HMM.mes("chat.sign.place.noSeparator"));  				
-			e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
-			//Line 3 does not contain separator
+		}
+		else{
+			p.sendMessage(HMM.mes("chat.sign.place.noRegion"));  
+			e.setCancelled(true);
 		}
 	}
 	public boolean isReceptionSign(Sign s){
