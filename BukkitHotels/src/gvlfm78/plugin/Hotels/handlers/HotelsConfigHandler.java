@@ -13,7 +13,6 @@ import java.nio.charset.Charset;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -43,23 +42,7 @@ public class HotelsConfigHandler {
 	}
 
 	public void setupConfigyml(Plugin plugin){
-		FileConfiguration config = plugin.getConfig();
-		plugin.getLogger().info("Generating config file...");
-		config.options().header("Hotels Plugin by kernitus\nAvailable languages: enGB, itIT, zhCN, znTW");
-		config.addDefault("settings.language", String.valueOf("enGB"));
-		config.addDefault("settings.max_hotels_owned", Integer.valueOf(3));
-		config.addDefault("settings.max_rooms_owned", Integer.valueOf(3));
-		config.addDefault("settings.max_rooms_owned_per_hotel", Integer.valueOf(2));
-		config.addDefault("settings.max_rent_extend", Integer.valueOf(3));
-		config.addDefault("settings.hotelsLoopTimerMinutes", Integer.valueOf(2));
-		config.addDefault("settings.use-permissions", Boolean.TRUE);
-		config.addDefault("settings.checkForUpdates", Boolean.TRUE);
-		config.addDefault("settings.allowPlayersIntoFreeRooms", Boolean.TRUE);
-		config.addDefault("settings.allowPlayersToOpenContainersInFreeRooms", Boolean.FALSE);
-		config.addDefault("settings.onlyDisplayAllowedCommands", Boolean.TRUE);
-
-		config.options().copyDefaults(true);
-		plugin.saveConfig();
+		plugin.saveResource("config.yml", false);
 		plugin.getLogger().info("Config file generated");
 	}
 
@@ -325,8 +308,8 @@ public class HotelsConfigHandler {
 		//Protection-Related
 		flagsConfig.addDefault("room.protection.BUILD", "none");
 		flagsConfig.addDefault("room.protection.INTERACT", "-g non_members deny");
-		flagsConfig.addDefault("room.protection.BLOCK-BREAK", "deny");
-		flagsConfig.addDefault("room.protection.BLOCK-PLACE", "deny");
+		flagsConfig.addDefault("room.protection.BLOCK-BREAK", "none");
+		flagsConfig.addDefault("room.protection.BLOCK-PLACE", "none");
 		flagsConfig.addDefault("room.protection.USE", "-g non_members deny");
 		flagsConfig.addDefault("room.protection.DAMAGE-ANIMALS", "none");
 		flagsConfig.addDefault("room.protection.CHEST-ACCESS", "-g non_members deny");

@@ -591,6 +591,7 @@ public class HotelsCommandExecutor {
 							if(player.equals(pfromfile)){
 								ProtectedRegion r = WGM.getRM(w).getRegion("hotel-"+hotel+"-"+room);
 								WGM.removeMember(player, r);
+								r.setPriority(1);
 								//Config stuff
 								config.set("Sign.renter", null);
 								config.set("Sign.timeRentedAt", null);
@@ -630,42 +631,78 @@ public class HotelsCommandExecutor {
 	public void check(String playername, CommandSender sender){
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
 		List<World> worlds = Bukkit.getWorlds();
+		Map<ProtectedRegion,World> hotels = new HashMap<ProtectedRegion,World>();
+		List<ProtectedRegion> rooms = new ArrayList<ProtectedRegion>();
 		@SuppressWarnings("deprecation")
 		OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
 		if(p!=null&&p.hasPlayedBefore()){
-			sender.sendMessage(HMM.mes("chat.commands.check.heading").replaceAll("%player%", playername));
-			for(World w:worlds){
+
+			for(World w:worlds){//Looping through all the regions in all the worlds & separating rooms from hotels
 				regions = WGM.getRM(w).getRegions();
 				ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
 				if(rlist.length>0){
 					for(ProtectedRegion r:rlist){
 						if(r.getId().toLowerCase().startsWith("hotel-")){ //If it's a hotel
-							if(r.getId().toLowerCase().matches("^hotel-.+-.+")){ //If it's a room
-								if(r.getMembers().contains(WGM.getWorldGuard().wrapOfflinePlayer(p))){
-									String[] rId = r.getId().toLowerCase().split("-");
-									String hotelname = rId[1].replaceAll("-", "");
-									String roomnum = rId[2].replaceAll("-", "");
-									File file = HConH.getFile("Signs"+File.separator+hotelname+"-"+roomnum+".yml");
-									YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-									long expiryDate = config.getLong("Sign.expiryDate");
-									if(expiryDate>0){
-										long currentmins = System.currentTimeMillis()/1000/60;
-										String timeleft = SM.TimeFormatter(expiryDate-currentmins);
-										sender.sendMessage(HMM.mes("chat.commands.check.line")
-												.replaceAll("%hotel%", hotelname).replaceAll("%room%", roomnum).replaceAll("%timeleft%", String.valueOf(timeleft)));
-									}
-									else{
-										sender.sendMessage(HMM.mes("chat.commands.check.line")
-												.replaceAll("%hotel%", hotelname).replaceAll("%room%", roomnum).replaceAll("%timeleft%", HMM.mesnopre("sign.permanent")));
-									}
-
-								}
+							if(r.getId().toLowerCase().matches("^hotel-.+-.+")){//If it's a room
+								if(r.getMembers().contains(WGM.getWorldGuard().wrapOfflinePlayer(p)))//They are the renter
+									rooms.add(r);//Add to hotels list
+							}
+							else{
+								if(r.getOwners().contains(WGM.getWorldGuard().wrapOfflinePlayer(p)))//They are the owner
+									hotels.put(r,w);//Add to rooms list
 							}
 						}
 					}
 				}
 			}
-			sender.sendMessage(HMM.mes("chat.commands.check.footer").replaceAll("%player%", playername));
+			//Printing out owned hotels first
+			sender.sendMessage(HMM.mes("chat.commands.check.headerHotels").replaceAll("%player%", playername));
+			if(hotels.size()>0){
+				for(ProtectedRegion hr:hotels.keySet()){
+					String[] rId = hr.getId().toLowerCase().split("-");
+					String hotelName = rId[1];
+
+					//String hotelName = hr.getId().replaceFirst("hotel-", "");
+					//hotelName = hotelName.replaceFirst("-\\d+", "");
+					World world = hotels.get(hr);
+					int total = SM.totalRooms(hotelName, world);
+					int free = SM.freeRooms(hotelName, world);
+					sender.sendMessage(HMM.mes("chat.commands.check.lineHotels")
+							.replaceAll("%player%", playername)
+							.replaceAll("%hotel%", hotelName)
+							.replaceAll("%total%", String.valueOf(total))
+							.replaceAll("%free%", String.valueOf(free))
+							);
+				}
+			}
+			else
+				sender.sendMessage(HMM.mes("chat.commands.check.noHotels"));
+
+			//And printing out rented rooms
+			sender.sendMessage(HMM.mes("chat.commands.check.headerRooms").replaceAll("%player%", playername));
+			if(rooms.size()>0){
+				for(ProtectedRegion r:rooms){//looping through rented rooms
+					String[] rId = r.getId().toLowerCase().split("-");
+					String hotelName = rId[1];
+					String roomNum = rId[2];
+
+					File file = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+					long expiryDate = config.getLong("Sign.expiryDate");
+
+					if(expiryDate>0){
+						long currentmins = System.currentTimeMillis()/1000/60;
+						String timeleft = SM.TimeFormatter(expiryDate-currentmins);
+						sender.sendMessage(HMM.mes("chat.commands.check.lineRooms")
+								.replaceAll("%hotel%", hotelName).replaceAll("%room%", roomNum).replaceAll("%timeleft%", String.valueOf(timeleft)));
+					}
+					else//Room is permanently rented
+						sender.sendMessage(HMM.mes("chat.commands.check.lineRooms")
+								.replaceAll("%hotel%", hotelName).replaceAll("%room%", roomNum).replaceAll("%timeleft%", HMM.mesnopre("sign.permanent")));
+				}
+			}
+			else
+				sender.sendMessage(HMM.mes("chat.commands.check.noRooms"));
 		}
 		else
 			sender.sendMessage(HMM.mes("chat.commands.userNonExistant"));
@@ -692,49 +729,45 @@ public class HotelsCommandExecutor {
 				}
 			}
 		}
-		sender.sendMessage(HMM.mes("chat.commands.listHotels.footer"));
 	}
 	public void listRooms(String hotel, World w, CommandSender sender){
 		String hotelName = hotel.substring(0, 1).toUpperCase() + hotel.substring(1).toLowerCase();
 		sender.sendMessage(HMM.mes("chat.commands.listRooms.heading").replaceAll("%hotel%", hotelName));
-		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WGM.getRM(w).getRegions();
-		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		if(rlist.length>0){
-			for(ProtectedRegion r : rlist){
-				String id = r.getId();
-				if(id.startsWith("hotel-")){ //If it's a hotel
-					if(id.matches("^hotel-"+hotel.toLowerCase()+"-.+")){ //If it's a room of the specified hotel
-						String roomnum = (id.replaceAll("hotel-.+-", ""));
-						int spaceamount = 10-roomnum.length();
-						String space = " ";
-						String rep = StringUtils.repeat(space, spaceamount);
-						File file = HConH.getFile("Signs"+File.separator+hotel.toLowerCase()+"-"+roomnum+".yml");
-						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-						String state = "";
-						if(config!=null){
-							String renter = config.getString("Sign.renter");
-							if(renter==null){
-								//Vacant
-								state = ChatColor.GREEN+HMM.mesnopre("sign.vacant");
-							}
-							else{
-								//Occupied
-								state = ChatColor.BLUE+HMM.mesnopre("sign.occupied");
-							}
-							sender.sendMessage(HMM.mes("chat.commands.listRooms.line")
-									.replaceAll("%room%", roomnum)
-									.replaceAll("%state%", state)
-									.replaceAll("%space%", rep)
-									);
+		Map<String, ProtectedRegion> regions = WGM.getRM(w).getRegions();
+		boolean roomsFound = false;
+		for(ProtectedRegion r : regions.values()){
+			String id = r.getId();
+			if(id.startsWith("hotel-")){ //If it's a hotel
+				if(id.matches("^hotel-"+hotel.toLowerCase()+"-.+")){ //If it's a room of the specified hotel
+					String roomnum = (id.replaceAll("hotel-.+-", ""));
+					int spaceamount = 10-roomnum.length();
+					String space = " ";
+					String rep = StringUtils.repeat(space, spaceamount);
+					File file = HConH.getFile("Signs"+File.separator+hotel.toLowerCase()+"-"+roomnum+".yml");
+					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+					String state = "";
+					if(config!=null){
+						String renter = config.getString("Sign.renter");
+						if(renter==null){
+							//Vacant
+							state = ChatColor.GREEN+HMM.mesnopre("sign.vacant");
 						}
+						else{
+							//Occupied
+							state = ChatColor.BLUE+HMM.mesnopre("sign.occupied");
+						}
+						sender.sendMessage(HMM.mes("chat.commands.listRooms.line")
+								.replaceAll("%room%", roomnum)
+								.replaceAll("%state%", state)
+								.replaceAll("%space%", rep)
+								);
+						roomsFound = true;
 					}
 				}
 			}
 		}
-		else
+		if(roomsFound==false)
 			sender.sendMessage(HMM.mes("chat.commands.listRooms.noRooms"));
-		sender.sendMessage(HMM.mes("chat.commands.listRooms.footer").replaceAll("%hotel%", hotelName));
 	}
 	public void removeSigns(String hotelName,World world,CommandSender sender){
 		if(WGM.hasRegion(world, "Hotel-"+hotelName)){

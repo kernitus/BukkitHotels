@@ -131,11 +131,23 @@ public class HotelsListener implements Listener {
 					}
 				}
 			}
-			//There are no messages
 		}
-		//There are no messages
+		//Notifying hotel owners of any revenue they made while offline
+		ConfigurationSection allRevenueMessages = queue.getConfigurationSection("messages.revenue");
+		if(allRevenueMessages!=null){
+			Set<String> keys = allRevenueMessages.getKeys(false);
+			if(keys!=null){
+				for(String key:keys){
+					UUID configUUID = UUID.fromString(queue.getString("messages.revenue."+key+".UUID"));
+					if(playerUUID.equals(configUUID)){
+						p.sendMessage(queue.getString("messages.revenue."+key+".message"));
+						queue.set("messages.revenue."+key, null);
+						HConH.saveMessageQueue(queue);
+					}
+				}
+			}
+		}
 	}
-
 	public int totalRooms(String hotelName,World w){
 		int tot = 0;
 		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();

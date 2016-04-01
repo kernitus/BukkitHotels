@@ -34,6 +34,8 @@ sign:
 chat:
   prefix: '&9[Hotels]&r'
   noPermission: '&4You do not have permission!'
+  moneyEarned: '&aYou have earned $%revenue% from the rent of room %room% in your hotel %hotel%'
+  moneyEarnedExtend: '&aYou have earned $%revenue% from the extension of the rent of room %room% in your hotel %hotel%'
   sign:
     place:
       fileFail: '&4Could not save sign file'
@@ -223,9 +225,12 @@ chat:
       success: '&aSuccessfully removed %player% from room %room% of the %hotel% hotel'
       usage: '&4Correct usage: /hotels remove [playerName] [hotelname] [roomNum] <worldname>'
     check:
-      heading: '&a==Rented rooms list for %player%=='
-      footer: '&c==End of rented rooms list for %player%=='
-      line: '&6Hotel: &c%hotel%    &6Room: &c%room%    &6Expires in: &c%timeleft%'
+      headerHotels: '&a==Owned hotels list for %player%=='
+      noHotels: '&cYou do not own any hotels!'
+      lineHotels: '&6Hotel: &c%hotel%    &9Total: &r%total%   &aFree: &r%free%'
+      headerRooms: '&a==Rented rooms list for %player%=='
+      noRooms: '&cYou have not rented any rooms!'
+      lineRooms: '&6Hotel: &c%hotel%    &6Room: &c%room%    &6Expires in: &c%timeleft%'
     listHotels:
       heading: '&a==Hotel list=='
       footer: '&c==End of hotel list=='
@@ -270,3 +275,20 @@ chat:
         this!'
     reload:
       success: '&aConfiguration files reloaded'
+    sellhotel:
+      consoleRejected: The console can't sell a hotel!
+      usage: '&4Correct usage: &6&o/ht sellh [hotelName] [buyerName] [price]'
+      buyerNotOnline: '&4The buyer is not online!'
+      selling: '&aPlayer %seller% is selling their hotel %hotel% to you for $%price%. Type &6&o/ht buyh %hotel% &r&ato buy it'
+      sellingAsked: '&aThe player %buyer% has been asked if they wish to buy your hotel'
+      sellingAlreadyAsked: '&4You have already asked the player %buyer% if they wish to buy your hotel!'
+      invalidPrice: '&4The price you entered is not valid!'
+      success: '&aYou have just sold the %hotel% hotel to player %buyer% for $%price%'
+      expired: '&4Your sale of the hotel %hotel% has expired'
+    buyhotel:
+      consoleRejected: The console can't buy a hotel!
+      usage: '&4Correct usage: &6&o/ht buyh [hotelName]'
+      success: '&aYou have just bought the %hotel% hotel from %seller% for $%price%'
+      notOnSale: '&4That hotel is not on sale!'
+      notEnoughMoney: '&4You do not have enough money!'
+      expired: '&4The sale of hotel %hotel% has expired'

@@ -49,7 +49,6 @@ public class HotelsLoop extends BukkitRunnable {
 
 		ArrayList<String> fileslist = HFF.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
 		for(String x: fileslist){
-			YamlConfiguration locale = HConH.getLocale();
 			File file = HConH.getFile("Signs"+File.separator+x);
 			if(file.getName().matches("Reception-.+-.+")){
 				//It's a reception sign
@@ -63,7 +62,7 @@ public class HotelsLoop extends BukkitRunnable {
 				if(SM.updateReceptionSign(l)==true){
 					file.delete();
 					b.setType(Material.AIR);
-					plugin.getLogger().info(locale.getString("sign.delete.reception").replaceAll("%filename%", file.getName()));
+					plugin.getLogger().info(HMM.mesnopre("sign.delete.reception").replaceAll("%filename%", file.getName()));
 				}
 			}
 			else{
@@ -101,10 +100,11 @@ public class HotelsLoop extends BukkitRunnable {
 											}
 											//If set in config, make room accessible to all players now that it is not rented
 											WGM.makeRoomAccessible(region);
+											region.setPriority(1);
 
-											sign.setLine(3, ChatColor.GREEN+locale.getString("sign.vacant"));
+											sign.setLine(3, ChatColor.GREEN+HMM.mesnopre("sign.vacant"));
 											sign.update();
-											plugin.getLogger().info(locale.getString("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
+											plugin.getLogger().info(HMM.mesnopre("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
 											if(p.isOnline()){
 												Player op = Bukkit.getServer().getPlayer(UUID.fromString(config.getString("Sign.renter")));
 												op.sendMessage(HMM.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
@@ -119,7 +119,7 @@ public class HotelsLoop extends BukkitRunnable {
 												int expiryMessagesSize = expiryMessages.size();
 												String pathToPlace = "messages.expiry."+(expiryMessagesSize+1);
 												queue.set(pathToPlace+".UUID", p.getUniqueId().toString());
-												queue.set(pathToPlace+".message", locale.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+												queue.set(pathToPlace+".message", HMM.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 												HConH.saveMessageQueue(queue);
 											}
 											config.set("Sign.renter", null);
@@ -161,22 +161,64 @@ public class HotelsLoop extends BukkitRunnable {
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
-								sign.setLine(3, ChatColor.GREEN+locale.getString("sign.vacant"));
+								sign.setLine(3, ChatColor.GREEN+HMM.mesnopre("sign.vacant"));
 								sign.setLine(2, SM.TimeFormatter(config.getLong("Sign.time")));
 								sign.update();
 							}
 						}
 						else{
 							file.delete();
-							plugin.getLogger().info(locale.getString("sign.delete.roomNum").replaceAll("%filename%", file.getName()));}
+							plugin.getLogger().info(HMM.mesnopre("sign.delete.roomNum").replaceAll("%filename%", file.getName()));}
 					}
 					else{
 						file.delete();
-						plugin.getLogger().info(locale.getString("sign.delete.hotelName").replaceAll("%filename%", file.getName()));}
+						plugin.getLogger().info(HMM.mesnopre("sign.delete.hotelName").replaceAll("%filename%", file.getName()));}
 				}
 				else{
 					file.delete();
-					plugin.getLogger().info(locale.getString("sign.delete.location").replaceAll("%filename%", file.getName()));}
+					plugin.getLogger().info(HMM.mesnopre("sign.delete.location").replaceAll("%filename%", file.getName()));}
+			}
+		}
+		//Handling hotel files
+		File hdir = new File("plugins"+File.separator+"Hotels"+File.separator+"Hotels");
+		if(!(hdir.exists()))
+			hdir.mkdir();
+
+		ArrayList<String> hfileslist = HFF.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Hotels");
+		for(String h:hfileslist){
+			File file = HConH.getFile("Hotels"+File.separator+h);
+			YamlConfiguration hcon = YamlConfiguration.loadConfiguration(file);
+			String buyeruuid = hcon.getString("Hotel.sell.buyer");
+			if(buyeruuid!=null){
+				String hotelName = file.getName().replaceFirst(".yml", "");
+				OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(buyeruuid));
+				if(op.isOnline()){
+					Player oop = (Player) op;
+					oop.sendMessage(HMM.mes("hotels.commands.buyhotel.expired").replaceAll("%hotel%", hotelName));
+				}
+				List<World> worlds = Bukkit.getWorlds();
+				for(World currentw:worlds){
+					if(WGM.hasRegion(currentw, "hotel-"+hotelName)){
+						ProtectedRegion hr = WGM.getRegion(currentw, "hotel-"+hotelName);
+						Set<String> owners = hr.getOwners().getPlayers();
+						for(String co:owners){
+							@SuppressWarnings("deprecation")
+							OfflinePlayer cof = Bukkit.getOfflinePlayer(co);
+							if(cof.isOnline()){
+								Player cop = (Player) cof;
+								cop.sendMessage(HMM.mes("hotels.commands.sellhotel.expired").replaceAll("%hotel%", hotelName));
+							}
+						}
+					}
+				}
+				
+				hcon.set("Hotel.sell.buyer", null);
+				hcon.set("Hotel.sell.price", null);
+				try {
+					hcon.save(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

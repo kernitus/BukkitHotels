@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -397,6 +399,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 							if(WGM.isOwner(p, "hotel-"+args[1], world)||HMM.hasPerm(p, "hotels.delete.admin")){
 								HCE.removeSigns(args[1],world,sender);
 								HCE.removeRegions(args[1],world,sender);
+								File file = HConH.getFile("Hotels"+File.separator+args[1].toLowerCase()+".yml");
+								if(file.exists())
+									file.delete();
 							}
 							else
 								p.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
@@ -405,6 +410,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 							World world = Bukkit.getWorld(args[2]);
 							HCE.removeSigns(args[1],world,sender);
 							HCE.removeRegions(args[1],world,sender);
+							File file = HConH.getFile("Hotels"+File.separator+args[1].toLowerCase()+".yml");
+							if(file.exists())
+								file.delete();
 						}
 					}
 					else
@@ -691,6 +699,131 @@ public class HotelsCommandHandler implements CommandExecutor {
 			else if(args[0].equalsIgnoreCase("reload")){
 				HConH.reloadConfigs(plugin);
 				sender.sendMessage(HMM.mes("chat.commands.reload.success"));
+			}
+			else if(args[0].equalsIgnoreCase("sellhotel")||args[0].equalsIgnoreCase("sellh")){
+				if(sender instanceof Player){
+					Player player = (Player) sender;
+					if(HMM.hasPerm(player, "hotels.sell.hotel")){
+						if(args.length>=4){//If they have all necessary arguments
+							World world = player.getWorld();
+							if(WGM.hasRegion(world, "hotel-"+args[1])){//If specified hotel exists
+								if(WGM.isOwner(player, "hotel-"+args[1], world)){
+									@SuppressWarnings("deprecation")
+									Player buyer = Bukkit.getPlayerExact(args[2]);
+									if(buyer!=null&&buyer.isOnline()){
+										int price;
+										try{
+											price = Integer.parseInt(args[3]);
+										}
+										catch(NumberFormatException e){
+											sender.sendMessage(HMM.mes("chat.commands.sellhotel.invalidPrice"));
+											return false;
+										}
+										String hotelName = args[1].toLowerCase();
+										File hotelFile = HConH.getFile("Hotels"+File.separator+hotelName+".yml");
+										YamlConfiguration hotelconf = YamlConfiguration.loadConfiguration(hotelFile);
+										String previousBuyer = hotelconf.getString("Hotel.sell.buyer");
+										if(previousBuyer==null||previousBuyer.isEmpty()||!buyer.getUniqueId().toString().equals(previousBuyer)){
+											hotelconf.set("Hotel.sell.buyer", buyer.getUniqueId().toString());
+											hotelconf.set("Hotel.sell.price", price);
+											try {
+												hotelconf.save(hotelFile);
+											} catch (IOException e) {
+												e.printStackTrace();
+											}
+											sender.sendMessage(HMM.mes("chat.commands.sellhotel.sellingAsked").replaceAll("%buyer%", buyer.getName()));
+											buyer.sendMessage(HMM.mes("chat.commands.sellhotel.selling")
+													.replaceAll("%seller%", player.getName())
+													.replaceAll("%hotel%", args[1])
+													.replaceAll("%price%", String.valueOf(price))
+													);
+										}
+										else
+											sender.sendMessage(HMM.mes("chat.commands.sellhotel.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName()));
+									}
+									else
+										sender.sendMessage(HMM.mes("chat.commands.sellhotel.buyerNotOnline"));
+								}
+								else
+									sender.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
+							}
+							else
+								sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant"));	
+						}
+						else
+							sender.sendMessage(HMM.mes("chat.commands.sellhotel.usage"));
+					}
+					else
+						sender.sendMessage(HMM.mes("chat.noPermission"));
+				}
+				else
+					sender.sendMessage(HMM.mesnopre("chat.commands.sellhotel.consoleRejected"));
+			}
+			else if(args[0].equalsIgnoreCase("buyhotel")||args[0].equalsIgnoreCase("buyh")){
+				if(sender instanceof Player){
+					Player player = (Player) sender;
+					if(args.length>=2){
+						World world = player.getWorld();
+						if(WGM.hasRegion(world, "hotel-"+args[1])){
+							String hotelName = args[1].toLowerCase();
+							File hotelFile = HConH.getFile("Hotels"+File.separator+hotelName+".yml");
+							YamlConfiguration hotelconf = YamlConfiguration.loadConfiguration(hotelFile);
+							String configBuyer = hotelconf.getString("Hotel.sell.buyer");
+							if(configBuyer!=null&&!configBuyer.isEmpty()&&configBuyer.matches(player.getUniqueId().toString())){
+								//They are the buyer the hotel owner has specified
+								double balance = HotelsMain.economy.getBalance(player);
+								int price = hotelconf.getInt("Hotel.sell.price");
+								if((balance-price)>=0){
+									//Player has enough money
+									HotelsMain.economy.withdrawPlayer(player, price);
+									ProtectedRegion region = WGM.getRegion(world, "hotel-"+args[1]);
+									Set<String> owners = region.getOwners().getPlayers();
+									String onlineOwner = "";
+									for(String name:owners){//Paying all owners
+										@SuppressWarnings("deprecation")
+										OfflinePlayer p = Bukkit.getOfflinePlayer(name);
+										if(p.isOnline()){
+											Player op = (Player) p;
+											WGM.removeOwner(op, region);
+											HotelsMain.economy.depositPlayer(op, price);
+											onlineOwner = op.getName();
+											op.sendMessage(HMM.mes("chat.commands.sellhotel.success")
+													.replaceAll("%hotel%", hotelName)
+													.replaceAll("%buyer%", player.getName())
+													.replaceAll("%price%", String.valueOf(price))
+													);
+										}
+									}
+									WGM.addOwner(player, region);
+									player.sendMessage(HMM.mes("chat.commands.buyhotel.success")
+											.replaceAll("%hotel%", hotelName)
+											.replaceAll("%seller%", onlineOwner)
+											.replaceAll("%price%", String.valueOf(price))
+											);
+
+									hotelconf.set("Hotel.sell.buyer", null);
+									hotelconf.set("Hotel.sell.price", null);
+									try {
+										hotelconf.save(hotelFile);
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
+								}
+								else
+									sender.sendMessage(HMM.mes("chat.commands.buyhotel.notEnoughMoney"));
+							}
+							else
+								sender.sendMessage(HMM.mes("chat.commands.buyhotel.notOnSale"));	
+						}
+						else
+							sender.sendMessage(HMM.mes("chat.commands.hotelNonExistant"));	
+					}
+					else
+						sender.sendMessage(HMM.mesnopre("chat.commands.buyhotel.usage"));
+				}
+				else
+					sender.sendMessage(HMM.mesnopre("chat.commands.buyhotel.consoleRejected"));
+
 			}
 			//Other command
 			else {

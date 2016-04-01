@@ -120,6 +120,7 @@ public class HotelsCreationMode {
 			WGM.addRegion(world, region);
 			WGM.hotelFlags(region,hotelName);
 			WGM.addOwner(p, region);
+			region.setPriority(5);
 			WGM.saveRegions(world);
 			String idHotelName =region.getId();
 			String[] partsofhotelName = idHotelName.split("-");
@@ -140,21 +141,21 @@ public class HotelsCreationMode {
 		World world = p.getWorld();
 		ProtectedRegion hotelRegion = WGM.getRegion(world, "hotel-"+hotelName);
 		if(HMM.hasPerm(p, "hotels.create")){
-		if(!WGM.doesRoomRegionOverlap(region, world)){
-			if(WGM.isOwner(p, hotelRegion)||HMM.hasPerm(p, "hotels.create.admin")){
-			WGM.addRegion(world, region);
-			WGM.roomFlags(region,room);
-			region.setPriority(10);
-			WGM.makeRoomAccessible(region);
-			WGM.saveRegions(p.getWorld());
-			p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
-		}
+			if(!WGM.doesRoomRegionOverlap(region, world)){
+				if(WGM.isOwner(p, hotelRegion)||HMM.hasPerm(p, "hotels.create.admin")){
+					WGM.addRegion(world, region);
+					WGM.roomFlags(region,room);
+					region.setPriority(1);
+					WGM.makeRoomAccessible(region);
+					WGM.saveRegions(p.getWorld());
+					p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
+				}
+				else
+					p.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
+			}
 			else
-				p.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
+				p.sendMessage(HMM.mes("chat.commands.create.roomAlreadyPresent"));
 		}
-		else
-			p.sendMessage(HMM.mes("chat.commands.create.roomAlreadyPresent"));
-	}
 		else
 			p.sendMessage(HMM.mes("chat.noPermission"));
 	}
@@ -302,15 +303,16 @@ public class HotelsCreationMode {
 			}
 		}
 		//Sign
-		ItemStack sign = new ItemStack(Material.SIGN, 1);
-		ItemMeta sim = sign.getItemMeta();
-		sim.setDisplayName(HMM.mesnopre("chat.creationMode.items.sign.name"));
-		List<String> signLoreList = new ArrayList<String>();
-		signLoreList.add(HMM.mesnopre("chat.creationMode.items.sign.lore1"));
-		signLoreList.add(HMM.mesnopre("chat.creationMode.items.sign.lore2"));
-		sim.setLore(signLoreList);
-		sign.setItemMeta(sim);
-		pi.setItem(1, sign);
+		if(p.hasPermission("hotels.createmode.admin")){
+			ItemStack sign = new ItemStack(Material.SIGN, 1);
+			ItemMeta sim = sign.getItemMeta();
+			sim.setDisplayName(HMM.mesnopre("chat.creationMode.items.sign.name"));
+			List<String> signLoreList = new ArrayList<String>();
+			signLoreList.add(HMM.mesnopre("chat.creationMode.items.sign.lore1"));
+			signLoreList.add(HMM.mesnopre("chat.creationMode.items.sign.lore2"));
+			sim.setLore(signLoreList);
+			sign.setItemMeta(sim);
+		}
 		//Compass
 		if(p.hasPermission("worldedit.navigation")){
 			ItemStack compass = new ItemStack(Material.COMPASS, 1);

@@ -1,8 +1,5 @@
 package kernitus.plugin.Hotels.managers;
 
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -10,6 +7,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -21,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -34,6 +33,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 public class SignManager {
 
@@ -270,7 +272,8 @@ public class SignManager {
 	public void rentRoom(YamlConfiguration signConfig,File signFile,Player p,String hotelName,String roomNum){
 		YamlConfiguration configyml = HConH.getconfigyml();
 		//If region exists
-		if(WGM.getRM(p.getWorld()).hasRegion(signConfig.getString("Sign.region"))){
+		World world = p.getWorld();
+		if(WGM.getRM(world).hasRegion(signConfig.getString("Sign.region"))){
 			String cRenter = signConfig.getString("Sign.renter");
 			if(cRenter==null){ //If there is no renter
 				if(HotelsMain.economy.hasAccount(p)){
@@ -280,7 +283,10 @@ public class SignManager {
 						//If player is under max owned rooms limit
 						if(getTimesRented(p.getUniqueId())<configyml.getInt("settings.max_rooms_owned")){
 							//Renter has passed all conditions and is able to rent this room
-							HotelsMain.economy.withdrawPlayer(p, price);
+							HotelsMain.economy.withdrawPlayer(p, price);//Taking away money from renter
+							payOwners(price,hotelName,roomNum,world,false);
+							WGM.getRM(world).getRegion(signConfig.getString("Sign.region")).setPriority(10);
+
 							//Setting time rented at
 							signConfig.set("Sign.renter", p.getUniqueId().toString());
 							long currentmins = System.currentTimeMillis()/1000/60;
@@ -353,6 +359,74 @@ public class SignManager {
 		else
 			p.sendMessage(HMM.mes("chat.sign.use.nonExistantRoom")); 
 	}
+	public void payOwners(double price, String hotelName, String roomNum, World world, boolean isRentExtend){
+		String tax = HConH.getconfigyml().getString("settings.tax");
+		double revenue = price;
+		double taxValue;
+		if(tax.matches("\\d+%")){//If it's a percentage
+			tax = tax.replace("%", "");
+			try{
+				taxValue = Double.parseDouble(tax);
+			}
+			catch(NumberFormatException e){
+				//Tax value is invalid, assuming it is 0%
+				taxValue = 0;
+			}
+			if(taxValue>=0&&taxValue<=100){
+				revenue = revenue-(revenue*(taxValue/100));
+			}
+		}
+		else if(tax.matches("\\d+")){//If it's a set amount
+			try{
+				taxValue = Double.parseDouble(tax);
+			}
+			catch(NumberFormatException e){
+				//Tax value is invalid, assuming it is 0%
+				taxValue = 0;
+			}
+			revenue = revenue-taxValue;
+		}
+		//Giving to all owners the revenue
+		Set<String> hotelOwners = WGM.getRegion(world, "hotel-"+hotelName).getOwners().getPlayers();
+		for(String ownerName:hotelOwners){
+			@SuppressWarnings("deprecation")
+			OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerName);
+			HotelsMain.economy.depositPlayer(owner, revenue);
+			String chatMessage;
+			if(isRentExtend==true)
+				chatMessage = "chat.moneyEarnedExtend";
+				else
+					chatMessage = "chat.moneyEarned";
+			if(revenue<0)
+				revenue = 0;
+			
+			if(owner.isOnline()){//Telling player they earned some munniez
+				Player player = (Player) owner;
+				player.sendMessage(HMM.mes(chatMessage)
+						.replaceAll("%revenue%", String.valueOf((int) revenue))
+						.replaceAll("%hotel%", hotelName)
+						.replaceAll("%room%", roomNum)
+						);
+			}
+			else{//Placing message in message queue
+				YamlConfiguration queue = HConH.getMessageQueue();
+				if(!queue.contains("messages.revenue")){
+					queue.createSection("messages.revenue");
+					HConH.saveMessageQueue(queue);
+				}
+				Set<String> revenueMessages = queue.getConfigurationSection("messages.revenue").getKeys(false);
+				int expiryMessagesSize = revenueMessages.size();
+				String pathToPlace = "messages.revenue."+(expiryMessagesSize+1);
+				queue.set(pathToPlace+".UUID", owner.getUniqueId().toString());
+				queue.set(pathToPlace+".message", HMM.mes(chatMessage)
+						.replaceAll("%revenue%", String.valueOf((int) revenue))
+						.replaceAll("%room%", roomNum)
+						.replaceAll("%hotel%", hotelName)
+						);
+				HConH.saveMessageQueue(queue);
+			}
+		}
+	}
 	public void breakRoomSign(BlockBreakEvent e){
 		Block b = e.getBlock();
 		Sign s = (Sign) b.getState();
@@ -420,6 +494,8 @@ public class SignManager {
 		int x = signConfig.getInt("Sign.location.coords.x");
 		int y = signConfig.getInt("Sign.location.coords.y");
 		int z = signConfig.getInt("Sign.location.coords.z");
+		String hotelName = signConfig.getString("Sign.hotel");
+		String roomNum = signConfig.getString("Sign.room");
 		Location loc = new Location(w,x,y,z);
 		Block block = loc.getBlock();
 		if(block.getType()==Material.SIGN||block.getType()==Material.WALL_SIGN||block.getType()==Material.SIGN_POST){
@@ -433,6 +509,8 @@ public class SignManager {
 					double price = signConfig.getDouble("Sign.cost");
 					if(account>=price){//If player has enough money
 						HotelsMain.economy.withdrawPlayer(p, price);
+						payOwners(price, hotelName, roomNum, w, true);
+						WGM.getRM(w).getRegion(signConfig.getString("Sign.region")).setPriority(10);
 						signConfig.set("Sign.extended", extended+1);
 						try {
 							signConfig.save(signFile);
@@ -508,6 +586,14 @@ public class SignManager {
 			}
 		}
 		return free;
+	}
+
+	public long getRemainingTime(String hotelName, String roomNum){
+		File file = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		long expiryDate = config.getLong("Sign.expiryDate");
+		long currentMins = System.currentTimeMillis()/1000/60;
+		return expiryDate-currentMins;
 	}
 
 	public boolean updateReceptionSign(Location l){
