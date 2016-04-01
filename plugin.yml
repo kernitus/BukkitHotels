@@ -17,43 +17,38 @@ permissions:
    hotels.*:
      description: Gives access to all Hotels commands
      children:
-       hotels.createmode: true
-       hotels.create: true
-       hotels.delete: true
-       hotels.delete.rooms: true
-       hotels.rename: true
-       hotels.renumber: true
+       hotels.sign.use: true
        hotels.remove: true
        hotels.rent: true
        hotels.check: true
        hotels.check.others: true
-       hotels.sign.create: true
-       hotels.sign.use: true
        hotels.list.hotels: true
        hotels.list.rooms: true
        hotels.friend: true
-       hotels.sethome: true
-       hotels.home: true
-       hotels.home.others: true
        hotels.reload: true
-   hotels.createmode:
-     description: Allows you to enter hotel creation mode
-     default: op
-   hotels.create:
-     description: Allows you to create a hotel
-     default: op
-   hotels.delete:
-     description: Allows you to delete hotels and connected rooms and signs
-     default: op
-   hotels.delete.rooms:
-     description: Allows you to delete hotel rooms and connected signs
-     default: op
-   hotels.rename:
-     description: Allows you to rename hotels and connected rooms and signs
-     default: op
-   hotels.renumber:
-     description: Allows you to renumber rooms and connected signs
-     default: op
+       hotels.createmode.user: true
+       hotels.create.user: true
+       hotels.sign.create.user: true
+       hotels.delete.user: true
+       hotels.delete.rooms.user: true
+       hotels.home.user: true
+       hotels.sethome.user: true
+       hotels.rename.user: true
+       hotels.renumber.user: true
+       hotels.createmode.admin: true
+       hotels.create.admin: true
+       hotels.sign.create.admin: true
+       hotels.delete.admin: true
+       hotels.delete.rooms.admin: true
+       hotels.home.admin: true
+       hotels.sethome.admin: true
+       hotels.rename.admin: true
+       hotels.renumber.admin: true
+       hotels.sell.hotel: true
+
+   hotels.sign.use:
+     description: Allows you to use hotel room signs
+     default: true
    hotels.remove:
      description: Allows you to remove a player as a renter of a room
      default: op
@@ -66,30 +61,72 @@ permissions:
    hotels.check.others:
      description: Allows you to see stats about other player's rented rooms
      default: op
-   hotels.sign.create:
-     description: Allows you to create hotel room signs
-     default: op
-   hotels.sign.use:
-     description: Allows you to use hotel room signs
-     default: true
    hotels.list.hotels:
      description: Allows you to see a list of all hotels
      default: true
    hotels.list.rooms:
      description: Allows you to see a list of all rooms within a hotel
-     default: op
+     default: true 
    hotels.friend:
      description: Allows you to add and remove friends from rented rooms
      default: true
-   hotels.sethome:
-     description: Allows you to set hotel homes if in creation mode and user room homes
-     default: true
-   hotels.home:
-     description: Allows you to teleport to hotel and room homes
-     default: true
-   hotels.home.others:
-     description: Allows you to teleport into rooms that you have not rented
-     default: false
    hotels.reload:
      description: Allows you to reload all configuration files
-     default: false
+     default: op
+   hotels.createmode.user:
+     description: Allows you to enter hotel creation mode
+     default: true
+   hotels.createmode.admin:
+     description: Allows you to enter hotel creation mode
+     default: op
+   hotels.create.user:
+     description: Allows you to create a hotel
+     default: true
+   hotels.create.admin:
+     description: Allows you to create a hotel
+     default: op
+   hotels.sign.create.user:
+     description: Allows you to create hotel room signs
+     default: true
+   hotels.sign.create:
+     description: Allows you to create hotel room signs
+     default: op    
+   hotels.delete.user:
+     description: Allows you to delete hotels and connected rooms and signs
+     default: true   
+   hotels.delete.admin:
+     description: Allows you to delete hotels and connected rooms and signs
+     default: op     
+   hotels.delete.rooms.user:
+     description: Allows you to delete hotel rooms and connected signs
+     default: true   
+   hotels.delete.rooms.admin:
+     description: Allows you to delete hotel rooms and connected signs
+     default: op     
+   hotels.home.user:
+     description: Allows you to teleport to hotel and room homes
+     default: true 
+   hotels.home.admin:
+     description: Allows you to teleport to hotel and room homes
+     default: op     
+   hotels.sethome.user:
+     description: Allows you to set hotel homes if in creation mode and user room homes
+     default: true  
+   hotels.sethome.admin:
+     description: Allows you to set hotel homes if in creation mode and user room homes
+     default: op 
+   hotels.rename.user:
+     description: Allows you to rename hotels and connected rooms and signs
+     default: true
+   hotels.rename.admin:
+     description: Allows you to rename hotels and connected rooms and signs
+     default: op
+   hotels.renumber.user:
+     description: Allows you to renumber rooms and connected signs
+     default: true
+   hotels.renumber.admin:
+     description: Allows you to renumber rooms and connected signs
+     default: op
+   hotels.sell.hotel:
+     description: Allows you to sell your hotels
+     default: true
