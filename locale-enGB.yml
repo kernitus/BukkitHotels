@@ -124,6 +124,9 @@ chat:
         a player from the list of friends that can access the specified room'
       friendList: '&6/ht friend|f list [hotelName] [roomNum] - &aLists players in friend list
         of specified hotel room'
+      sellh: '&6/ht sellh [hotelName] [playerName] [price] - &aOffers to sell your hotel to specified
+        user for specified price'
+      buyh: '&6/ht buyh [hotelName] - &aBuys specified hotel from owner if it is on sale'
       reload: '&6/ht reload - &aReloads all configuration files'
       remove: '&6/ht remove [playerName] [hotelName] [roomNum] - &aRemoves player from his rented
         room'

@@ -77,6 +77,9 @@ public class HotelsCommandExecutor {
 
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.friend"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.friendList"));
+		
+		s.sendMessage(HMM.mesnopre("chat.commands.commands.sellh"));
+		s.sendMessage(HMM.mesnopre("chat.commands.commands.buyh"));
 
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.reload"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.remove"));
@@ -118,6 +121,11 @@ public class HotelsCommandExecutor {
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.friend"));
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.friendList"));}
 
+		if(HMM.hasPerm(s, "hotels.sell.room")){
+			s.sendMessage(HMM.mesnopre("chat.commands.commands.sellh"));
+			s.sendMessage(HMM.mesnopre("chat.commands.commands.buyh"));
+		}
+		
 		if(HMM.hasPerm(s,"hotels.reload"))
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.reload"));
 
