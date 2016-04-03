@@ -380,7 +380,7 @@ public class HotelsCommandExecutor {
 					File file = HConH.getFile("Signs"+File.separator+hotel+"-"+oldnum+".yml");
 					if(file.exists()){
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-						World signworld = Bukkit.getWorld(config.getString("Sign.location.world").trim());
+						World signworld = Bukkit.getWorld(config.getString("Sign.location.world"));
 						int signx = config.getInt("Sign.location.coords.x");
 						int signy = config.getInt("Sign.location.coords.y");
 						int signz = config.getInt("Sign.location.coords.z");
@@ -393,9 +393,9 @@ public class HotelsCommandExecutor {
 								String Line2 = ChatColor.stripColor(s.getLine(1));
 								String signroom = Line2.split(" ")[1];
 								if(Line1.toLowerCase().matches(hotel.toLowerCase())){
-									if(WGM.hasRegion(signworld, "Hotel-"+hotel)){
-										if(WGM.getRegion(signworld, "Hotel-"+hotel).contains(signx, signy, signz)){
-											if(signroom.trim().toLowerCase().matches(oldnum.trim().toLowerCase())){
+									if(WGM.hasRegion(signworld, "hotel-"+hotel)){
+										if(WGM.getRegion(signworld, "hotel-"+hotel).contains(signx, signy, signz)){
+											if(signroom.trim().toLowerCase().matches(oldnum.toLowerCase())){
 												s.setLine(1, HMM.mesnopre("sign.room.name")+" "+newnum+" - "+Line2.split(" ")[3]);
 												s.update();
 												config.set("Sign.room", Integer.valueOf(newnum));
@@ -508,8 +508,8 @@ public class HotelsCommandExecutor {
 							Sign s = (Sign) b.getState();
 							String Line1 = ChatColor.stripColor(s.getLine(0));
 							if(Line1.toLowerCase().matches(oldname.toLowerCase())){
-								if(WGM.getRegion(signworld, "Hotel-"+newname).contains(signx, signy, signz)){
-									s.setLine(0, ChatColor.BLUE+newname);
+								if(WGM.getRegion(signworld, "hotel-"+newname).contains(signx, signy, signz)){
+									s.setLine(0, ChatColor.DARK_BLUE+newname);
 									s.update();
 									config.set("Sign.hotel", newname);
 									config.set("Sign.region", "hotel-"+newname+"-"+regionIdparts[2]);
@@ -517,14 +517,14 @@ public class HotelsCommandExecutor {
 										config.save(file);
 									} catch (IOException e) {
 										e.printStackTrace();
-										File newfile = HConH.getFile("Signs"+File.separator+newname.toLowerCase()+"-"+regionIdparts[2]+".yml");
-										file.renameTo(newfile);
-
-										//Renaming
-										File hotelsFile = HConH.getFile("Hotels"+File.separator+oldname.toLowerCase()+".yml");
-										File newHotelsfile = HConH.getFile("Hotels"+File.separator+newname.toLowerCase()+".yml");
-										hotelsFile.renameTo(newHotelsfile);
 									}
+									File newfile = HConH.getFile("Signs"+File.separator+newname.toLowerCase()+"-"+regionIdparts[2]+".yml");
+									file.renameTo(newfile);
+
+									//Renaming
+									File hotelsFile = HConH.getFile("Hotels"+File.separator+oldname.toLowerCase()+".yml");
+									File newHotelsfile = HConH.getFile("Hotels"+File.separator+newname.toLowerCase()+".yml");
+									hotelsFile.renameTo(newHotelsfile);
 								}
 							}
 						}
