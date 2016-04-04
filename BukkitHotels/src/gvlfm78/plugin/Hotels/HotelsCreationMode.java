@@ -303,7 +303,7 @@ public class HotelsCreationMode {
 			}
 		}
 		//Sign
-		if(p.hasPermission("hotels.createmode.admin")){
+		if(HMM.hasPerm(p,"hotels.createmode.admin")){
 			ItemStack sign = new ItemStack(Material.SIGN, 1);
 			ItemMeta sim = sign.getItemMeta();
 			sim.setDisplayName(HMM.mesnopre("chat.creationMode.items.sign.name"));
@@ -312,9 +312,10 @@ public class HotelsCreationMode {
 			signLoreList.add(HMM.mesnopre("chat.creationMode.items.sign.lore2"));
 			sim.setLore(signLoreList);
 			sign.setItemMeta(sim);
+			pi.setItem(1, sign);
 		}
 		//Compass
-		if(p.hasPermission("worldedit.navigation")){
+		if(HMM.hasPerm(p,"worldedit.navigation")){
 			ItemStack compass = new ItemStack(Material.COMPASS, 1);
 			ItemMeta cim = compass.getItemMeta();
 			cim.setDisplayName(HMM.mesnopre("chat.creationMode.items.compass.name"));
@@ -326,7 +327,7 @@ public class HotelsCreationMode {
 			pi.setItem(2, compass);
 		}
 		//Leather
-		if(p.hasPermission("worldguard.region.wand")){
+		if(HMM.hasPerm(p,"worldguard.region.wand")){
 			ItemStack leather = new ItemStack(Material.LEATHER, 1);
 			ItemMeta lim = leather.getItemMeta();
 			lim.setDisplayName(HMM.mesnopre("chat.creationMode.items.leather.name"));
