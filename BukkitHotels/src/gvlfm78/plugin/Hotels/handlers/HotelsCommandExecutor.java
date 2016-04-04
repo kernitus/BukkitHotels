@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
@@ -599,7 +600,13 @@ public class HotelsCommandExecutor {
 							if(player.equals(pfromfile)){
 								ProtectedRegion r = WGM.getRM(w).getRegion("hotel-"+hotel+"-"+room);
 								WGM.removeMember(player, r);
-								r.setPriority(1);
+								
+								if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
+									
+									r.setFlag(DefaultFlag.BLOCK_BREAK, State.ALLOW);
+									r.setFlag(DefaultFlag.BLOCK_PLACE, State.ALLOW);
+								}
+								
 								//Config stuff
 								config.set("Sign.renter", null);
 								config.set("Sign.timeRentedAt", null);
