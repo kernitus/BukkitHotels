@@ -269,7 +269,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 								if(WGM.hasRegion(world, "hotel-"+hotelname)){
 									if(WGM.isOwner(p, "hotel-"+hotelname, p.getWorld())||HMM.hasPerm(p, "hotels.delete.room.admin")){
 										if(WGM.hasRegion(world, "hotel-"+hotelname+"-"+roomnum)){
+											if(HMM.hasPerm(p, "hotels.delete.rooms.admin")||SM.isRoomFree(hotelname, roomnum, world)){//TODO either add another message or use pre-existing one
 											HCE.removeRoom(args[1],roomnum, world,sender);
+											}
 										}
 										else
 											sender.sendMessage(HMM.mes("chat.commands.roomNonExistant"));

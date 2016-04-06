@@ -582,14 +582,9 @@ public class SignManager {
 			String ID = r.getId();
 			if(ID.startsWith("hotel-"+hotelName)){
 				if(ID.matches("^hotel-"+hotelName+"-\\d+")){//It is a room in the specified hotel
-					String roomNum = ID.replaceFirst("^hotel-.+-", "");
-					File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
-					if(signFile.exists()){
-						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
-						String renter = config.getString("Sign.renter");
-						if(renter==null||renter.isEmpty())
-							free++;
-					}
+					String roomNum = ID.replaceFirst("hotel-.+-", "");
+					if(isRoomFree(hotelName,roomNum,w))
+						free++;
 				}
 			}
 		}
@@ -608,7 +603,21 @@ public class SignManager {
 		}
 		return false;
 	}
-	//TODO create doesHotelHaveRentedRooms using isroom free, and fix free romms to use is room free
+	public boolean doesHotelHaveRentedRooms(String hotelName,World world){
+		hotelName = hotelName.toLowerCase();
+		if(WGM.hasRegion(world, "hotel-"+hotelName)){
+			Map<String, ProtectedRegion> regions = WGM.getRM(world).getRegions();
+			for(ProtectedRegion r:regions.values()){
+				String ID = r.getId();
+				if(ID.matches("^hotel-"+hotelName+"-"+"\\d+")){//it's a room in this hotel
+					String roomNum = ID.replaceFirst("hotel-"+hotelName+"-", "");
+					if(!isRoomFree(hotelName,roomNum,world))
+						return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	public long getRemainingTime(String hotelName, String roomNum){
 		File file = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
