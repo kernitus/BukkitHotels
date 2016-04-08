@@ -269,9 +269,11 @@ public class HotelsCommandHandler implements CommandExecutor {
 								if(WGM.hasRegion(world, "hotel-"+hotelname)){
 									if(WGM.isOwner(p, "hotel-"+hotelname, p.getWorld())||HMM.hasPerm(p, "hotels.delete.room.admin")){
 										if(WGM.hasRegion(world, "hotel-"+hotelname+"-"+roomnum)){
-											if(HMM.hasPerm(p, "hotels.delete.rooms.admin")||SM.isRoomFree(hotelname, roomnum, world)){//TODO either add another message or use pre-existing one
-											HCE.removeRoom(args[1],roomnum, world,sender);
+											if(HMM.hasPerm(p, "hotels.delete.rooms.admin")||SM.isRoomFree(hotelname, roomnum, world)){
+												HCE.removeRoom(args[1],roomnum, world,sender);
 											}
+											else
+												sender.sendMessage(HMM.mes("chat.commands.deleteRoom.roomRented"));
 										}
 										else
 											sender.sendMessage(HMM.mes("chat.commands.roomNonExistant"));
@@ -399,11 +401,15 @@ public class HotelsCommandHandler implements CommandExecutor {
 							Player p = (Player) sender;
 							World world = p.getWorld();
 							if(WGM.isOwner(p, "hotel-"+args[1], world)||HMM.hasPerm(p, "hotels.delete.admin")){
+								if(HMM.hasPerm(p, "hotels.delete.admin")||SM.doesHotelHaveRentedRooms(args[1], world)){
 								HCE.removeSigns(args[1],world,sender);
 								HCE.removeRegions(args[1],world,sender);
 								File file = HConH.getFile("Hotels"+File.separator+args[1].toLowerCase()+".yml");
 								if(file.exists())
 									file.delete();
+							}
+							else
+								p.sendMessage(HMM.mes("chat.commands.deleteHotel.hasRentedRooms"));
 							}
 							else
 								p.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));

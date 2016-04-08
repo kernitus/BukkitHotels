@@ -276,6 +276,7 @@ public class SignManager {
 		if(WGM.getRM(world).hasRegion(signConfig.getString("Sign.region"))){
 			String cRenter = signConfig.getString("Sign.renter");
 			if(cRenter==null){ //If there is no renter
+				if(!isPlayerOverRoomLimitPerHotel(hotelName, p)){//If player is under per-hotel limit
 				if(HotelsMain.economy.hasAccount(p)){
 					double account = HotelsMain.economy.getBalance(p);
 					double price = signConfig.getDouble("Sign.cost");
@@ -351,7 +352,10 @@ public class SignManager {
 					}
 				}
 				else
-					p.sendMessage(HMM.mes("chat.sign.use.noAccount")); 
+					p.sendMessage(HMM.mes("chat.sign.use.noAccount"));
+			}
+			else
+				p.sendMessage(HMM.mes("chat.sign.use.overRoomsPerHotelLimit").replaceAll("%limit%", HConH.getconfigyml().getString("settings.max_rooms_owned_per_hotel")));
 			}
 			else if(Bukkit.getServer().getOfflinePlayer(UUID.fromString(cRenter)).equals(p)){
 				//Renter is same player that right clicked
@@ -616,6 +620,34 @@ public class SignManager {
 				}
 			}
 		}
+		return false;
+	}
+	public int howManyRoomsPlayerHasRentedInHotel(String hotelName, Player player){
+		World world = player.getWorld();
+		Map<String,ProtectedRegion> regions = WGM.getRM(world).getRegions();
+		int rooms=0;
+		
+		for(ProtectedRegion r:regions.values()){
+			String ID = r.getId();
+			if(ID.matches("^hotel-"+hotelName+"-"+"\\d+")){//it's a room in this hotel
+				String roomNum = ID.replaceFirst("hotel-.+-", "");
+				File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+				if(signFile.exists()){
+					YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
+					String renter = config.getString("Sign.renter");
+					if(renter.equalsIgnoreCase(player.getUniqueId().toString()))
+						rooms++;
+				}
+			}
+		}
+		return rooms;
+	}
+	
+	public boolean isPlayerOverRoomLimitPerHotel(String hotelName, Player player){
+		int limit = HConH.getconfigyml().getInt("max_rooms_owned_per_hotel");
+		int rented = howManyRoomsPlayerHasRentedInHotel(hotelName,player);
+		if(rented>=limit)
+			return true;
 		return false;
 	}
 
