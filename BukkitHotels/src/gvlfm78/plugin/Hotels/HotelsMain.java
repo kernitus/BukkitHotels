@@ -1,26 +1,28 @@
 package kernitus.plugin.Hotels;
 
+import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.HotelsLoop;
+import kernitus.plugin.Hotels.managers.HotelsMessageManager;
+
 import java.io.IOException;
+
+import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsLoop;
-import net.milkbowl.vault.economy.Economy;
-
 public class HotelsMain extends JavaPlugin{
 
 	public static Economy economy = null; //Creating economy variable
 
 	HotelsConfigHandler HConH = new HotelsConfigHandler(this);
+	HotelsMessageManager HMM = new HotelsMessageManager(this);
 	HotelsLoop hotelsloop;
 	protected HotelsUpdateChecker updateChecker;
 
-	YamlConfiguration locale = HConH.getLocale();
 	YamlConfiguration queue = HConH.getMessageQueue();
 
 	@Override
@@ -30,17 +32,13 @@ public class HotelsMain extends JavaPlugin{
 		this.updateChecker.updateNeeded();
 		if(getConfig().getBoolean("settings.checkForUpdates")){
 			if(this.updateChecker.updateNeeded()){
-				String updateAvailable = locale.getString("main.updateAvailable").replaceAll("%version%", this.updateChecker.getVersion());
-				String updateLink = locale.getString("main.updateAvailableLink").replaceAll("%link%", this.updateChecker.getLink());
+				String updateAvailable = HMM.mesnopre("main.updateAvailable").replaceAll("%version%", this.updateChecker.getVersion());
+				String updateLink = HMM.mesnopre("main.updateAvailableLink").replaceAll("%link%", this.updateChecker.getLink());
 				getLogger().info(updateAvailable);
 				getLogger().info(updateLink);
 
 				queue.set("messages.update.available", updateAvailable);
 				queue.set("messages.update.link", updateLink);
-				HConH.saveMessageQueue(queue);
-			}
-			else{
-				queue.set("messages.update", null);
 				HConH.saveMessageQueue(queue);
 			}
 		}
@@ -53,7 +51,7 @@ public class HotelsMain extends JavaPlugin{
 		if (!setupEconomy()){
 			//If economy is turned on
 			//but no vault is found it will warn the user
-			String message = locale.getString("main.enable.noVault");
+			String message = HMM.mesnopre("main.enable.noVault");
 			if(message!=null){
 				getLogger().severe(message);
 			}
@@ -70,9 +68,9 @@ public class HotelsMain extends JavaPlugin{
 			hotelsloop.runTaskTimer(this, 200, 2*60*20);
 
 		//Logging to console the correct enabling of Hotels
-		String message = locale.getString("main.enable.success");
+		String message = HMM.mesnopre("main.enable.success");
 		if(message!=null){
-			getLogger().info(locale.getString("main.enable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
+			getLogger().info(HMM.mesnopre("main.enable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 		}
 		else
 			getLogger().info(pdfFile.getName()+" v"+pdfFile.getVersion()+ " has been enabled correctly");
@@ -90,9 +88,9 @@ public class HotelsMain extends JavaPlugin{
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Logging to console the disabling of Hotels
-		String message = locale.getString("main.disable.success");
+		String message = HMM.mesnopre("main.disable.success");
 		if(message!=null){
-			getLogger().info(locale.getString("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
+			getLogger().info(HMM.mesnopre("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 		}
 		else
 			getLogger().info(pdfFile.getName() + " v" + pdfFile.getVersion() + " has been disabled");
