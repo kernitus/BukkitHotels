@@ -1,5 +1,6 @@
 package kernitus.plugin.Hotels.managers;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import kernitus.plugin.Hotels.HotelsMain;
@@ -22,10 +23,12 @@ public class HotelsUpdateLoop extends BukkitRunnable{
 		updateChecker.updateNeeded();
 		if(HConH.getconfigyml().getBoolean("settings.checkForUpdates")){
 			if(updateChecker.updateNeeded()){
-				String updateAvailable = locale.getString("main.updateAvailable").replaceAll("%version%", this.updateChecker.getVersion());
-				String updateLink = locale.getString("main.updateAvailableLink").replaceAll("%link%", this.updateChecker.getLink());
-				getLogger().info(updateAvailable);
-				getLogger().info(updateLink);
+				String updateAvailable = HMM.mesnopre("main.updateAvailable").replaceAll("%version%", updateChecker.getVersion());
+				String updateLink = HMM.mesnopre("main.updateAvailableLink").replaceAll("%link%", updateChecker.getLink());
+				plugin.getLogger().info(updateAvailable);
+				plugin.getLogger().info(updateLink);
+				
+				YamlConfiguration queue = HConH.getMessageQueue();
 
 				queue.set("messages.update.available", updateAvailable);
 				queue.set("messages.update.link", updateLink);

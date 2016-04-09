@@ -21,6 +21,7 @@ sign:
     name: '&2Room'
     free: Free Rooms
     total: Total Rooms
+    breakDenied: '&4You cannot break this room sign as the room has been rented!'
   reception: Reception
   vacant: Vacant
   occupied: Occupied

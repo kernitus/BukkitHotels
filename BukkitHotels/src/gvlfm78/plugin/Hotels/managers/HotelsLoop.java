@@ -20,6 +20,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.HotelsMain;
@@ -100,7 +101,12 @@ public class HotelsLoop extends BukkitRunnable {
 											}
 											//If set in config, make room accessible to all players now that it is not rented
 											WGM.makeRoomAccessible(region);
-											region.setPriority(1);
+											if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
+												
+												region.setFlag(DefaultFlag.BLOCK_BREAK, null);
+												region.setFlag(DefaultFlag.BLOCK_PLACE, null);
+												region.setPriority(1);
+											}
 
 											sign.setLine(3, ChatColor.GREEN+HMM.mesnopre("sign.vacant"));
 											sign.update();

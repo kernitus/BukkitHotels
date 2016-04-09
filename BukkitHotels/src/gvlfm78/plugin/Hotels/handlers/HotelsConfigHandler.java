@@ -225,7 +225,7 @@ public class HotelsConfigHandler {
 		flagsConfig.addDefault("hotel.protection.BLOCK-PLACE", "none");
 		flagsConfig.addDefault("hotel.protection.USE", "allow");
 		flagsConfig.addDefault("hotel.protection.DAMAGE-ANIMALS", "none");
-		flagsConfig.addDefault("hotel.protection.CHEST-ACCESS", "allow");
+		flagsConfig.addDefault("hotel.protection.CHEST-ACCESS", "none");
 		flagsConfig.addDefault("hotel.protection.RIDE", "allow");
 		flagsConfig.addDefault("hotel.protection.PVP", "deny");
 		flagsConfig.addDefault("hotel.protection.SLEEP", "allow");

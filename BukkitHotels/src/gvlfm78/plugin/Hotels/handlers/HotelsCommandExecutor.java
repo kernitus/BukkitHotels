@@ -22,14 +22,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.managers.HotelsLoop;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
+import kernitus.plugin.Hotels.managers.HotelsLoop;
 import kernitus.plugin.Hotels.managers.HotelsMessageManager;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
@@ -603,8 +602,9 @@ public class HotelsCommandExecutor {
 								
 								if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
 									
-									r.setFlag(DefaultFlag.BLOCK_BREAK, State.ALLOW);
-									r.setFlag(DefaultFlag.BLOCK_PLACE, State.ALLOW);
+									r.setFlag(DefaultFlag.BLOCK_BREAK, null);
+									r.setFlag(DefaultFlag.BLOCK_PLACE, null);
+									r.setPriority(1);
 								}
 								
 								//Config stuff

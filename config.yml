@@ -29,5 +29,7 @@ settings:
   allowPlayersIntoFreeRooms: true
 # If players should be allowed to open containers in free rooms
   allowPlayersToOpenContainersInFreeRooms: false
+# If hotel owners should not be allowed to interfere with rented rooms
+  stopOwnersEditingRentedRooms: true
 # If doing /ht commands should only display the commands a player has permission for
   onlyDisplayAllowedCommands: true

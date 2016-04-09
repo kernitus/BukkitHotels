@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -145,7 +146,10 @@ public class HotelsCreationMode {
 				if(WGM.isOwner(p, hotelRegion)||HMM.hasPerm(p, "hotels.create.admin")){
 					WGM.addRegion(world, region);
 					WGM.roomFlags(region,room);
-					region.setPriority(1);
+					if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
+						region.setPriority(1);
+					else
+						region.setPriority(10);
 					WGM.makeRoomAccessible(region);
 					WGM.saveRegions(p.getWorld());
 					p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
@@ -303,7 +307,7 @@ public class HotelsCreationMode {
 			}
 		}
 		//Sign
-		if(HMM.hasPerm(p,"hotels.createmode.admin")){
+		if(p.getGameMode().equals(GameMode.CREATIVE)){
 			ItemStack sign = new ItemStack(Material.SIGN, 1);
 			ItemMeta sim = sign.getItemMeta();
 			sim.setDisplayName(HMM.mesnopre("chat.creationMode.items.sign.name"));

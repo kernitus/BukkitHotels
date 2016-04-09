@@ -277,85 +277,85 @@ public class SignManager {
 			String cRenter = signConfig.getString("Sign.renter");
 			if(cRenter==null){ //If there is no renter
 				if(!isPlayerOverRoomLimitPerHotel(hotelName, p)){//If player is under per-hotel limit
-				if(HotelsMain.economy.hasAccount(p)){
-					double account = HotelsMain.economy.getBalance(p);
-					double price = signConfig.getDouble("Sign.cost");
-					if(account>=price){//If player has enough money
-						//If player is under max owned rooms limit
-						if(getTimesRented(p.getUniqueId())<configyml.getInt("settings.max_rooms_owned")){
-							//Renter has passed all conditions and is able to rent this room
-							HotelsMain.economy.withdrawPlayer(p, price);//Taking away money from renter
-							payOwners(price,hotelName,roomNum,world,false);
+					if(HotelsMain.economy.hasAccount(p)){
+						double account = HotelsMain.economy.getBalance(p);
+						double price = signConfig.getDouble("Sign.cost");
+						if(account>=price){//If player has enough money
+							//If player is under max owned rooms limit
+							if(getTimesRented(p.getUniqueId())<configyml.getInt("settings.max_rooms_owned")){
+								//Renter has passed all conditions and is able to rent this room
+								HotelsMain.economy.withdrawPlayer(p, price);//Taking away money from renter
+								payOwners(price,hotelName,roomNum,world,false);
 
-							ProtectedRegion region = WGM.getRegion(world,signConfig.getString("Sign.region"));
+								ProtectedRegion region = WGM.getRegion(world,signConfig.getString("Sign.region"));
 
-							if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
+								//Setting time rented at
+								signConfig.set("Sign.renter", p.getUniqueId().toString());
+								long currentmins = System.currentTimeMillis()/1000/60;
+								signConfig.set("Sign.timeRentedAt", currentmins);
 
-								region.setFlag(DefaultFlag.BLOCK_BREAK, State.DENY);
-								region.setFlag(DefaultFlag.BLOCK_PLACE, State.DENY);
-							}
+								//Setting expiry time
+								long minstoexpire = signConfig.getLong("Sign.time");
+								if(minstoexpire==0){
+									signConfig.set("Sign.expiryDate", 0);
+								}
+								else{
+									long expirydate = currentmins+minstoexpire;
+									signConfig.set("Sign.expiryDate", expirydate);
+								}
 
-							//Setting time rented at
-							signConfig.set("Sign.renter", p.getUniqueId().toString());
-							long currentmins = System.currentTimeMillis()/1000/60;
-							signConfig.set("Sign.timeRentedAt", currentmins);
+								try {//Saving config file
+									signConfig.save(signFile);
+								} catch (IOException e1) {
+									e1.printStackTrace();
+								}
 
-							//Setting expiry time
-							long minstoexpire = signConfig.getLong("Sign.time");
-							if(minstoexpire==0){
-								signConfig.set("Sign.expiryDate", 0);
-							}
-							else{
-								long expirydate = currentmins+minstoexpire;
-								signConfig.set("Sign.expiryDate", expirydate);
-							}
+								//Adding renter as region member
+								ProtectedRegion r = WGM.getRM(p.getWorld()).getRegion("Hotel-"+hotelName+"-"+roomNum);
+								WGM.addMember(p, (ProtectedCuboidRegion) r);
 
-							try {//Saving config file
-								signConfig.save(signFile);
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							}
+								//Re-setting room flags in case room was set to allow all players in
+								WGM.roomFlags(r,roomNum);
+								
+								if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
+									region.setPriority(10);
+									region.setFlag(DefaultFlag.BLOCK_BREAK, State.DENY);
+									region.setFlag(DefaultFlag.BLOCK_PLACE, State.DENY);
+								}
 
-							//Adding renter as region member
-							ProtectedRegion r = WGM.getRM(p.getWorld()).getRegion("Hotel-"+hotelName+"-"+roomNum);
-							WGM.addMember(p, (ProtectedCuboidRegion) r);
+								WGM.saveRegions(world);//Saving WG regions
 
-							//Re-setting room flags in case room was set to allow all players in
-							WGM.roomFlags(r,roomNum);
-
-							WGM.saveRegions(world);//Saving WG regions
-
-							World w = Bukkit.getWorld(signConfig.getString("Sign.location.world"));
-							int x = signConfig.getInt("Sign.location.coords.x");
-							int y = signConfig.getInt("Sign.location.coords.y");
-							int z = signConfig.getInt("Sign.location.coords.z");
-							Location loc = new Location(w,x,y,z);
-							Block block = loc.getBlock();
-							if(block.getType()==Material.SIGN||block.getType()==Material.WALL_SIGN||block.getType()==Material.SIGN_POST){
-								Sign s = (Sign) block.getState();
-								s.setLine(3, ChatColor.RED+p.getName());//Writing renter name on sign
-								s.update();
-								DecimalFormat df = new DecimalFormat("#.##");
-								p.sendMessage(HMM.mes("chat.sign.use.success").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName)
-										.replaceAll("%price%", String.valueOf(df.format(price))));
-								//Successfully rented room
+								World w = Bukkit.getWorld(signConfig.getString("Sign.location.world"));
+								int x = signConfig.getInt("Sign.location.coords.x");
+								int y = signConfig.getInt("Sign.location.coords.y");
+								int z = signConfig.getInt("Sign.location.coords.z");
+								Location loc = new Location(w,x,y,z);
+								Block block = loc.getBlock();
+								if(block.getType()==Material.SIGN||block.getType()==Material.WALL_SIGN||block.getType()==Material.SIGN_POST){
+									Sign s = (Sign) block.getState();
+									s.setLine(3, ChatColor.RED+p.getName());//Writing renter name on sign
+									s.update();
+									DecimalFormat df = new DecimalFormat("#.00");
+									p.sendMessage(HMM.mes("chat.sign.use.success").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName)
+											.replaceAll("%price%", String.valueOf(df.format(price))));
+									//Successfully rented room
+								}
+								else
+									p.sendMessage(HMM.mes("chat.commands.rent.invalidLocation")); 
 							}
 							else
-								p.sendMessage(HMM.mes("chat.commands.rent.invalidLocation")); 
+								p.sendMessage(HMM.mes("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(configyml.getInt("settings.max_rooms_owned"))));
 						}
-						else
-							p.sendMessage(HMM.mes("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(configyml.getInt("settings.max_rooms_owned"))));
+						else{
+							double topay = price-account;
+							p.sendMessage(HMM.mes("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay))); 
+						}
 					}
-					else{
-						double topay = price-account;
-						p.sendMessage(HMM.mes("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay))); 
-					}
+					else
+						p.sendMessage(HMM.mes("chat.sign.use.noAccount"));
 				}
 				else
-					p.sendMessage(HMM.mes("chat.sign.use.noAccount"));
-			}
-			else
-				p.sendMessage(HMM.mes("chat.sign.use.overRoomsPerHotelLimit").replaceAll("%limit%", HConH.getconfigyml().getString("settings.max_rooms_owned_per_hotel")));
+					p.sendMessage(HMM.mes("chat.sign.use.overRoomsPerHotelLimit").replaceAll("%limit%", HConH.getconfigyml().getString("settings.max_rooms_owned_per_hotel")));
 			}
 			else if(Bukkit.getServer().getOfflinePlayer(UUID.fromString(cRenter)).equals(p)){
 				//Renter is same player that right clicked
@@ -440,28 +440,35 @@ public class SignManager {
 		Sign s = (Sign) b.getState();
 		String Line1 = (ChatColor.stripColor(s.getLine(0)));
 		World w = b.getWorld();
+		Player p = e.getPlayer();
 		if(WGM.hasRegion(w, "Hotel-"+Line1)){
 			//Room sign has been broken?
-			if(WGM.getRegion(w, "Hotel-"+Line1).contains(b.getX(), b.getY(), b.getZ())){
+			if(WGM.getRegion(w, "Hotel-"+Line1).contains(b.getX(), b.getY(), b.getZ())){//If sign is in room
 				String Line2 = ChatColor.stripColor(s.getLine(1));
 				String[] Line2split = Line2.split(" ");
 				int roomnum = Integer.parseInt(Line2split[1]);
-				if(WGM.hasRegion(w, "Hotel-"+Line1+"-"+roomnum)){
+				if(WGM.hasRegion(w, "Hotel-"+Line1+"-"+roomnum)){//If room region exists
 					File signFile = HConH.getFile("Signs"+File.separator+Line1.toLowerCase()+"-"+roomnum+".yml");
-					if(signFile.exists()){
+					if(signFile.exists()){//If signfile is present
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
-						if(config.getString("Sign.hotel").equalsIgnoreCase(Line1)){
-							if(config.getInt("Sign.room")==roomnum){
+						if(config.getString("Sign.hotel").equalsIgnoreCase(Line1)){//If sign and config hotel names match
+							if(config.getInt("Sign.room")==roomnum){//If sign and config room nums match
 								World locw = Bukkit.getWorld(config.getString("Sign.location.world"));
-								if(locw!=null){
+								if(locw!=null&&w==locw){//If sign and config worlds match
 									int locx = config.getInt("Sign.location.coords.x");
 									int locy = config.getInt("Sign.location.coords.y");
 									int locz = config.getInt("Sign.location.coords.z");
 									int bx = b.getX();
 									int by = b.getY();
 									int bz = b.getZ();
-									if(locx==bx&&locy==by&&locz==bz){
-										signFile.delete();
+									if(locx==bx&&locy==by&&locz==bz){//If sign and config location match
+										if(isRoomFree(Line1, String.valueOf(roomnum), w)||HMM.hasPerm(p, "hotels.delete.rooms.admin")){
+											signFile.delete();
+										}
+										else{
+											p.sendMessage(HMM.mes("sign.room.breakDenied"));
+											e.setCancelled(true);
+										}
 									}
 								}
 							}
@@ -626,7 +633,7 @@ public class SignManager {
 		World world = player.getWorld();
 		Map<String,ProtectedRegion> regions = WGM.getRM(world).getRegions();
 		int rooms=0;
-		
+
 		for(ProtectedRegion r:regions.values()){
 			String ID = r.getId();
 			if(ID.matches("^hotel-"+hotelName+"-"+"\\d+")){//it's a room in this hotel
@@ -635,16 +642,16 @@ public class SignManager {
 				if(signFile.exists()){
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
 					String renter = config.getString("Sign.renter");
-					if(renter.equalsIgnoreCase(player.getUniqueId().toString()))
+					if(renter!=null&&renter.equalsIgnoreCase(player.getUniqueId().toString()))
 						rooms++;
 				}
 			}
 		}
 		return rooms;
 	}
-	
+
 	public boolean isPlayerOverRoomLimitPerHotel(String hotelName, Player player){
-		int limit = HConH.getconfigyml().getInt("max_rooms_owned_per_hotel");
+		int limit = HConH.getconfigyml().getInt("settings.max_rooms_owned_per_hotel");
 		int rented = howManyRoomsPlayerHasRentedInHotel(hotelName,player);
 		if(rented>=limit)
 			return true;
