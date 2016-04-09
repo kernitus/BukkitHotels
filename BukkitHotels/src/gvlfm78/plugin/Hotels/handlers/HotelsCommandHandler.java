@@ -401,7 +401,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 							Player p = (Player) sender;
 							World world = p.getWorld();
 							if(WGM.isOwner(p, "hotel-"+args[1], world)||HMM.hasPerm(p, "hotels.delete.admin")){
-								if(HMM.hasPerm(p, "hotels.delete.admin")||SM.doesHotelHaveRentedRooms(args[1], world)){
+								if(HMM.hasPerm(p, "hotels.delete.admin")||!SM.doesHotelHaveRentedRooms(args[1], world)){
 								HCE.removeSigns(args[1],world,sender);
 								HCE.removeRegions(args[1],world,sender);
 								File file = HConH.getFile("Hotels"+File.separator+args[1].toLowerCase()+".yml");

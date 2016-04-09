@@ -620,7 +620,7 @@ public class SignManager {
 			Map<String, ProtectedRegion> regions = WGM.getRM(world).getRegions();
 			for(ProtectedRegion r:regions.values()){
 				String ID = r.getId();
-				if(ID.matches("^hotel-"+hotelName+"-"+"\\d+")){//it's a room in this hotel
+				if(ID.matches("^hotel-"+hotelName+"-\\d+")){//it's a room in this hotel
 					String roomNum = ID.replaceFirst("hotel-"+hotelName+"-", "");
 					if(!isRoomFree(hotelName,roomNum,world))
 						return true;
@@ -630,13 +630,14 @@ public class SignManager {
 		return false;
 	}
 	public int howManyRoomsPlayerHasRentedInHotel(String hotelName, Player player){
+		hotelName = hotelName.toLowerCase();
 		World world = player.getWorld();
 		Map<String,ProtectedRegion> regions = WGM.getRM(world).getRegions();
 		int rooms=0;
 
 		for(ProtectedRegion r:regions.values()){
 			String ID = r.getId();
-			if(ID.matches("^hotel-"+hotelName+"-"+"\\d+")){//it's a room in this hotel
+			if(ID.matches("^hotel-"+hotelName+"-\\d+")){//it's a room in this hotel
 				String roomNum = ID.replaceFirst("hotel-.+-", "");
 				File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 				if(signFile.exists()){

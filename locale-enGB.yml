@@ -207,7 +207,7 @@ chat:
         number manually'
       usage: '&4Correct Usage: &6&o/hotels room hotelName roomNum'
     deleteHotel:
-      hasRentedRooms: 'You cannot delete this hotel as some rooms in it have been rented!'
+      hasRentedRooms: '&4You cannot delete this hotel as some rooms in it have been rented!'
     deleteRoom:
       usage: '&4Correct usage: /hotels delr [hotelName] [roomNum] <worldName>'
       roomRented: '&4You cannot delete this room as it has been rented!'
