@@ -4,12 +4,16 @@ import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.HotelsLoop;
 import kernitus.plugin.Hotels.managers.HotelsMessageManager;
+import kernitus.plugin.Hotels.managers.HotelsUpdateLoop;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import net.milkbowl.vault.economy.Economy;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,6 +44,14 @@ public class HotelsMain extends JavaPlugin{
 				queue.set("messages.update.available", updateAvailable);
 				queue.set("messages.update.link", updateLink);
 				HConH.saveMessageQueue(queue);
+				
+				Collection<? extends Player> players = getServer().getOnlinePlayers();
+				for(Player p:players){
+					if(p.isOp()||p.hasPermission("hotels.*")){
+						p.sendMessage(ChatColor.BLUE+updateAvailable);
+						p.sendMessage(ChatColor.BLUE+updateLink);
+					}
+				}
 			}
 		}
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -66,6 +78,13 @@ public class HotelsMain extends JavaPlugin{
 			hotelsloop.runTaskTimer(this, 200, minutes*60*20);
 		else
 			hotelsloop.runTaskTimer(this, 200, 2*60*20);
+
+		HotelsUpdateLoop HUL = new HotelsUpdateLoop(this);
+		int hours = this.getConfig().getInt("settings.updateTime");
+		if(hours>0)
+			HUL.runTaskTimerAsynchronously(this, 3*60*60*20, hours*60*60*20);
+		else
+			hotelsloop.runTaskTimer(this, 3*60*60*20, 6*60*60*20);
 
 		//Logging to console the correct enabling of Hotels
 		String message = HMM.mesnopre("main.enable.success");

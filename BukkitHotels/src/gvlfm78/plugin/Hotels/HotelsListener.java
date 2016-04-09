@@ -103,7 +103,7 @@ public class HotelsListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
-		//Player joined the server, update notification to admins:
+		//Player joined the server, update notification to ops:
 		Player p = e.getPlayer();
 		if(p.hasPermission("hotel.*")||p.isOp()){
 			File qfile = HConH.getFile("queuedMessages.yml");

@@ -1,6 +1,10 @@
 package kernitus.plugin.Hotels.managers;
 
+import java.util.Collection;
+
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import kernitus.plugin.Hotels.HotelsMain;
@@ -33,6 +37,14 @@ public class HotelsUpdateLoop extends BukkitRunnable{
 				queue.set("messages.update.available", updateAvailable);
 				queue.set("messages.update.link", updateLink);
 				HConH.saveMessageQueue(queue);
+				
+				Collection<? extends Player> players = plugin.getServer().getOnlinePlayers();
+				for(Player p:players){
+					if(p.isOp()||p.hasPermission("hotels.*")){
+						p.sendMessage(ChatColor.BLUE+updateAvailable);
+						p.sendMessage(ChatColor.BLUE+updateLink);
+					}
+				}
 			}
 		}
 		
