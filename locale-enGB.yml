@@ -195,7 +195,6 @@ chat:
       maxHotelsReached: '&4You have reached the limit of %max% hotels you can own'
       creationSuccess: '&aYou currently own %tot% hotels. You can own another %left%.'
       hotelAlreadyPresent: '&4There is already a hotel present here'
-      roomAlreadyPresent: '&4There is already a room present here'
       fail: '&4Could not create hotel. Did you enter Hotel Creation Mode? (&3&o/hotels
         cm enter&r&4)'
       consoleRejected: The console can't create a hotel!
@@ -206,6 +205,7 @@ chat:
       nextNewRoomFail: '&4Could not find next available room! Try specifying the room
         number manually'
       usage: '&4Correct Usage: &6&o/hotels room hotelName roomNum'
+      alreadyPresent: '&4There is already a room present here'
     deleteHotel:
       hasRentedRooms: '&4You cannot delete this hotel as some rooms in it have been rented!'
     deleteRoom:

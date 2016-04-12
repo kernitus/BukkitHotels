@@ -21,6 +21,7 @@ sign:
     name: '&2房間'
     free: 空閑的房間
     total: 房間數總計
+    breakDenied: '&4這個房間已被租用, 你不能破壞它的房間牌子!'
   reception: 前臺
   vacant: 空閑中
   occupied: 已被租用
@@ -34,6 +35,8 @@ sign:
 chat:
   prefix: '&9[旅館]&r'
   noPermission: '&4妳沒有權限這樣做!'
+  moneyEarned: '&a你通過 %hotel% 旅館的房間 %room% 賺取了 $%revenue%'
+  moneyEarnedExtend: '&a你通過 %hotel% 旅館的房間 %room% 賺取了續期費用 $%revenue%'
   sign:
     place:
       fileFail: '&4無法保存文件'
@@ -59,6 +62,7 @@ chat:
       maxRoomsReached: '&4您已經擁有了最多 %max% 個房間'
       extensionSuccess: '&a房租已經漲到最高 %tot% 倍. 妳還可以再續租 %left%.'
       extensionSuccessNoMore: '&a房租已經漲到最高 %tot% 倍.妳不能再續租了'
+      overRoomsPerHotelLimit: '&4你在這個旅館中最多只能租 %limit% 間房間'
   creationMode:
     hotelCreationFailed: '&4旅館已存在，不能創建'
     hotelCreationSuccessful: '&2妳已經成功創建%hotel% 旅館'
@@ -66,7 +70,7 @@ chat:
     selectionInvalid: '&4無效的選區!請重新選擇!'
     invalidChar: '&4名稱中不能包含字符 &6&l-'
     rooms:
-      alreadyExists: '&4This room already exists!'
+      alreadyExists: '&4這個房間已經存在了!'
       notInHotel: '&4此房間不在指定的旅館中!'
       fail: '&4失敗!無法創建房間!'
     inventory:
@@ -93,9 +97,9 @@ chat:
         lore1: '右鍵點擊放置'
         lore2: '第壹行寫上: &9[Hotels]'
       leather:
-        name: '&bPiece O'' Leather'
-        lore1: R-click to check for
-        lore2: conflict between regions
+        name: '&b壹塊普通的皮革'
+        lore1: '右鍵點擊檢查'
+        lore2: '區域之間是否有沖突'
   commands:
     commands:
       header: '&4================================'
@@ -120,6 +124,8 @@ chat:
       remove: '&6/ht remove [玩家名] [旅館名] [房間名] - &a將指定旅館指定房間中的租客強制逐出'
       delr: '&6/ht delr [旅館名] [房間號] - &a刪除指定名稱的房間'
       delete: '&6/ht delete [旅館名] - &a刪除指定名稱的旅館'
+      sellh: '&6/ht sellh [旅館名稱] [玩家名] [價格] - &a以指定價格將壹間指定的旅館出售給壹名指定名稱的用戶'
+      buyh: '&6/ht buyh [旅館名稱] - &a購買壹間指定的旅館(如果可用)'
     help:
       header: '&4================================'
       subheader: '&5--Hotels 插件幫助界面--'
@@ -177,11 +183,17 @@ chat:
       reset: '&2該背包文件已被重置'
       noarg: '&4請指定 &6&oenter(進入) &4或者 &6&oexit(離開) &4模式'
       consoleRejected: 控制臺不能使用旅館的創建模式!
+      alreadyIn: '&4你已經進入了創建模式了!'
+      notAlreadyIn: '&4你現在不在創建模式!'
     create:
       fail: '&4無法創建旅館?請確認是否進入了旅館創建模式? (&3&o輸入指令：/hotels
          cm enter&r&4)'
       consoleRejected: '控制臺不能創建壹個旅館!'
       noName: '&4給妳的旅館起個響亮的名字吧!'
+      maxHotelsReached: '&4你已經擁有了 %max% 間旅館, 數量已達上限'
+      creationSuccess: '&a你現在擁有 %tot% 間旅館. 你還可以創建 %left% 間.'
+      hotelAlreadyPresent: '&4這裏已經有壹家旅館了'
+      roomAlreadyPresent: '&4這裏已經有壹個房間了'
     room:
       success: '&a妳已經創建了 %hotel% 旅館的 %room% 房間'
       roomNumInvalid: '&4房間號碼必須為整數哦!'
@@ -189,6 +201,9 @@ chat:
       usage: '&4正確格式: &6&o/hotels room 旅館名字 房間號碼'
     deleteRoom:
       usage: '&4正確格式: /hotels delr [旅館名字] [房間號碼] <世界>'
+      roomRented: '&4這個房間已被租用, 你目前無法刪除!'
+    deleteHotel:
+      hasRentedRooms: '&4這個旅館中有房間正在被租用, 你目前無法刪除!'
     renumber:
       usage: '&4正確格式: /hotels renum [旅館名字] [舊號碼] [新號碼] <世界>'
       success: '&2妳成功將 %hotel% 旅館的 %oldnum% 房間換成了 %newnum% 房間'
@@ -210,9 +225,14 @@ chat:
       success: '&a成功將 %hotel% 旅館 %room% 房間的玩家移除'
       usage: '&4正確格式: /hotels remove [玩家] [旅館] [房間] <世界>'
     check:
-      heading: '&a==%player%出租列表=='
-      footer: '&c== %player%出租列表最末=='
-      line: '&6旅館: &c%hotel%    &6房間: &c%room%    &6到期: &c%timeleft%'
+      headerHotels: '&a==%player% 擁有的旅館列表=='
+      footerHotels: '&c==%player% 擁有的旅館列表底部=='
+      noHotels: '&c你沒有擁有壹間旅館!'
+      lineHotels: '&6旅館: &c%hotel% &9總計: &r%total% &a空閑狀態: &r%free%'
+      headerRooms: '&a==%player% 租用的房間列表=='
+      footerRooms: '&c==%player% 租用的房間列表底部=='
+      noRooms: '&c你沒有租用任何壹間房間!'
+      lineRooms: '&6旅館: &c%hotel% &6房間: &c%room% &6租期剩余: &c%timeleft%'
     listHotels:
       heading: '&a==旅館列表=='
       footer: '&c==旅館列表最末=='
@@ -254,3 +274,20 @@ chat:
       regionNotFound: '&4指定旅館或房間未被找到!'
       usage: '&4正確用法: /ht home [旅館名] <房間>'
       notRenterNoPermission: '&4妳無法這麽做,因為妳沒有權限或者妳不是租客!'
+    sellhotel:
+      consoleRejected: '控制臺不能出售旅館'
+      usage: '&4正確用法: &6&o/ht sellh [旅館名稱] [購買者名稱] [價格]'
+      buyerNotOnline: '&4購買者不在線!'
+      selling: '&a玩家 %seller% 想將旅館以 $%price% 出售給你 %hotel%. 輸入 &6&o/ht buyh %hotel% &r&a來接受交易並購買'
+      sellingAsked: '&a已向 %buyer% 發送了請求, 詢問其是否願意購買你的旅館'
+      sellingAlreadyAsked: '&4你之前已經向 %buyer% 發送了詢問其是否願意購買你的旅館的請求了!'
+      invalidPrice: '&4你輸入的價格不可用或無效!'
+      success: '&a你已以 $%price% 售出了旅館 %hotel% 給 %buyer%'
+      expired: '&4你的旅館 %hotel% 出售已過期'
+    buyhotel:
+      consoleRejected: '控制臺不能買旅館!'
+      usage: '&4正確用法: &6&o/ht buyh [旅館名稱]'
+      success: '&a你以 $%price% 從 %seller% 處購買了旅館 %hotel%'
+      notOnSale: '&4那間旅館不在出售中!'
+      notEnoughMoney: '&4你沒有足夠的錢!'
+      expired: '&4%hotel% 旅館的出售交易已過期'

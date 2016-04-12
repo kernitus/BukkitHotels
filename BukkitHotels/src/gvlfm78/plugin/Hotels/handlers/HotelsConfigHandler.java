@@ -24,7 +24,7 @@ public class HotelsConfigHandler {
 	public HotelsConfigHandler(HotelsMain instance){
 		this.plugin = instance;
 	}
-	//TODO Make static variable
+	
 	public void setupConfigs(Plugin plugin){
 		//Message Queue
 		if(!getMessageQueueFile().exists())

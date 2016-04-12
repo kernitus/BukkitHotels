@@ -158,7 +158,7 @@ public class HotelsCreationMode {
 					p.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
 			}
 			else
-				p.sendMessage(HMM.mes("chat.commands.create.roomAlreadyPresent"));
+				p.sendMessage(HMM.mes("chat.commands.room.alreadyPresent"));
 		}
 		else
 			p.sendMessage(HMM.mes("chat.noPermission"));
