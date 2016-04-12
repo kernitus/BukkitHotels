@@ -3,6 +3,8 @@
 # https://www.spigotmc.org/resources/hotels.2047/
 settings:
 # Available languages: enGB, itIT, zhCN, znTW
+# Available from Hotels 0.6.1 : ruRU, frFR and possibly esES
+# You must delete the current locale.yml and do /ht reload for the locale to update
   language: enGB
 # Maximum amount of hotels a player can own
   max_hotels_owned: 3
@@ -23,6 +25,8 @@ settings:
 # If set to false ops will have admin permissions
 # and all other player will have user permissions
   use-permissions: true
+# How often the plugin should check for updates (in hours)
+  updateTime: 6
 # If hotels should check for updates
   checkForUpdates: true
 # If players should be allowed to enter free rooms

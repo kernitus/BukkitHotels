@@ -100,27 +100,21 @@ chat:
       header: '&4================================'
       subheader: '&5--Plugin Hotels pagina aiuto comandi--'
       footer: '&4================================'
-      help: '&6/ht help - &aMostra schermata di aiuto
-      creationMode: "&6/ht [creationmode|cm] [enter|exit] - &aEntra/esci dalla
-       modalità di creazione'
+      help: '&6/ht help - &aMostra schermata di aiuto'
+      creationMode: '&6/ht [creationmode|cm] [enter|exit] - &aEntra/esci dalla modalità di creazione'
       create: '&6/ht [create|c] [nomehotel] - &aCrea un hotel con l''attuale selezione'
-      room: '&6/ht room [nomehotel] <numstanza> - &aCrea una stanza con l''attuale selezione
-        all''interno dell''hotel specificato'
+      room: '&6/ht room [nomehotel] <numstanza> - &aCrea una stanza con l''attuale selezione all''interno dell''hotel specificato'
       renum: '&6/ht renum [nomehotel] [vecchionumero] [nuovonumero] - &aRinumera stanza specificata'
       rename: '&6/ht rename [vecchionome] [nuovonome] - &aRinomina hotel specificato'
       sethome: '&6/ht sethome - &aImposta home di hotel/stanza'
       home: '&6/ht home [nomehotel] <numstanza> - &aTi teletrasporta ad una home di hotel/stanza'
       check: '&6/ht check <giocatore> - &aLista tutte le stanze affittate da te/giocatore specificato'
       list: '&6/ht list <nomemondo> - &aLista tutti gli hotel nell''attuale/specificato mondo'
-      rlist: '&6/ht rlist [hotel] <nomemondo> - &aLista tutte le stanze nell''albergo specificato
-        nell''attuale/specificato mondo'
-      friend: '&6/ht friend [add|remove] [nomehotel] [numstanza] [giocatore] - &aAggiunge/rimuove
-        un giocatore dalla lista di amici che hanno accesso ad una specificata stanza'
-      friendList: '&6/ht friend list [nomehotel] [numstanza] - &aLista i giocatori nella
-        lista di amici nella specificata stanza di albergo'
+      rlist: '&6/ht rlist [hotel] <nomemondo> - &aLista tutte le stanze nell''albergo specificato nell''attuale/specificato mondo'
+      friend: '&6/ht friend [add|remove] [nomehotel] [numstanza] [giocatore] - &aAggiunge/rimuove un giocatore dalla lista di amici che hanno accesso ad una specificata stanza'
+      friendList: '&6/ht friend list [nomehotel] [numstanza] - &aLista i giocatori nella lista di amici nella specificata stanza di albergo'
       reload: '&6/ht reload - &aRicarica tutti i file di configurazione'
-      remove: '&6/ht remove [giocatore] [nomehotel] [numstanza] - &aRimuove il giocatore
-        dalla sua stanza affitata'
+      remove: '&6/ht remove [giocatore] [nomehotel] [numstanza] - &aRimuove il giocatore dalla sua stanza affitata'
       delr: '&6/ht delr [nomehotel] [numstanza] - &aRimuove stanza specificata'
       delete: '&6/ht delete [nomehotel] - &aRimuove hotel specificato'
       sellh: '&6/ht sellh [nomehotel] [nomegiocatore] [prezzo] - &aOffre in vendita il tuo hotel al giocatore specificato per il prezzo specificato'
@@ -159,8 +153,7 @@ chat:
         '5': '&e    15:1m3k'
         '6': '&e    3d 6m 2s'
         '7': '&9&oPuoi usare &20 &9&ocome tempo per rendere l''affitto infinito'
-        '8': '&9&oNel costo, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9
-          = &2milione&9 &5b&9 = &2miliardo'
+        '8': '&9&oNel costo, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2milione&9 &5b&9 = &2miliardo'
     unknownArg: '&4Argomento sconosciuto. Prova &3&o/hotels'
     noWorld: '&cDevi specificare un mondo'
     noHotel: '&cDevi specificare un hotel'
@@ -185,8 +178,7 @@ chat:
       noarg: '&4Perfavore specifica &6&oenter &4o &6&oexit (entra o esci)'
       consoleRejected: La console non può usare la modalità di creazione hotel!
     create:
-      fail: '&4Impossibile creare l''hotel. Sei entrato nella modalità di creazione hotel? (&3&o/hotels
-        cm enter&r&4)'
+      fail: '&4Impossibile creare l''hotel. Sei entrato nella modalità di creazione hotel? (&3&o/hotels cm enter&r&4)'
       consoleRejected: La console non può creare un hotel!
       noName: '&4Dai un nome al tuo hotel!'
       maxHotelsReached: '&4Hai raggiunto il limite di %max% hotel che puoi possedere'
@@ -195,8 +187,7 @@ chat:
     room:
       success: '&aHai creato la stanza %room% dell''hotel %hotel%'
       roomNumInvalid: '&4Il numero della stanza non è un numero intero!'
-      nextNewRoomFail: '&4Impossibile trovare la prossima stanza disponibile! Prova a specificare
-        la stanza manualmente'
+      nextNewRoomFail: '&4Impossibile trovare la prossima stanza disponibile! Prova a specificare la stanza manualmente'
       usage: '&4Utilizzo corretto: &6&o/hotels room [nomehotel] [numstanza]'
       alreadyPresent: '&4There is already a room present here'
     deleteRoom:
@@ -206,8 +197,7 @@ chat:
       hasRentedRooms: '&4Non puoi eliminare questo hotel dato che alcune stanze sono in affitto'
     renumber:
       usage: '&4Utilizzo corretto: /hotels renum [nomehotel] [vecchionumero] [nuovonumero] <nomemondo>'
-      success: '&2Hai cambiato la stanza %oldnum% alla stanza %newnum% dell''hotel
-         %hotel% con successo'
+      success: '&2Hai cambiato la stanza %oldnum% alla stanza %newnum% dell''hotel %hotel% con successo'
       fail: '&4Impossibile rinominare la stanza %oldnum%'
       newNumTooBig: '&4Il nuovo numero è troppo grande!'
     rename:
@@ -278,9 +268,9 @@ chat:
     sellhotel:
       consoleRejected: La console non può vendere un hotel!
       usage: '&4Utilizzo corretto: &6&o/ht sellh [nomehotel] [nomecompratore] [prezzo]'
-      buyerNotOnline: '&4Il compratore non è online!
+      buyerNotOnline: '&4Il compratore non è online!'
       selling: '&aIl giocatore %seller% sta vendendo il suo hotel %hotel% a te per $%price%. Scrivi &6&o/ht buyh %hotel% &r&aper comprarlo'
-      sellingAsked:'&aRichiesta di acquisto inviata al giocatore %buyer%'
+      sellingAsked: '&aRichiesta di acquisto inviata al giocatore %buyer%'
       sellingAlreadyAsked: '&4Hai già chiesto al giocatore %buyer% se vuole comprare il tuo hotel!'
       invalidPrice: '&4Il prezzo che hai immesso non è valido!'
       success: '&aHai appena venduto l''hotel %hotel% al giocatore %buyer% per $%price%'
@@ -288,7 +278,7 @@ chat:
     buyhotel:
       consolRejected: La console non può comprare un hotel!
       usage: '&4Utilizzo corretto: &6&o/ht buyh [nomehotel]'
-      success: '&aHai appena comprato l''hotel %hotel% da %seller% per $%price%
+      success: '&aHai appena comprato l''hotel %hotel% da %seller% per $%price%'
       notOnSale: '&4Quell''hotel non è in vendita!'
       notEnoughMoney: '&4Non hai abbastanza soldi!'
       expired: '&4L''offerta di vendita dell''hotel %hotel% è scaduta'
