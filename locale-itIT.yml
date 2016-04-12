@@ -21,6 +21,7 @@ sign:
     name: '&2Stanza'
     free: Stanze Libere
     total: Stanze Totali
+    breakDenied: '&4Non puoi rompere questo cartello dato che la stanza è in affitto'
   reception: Reception
   vacant: Libero
   occupied: Occupato
@@ -34,6 +35,8 @@ sign:
 chat:
   prefix: '&9[Hotels]&r'
   noPermission: '&4Non hai il permesso!'
+  moneyEarned: '&aHai guadagnato $%revenue% dall''affitto della stanza %room% del tuo hotel %hotel%'
+  moneyEarnedExtend: '&aHai guadagnato $%revenue% dall''estensione dell''affitto della stanza %room% del tuo hotel %hotel%'
   sign:
     place:
       fileFail: '&4Impossibile salvare il file di cartello'
@@ -57,9 +60,9 @@ chat:
       signOutOfRegion: '&4Il cartello non è all''interno della regione dell''hotel specificato'
       maxEntendReached: '&4Hai raggiunto il limite di estensione dell''affitto di %max% volte!'
       maxRoomsReached: '&4Hai raggiunto il limite di %max% stanze che puoi possedere'
-      extensionSuccess: '&aL''affitto è stato esteso %tot% volte. Lo puoi estendere altre
-        %left% volte.'
+      extensionSuccess: '&aL''affitto è stato esteso %tot% volte. Lo puoi estendere altre %left% volte.'
       extensionSuccessNoMore: '&aL''affitto è stato esteso %tot% volte. Non lo puoi più estendere.'
+      overRoomsPerHotelLimit: '&4Hai raggiunto il limite di %limit% stanze che puoi affittare in questo hotel'
   creationMode:
     hotelCreationFailed: '&4Impossibile creare l''hotel, l''hotel esiste già'
     hotelCreationSuccessful: '&2Hai creato con successo l''hotel %hotel%'
@@ -120,6 +123,8 @@ chat:
         dalla sua stanza affitata'
       delr: '&6/ht delr [nomehotel] [numstanza] - &aRimuove stanza specificata'
       delete: '&6/ht delete [nomehotel] - &aRimuove hotel specificato'
+      sellh: '&6/ht sellh [nomehotel] [nomegiocatore] [prezzo] - &aOffre in vendita il tuo hotel al giocatore specificato per il prezzo specificato'
+      buyh:  '&6/ht buyh [nomehotel] - &aCompra l''hotel specificato se è in vendita'
     help:
       header: '&4================================'
       subheader: '&5--Plugin Hotels pagina di aiuto--'
@@ -184,14 +189,21 @@ chat:
         cm enter&r&4)'
       consoleRejected: La console non può creare un hotel!
       noName: '&4Dai un nome al tuo hotel!'
+      maxHotelsReached: '&4Hai raggiunto il limite di %max% hotel che puoi possedere'
+      creationSuccess: '&aAttualmente possiedi %tot% hotel. Puoi possederne altri %left%'
+      hotelAlreadyPresent: '&4Vi è già presente un hotel qui'
     room:
       success: '&aHai creato la stanza %room% dell''hotel %hotel%'
       roomNumInvalid: '&4Il numero della stanza non è un numero intero!'
       nextNewRoomFail: '&4Impossibile trovare la prossima stanza disponibile! Prova a specificare
         la stanza manualmente'
       usage: '&4Utilizzo corretto: &6&o/hotels room [nomehotel] [numstanza]'
+      alreadyPresent: '&4There is already a room present here'
     deleteRoom:
       usage: '&4Utilizzo corretto: /hotels delr [nomehotel] [numstanza] <nomemondo>'
+      roomRented: '&4Non puoi eliminare questa stanza dato che è in affitto'
+    deleteHotel:
+      hasRentedRooms: '&4Non puoi eliminare questo hotel dato che alcune stanze sono in affitto'
     renumber:
       usage: '&4Utilizzo corretto: /hotels renum [nomehotel] [vecchionumero] [nuovonumero] <nomemondo>'
       success: '&2Hai cambiato la stanza %oldnum% alla stanza %newnum% dell''hotel
@@ -214,9 +226,14 @@ chat:
       success: '&aIl giocatore %player% è stato rimosso dalla stanza %room% dell''hotel %hotel%'
       usage: '&4Utilizzo corretto: /hotels remove [nomegiocatore] [nomehotel] [numstanza] <nomemondo>'
     check:
-      heading: '&a==Lista stanze affittate da %player%=='
-      footer: '&c==Fine lista stanze affittate da %player%=='
-      line: '&6Hotel: &c%hotel%    &6Stanza: &c%room%    &6Scade tra: &c%timeleft%'
+      headerHotels: '&a==Lista hotel in possesso di %player%=='
+      footerHotels: '&c==Fine lista hotel in possesso di %player%=='
+      noHotels: '&cNon possiedi alcun hotel!'
+      lineHotels: '&6Hotel: &c%hotel% &9Totale: &r%total% &aLibere: &r%free%'
+      headerRooms: '&a==Lista stanze affittate da %player%=='
+      footerRooms: '&c==Fine lista stanze affittate da %player%=='
+      noRooms: '&cNon hai affittato alcuna stanza!'
+      lineRooms: '&6Hotel: &c%hotel%    &6Stanza: &c%room%    &6Scade tra: &c%timeleft%'
     listHotels:
       heading: '&a==Lista hotel=='
       footer: '&c==Fine lista hotel=='
@@ -258,3 +275,20 @@ chat:
       regionNotFound: '&4L''hotel o la stanza specificata non sono stati trovati!'
       usage: '&4Utilizzo corretto: /ht home [nomehotel] <numstanza>'
       notRenterNoPermission: '&4Non sei l''affituario o non hai il permesso per fare ciò'
+    sellhotel:
+      consoleRejected: La console non può vendere un hotel!
+      usage: '&4Utilizzo corretto: &6&o/ht sellh [nomehotel] [nomecompratore] [prezzo]'
+      buyerNotOnline: '&4Il compratore non è online!
+      selling: '&aIl giocatore %seller% sta vendendo il suo hotel %hotel% a te per $%price%. Scrivi &6&o/ht buyh %hotel% &r&aper comprarlo'
+      sellingAsked:'&aRichiesta di acquisto inviata al giocatore %buyer%'
+      sellingAlreadyAsked: '&4Hai già chiesto al giocatore %buyer% se vuole comprare il tuo hotel!'
+      invalidPrice: '&4Il prezzo che hai immesso non è valido!'
+      success: '&aHai appena venduto l''hotel %hotel% al giocatore %buyer% per $%price%'
+      expired: '&4La tua offerta di vendita dell''hotel %hotel% è scaduta'
+    buyhotel:
+      consolRejected: La console non può comprare un hotel!
+      usage: '&4Utilizzo corretto: &6&o/ht buyh [nomehotel]'
+      success: '&aHai appena comprato l''hotel %hotel% da %seller% per $%price%
+      notOnSale: '&4Quell''hotel non è in vendita!'
+      notEnoughMoney: '&4Non hai abbastanza soldi!'
+      expired: '&4L''offerta di vendita dell''hotel %hotel% è scaduta'
