@@ -228,7 +228,13 @@ public class HotelsCreationMode {
 
 			inv.set("inventory", p.getInventory().getContents());
 			inv.set("armour", p.getInventory().getArmorContents());
+			
+			try{//Only if in 1.9 try getting this
 			inv.set("extra", p.getInventory().getExtraContents());
+			}
+			catch(NoSuchMethodError er){
+				//We must be in a pre-1.9 version
+			}
 
 			try {
 				inv.save(file);
@@ -259,8 +265,13 @@ public class HotelsCreationMode {
 			List<ItemStack> armourItems = (List<ItemStack>) inv.getList("armour");
 			pinv.setArmorContents(armourItems.toArray(new ItemStack[armourItems.size()]));
 
+			try{
 			List<ItemStack> extraItems = (List<ItemStack>) inv.getList("extra");
 			pinv.setExtraContents(extraItems.toArray(new ItemStack[extraItems.size()]));
+			}
+			catch(Exception et){
+				//Must be in a pre-1.9 version
+			}
 
 			p.sendMessage(HMM.mes("chat.creationMode.inventory.restoreSuccess"));
 			file.delete();
