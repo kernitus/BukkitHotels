@@ -106,8 +106,7 @@ chat:
       subheader: '&5--Hotels 插件指令帮助页面--'
       footer: '&4================================'
       help: '&6/ht help - &a提供帮助界面'
-      creationMode: '&6/ht [creationmode|cm] [enter/exit] - &a进入/离开 创建模式
-        mode'
+      creationMode: '&6/ht [creationmode|cm] [enter/exit] - &a进入/离开 创建模式'
       create: '&6/ht [create|c] [旅馆名称] - &a将目前的选区创建为你指定名称的旅馆'
       room: '&6/ht room [旅馆名称] <房间号> - &a将目前的选区创建为指定旅馆中指定号码的房间'
       renum: '&6/ht renum [旅馆名称] [旧编号] [新编号] - &a将指定房间重新编号'
@@ -117,8 +116,7 @@ chat:
       check: '&6/ht check <玩家名> - &a列出由 你|指定玩家 租借的所有房间'
       list: '&6/ht list <世界名> - &a列出所有目前在你 所在|指定 世界中的旅馆'
       rlist: '&6/ht rlist [旅馆名] <世界名> - &a列出所有目前在你 所在|指定 世界中旅馆的所有房间'
-      friend: '&6/ht friend [add/remove] [旅馆名] [房间名] [玩家名] - &a添加/移除
-        一名可以在你指定旅馆的指定房间中打开、使用物品的玩家'
+      friend: '&6/ht friend [add/remove] [旅馆名] [房间名] [玩家名] - &a添加/移除 一名可以在你指定旅馆的指定房间中打开、使用物品的玩家'
       friendList: '&6/ht friend list [旅馆名] [房间名] - &a列出所有在指定旅馆的指定房间中有权限的好友列表'
       reload: '&6/ht reload - &a重载配置文件'
       remove: '&6/ht remove [玩家名] [旅馆名] [房间名] - &a将指定旅馆指定房间中的租客强制逐出'
@@ -160,8 +158,7 @@ chat:
         '5': '&e    15:1m3k     &7(15号房间价格100万零3千)'
         '6': '&e    3d 6m 2s     &7(3天零6分2秒)'
         '7': '&9&o你可以设置 &20 &9&o这等效于无限时间'
-        '8': '&9&o关于价格设置: &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9
-          = &2百万&9 &5b&9 = &2十亿'
+        '8': '&9&o关于价格设置: &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2百万&9 &5b&9 = &2十亿'
     unknownArg: '&4未知参数. 使用 &3&o/hotels 寻找解决方案'
     noWorld: '&c请指定世界名'
     noHotel: '&c请指定旅馆名称'
@@ -186,8 +183,7 @@ chat:
       alreadyIn: '&4你已经进入了创建模式了!'
       notAlreadyIn: '&4你现在不在创建模式!'
     create:
-      fail: '&4无法创建旅馆?请确认是否进入了旅馆创建模式? (&3&o输入指令：/hotels
-         cm enter&r&4)'
+      fail: '&4无法创建旅馆?请确认是否进入了旅馆创建模式? (&3&o输入指令：/hotels cm enter&r&4)'
       consoleRejected: '控制台不能创建一个旅馆!'
       noName: '&4给你的旅馆起个响亮的名字吧!'
       maxHotelsReached: '&4你已经拥有了 %max% 间旅馆, 数量已达上限'

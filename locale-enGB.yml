@@ -60,10 +60,8 @@ chat:
       signOutOfRegion: '&4Sign is not inside specified hotel region'
       maxEntendReached: '&4You have reached the limit of rent extention of %max% times!'
       maxRoomsReached: '&4You have reached the limit of %max% rooms you can own'
-      extensionSuccess: '&aRent has been extended %tot% times. You can extend it another
-        %left% times.'
-      extensionSuccessNoMore: '&aRent has been extended %tot% times. You can''t extend
-        it any more.'
+      extensionSuccess: '&aRent has been extended %tot% times. You can extend it another %left% times.'
+      extensionSuccessNoMore: '&aRent has been extended %tot% times. You can''t extend it any more.'
       overRoomsPerHotelLimit: '&4You have reached the limit of %limit% rooms you can rent in this hotel'
   creationMode:
     hotelCreationFailed: '&4Could not create hotel, hotel already exists'
@@ -109,29 +107,22 @@ chat:
       subheader: '&5--Hotels plugin command help page--'
       footer: '&4================================'
       help: '&6/ht help - &aDisplays help page'
-      creationMode: '&6/ht [creationmode|cm] [enter|exit] - &aEnter/exit creation
-        mode'
+      creationMode: '&6/ht [creationmode|cm] [enter|exit] - &aEnter/exit creation mode'
       create: '&6/ht create|c [hotelName] - &aCreate a hotel with current selection'
-      room: '&6/ht room [hotelName] <roomNum> - &aCreate room with current selection
-        within specified hotel'
+      room: '&6/ht room [hotelName] <roomNum> - &aCreate room with current selection within specified hotel'
       renum: '&6/ht renum [hotelName] [oldNum] [newNum] - &aRenumbers specified room'
       rename: '&6/ht rename [oldName] [newName] - &aRenames specified hotel'
       sethome: '&6/ht sethome - &aSets a hotel/room home'
       home: '&6/ht home [hotelName] <roomNum> - &aTeleports you to a hotel/room home'
       check: '&6/ht check <playerName> - &aLists all rooms rented by you/specified player'
       list: '&6/ht list <worldName> - &aLists all hotels in current/specified world'
-      rlist: '&6/ht rlist [hotelName] <worldName> - &aLists all rooms in specified hotel in
-        current/specified world'
-      friend: '&6/ht friend|f [add|remove] [hotelName] [roomNum] [playerName] - &aAdds/removes
-        a player from the list of friends that can access the specified room'
-      friendList: '&6/ht friend|f list [hotelName] [roomNum] - &aLists players in friend list
-        of specified hotel room'
-      sellh: '&6/ht sellh [hotelName] [playerName] [price] - &aOffers to sell your hotel to specified
-        user for specified price'
+      rlist: '&6/ht rlist [hotelName] <worldName> - &aLists all rooms in specified hotel in current/specified world'
+      friend: '&6/ht friend|f [add|remove] [hotelName] [roomNum] [playerName] - &aAdds/removes a player from the list of friends that can access the specified room'
+      friendList: '&6/ht friend|f list [hotelName] [roomNum] - &aLists players in friend list of specified hotel room'
+      sellh: '&6/ht sellh [hotelName] [playerName] [price] - &aOffers to sell your hotel to specified user for specified price'
       buyh: '&6/ht buyh [hotelName] - &aBuys specified hotel from owner if it is on sale'
       reload: '&6/ht reload - &aReloads all configuration files'
-      remove: '&6/ht remove [playerName] [hotelName] [roomNum] - &aRemoves player from his rented
-        room'
+      remove: '&6/ht remove [playerName] [hotelName] [roomNum] - &aRemoves player from his rented room'
       delr: '&6/ht delr [hotelName] [roomNum] - &aDeletes specified room'
       delete: '&6/ht delete [hotelName] - &aDelete specified hotel'
     help:
@@ -168,8 +159,7 @@ chat:
         '5': '&e    15:1m3k'
         '6': '&e    3d 6m 2s'
         '7': '&9&oYou can use &20 &9&oas a time to make the rent infinite'
-        '8': '&9&oIn cost, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9
-          = &2million&9 &5b&9 = &2billion (1000 million)'
+        '8': '&9&oIn cost, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2billion (1000 million)'
     unknownArg: '&4Unknown argument. Try &3&o/hotels'
     noWorld: '&cPlease specify world'
     noHotel: '&cPlease specify hotel'
@@ -195,15 +185,13 @@ chat:
       maxHotelsReached: '&4You have reached the limit of %max% hotels you can own'
       creationSuccess: '&aYou currently own %tot% hotels. You can own another %left%.'
       hotelAlreadyPresent: '&4There is already a hotel present here'
-      fail: '&4Could not create hotel. Did you enter Hotel Creation Mode? (&3&o/hotels
-        cm enter&r&4)'
+      fail: '&4Could not create hotel. Did you enter Hotel Creation Mode? (&3&o/hotels cm enter&r&4)'
       consoleRejected: The console can't create a hotel!
       noName: '&4Give a name to your hotel!'
     room:
       success: '&aYou have created room %room% of the %hotel% hotel'
       roomNumInvalid: '&4The room number is not a valid integer!'
-      nextNewRoomFail: '&4Could not find next available room! Try specifying the room
-        number manually'
+      nextNewRoomFail: '&4Could not find next available room! Try specifying the room number manually'
       usage: '&4Correct Usage: &6&o/hotels room hotelName roomNum'
       alreadyPresent: '&4There is already a room present here'
     deleteHotel:
@@ -213,8 +201,7 @@ chat:
       roomRented: '&4You cannot delete this room as it has been rented!'
     renumber:
       usage: '&4Correct usage: /hotels renum [hotelName] [oldNum] [newNum] <worldName>'
-      success: '&2You have successfully changed room %oldnum% to room %newnum% of
-        the %hotel% hotel'
+      success: '&2You have successfully changed room %oldnum% to room %newnum% of the %hotel% hotel'
       fail: '&4Could not renumber room %oldnum%'
       newNumTooBig: '&4New number is too big!'
     rename:
@@ -279,8 +266,7 @@ chat:
       noHomeSet: '&4No home is set!'
       regionNotFound: '&4Specified hotel or room not found!'
       usage: '&4Correct usage: /ht home [hotelName] <roomNum>'
-      notRenterNoPermission: '&4You are not the renter or have the permission to do
-        this!'
+      notRenterNoPermission: '&4You are not the renter or have the permission to do this!'
     reload:
       success: '&aConfiguration files reloaded'
     sellhotel:

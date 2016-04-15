@@ -11,6 +11,7 @@ import java.util.Collection;
 
 import net.milkbowl.vault.economy.Economy;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -44,7 +45,7 @@ public class HotelsMain extends JavaPlugin{
 				queue.set("messages.update.available", updateAvailable);
 				queue.set("messages.update.link", updateLink);
 				HConH.saveMessageQueue(queue);
-				
+
 				Collection<? extends Player> players = getServer().getOnlinePlayers();
 				for(Player p:players){
 					if(p.isOp()||p.hasPermission("hotels.*")){
@@ -74,18 +75,38 @@ public class HotelsMain extends JavaPlugin{
 		//HotelsLoop stuff
 		hotelsloop = new HotelsLoop(this);
 		int minutes = this.getConfig().getInt("settings.hotelsLoopTimerMinutes");
-		if(minutes>0)
-			hotelsloop.runTaskTimer(this, 200, minutes*60*20);
-		else
-			hotelsloop.runTaskTimer(this, 200, 2*60*20);
 
+		boolean isLoopRunning;
+		try{
+			isLoopRunning = Bukkit.getScheduler().isCurrentlyRunning(hotelsloop.getTaskId());
+		}
+		catch(Exception e5){
+			isLoopRunning = false;
+		}
+		if(!isLoopRunning){
+			if(minutes>0)
+				hotelsloop.runTaskTimer(this, 200, minutes*60*20);
+			else
+				hotelsloop.runTaskTimer(this, 200, 2*60*20);
+		}
+
+		//HotelsUpdateLoop stuff
 		HotelsUpdateLoop HUL = new HotelsUpdateLoop(this);
 		int hours = this.getConfig().getInt("settings.updateTime");
-		if(hours>0)
-			HUL.runTaskTimerAsynchronously(this, 3*60*60*20, hours*60*60*20);
-		else
-			hotelsloop.runTaskTimer(this, 3*60*60*20, 6*60*60*20);
+		boolean isUpdateCheckRunning;
+		try{
+			isUpdateCheckRunning = Bukkit.getScheduler().isCurrentlyRunning(HUL.getTaskId());
+		}
+		catch(Exception e5){
+			isUpdateCheckRunning = false;
+		}
 
+		if(!isUpdateCheckRunning){//If the update checker is not running
+			if(hours>0)
+				HUL.runTaskTimerAsynchronously(this, 3*60*60*20, hours*60*60*20);
+			else
+				HUL.runTaskTimerAsynchronously(this, 3*60*60*20, 6*60*60*20);
+		}
 		//Logging to console the correct enabling of Hotels
 		String message = HMM.mesnopre("main.enable.success");
 		if(message!=null){
