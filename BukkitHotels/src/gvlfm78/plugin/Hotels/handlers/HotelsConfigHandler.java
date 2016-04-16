@@ -63,6 +63,10 @@ public class HotelsConfigHandler {
 				setupLanguage("zhCN",plugin);
 			else if(lang.equalsIgnoreCase("zhTW"))
 				setupLanguage("zhTW",plugin);
+			else if(lang.equalsIgnoreCase("frFR")|lang.equalsIgnoreCase("fr"))
+				setupLanguage("frFR",plugin);
+			else if(lang.equalsIgnoreCase("ruRU")|lang.equalsIgnoreCase("ru"))
+				setupLanguage("ruRU",plugin);
 			else if(lang.equalsIgnoreCase("custom"))
 				return;
 			else
