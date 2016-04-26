@@ -77,7 +77,7 @@ public class HotelsCommandExecutor {
 
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.friend"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.friendList"));
-		
+
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.sellh"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.buyh"));
 
@@ -125,7 +125,7 @@ public class HotelsCommandExecutor {
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.sellh"));
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.buyh"));
 		}
-		
+
 		if(HMM.hasPerm(s,"hotels.reload"))
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.reload"));
 
@@ -219,6 +219,10 @@ public class HotelsCommandExecutor {
 	public void cmdReload(CommandSender s,Plugin pluginstance){
 		HConH.reloadConfigs(pluginstance);
 		s.sendMessage(HMM.mes("chat.commands.reload.success"));
+	}
+	public void cmdRent(CommandSender s,String hotelName){
+		//TODO erkgnuig
+		this.nextFreeRoom(world, hotelName)
 	}
 	public void cmdRent(CommandSender s,String hotelName, String roomNum){
 		File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
@@ -599,14 +603,14 @@ public class HotelsCommandExecutor {
 							if(player.equals(pfromfile)){
 								ProtectedRegion r = WGM.getRM(w).getRegion("hotel-"+hotel+"-"+room);
 								WGM.removeMember(player, r);
-								
+
 								if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
-									
+
 									r.setFlag(DefaultFlag.BLOCK_BREAK, null);
 									r.setFlag(DefaultFlag.BLOCK_PLACE, null);
 									r.setPriority(1);
 								}
-								
+
 								//Config stuff
 								config.set("Sign.renter", null);
 								config.set("Sign.timeRentedAt", null);
@@ -846,8 +850,7 @@ public class HotelsCommandExecutor {
 	}
 	public int nextNewRoom(World w, String hotel){
 		if(WGM.hasRegion(w, "Hotel-"+hotel)){
-			Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-			regions = WGM.getRM(w).getRegions();
+			Map<String, ProtectedRegion> regions = WGM.getRM(w).getRegions();
 			for(int i=0; i<regions.size(); i++){
 				if(!WGM.hasRegion(w, "Hotel-"+hotel+"-"+(i+1)))
 					return i+1;
@@ -856,5 +859,19 @@ public class HotelsCommandExecutor {
 		else
 			return 0;
 		return 0;
+	}
+	public String nextFreeRoom(World w, String hotel){
+		if(WGM.hasRegion(w, "Hotel-"+hotel)){
+			Map<String, ProtectedRegion> regions = WGM.getRM(w).getRegions();
+			for(ProtectedRegion r:regions.values()){
+				String ID = r.getId();
+				if(ID.matches("hotel-\\w+-\\d+")){
+					String roomNum = ID.replaceFirst("hotel-\\w+-", "");
+					if(SM.isRoomFree(hotel, roomNum, w))
+						return roomNum;
+				}
+			}
+		}
+		return null;
 	}
 }
