@@ -220,10 +220,6 @@ public class HotelsCommandExecutor {
 		HConH.reloadConfigs(pluginstance);
 		s.sendMessage(HMM.mes("chat.commands.reload.success"));
 	}
-	public void cmdRent(CommandSender s,String hotelName){
-		//TODO erkgnuig
-		this.nextFreeRoom(world, hotelName)
-	}
 	public void cmdRent(CommandSender s,String hotelName, String roomNum){
 		File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 		if(signFile.exists()){
@@ -680,9 +676,6 @@ public class HotelsCommandExecutor {
 				for(ProtectedRegion hr:hotels.keySet()){
 					String[] rId = hr.getId().toLowerCase().split("-");
 					String hotelName = rId[1];
-
-					//String hotelName = hr.getId().replaceFirst("hotel-", "");
-					//hotelName = hotelName.replaceFirst("-\\d+", "");
 					World world = hotels.get(hr);
 					int total = SM.totalRooms(hotelName, world);
 					int free = SM.freeRooms(hotelName, world);
@@ -767,14 +760,10 @@ public class HotelsCommandExecutor {
 					String state = "";
 					if(config!=null){
 						String renter = config.getString("Sign.renter");
-						if(renter==null){
-							//Vacant
+						if(renter==null) //Vacant
 							state = ChatColor.GREEN+HMM.mesnopre("sign.vacant");
-						}
-						else{
-							//Occupied
+						else //Occupied
 							state = ChatColor.BLUE+HMM.mesnopre("sign.occupied");
-						}
 						sender.sendMessage(HMM.mes("chat.commands.listRooms.line")
 								.replaceAll("%room%", roomnum)
 								.replaceAll("%state%", state)
@@ -856,22 +845,6 @@ public class HotelsCommandExecutor {
 					return i+1;
 			}
 		}
-		else
-			return 0;
 		return 0;
-	}
-	public String nextFreeRoom(World w, String hotel){
-		if(WGM.hasRegion(w, "Hotel-"+hotel)){
-			Map<String, ProtectedRegion> regions = WGM.getRM(w).getRegions();
-			for(ProtectedRegion r:regions.values()){
-				String ID = r.getId();
-				if(ID.matches("hotel-\\w+-\\d+")){
-					String roomNum = ID.replaceFirst("hotel-\\w+-", "");
-					if(SM.isRoomFree(hotel, roomNum, w))
-						return roomNum;
-				}
-			}
-		}
-		return null;
 	}
 }
