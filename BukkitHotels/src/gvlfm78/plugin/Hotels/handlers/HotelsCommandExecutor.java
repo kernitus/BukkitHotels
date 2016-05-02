@@ -77,7 +77,7 @@ public class HotelsCommandExecutor {
 
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.friend"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.friendList"));
-		
+
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.sellh"));
 		s.sendMessage(HMM.mesnopre("chat.commands.commands.buyh"));
 
@@ -125,7 +125,7 @@ public class HotelsCommandExecutor {
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.sellh"));
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.buyh"));
 		}
-		
+
 		if(HMM.hasPerm(s,"hotels.reload"))
 			s.sendMessage(HMM.mesnopre("chat.commands.commands.reload"));
 
@@ -599,14 +599,14 @@ public class HotelsCommandExecutor {
 							if(player.equals(pfromfile)){
 								ProtectedRegion r = WGM.getRM(w).getRegion("hotel-"+hotel+"-"+room);
 								WGM.removeMember(player, r);
-								
+
 								if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
-									
+
 									r.setFlag(DefaultFlag.BLOCK_BREAK, null);
 									r.setFlag(DefaultFlag.BLOCK_PLACE, null);
 									r.setPriority(1);
 								}
-								
+
 								//Config stuff
 								config.set("Sign.renter", null);
 								config.set("Sign.timeRentedAt", null);
@@ -676,9 +676,6 @@ public class HotelsCommandExecutor {
 				for(ProtectedRegion hr:hotels.keySet()){
 					String[] rId = hr.getId().toLowerCase().split("-");
 					String hotelName = rId[1];
-
-					//String hotelName = hr.getId().replaceFirst("hotel-", "");
-					//hotelName = hotelName.replaceFirst("-\\d+", "");
 					World world = hotels.get(hr);
 					int total = SM.totalRooms(hotelName, world);
 					int free = SM.freeRooms(hotelName, world);
@@ -763,14 +760,10 @@ public class HotelsCommandExecutor {
 					String state = "";
 					if(config!=null){
 						String renter = config.getString("Sign.renter");
-						if(renter==null){
-							//Vacant
+						if(renter==null) //Vacant
 							state = ChatColor.GREEN+HMM.mesnopre("sign.vacant");
-						}
-						else{
-							//Occupied
+						else //Occupied
 							state = ChatColor.BLUE+HMM.mesnopre("sign.occupied");
-						}
 						sender.sendMessage(HMM.mes("chat.commands.listRooms.line")
 								.replaceAll("%room%", roomnum)
 								.replaceAll("%state%", state)
@@ -846,15 +839,12 @@ public class HotelsCommandExecutor {
 	}
 	public int nextNewRoom(World w, String hotel){
 		if(WGM.hasRegion(w, "Hotel-"+hotel)){
-			Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-			regions = WGM.getRM(w).getRegions();
+			Map<String, ProtectedRegion> regions = WGM.getRM(w).getRegions();
 			for(int i=0; i<regions.size(); i++){
 				if(!WGM.hasRegion(w, "Hotel-"+hotel+"-"+(i+1)))
 					return i+1;
 			}
 		}
-		else
-			return 0;
 		return 0;
 	}
 }
