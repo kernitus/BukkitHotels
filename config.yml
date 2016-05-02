@@ -1,9 +1,9 @@
-# Hotels Plugin by kernitus
+# Hotels plugin by kernitus
 # http://dev.bukkit.org/bukkit-plugins/hotels/
 # https://www.spigotmc.org/resources/hotels.2047/
 settings:
-# Available languages: enGB, itIT, zhCN, znTW
-# Available from Hotels 0.6.1 : ruRU, frFR and possibly esES
+# Available languages: enGB, itIT, zhCN, znTW, frFR, ruRU
+# Looking for translator for German and Spanish
 # You must delete the current locale.yml and do /ht reload for the locale to update
   language: enGB
 # Maximum amount of hotels a player can own

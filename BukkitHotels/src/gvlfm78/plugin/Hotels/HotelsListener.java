@@ -66,7 +66,7 @@ public class HotelsListener implements Listener {
 			}
 			else{
 				p.sendMessage(HMM.mes("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
-				e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
+				e.setLine(0, ChatColor.DARK_RED+e.getLine(0));
 				//No permissions
 			}
 		}

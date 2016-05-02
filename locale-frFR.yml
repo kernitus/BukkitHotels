@@ -1,4 +1,4 @@
-# Hotels plugin de kernitus
+# Hotels plugin by kernitus
 # Cette traduction pourrait contenir des erreurs. Si vous avez des améliorations vous pouvez contacter kernitus
 language: frFR
 main:
@@ -41,7 +41,7 @@ chat:
   sign:
     place:
       fileFail: '&4Impossible sauver le fichier de signe'
-      outOfRegion: '&4Le fichier n'est pas dans la region de l''hôtel!'
+      outOfRegion: '&4Le fichier n''est pas dans la region de l''hôtel!'
       noHotel: '&4Hôtel inexistant'
       emptySign: '&4Fichier vide'
       success: '&2Fichier creé avec succès!'
@@ -51,7 +51,7 @@ chat:
       noSeparator: '&4La ligne 3 doit contenir le séparator &3:'
     use:
       success: '&aVous avez loué la pièce %room% de l''hôtel %hotel% pour $%price%'
-      notEnoughMoney: '&4Vous n''avez pas assez d'argent! Vous avez besoin d''autre $%missingmoney%'
+      notEnoughMoney: '&4Vous n''avez pas assez d''argent! Vous avez besoin d''autre $%missingmoney%'
       noAccount: '&4Vous n''avez pas un compre financier!'
       taken: '&4Ce pièce est déja loué'
       nonExistantRoom: '&4Ce pièce n''existe pas!'
@@ -72,7 +72,7 @@ chat:
     invalidChar: '&4Le nom ne peut pas contenir la lettre &6&l-'
     rooms:
       alreadyExists: '&4Ce pièce existe déjà!'
-      notInHotel: '&4La pièce n'est pas dans l''hôtel spécifié!'
+      notInHotel: '&4La pièce n''est pas dans l''hôtel spécifié!'
       fail: '&4Impossible créer la pièce!'
     inventory:
       storeFail: '&4Impossible sauver votre inventaire'
@@ -159,10 +159,10 @@ chat:
     noWorld: '&cVous devez spécifier un monde'
     noHotel: '&cVous devez spécifier un hôtel'
     noPlayer: '&cVous devez spécifier un joueur'
-    userNonExistant: '&4Le joueur spécifié n'existe pas'
-    roomNonExistant: '&4La pièce spécifié n'existe pas'
-    hotelNonExistant: '&4L''hôtel spécifié n'existe pas'
-    worldNonExistant: '&4Le monde spécifié n'existe pas'
+    userNonExistant: '&4Le joueur spécifié n''existe pas'
+    roomNonExistant: '&4La pièce spécifié n''existe pas'
+    hotelNonExistant: '&4L''hôtel spécifié n''existe pas'
+    worldNonExistant: '&4Le monde spécifié n''existe pas'
     reload:
       success: '&aFichier de configuration chargé correctement'
     rent:
@@ -183,17 +183,17 @@ chat:
       consoleRejected: La console ne peut pas créerun hôtel!
       noName: '&4Nommer votre hôtel!'
       maxHotelsReached: '&Vous avez atteint votre limite de %max% hôtel que vous pouvez possedér'
-      creationSuccess: '&aActuellemente vous possédez %tot% hôtel. Vous pouvez posséder d'autre %left%'
+      creationSuccess: '&aActuellemente vous possédez %tot% hôtel. Vous pouvez posséder d''autre %left%'
       hotelAlreadyPresent: '&4Il existe déjà un hôtel ici'
     room:
       success: '&aVous avez crée %room% de l''hôtel %hôtel%'
-      roomNumInvalid: '&4Le numéro de la pièce n'est pas un numéro complet!'
+      roomNumInvalid: '&4Le numéro de la pièce n''est pas un numéro complet!'
       nextNewRoomFail: '&4Impossible trouver la prochaine pièce disponible! Essayez de spécifier la pièce manuellement'
       usage: '&4Utilisation correct: &6&o/hotels room [nomhôtel] [numéropièce]'
       alreadyPresent: '&4Il y a déjà une pièce present ici'
     deleteRoom:
       usage: '&4Utilisation correct: /hotels delr [nomhôtel] [numéropièce] <nommonde>'
-      roomRented: '&4Vous ne pouvez pas éliminer ce pièce car c'est loué'
+      roomRented: '&4Vous ne pouvez pas éliminer ce pièce car c''est loué'
     deleteHotel:
       hasRentedRooms: '&4Vous ne pouvez pas éliminer ce hôtel car certaines pièces sont loués'
     renumber:
@@ -213,7 +213,7 @@ chat:
       fail: '&4Impossible supprimer regions hôtel'
     remove:
       playerNotRenter: '&4Le joueur spécifié n''a pas loué la pièce spécifié'
-      noRenter: '&4La pièce spécifié n'est pas loué!'
+      noRenter: '&4La pièce spécifié n''est pas loué!'
       success: '&aLe joueur %player% a été enlevé de la pièce %room% de l''hôtel %hotel%'
       usage: '&4Utilisation correct: /hotels remove [nomjoueur] [nomhôtel] [numéropièce] <nommonde>'
     check:
@@ -240,12 +240,12 @@ chat:
     friend:
       usage: '&4Utilisation correct: /hotels friend [add|remove|list] [nomhôtel] [numéropièce] <nomami>'
       wrongData: '&4L''hôtel ou la pièce mis ne correspond pas à aucun place existant'
-      noRenter: '&4La pièce spécifié n'a pas un tenant!'
-      notRenter: '&4Vous n'est pas le tenant de la pièce spécifié!'
+      noRenter: '&4La pièce spécifié n''a pas un tenant!'
+      notRenter: '&4Vous n''est pas le tenant de la pièce spécifié!'
       consoleRejected: La console ne peut pas ajouter/enlever amis d'une pièce!
       addYourself: '&4Vous ne pouvez pas vous ajouter à la liste d''amis!'
       nonExistant: '&4Vous ne pouvez pas ajouter amis inexistante à votre liste d''amis!'
-      friendNotInList: '&4L''utilisateur spécifié n'est pas dans votre liste d''amis!'
+      friendNotInList: '&4L''utilisateur spécifié n''est pas dans votre liste d''amis!'
       addSuccess: '&aLe joueur %friend% a été ajouté à votre liste d''amis avec succès'
       removeSuccess: '&aLe joueur %friend% a été enlevé de votre liste d''amis avec succès'
       noFriends: '&2Vous n''avez pas ajouté aucun ami à la pièce spécifié'
@@ -263,13 +263,13 @@ chat:
     home:
       consoleRejected: La console ne peut pas se téléporter à la maison!
       noHomeSet: '&4Pas aucun home set!'
-      regionNotFound: '&4L''hôtel ou la pièce spécifié n'ont pas été trouvé!'
+      regionNotFound: '&4L''hôtel ou la pièce spécifié n''ont pas été trouvé!'
       usage: '&4Utilisation correct: /ht home [nomhôtel] <numéropièce>'
-      notRenterNoPermission: '&4Vous n''êtes pas le tenent ou vous n'avez pas me permis de faire ça'
+      notRenterNoPermission: '&4Vous n''êtes pas le tenent ou vous n''avez pas me permis de faire ça'
     sellhotel:
       consoleRejected: La console ne peut pas vendre un hôtel!
       usage: '&4Utilisation correct: &6&o/ht sellh [nomhôtel] [nomacheteur] [prix]'
-      buyerNotOnline: '&4L''acheteur n'est pas en ligne!'
+      buyerNotOnline: '&4L''acheteur n''est pas en ligne!'
       selling: '&aLe joueur %seller% vend son hôtel %hotel% à toi pour $%price%. écrivez &6&o/ht buyh %hotel% &r&apour l''acheter'
       sellingAsked: '&aDemande d''achète envoyé au joueur %buyer%'
       sellingAlreadyAsked: '&4Vous avez déjà demandé au joueur %buyer% si il veut acheter votre hôtel!'

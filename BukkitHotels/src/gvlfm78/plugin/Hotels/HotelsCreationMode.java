@@ -215,6 +215,7 @@ public class HotelsCreationMode {
 	public void saveInventory(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
+		PlayerInventory pinv = p.getInventory();
 		File file = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
 
 		if(!file.exists()){
@@ -226,11 +227,11 @@ public class HotelsCreationMode {
 
 			YamlConfiguration inv = HConH.getconfig("Inventories"+File.separator+playerUUID+".yml");
 
-			inv.set("inventory", p.getInventory().getContents());
-			inv.set("armour", p.getInventory().getArmorContents());
+			inv.set("inventory", pinv.getContents());
+			inv.set("armour", pinv.getArmorContents());
 			
 			try{//Only if in 1.9 try getting this
-			inv.set("extra", p.getInventory().getExtraContents());
+			inv.set("extra", pinv.getExtraContents());
 			}
 			catch(NoSuchMethodError er){
 				//We must be in a pre-1.9 version
@@ -242,7 +243,8 @@ public class HotelsCreationMode {
 				p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail"));
 			}
 
-			p.getInventory().clear();
+			pinv.clear();
+			pinv.setArmorContents(new ItemStack[4]);
 			p.sendMessage(HMM.mes("chat.creationMode.inventory.storeSuccess"));
 		}else{
 			p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail"));
