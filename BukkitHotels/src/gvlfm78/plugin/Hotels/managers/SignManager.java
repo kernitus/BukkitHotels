@@ -169,7 +169,7 @@ public class SignManager {
 										e1.printStackTrace();}
 
 									e.setLine(0, ChatColor.DARK_BLUE+Line2); //Hotel Name
-									e.setLine(1, ChatColor.DARK_GREEN+"Room " + roomnum+" - "+cost.toUpperCase()+"$"); //Room Number + Cost
+									e.setLine(1, ChatColor.DARK_GREEN+HMM.mesnopre("sign.room.name")+" "+roomnum+" - "+cost.toUpperCase()+"$"); //Room Number + Cost
 									if(immutedtime.matches("0"))
 										e.setLine(2,HMM.mesnopre("sign.permanent"));
 									else{
