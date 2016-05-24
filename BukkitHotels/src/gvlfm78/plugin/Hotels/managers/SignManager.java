@@ -614,6 +614,21 @@ public class SignManager {
 		}
 		return false;
 	}
+	public boolean isRoomFreeOrNotSetup(String hotelName,String roomNum,World world){
+		hotelName = hotelName.toLowerCase();
+		if(WGM.hasRegion(world, "hotel-"+hotelName+"-"+roomNum)){
+			File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+			if(signFile.exists()){
+				YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
+				String renter = config.getString("Sign.renter");
+				if(renter==null||renter.isEmpty())
+					return true;//Room is empty
+			}
+			else
+				return true;//Room sign has not been placed
+		}
+		return false;
+	}
 	public boolean doesHotelHaveRentedRooms(String hotelName,World world){
 		hotelName = hotelName.toLowerCase();
 		if(WGM.hasRegion(world, "hotel-"+hotelName)){
@@ -622,7 +637,7 @@ public class SignManager {
 				String ID = r.getId();
 				if(ID.matches("^hotel-"+hotelName+"-\\d+")){//it's a room in this hotel
 					String roomNum = ID.replaceFirst("hotel-"+hotelName+"-", "");
-					if(!isRoomFree(hotelName,roomNum,world))
+					if(!isRoomFreeOrNotSetup(hotelName,roomNum,world))
 						return true;
 				}
 			}
