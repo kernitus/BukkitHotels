@@ -1,5 +1,7 @@
 package kernitus.plugin.Hotels;
 
+import kernitus.plugin.Hotels.Metrics.Graph;
+import kernitus.plugin.Hotels.handlers.HotelsCommandExecutor;
 import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.HotelsLoop;
@@ -24,6 +26,7 @@ public class HotelsMain extends JavaPlugin{
 	public static Economy economy = null; //Creating economy variable
 
 	HotelsConfigHandler HConH = new HotelsConfigHandler(this);
+	HotelsCommandExecutor HCE = new HotelsCommandExecutor(this);
 	HotelsMessageManager HMM = new HotelsMessageManager(this);
 	HotelsLoop hotelsloop;
 	protected HotelsUpdateChecker updateChecker;
@@ -117,6 +120,18 @@ public class HotelsMain extends JavaPlugin{
 		//Metrics
 		try {
 			Metrics metrics = new Metrics(this);
+
+			Graph hotelAmount = metrics.createGraph("Amount of Hotels");
+
+			hotelAmount.addPlotter(new Metrics.Plotter("Hotel Count") {
+
+				@Override
+				public int getValue() {
+					return HCE.getHotelCount(); // Number of players who used a diamond sword
+				}
+
+			});
+
 			metrics.start();
 		} catch (IOException e) {
 			// Failed to submit the stats :-(

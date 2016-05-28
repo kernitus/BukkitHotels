@@ -448,6 +448,7 @@ public class SignManager {
 				String[] Line2split = Line2.split(" ");
 				int roomnum = Integer.parseInt(Line2split[1]);
 				if(WGM.hasRegion(w, "Hotel-"+Line1+"-"+roomnum)){//If room region exists
+					ProtectedRegion roomRegion = WGM.getRegion(w, "Hotel-"+Line1+"-"+roomnum);
 					File signFile = HConH.getFile("Signs"+File.separator+Line1.toLowerCase()+"-"+roomnum+".yml");
 					if(signFile.exists()){//If signfile is present
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
@@ -463,6 +464,7 @@ public class SignManager {
 									int bz = b.getZ();
 									if(locx==bx&&locy==by&&locz==bz){//If sign and config location match
 										if(isRoomFree(Line1, String.valueOf(roomnum), w)||HMM.hasPerm(p, "hotels.delete.rooms.admin")){
+											WGM.getRM(w).removeRegion(roomRegion.getId());
 											signFile.delete();
 										}
 										else{

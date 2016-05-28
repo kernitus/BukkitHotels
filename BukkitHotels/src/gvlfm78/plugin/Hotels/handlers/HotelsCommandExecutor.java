@@ -719,12 +719,27 @@ public class HotelsCommandExecutor {
 		else
 			sender.sendMessage(HMM.mes("chat.commands.userNonExistant"));
 	}
+	public int getHotelCount(){
+		//Loop through all worlds, all regions, find hotel- matching and add to count, return count
+		int count = 0;
+
+		List<World> worlds = Bukkit.getWorlds();
+
+		for(World world : worlds){//Loop through all worlds
+			Map<String, ProtectedRegion> regions = WGM.getRM(world).getRegions();
+			for(ProtectedRegion region:regions.values()){//Loop through all regions in world
+				String id = region.getId();
+				if(id.matches("^hotel-\\w+$"))//If it's a hotel
+					count++;
+			}
+		}
+		return count;
+	}
 	public void listHotels(World w, CommandSender sender){
 		sender.sendMessage(HMM.mes("chat.commands.listHotels.heading"));
-		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WGM.getRM(w).getRegions();
-		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		for(ProtectedRegion r:rlist){
+		Map<String, ProtectedRegion> regions = WGM.getRM(w).getRegions();
+
+		for(ProtectedRegion r:regions.values()){
 			String id = r.getId();
 			if(id.startsWith("hotel-")){ //If it's a hotel
 				if(!id.matches("^hotel-.+-.+")){ //if it's not a room
