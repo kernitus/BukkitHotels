@@ -105,21 +105,25 @@ public class HotelsCommandHandler implements CommandExecutor {
 			else if((args[0].equalsIgnoreCase("createmode"))||(args[0].equalsIgnoreCase("cm"))){
 				if(sender instanceof Player){
 					Player p = (Player) sender;
-					if(HMM.hasPerm(p, "hotels.createmode")){
-						if(args[1].equalsIgnoreCase("enter"))
-							HCE.cmdCreateModeEnter(p);
-						else if(args[1].equalsIgnoreCase("exit"))
-							HCE.cmdCreateModeExit(p);
-						else if(args[1].equalsIgnoreCase("reset"))
-							HCE.cmdCreateModeReset(p);
+					if(args.length>=2){
+						if(HMM.hasPerm(p, "hotels.createmode")){
+							if(args[1].equalsIgnoreCase("enter"))
+								HCE.cmdCreateModeEnter(p);
+							else if(args[1].equalsIgnoreCase("exit"))
+								HCE.cmdCreateModeExit(p);
+							else if(args[1].equalsIgnoreCase("reset"))
+								HCE.cmdCreateModeReset(p);
+							else
+								p.sendMessage(HMM.mes("chat.commands.creationMode.noarg"));
+						}
 						else
-							p.sendMessage(HMM.mes("chat.commands.creationMode.noarg"));
+							p.sendMessage(HMM.mes("chat.noPermission"));
 					}
 					else
-						p.sendMessage(HMM.mes("chat.noPermission"));
+						p.sendMessage(HMM.mes("chat.commands.creationMode.noarg"));
 				}
 				else
-					sender.sendMessage("chat.commands.creationMode.consoleRejected");
+					sender.sendMessage(HMM.mes("chat.commands.creationMode.consoleRejected"));
 			}
 			else if(args[0].equalsIgnoreCase("check")){
 				if(sender instanceof Player){
@@ -402,14 +406,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 							World world = p.getWorld();
 							if(WGM.isOwner(p, "hotel-"+args[1], world)||HMM.hasPerm(p, "hotels.delete.admin")){
 								if(HMM.hasPerm(p, "hotels.delete.admin")||!SM.doesHotelHaveRentedRooms(args[1], world)){
-								HCE.removeSigns(args[1],world,sender);
-								HCE.removeRegions(args[1],world,sender);
-								File file = HConH.getFile("Hotels"+File.separator+args[1].toLowerCase()+".yml");
-								if(file.exists())
-									file.delete();
-							}
-							else
-								p.sendMessage(HMM.mes("chat.commands.deleteHotel.hasRentedRooms"));
+									HCE.removeSigns(args[1],world,sender);
+									HCE.removeRegions(args[1],world,sender);
+									File file = HConH.getFile("Hotels"+File.separator+args[1].toLowerCase()+".yml");
+									if(file.exists())
+										file.delete();
+								}
+								else
+									p.sendMessage(HMM.mes("chat.commands.deleteHotel.hasRentedRooms"));
 							}
 							else
 								p.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
