@@ -44,8 +44,7 @@ public class WorldGuardManager {
 		this.plugin = instance;
 	}
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-
-	YamlConfiguration locale = HConH.getLocale();
+	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
 
 	public WorldGuardPlugin getWorldGuard(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -201,24 +200,24 @@ public class WorldGuardManager {
 			}
 			switch(pureKey){
 			case "GREETING":
-				if(Boolean.valueOf(keyValue)){//TODO get correct message from locale depending on if it's a room or hotel; can also separate greeting and farewell cases
+				if(Boolean.valueOf(keyValue)){
 					if(isHotel){
-						String message = locale.getString("message.hotel.enter").replaceAll("%hotel%", namenum);
+						String message = HMM.mesnopre("message.hotel.enter").replaceAll("%hotel%", namenum);
 						flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 					}
 					else{
-						String message = locale.getString("message.room.enter").replaceAll("%room%", namenum);
+						String message = HMM.mesnopre("message.room.enter").replaceAll("%room%", namenum);
 						flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 					}
 				}
 				break;
 			case "FAREWELL":
 				if(isHotel){
-					String message = locale.getString("message.hotel.exit").replaceAll("%hotel%", namenum);
+					String message = HMM.mesnopre("message.hotel.exit").replaceAll("%hotel%", namenum);
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				}
 				else{
-					String message = locale.getString("message.room.exit").replaceAll("%room%", namenum);
+					String message = HMM.mesnopre("message.room.exit").replaceAll("%room%", namenum);
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				}
 				break;

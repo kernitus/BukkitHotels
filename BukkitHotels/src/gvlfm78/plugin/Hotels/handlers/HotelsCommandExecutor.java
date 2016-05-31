@@ -48,7 +48,7 @@ public class HotelsCommandExecutor {
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 	HotelsFileFinder HFF = new HotelsFileFinder(plugin);
 
-	public void cmdCreate(Plugin plugin, Player p,String hotelName){//Hotel creation command{
+	public void cmdCreate(Plugin plugin, Player p,String hotelName){//Hotel creation command
 		UUID playerUUID = p.getUniqueId();
 		File file = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
 		if(file.exists()){
