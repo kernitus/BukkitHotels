@@ -128,8 +128,12 @@ public class HotelsCreationMode {
 			p.sendMessage(HMM.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
 			int ownedHotels = ownedHotels(p);
 			int maxHotels = HConH.getconfigyml().getInt("settings.max_hotels_owned");
-			int hotelsLeft = maxHotels-ownedHotels;
+
+			String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
+
+			if(!HMM.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
 			p.sendMessage(HMM.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
+			
 			return true;
 		}
 		else{
@@ -229,9 +233,9 @@ public class HotelsCreationMode {
 
 			inv.set("inventory", pinv.getContents());
 			inv.set("armour", pinv.getArmorContents());
-			
+
 			try{//Only if in 1.9 try getting this
-			inv.set("extra", pinv.getExtraContents());
+				inv.set("extra", pinv.getExtraContents());
 			}
 			catch(NoSuchMethodError er){
 				//We must be in a pre-1.9 version
@@ -268,8 +272,8 @@ public class HotelsCreationMode {
 			pinv.setArmorContents(armourItems.toArray(new ItemStack[armourItems.size()]));
 
 			try{
-			List<ItemStack> extraItems = (List<ItemStack>) inv.getList("extra");
-			pinv.setExtraContents(extraItems.toArray(new ItemStack[extraItems.size()]));
+				List<ItemStack> extraItems = (List<ItemStack>) inv.getList("extra");
+				pinv.setExtraContents(extraItems.toArray(new ItemStack[extraItems.size()]));
 			}
 			catch(Exception et){
 				//Must be in a pre-1.9 version
