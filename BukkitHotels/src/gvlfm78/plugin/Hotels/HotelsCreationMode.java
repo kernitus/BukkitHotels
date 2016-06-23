@@ -1,5 +1,9 @@
 package kernitus.plugin.Hotels;
 
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.HotelsMessageManager;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,19 +33,12 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsMessageManager;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
-
 public class HotelsCreationMode {
-	private HotelsMain plugin;
-	public HotelsCreationMode(HotelsMain instance)
-	{
-		this.plugin = instance;
-	}
-	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
-	WorldGuardManager WGM = new WorldGuardManager(plugin);
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+
+	public HotelsCreationMode(){}
+	HotelsMessageManager HMM = new HotelsMessageManager();
+	WorldGuardManager WGM = new WorldGuardManager();
+	HotelsConfigHandler HConH = new HotelsConfigHandler();
 
 	public void checkFolder(){
 		File file = HConH.getFile("Inventories");
@@ -70,7 +67,7 @@ public class HotelsCreationMode {
 		}
 		return count;
 	}
-	public void hotelSetup(String hotelName, CommandSender s,Plugin plugin){
+	public void hotelSetup(String hotelName, CommandSender s){
 		Player p = (Player) s;
 		if(!hotelName.contains("-")){
 			if(HMM.hasPerm(p, "hotels.create")){

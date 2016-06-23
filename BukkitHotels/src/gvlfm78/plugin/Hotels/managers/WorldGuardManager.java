@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels.managers;
 
-import java.util.ArrayList;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,17 +35,12 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-
 
 public class WorldGuardManager {
-	private HotelsMain plugin;
-	public WorldGuardManager(HotelsMain instance){
-		this.plugin = instance;
-	}
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
+
+	public WorldGuardManager(){}
+	HotelsConfigHandler HConH = new HotelsConfigHandler();
+	HotelsMessageManager HMM = new HotelsMessageManager();
 
 	public WorldGuardPlugin getWorldGuard(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -102,6 +98,9 @@ public class WorldGuardManager {
 	public boolean hasRegion(World world, String regionName){
 		return getRM(world).hasRegion(regionName);
 	}
+	public ProtectedRegion getHotelRegion(World world, String name){
+		return getRegion(world, name);
+	}
 	public void renameRegion(String oldname, String newname,World world){
 		if(hasRegion(world, oldname)){//If old region exists
 			ProtectedRegion oldr = getRegion(world, oldname);//Get old region
@@ -128,6 +127,9 @@ public class WorldGuardManager {
 			saveRegions(world);
 		}
 	}
+	public Collection<ProtectedRegion> getRegions(World world){
+		return getRM(world).getRegions().values();
+	}
 	public boolean isOwner(Player p,ProtectedRegion r){
 		if(r.getOwners().contains(p.getName())||r.getOwners().contains(p.getUniqueId()))
 			return true;
@@ -150,9 +152,8 @@ public class WorldGuardManager {
 			return false;
 	}
 	public boolean doHotelRegionsOverlap(ProtectedRegion region, World world){
-		Map<String, ProtectedRegion> regions = getRM(world).getRegions();
-		Collection<ProtectedRegion> reegions = new ArrayList<ProtectedRegion>(regions.values());
-		List<ProtectedRegion> inter = region.getIntersectingRegions(reegions);
+		Collection<ProtectedRegion> regions = getRegions(world);
+		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
 		for(ProtectedRegion reg : inter){
 			if(reg.getId().startsWith("hotel-")){
 					return true;
@@ -161,9 +162,8 @@ public class WorldGuardManager {
 		return false;
 	}
 	public boolean doesRoomRegionOverlap(ProtectedRegion region, World world){
-		Map<String, ProtectedRegion> regions = getRM(world).getRegions();
-		Collection<ProtectedRegion> reegions = new ArrayList<ProtectedRegion>(regions.values());
-		List<ProtectedRegion> inter = region.getIntersectingRegions(reegions);
+		Collection<ProtectedRegion> regions = getRegions(world);
+		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
 		for(ProtectedRegion reg : inter){
 			if(reg.getId().matches("hotel-\\w+-\\d+")){//It's a room region
 					return true;

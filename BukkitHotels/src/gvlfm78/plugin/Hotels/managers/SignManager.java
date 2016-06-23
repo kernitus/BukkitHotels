@@ -40,14 +40,11 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class SignManager {
 
 	FilenameFilter SignFileFilter;
-	public HotelsMain plugin;
-	public SignManager(HotelsMain instance){
-		this.plugin = instance;
-	}
-	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
-	HotelsFileFinder HFF = new HotelsFileFinder(plugin);
-	WorldGuardManager WGM = new WorldGuardManager(plugin);
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	public SignManager(){}
+	HotelsMessageManager HMM = new HotelsMessageManager();
+	HotelsFileFinder HFF = new HotelsFileFinder();
+	WorldGuardManager WGM = new WorldGuardManager();
+	HotelsConfigHandler HConH = new HotelsConfigHandler();
 
 	public void placeReceptionSign(SignChangeEvent e){
 		Player p = e.getPlayer();

@@ -1,5 +1,12 @@
 package kernitus.plugin.Hotels.handlers;
 
+import kernitus.plugin.Hotels.HotelsCreationMode;
+import kernitus.plugin.Hotels.managers.HotelsFileFinder;
+import kernitus.plugin.Hotels.managers.HotelsLoop;
+import kernitus.plugin.Hotels.managers.HotelsMessageManager;
+import kernitus.plugin.Hotels.managers.SignManager;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,34 +32,22 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import kernitus.plugin.Hotels.HotelsCreationMode;
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.managers.HotelsFileFinder;
-import kernitus.plugin.Hotels.managers.HotelsLoop;
-import kernitus.plugin.Hotels.managers.HotelsMessageManager;
-import kernitus.plugin.Hotels.managers.SignManager;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
-
 public class HotelsCommandExecutor {
 
-	private HotelsMain plugin;
-	public HotelsCommandExecutor(HotelsMain instance)
-	{
-		this.plugin = instance;
-	}
+	public HotelsCommandExecutor(){}
 
-	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
-	SignManager SM = new SignManager(plugin);
-	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
-	WorldGuardManager WGM = new WorldGuardManager(plugin);
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	HotelsFileFinder HFF = new HotelsFileFinder(plugin);
+	HotelsMessageManager HMM = new HotelsMessageManager();
+	SignManager SM = new SignManager();
+	HotelsCreationMode HCM = new HotelsCreationMode();
+	WorldGuardManager WGM = new WorldGuardManager();
+	HotelsConfigHandler HConH = new HotelsConfigHandler();
+	HotelsFileFinder HFF = new HotelsFileFinder();
 
-	public void cmdCreate(Plugin plugin, Player p,String hotelName){//Hotel creation command
+	public void cmdCreate(Player p,String hotelName){//Hotel creation command
 		UUID playerUUID = p.getUniqueId();
 		File file = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
 		if(file.exists()){
-			HCM.hotelSetup(hotelName, p, plugin);
+			HCM.hotelSetup(hotelName, p);
 		}
 		else
 			p.sendMessage(HMM.mes("chat.commands.create.fail"));
@@ -217,7 +212,7 @@ public class HotelsCommandExecutor {
 		p.sendMessage(HMM.mes("chat.commands.creationMode.reset"));
 	}
 	public void cmdReload(CommandSender s,Plugin pluginstance){
-		HConH.reloadConfigs(pluginstance);
+		HConH.reloadConfigs();
 		s.sendMessage(HMM.mes("chat.commands.reload.success"));
 	}
 	public void cmdRent(CommandSender s,String hotelName, String roomNum){
@@ -364,7 +359,7 @@ public class HotelsCommandExecutor {
 		else
 			s.sendMessage(HMM.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
-	public void renumber(Plugin pluginstance, String hotel,String oldnum,String newnum, World world,CommandSender sender){
+	public void renumber(String hotel,String oldnum,String newnum, World world,CommandSender sender){
 		hotel = hotel.toLowerCase();
 		if(Integer.parseInt(newnum)<100000){
 			if(WGM.hasRegion(world, "Hotel-"+hotel)){
@@ -619,7 +614,7 @@ public class HotelsCommandExecutor {
 									e.printStackTrace();
 								}
 								//Hotelsloop
-								HotelsLoop hotelsloop = new HotelsLoop(plugin);
+								HotelsLoop hotelsloop = new HotelsLoop();
 								hotelsloop.run();
 								//Make free room accessible to all players if set in config
 								WGM.makeRoomAccessible(r);

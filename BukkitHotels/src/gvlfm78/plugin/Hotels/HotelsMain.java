@@ -25,9 +25,9 @@ public class HotelsMain extends JavaPlugin{
 
 	public static Economy economy = null; //Creating economy variable
 
-	HotelsConfigHandler HConH = new HotelsConfigHandler(this);
-	HotelsCommandExecutor HCE = new HotelsCommandExecutor(this);
-	HotelsMessageManager HMM = new HotelsMessageManager(this);
+	HotelsConfigHandler HConH = new HotelsConfigHandler();
+	HotelsCommandExecutor HCE = new HotelsCommandExecutor();
+	HotelsMessageManager HMM = new HotelsMessageManager();
 	HotelsLoop hotelsloop;
 	protected HotelsUpdateChecker updateChecker;
 
@@ -36,7 +36,7 @@ public class HotelsMain extends JavaPlugin{
 	@Override
 	public void onEnable(){
 		setupConfig();
-		this.updateChecker = new HotelsUpdateChecker(this, "http://dev.bukkit.org/bukkit-plugins/hotels/files.rss");
+		this.updateChecker = new HotelsUpdateChecker("http://dev.bukkit.org/bukkit-plugins/hotels/files.rss");
 		this.updateChecker.updateNeeded();
 		if(getConfig().getBoolean("settings.checkForUpdates")){
 			if(this.updateChecker.updateNeeded()){
@@ -60,7 +60,7 @@ public class HotelsMain extends JavaPlugin{
 		}
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Listeners and stuff
-		getServer().getPluginManager().registerEvents((new HotelsListener(this)), this);//Firing event listener
+		getServer().getPluginManager().registerEvents((new HotelsListener()), this);//Firing event listener
 		getCommand("Hotels").setExecutor(new HotelsCommandHandler(this));//Firing commands listener
 		setupEconomy();
 		//Economy and stuff
@@ -76,7 +76,7 @@ public class HotelsMain extends JavaPlugin{
 		}
 
 		//HotelsLoop stuff
-		hotelsloop = new HotelsLoop(this);
+		hotelsloop = new HotelsLoop();
 		int minutes = this.getConfig().getInt("settings.hotelsLoopTimerMinutes");
 
 		boolean isLoopRunning;
@@ -122,19 +122,119 @@ public class HotelsMain extends JavaPlugin{
 			Metrics metrics = new Metrics(this);
 
 			Graph hotelAmount = metrics.createGraph("Amount of Hotels");
+			Graph language = metrics.createGraph("Language");
+			int count = HCE.getHotelCount();
 
-			hotelAmount.addPlotter(new Metrics.Plotter("Hotel Count") {
+			//Hotel amount
+			switch(count) {
+			case 0:
+				hotelAmount.addPlotter(new Metrics.Plotter("1-3") {
+					@Override
+					public int getValue() {
+						return 0;
+					}
+				}); break;
+			case 1: case 2: case 3:
+				hotelAmount.addPlotter(new Metrics.Plotter("1-3") {
+					@Override
+					public int getValue() {
+						return 1;
+					}
+				}); break;
+			case 4: case 5:
+				hotelAmount.addPlotter(new Metrics.Plotter("4-5") {
+					@Override
+					public int getValue() {
+						return 2;
+					}
+				}); break;
+			case 6: case 7: case 8: case 9: case 10:
+				hotelAmount.addPlotter(new Metrics.Plotter("6-10") {
+					@Override
+					public int getValue() {
+						return 3;
+					}
+				}); break;
+			case 11: case 12: case 13: case 14: case 15:
+				hotelAmount.addPlotter(new Metrics.Plotter("11-15") {
+					@Override
+					public int getValue() {
+						return 4;
+					}
+				});
+			case 16: case 17: case 18: case 19: case 20:
+				hotelAmount.addPlotter(new Metrics.Plotter("16-20") {
+					@Override
+					public int getValue() {
+						return 5;
+					}
+				}); break;
+			default:
+				hotelAmount.addPlotter(new Metrics.Plotter(">20") {
+					@Override
+					public int getValue() {
+						return 6;
+					}
+				}); break;
+			}
 
-				@Override
-				public int getValue() {
-					return HCE.getHotelCount(); // Number of players who used a diamond sword
-				}
+			//Languages
+			switch(HConH.getLanguage()){
+			case "en": case "enGB":
+				language.addPlotter(new Metrics.Plotter("English") {
+					@Override
+					public int getValue() {
+						return 1;
+					}
+				}); break;
 
-			});
+			case "it": case "itIT":
+				language.addPlotter(new Metrics.Plotter("Italian") {
+					@Override
+					public int getValue() {
+						return 2;
+					}
+				}); break;
+			case "fr": case "frFR":
+				language.addPlotter(new Metrics.Plotter("French") {
+					@Override
+					public int getValue() {
+						return 3;
+					}
+				}); break;
+			case "ru": case "ruRU":
+				language.addPlotter(new Metrics.Plotter("Russian") {
+					@Override
+					public int getValue() {
+						return 4;
+					}
+				}); break;
+			case "zhCN":
+				language.addPlotter(new Metrics.Plotter("Simplified Chinese") {
+					@Override
+					public int getValue() {
+						return 5;
+					}
+				}); break;
+			case "zhTW":
+				language.addPlotter(new Metrics.Plotter("Traditional Cninese") {
+					@Override
+					public int getValue() {
+						return 6;
+					}
+				}); break;
+			default:
+				language.addPlotter(new Metrics.Plotter("Custom") {
+					@Override
+					public int getValue() {
+						return 7;
+					}
+				}); break;
+			}
 
 			metrics.start();
 		} catch (IOException e) {
-			// Failed to submit the stats :-(
+			// Failed to submit the stats
 		}
 	}
 	@Override
@@ -159,7 +259,7 @@ public class HotelsMain extends JavaPlugin{
 
 	//Setting up config files
 	private void setupConfig(){
-		HConH.setupConfigs(this);//Creates config file
+		HConH.setupConfigs();//Creates config file
 	}
 
 	//Setting up the economy

@@ -28,18 +28,16 @@ import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsCommandHandler implements CommandExecutor {
 
-	private HotelsMain plugin;
-	public HotelsCommandHandler(HotelsMain instance){
-		this.plugin = instance;
-	}
+	public HotelsCommandHandler(HotelsMain instance){}
 
-	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
-	SignManager SM = new SignManager(plugin);
-	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
-	WorldGuardManager WGM = new WorldGuardManager(plugin);
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	HotelsFileFinder HFF = new HotelsFileFinder(plugin);
-	HotelsCommandExecutor HCE = new HotelsCommandExecutor(plugin);
+	HotelsMain plugin = new HotelsMain();
+	HotelsMessageManager HMM = new HotelsMessageManager();
+	SignManager SM = new SignManager();
+	HotelsCreationMode HCM = new HotelsCreationMode();
+	WorldGuardManager WGM = new WorldGuardManager();
+	HotelsConfigHandler HConH = new HotelsConfigHandler();
+	HotelsFileFinder HFF = new HotelsFileFinder();
+	HotelsCommandExecutor HCE = new HotelsCommandExecutor();
 
 	//Prefix
 	YamlConfiguration locale = HConH.getLocale();
@@ -69,7 +67,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					Player p = (Player) sender;
 					if(args.length>1){
 						if(HMM.hasPerm(sender, "hotels.create")){
-							HCE.cmdCreate(plugin, p, args[1]);
+							HCE.cmdCreate(p, args[1]);
 						}
 						else
 							p.sendMessage(HMM.mes("chat.noPermission"));
@@ -369,12 +367,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 						if(args.length>3){
 							Player p = (Player) sender;
 							World world = p.getWorld();
-							HCE.renumber(plugin,args[1],args[2],args[3],world,sender);
+							HCE.renumber(args[1],args[2],args[3],world,sender);
 						}
 						else if(args.length>4){
 							World world = Bukkit.getWorld(args[4]);
 							if(world!=null){
-								HCE.renumber(plugin,args[1],args[2],args[3],world,sender);
+								HCE.renumber(args[1],args[2],args[3],world,sender);
 							}
 							else
 								sender.sendMessage(HMM.mes("chat.commands.worldNonExistant"));
@@ -386,7 +384,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						if(args.length>4){
 							World world = Bukkit.getWorld(args[4]);
 							if(world!=null){
-								HCE.renumber(plugin,args[1],args[2],args[3],world,sender);
+								HCE.renumber(args[1],args[2],args[3],world,sender);
 							}
 							else
 								sender.sendMessage(HMM.mes("chat.commands.worldNonExistant"));
@@ -709,7 +707,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(HMM.mes("chat.commands.home.consoleRejected"));
 			}
 			else if(args[0].equalsIgnoreCase("reload")){
-				HConH.reloadConfigs(plugin);
+				HConH.reloadConfigs();
 				sender.sendMessage(HMM.mes("chat.commands.reload.success"));
 			}
 			else if(args[0].equalsIgnoreCase("sellhotel")||args[0].equalsIgnoreCase("sellh")){

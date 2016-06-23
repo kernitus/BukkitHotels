@@ -16,22 +16,18 @@ import kernitus.plugin.Hotels.managers.HotelsMessageManager;
 
 public class HotelsUpdateChecker {
 	
-	private HotelsMain plugin;
 
-	public HotelsUpdateChecker(HotelsMain Huc)
-	{
-		this.plugin = Huc;
-	}
-	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	public HotelsUpdateChecker(){}
+	HotelsMain plugin = new HotelsMain();
+	HotelsMessageManager HMM = new HotelsMessageManager();
+	HotelsConfigHandler HConH = new HotelsConfigHandler();
 	
 	private URL filesFeed;
 
 	private String version;
 	private String link;
 
-	public HotelsUpdateChecker(HotelsMain plugin, String url){
-		this.plugin = plugin;
+	public HotelsUpdateChecker(String url){
 
 		try{
 			this.filesFeed = new URL(url);

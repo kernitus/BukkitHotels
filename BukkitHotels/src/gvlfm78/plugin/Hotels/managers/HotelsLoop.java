@@ -30,15 +30,14 @@ import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 public class HotelsLoop extends BukkitRunnable {
 
 	FilenameFilter SignFileFilter;
-	HotelsMain plugin;
-	public HotelsLoop(HotelsMain instance) {
-		this.plugin = instance;
-	}
-	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
-	SignManager SM = new SignManager(plugin);
-	HotelsFileFinder HFF = new HotelsFileFinder(plugin);
-	WorldGuardManager WGM = new WorldGuardManager(plugin);
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	public HotelsLoop(){}
+	
+	HotelsMain plugin = new HotelsMain();
+	HotelsMessageManager HMM = new HotelsMessageManager();
+	SignManager SM = new SignManager();
+	HotelsFileFinder HFF = new HotelsFileFinder();
+	WorldGuardManager WGM = new WorldGuardManager();
+	HotelsConfigHandler HConH = new HotelsConfigHandler();
 
 	public HotelsLoop(HotelsCommandHandler hotelsCommandHandler) {}
 

@@ -12,18 +12,16 @@ import kernitus.plugin.Hotels.HotelsUpdateChecker;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 public class HotelsUpdateLoop extends BukkitRunnable{
-	HotelsMain plugin;
 	
-	public HotelsUpdateLoop(HotelsMain instance) {
-		this.plugin = instance;
-	}
-	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	public HotelsUpdateLoop(HotelsMain instance){}
+	HotelsMain plugin = new HotelsMain();
+	HotelsMessageManager HMM = new HotelsMessageManager();
+	HotelsConfigHandler HConH = new HotelsConfigHandler();
 	
 	@Override
 	public void run() {
 	
-		HotelsUpdateChecker updateChecker = new HotelsUpdateChecker(plugin, "http://dev.bukkit.org/bukkit-plugins/hotels/files.rss");
+		HotelsUpdateChecker updateChecker = new HotelsUpdateChecker("http://dev.bukkit.org/bukkit-plugins/hotels/files.rss");
 		updateChecker.updateNeeded();
 		if(HConH.getconfigyml().getBoolean("settings.checkForUpdates")){
 			if(updateChecker.updateNeeded()){

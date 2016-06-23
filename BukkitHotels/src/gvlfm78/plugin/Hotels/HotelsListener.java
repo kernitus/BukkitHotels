@@ -1,8 +1,12 @@
 package kernitus.plugin.Hotels;
 
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.HotelsMessageManager;
+import kernitus.plugin.Hotels.managers.SignManager;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
+
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,22 +31,14 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsMessageManager;
-import kernitus.plugin.Hotels.managers.SignManager;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
-
 public class HotelsListener implements Listener {
 
-	private HotelsMain plugin;
-	public HotelsListener(HotelsMain instance){
-		this.plugin = instance;
-	}
-	HotelsMessageManager HMM = new HotelsMessageManager(plugin);
-	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
-	SignManager SM = new SignManager(plugin);
-	WorldGuardManager WGM = new WorldGuardManager(plugin);
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	public HotelsListener(){}
+	HotelsMessageManager HMM = new HotelsMessageManager();
+	HotelsCreationMode HCM = new HotelsCreationMode();
+	SignManager SM = new SignManager();
+	WorldGuardManager WGM = new WorldGuardManager();
+	HotelsConfigHandler HConH = new HotelsConfigHandler();
 
 	@EventHandler
 	public void onSignPlace(SignChangeEvent e){
@@ -65,9 +61,9 @@ public class HotelsListener implements Listener {
 				}
 			}
 			else{
+				//No permission
 				p.sendMessage(HMM.mes("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 				e.setLine(0, ChatColor.DARK_RED+e.getLine(0));
-				//No permissions
 			}
 		}
 	}
@@ -79,7 +75,7 @@ public class HotelsListener implements Listener {
 			if (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN){//If block is sign
 				Player p = e.getPlayer();
 				//Permission check
-				if(p.isOp()||(plugin.getConfig().getBoolean("settings.use-permissions")&&(p.hasPermission("hotels.sign.use")||p.hasPermission("hotels.*")))){
+				if(HMM.hasPerm(p, "hotels.sign.use")){
 					Sign s = (Sign) e.getClickedBlock().getState();
 					if(SM.isReceptionSign(s))
 						SM.useReceptionSign(e);
@@ -87,7 +83,7 @@ public class HotelsListener implements Listener {
 						SM.useRoomSign(e);
 				}
 				else
-					p.sendMessage(HMM.mes("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+					p.sendMessage(HMM.mes("chat.noPermission")); 
 			}
 		}
 	}
@@ -103,19 +99,17 @@ public class HotelsListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
-		//Player joined the server, update notification to ops:
+		//Player joined the server, send update notification to ops
 		Player p = e.getPlayer();
 		if(p.hasPermission("hotel.*")||p.isOp()){
-			File qfile = HConH.getFile("queuedMessages.yml");
-			YamlConfiguration queue = YamlConfiguration.loadConfiguration(qfile);
-			String ava = queue.getString("messages.update.available");
-			String lin = queue.getString("messages.update.link");
+			String ava = HConH.getupdateAvailable();
+			String lin = HConH.getupdateString();
 			if(ava!=null)
 				p.sendMessage(ChatColor.BLUE+ava);
 			if(lin!=null)
 				p.sendMessage(ChatColor.BLUE+lin);
 		}
-		//Notifying players if any of their rooms has expired while they were offline
+		//Notifying players if any of their rooms have expired while they were offline
 		UUID playerUUID = p.getUniqueId();
 		YamlConfiguration queue = HConH.getMessageQueue();
 		ConfigurationSection allExpiryMessages = queue.getConfigurationSection("messages.expiry");
@@ -150,15 +144,10 @@ public class HotelsListener implements Listener {
 	}
 	public int totalRooms(String hotelName,World w){
 		int tot = 0;
-		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WGM.getRM(w).getRegions();
-		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		for(int i=0; i<rlist.length; i++){
-			ProtectedRegion r = rlist[i];
-			if(r.getId().startsWith("hotel-"+hotelName)){
-				if(r.getId().matches("^hotel-"+hotelName+"-.+")){
-					tot++;
-				}
+		Collection<ProtectedRegion> regions = WGM.getRM(w).getRegions().values();
+		for(ProtectedRegion region : regions){
+			if(region.getId().matches("^hotel-"+hotelName+"-.+")){
+				tot++;
 			}
 		}
 		return tot;
@@ -166,22 +155,16 @@ public class HotelsListener implements Listener {
 
 	public int freeRooms(String hotelName,World w){
 		int free = 0;
-		Map<String, ProtectedRegion> regions = new HashMap<String, ProtectedRegion>();
-		regions = WGM.getRM(w).getRegions();
-		ProtectedRegion[] rlist = regions.values().toArray(new ProtectedRegion[regions.size()]);
-		for(int i=0; i<rlist.length; i++){
-			ProtectedRegion r = rlist[i];
-			if(r.getId().startsWith("hotel-"+hotelName)){
-				if(r.getId().matches("^hotel-"+hotelName+"-.+")){
-					int roomNum = Integer.parseInt(r.getId().replaceAll("^hotel-.+-", ""));
-					File signFile = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
-					if(signFile.exists()){
-						new YamlConfiguration();
-						YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
-						if(config.get("Sign.renter")==null){
-							free++;
-						}
-					}
+		Collection <ProtectedRegion> regions = WGM.getRegions(w);
+		for(ProtectedRegion region : regions){
+			String ID = region.getId();
+			if(ID.matches("^hotel-"+hotelName+"-.+")){
+				int roomNum = Integer.parseInt(ID.replaceAll("^hotel-.+-", ""));
+				File signFile = HConH.getSignFile(hotelName, roomNum);
+				if(signFile.exists()){
+					YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
+					if(config.get("Sign.renter")==null)
+						free++;
 				}
 			}
 		}
@@ -190,25 +173,23 @@ public class HotelsListener implements Listener {
 	//When a player tries to drop an item/block
 	@EventHandler
 	public void avoidDrop(PlayerDropItemEvent e) {
-		Player p = e.getPlayer();
-		UUID playerUUID = p.getUniqueId();
-		if(HCM.isInCreationMode(playerUUID.toString()))
+		String UUID = e.getPlayer().getUniqueId().toString();
+		if(HCM.isInCreationMode(UUID))
 			e.setCancelled(true);
 	}
 	//When a player tries to pickup an item/block
 	@EventHandler
 	public void avoidPickup(PlayerPickupItemEvent e) {
-		Player p = e.getPlayer();
-		UUID playerUUID = p.getUniqueId();
-		if(HCM.isInCreationMode(playerUUID.toString()))
+		String UUID  = e.getPlayer().getUniqueId().toString();
+		if(HCM.isInCreationMode(UUID))
 			e.setCancelled(true);
 	}
 	@EventHandler
 	public void avoidChestInteraction(InventoryClickEvent e){
 		Player p = (Player) e.getWhoClicked();
-		if(!p.hasPermission("hotels.createmode.admin")){
-			UUID playerUUID = p.getUniqueId();
-			if(HCM.isInCreationMode(playerUUID.toString()))
+		if(HMM.hasPerm(p, "hotels.cratemode.admin")){
+			String UUID = p.getUniqueId().toString();
+			if(HCM.isInCreationMode(UUID))
 				e.setCancelled(true);
 		}
 	}

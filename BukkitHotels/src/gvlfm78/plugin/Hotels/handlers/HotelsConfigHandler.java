@@ -1,5 +1,7 @@
 package kernitus.plugin.Hotels.handlers;
 
+import kernitus.plugin.Hotels.HotelsMain;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,32 +18,29 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-import kernitus.plugin.Hotels.HotelsMain;
-
 public class HotelsConfigHandler {
-	@SuppressWarnings("unused")
-	private HotelsMain plugin;
-	public HotelsConfigHandler(HotelsMain instance){
-		this.plugin = instance;
-	}
+
+	public HotelsConfigHandler(){}
 	
-	public void setupConfigs(Plugin plugin){
+	HotelsMain plugin = new HotelsMain();
+	
+	public void setupConfigs(){
 		//Message Queue
 		if(!getMessageQueueFile().exists())
 			setupMessageQueue();
 		//Config.yml
 		if (!getconfigymlFile().exists())
-			setupConfigyml(plugin);
+			setupConfigyml();
 
 		//Flags.yml
 		if(!getFlagsFile().exists())
-			setupFlags(plugin);
+			setupFlags();
 
 		//Locale
-		localeLanguageSelector(plugin);
+		localeLanguageSelector();
 	}
 
-	public void setupConfigyml(Plugin plugin){
+	public void setupConfigyml(){
 		plugin.saveResource("config.yml", false);
 		plugin.getLogger().info("Config file generated");
 	}
@@ -50,8 +49,8 @@ public class HotelsConfigHandler {
 		saveMessageQueue(getMessageQueue());
 	}
 
-	public void localeLanguageSelector(Plugin plugin){
-		String lang = plugin.getConfig().getString("settings.language");
+	public void localeLanguageSelector(){
+		String lang = getLanguage();
 		YamlConfiguration locale = getLocale();
 		String loclang = locale.getString("language"); //From already-generated locale.yml
 		if(loclang==null){
@@ -72,6 +71,9 @@ public class HotelsConfigHandler {
 			else
 				setupLanguage("enGB",plugin);
 		}
+	}
+	public String getLanguage(){
+		return plugin.getConfig().getString("settings.language");
 	}
 
 	public File getFile(String filepath){
@@ -118,6 +120,14 @@ public class HotelsConfigHandler {
 	public File getFlagsFile(){
 		return new File("plugins"+File.separator+"Hotels"+File.separator+"flags.yml");
 	}
+	
+	public File getSignFile(String hotelName, String roomNum){
+		return getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+	}
+	
+	public File getSignFile(String hotelName, int roomNum){
+		return getSignFile(hotelName, String.valueOf(roomNum));
+	}
 
 	public YamlConfiguration getconfig(String configName){
 		File file = getconfigFile(configName);
@@ -143,7 +153,14 @@ public class HotelsConfigHandler {
 		File file = getFlagsFile();
 		return getyml(file);
 	}
-
+	
+	public String getupdateAvailable(){
+		return getMessageQueue().getString("messages.update.available");
+	}
+	public String getupdateString(){
+		return getMessageQueue().getString("messages.update.link");
+	}
+	
 	public void saveConfiguration(File file, YamlConfiguration config){
 
 		try{
@@ -177,24 +194,24 @@ public class HotelsConfigHandler {
 		saveConfiguration(file,config);
 	}
 
-	public void reloadConfigs(Plugin plugin){
+	public void reloadConfigs(){
 		//Reload config.yml
 		if(getconfigymlFile().exists())
 		plugin.reloadConfig();
 		else
-			setupConfigyml(plugin);
+			setupConfigyml();
 		
 		//Message Queue
 		if(!getMessageQueueFile().exists())
 			setupMessageQueue();
 		//Flags.yml
 		if(!getFlagsFile().exists())
-			setupFlags(plugin);
+			setupFlags();
 
 		//Locale
-		localeLanguageSelector(plugin);
+		localeLanguageSelector();
 	}
-
+	
 	public void setupLanguage(String langCode, Plugin plugin){
 		plugin.saveResource("locale-"+langCode+".yml", false);
 		File loc = getLocaleFile();
@@ -204,7 +221,7 @@ public class HotelsConfigHandler {
 		plugin.getLogger().info(langCode+" Language strings generated");
 	}
 
-	public void setupFlags(Plugin plugin){
+	public void setupFlags(){
 
 		File flagsFile = getFlagsFile();
 		if(!flagsFile.exists())
