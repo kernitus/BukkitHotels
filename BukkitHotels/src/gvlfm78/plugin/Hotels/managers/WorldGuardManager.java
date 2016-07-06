@@ -1,7 +1,5 @@
 package kernitus.plugin.Hotels.managers;
 
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +15,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -39,8 +36,6 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 public class WorldGuardManager {
 
 	public WorldGuardManager(){}
-	HotelsConfigHandler HConH = new HotelsConfigHandler();
-	HotelsMessageManager HMM = new HotelsMessageManager();
 
 	public WorldGuardPlugin getWorldGuard(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -99,14 +94,20 @@ public class WorldGuardManager {
 		return getRM(world).hasRegion(regionName);
 	}
 	public ProtectedRegion getHotelRegion(World world, String name){
-		return getRegion(world, name);
+		return getRegion(world, "hotel-"+name);
+	}
+	public ProtectedRegion getRoomRegion(World world, String hotelName, String num){
+		return getRegion(world, "hotel-"+hotelName+"-"+num);
+	}
+	public ProtectedRegion getRoomRegion(World world, String hotelName, int num){
+		return getRegion(world, "hotel-"+hotelName+"-"+num);
 	}
 	public void renameRegion(String oldname, String newname,World world){
 		if(hasRegion(world, oldname)){//If old region exists
 			ProtectedRegion oldr = getRegion(world, oldname);//Get old region
 			ProtectedRegion newr2;
 			if(oldr instanceof ProtectedCuboidRegion){
-			newr2 = new ProtectedCuboidRegion(newname, oldr.getMinimumPoint(), oldr.getMaximumPoint());
+				newr2 = new ProtectedCuboidRegion(newname, oldr.getMinimumPoint(), oldr.getMaximumPoint());
 			}
 			else if(oldr instanceof ProtectedPolygonalRegion){
 				newr2 = new ProtectedPolygonalRegion(newname, oldr.getPoints(), oldr.getMinimumPoint().getBlockY(), oldr.getMaximumPoint().getBlockY());
@@ -156,7 +157,7 @@ public class WorldGuardManager {
 		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
 		for(ProtectedRegion reg : inter){
 			if(reg.getId().startsWith("hotel-")){
-					return true;
+				return true;
 			}
 		}
 		return false;
@@ -166,7 +167,7 @@ public class WorldGuardManager {
 		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
 		for(ProtectedRegion reg : inter){
 			if(reg.getId().matches("hotel-\\w+-\\d+")){//It's a room region
-					return true;
+				return true;
 			}
 		}
 		return false;
@@ -202,22 +203,22 @@ public class WorldGuardManager {
 			case "GREETING":
 				if(Boolean.valueOf(keyValue)){
 					if(isHotel){
-						String message = HMM.mesnopre("message.hotel.enter").replaceAll("%hotel%", namenum);
+						String message = Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", namenum);
 						flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 					}
 					else{
-						String message = HMM.mesnopre("message.room.enter").replaceAll("%room%", namenum);
+						String message = Mes.mesnopre("message.room.enter").replaceAll("%room%", namenum);
 						flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 					}
 				}
 				break;
 			case "FAREWELL":
 				if(isHotel){
-					String message = HMM.mesnopre("message.hotel.exit").replaceAll("%hotel%", namenum);
+					String message = Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", namenum);
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				}
 				else{
-					String message = HMM.mesnopre("message.room.exit").replaceAll("%room%", namenum);
+					String message = Mes.mesnopre("message.room.exit").replaceAll("%room%", namenum);
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				}
 				break;
@@ -296,31 +297,9 @@ public class WorldGuardManager {
 			groupFlags(r,flag,groupFlagValue);
 		}
 	}
-	public void hotelFlags(ProtectedRegion region,String hotelName){
-		YamlConfiguration flagsConfig = HConH.getFlags();
-		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
-		setFlags(section,region,hotelName);
-	}
-	public void roomFlags(ProtectedRegion region,String roomNum){
-		YamlConfiguration flagsConfig = HConH.getFlags();
-		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
-		setFlags(section,region,roomNum);
-	}
 	public void groupFlags(ProtectedRegion region,Flag<?> flag,String group){
 		RegionGroupFlag regionGroupFlag = flag.getRegionGroupFlag();
 		RegionGroup regionGroup = RegionGroup.valueOf(group.toUpperCase());
 		region.setFlag(regionGroupFlag, regionGroup);
-	}
-	public void makeRoomAccessible(ProtectedRegion region){
-		if(HConH.getconfigyml().getBoolean("settings.allowPlayersIntoFreeRooms")){
-			region.setFlag(DefaultFlag.INTERACT, null);
-			region.setFlag(DefaultFlag.USE, null);
-			makeRoomContainersAccessible(region);
-		}
-	}
-	public void makeRoomContainersAccessible(ProtectedRegion region){
-		if(HConH.getconfigyml().getBoolean("settings.allowPlayersToOpenContainersInFreeRooms")){
-			region.setFlag(DefaultFlag.CHEST_ACCESS, null);
-		}
 	}
 }

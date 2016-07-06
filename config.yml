@@ -3,39 +3,32 @@
 # Spigot Page: https://www.spigotmc.org/resources/hotels.2047/
 # GitHub Page: https://github.com/kernitus/BukkitHotels
 
-settings:
 # Available languages: enGB, itIT, zhCN, znTW, frFR, ruRU
 # Looking for translator for German and Spanish
 # You must delete the current locale.yml and do /ht reload for the locale to update
-  language: enGB
+language: enGB
 # Maximum amount of hotels a player can own
-  max_hotels_owned: 3
+max_hotels_owned: 3
 # Maximum amount of rooms a player can own (in total)
-  max_rooms_owned: 3
+max_rooms_owned: 3
 # Maximum amount of rooms a player can own (per hotel)
-  max_rooms_owned_per_hotel: 2
+max_rooms_owned_per_hotel: 2
 # Maximum times a player can extend their rent (per rented room)
-  max_rent_extend: 3
+max_rent_extend: 3
 # How often Hotels checks for expired rooms, updates reception signs etc.
-  hotelsLoopTimerMinutes: 2
+hotelsLoopTimerMinutes: 2
 # Tax on revenue from hotels. It is applied to the money players spend in a hotel
 # before the money is given to the hotel owner.
 # Can either be a percentage (25%) or a set amount every time (50)
 # If the money spent is less than the set amount the owner will not receive any money.
-  tax: 20%
-# If the plugin check for permissions
-# If set to false ops will have admin permissions
-# and all other player will have user permissions
-  use-permissions: true
-# How often the plugin should check for updates (in hours)
-  updateTime: 6
+tax: 20%
 # If hotels should check for updates
-  checkForUpdates: true
+checkForUpdates: true
 # If players should be allowed to enter free rooms
-  allowPlayersIntoFreeRooms: true
+allowPlayersIntoFreeRooms: true
 # If players should be allowed to open containers in free rooms
-  allowPlayersToOpenContainersInFreeRooms: false
+allowPlayersToOpenContainersInFreeRooms: false
 # If hotel owners should not be allowed to interfere with rented rooms
-  stopOwnersEditingRentedRooms: true
+stopOwnersEditingRentedRooms: true
 # If doing /ht commands should only display the commands a player has permission for
-  onlyDisplayAllowedCommands: true
+onlyDisplayAllowedCommands: true

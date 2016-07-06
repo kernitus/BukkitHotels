@@ -1,73 +1,49 @@
 package kernitus.plugin.Hotels;
 
+import java.io.IOException;
+import java.util.logging.Logger;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import kernitus.plugin.Hotels.Metrics.Graph;
 import kernitus.plugin.Hotels.handlers.HotelsCommandExecutor;
 import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsLoop;
-import kernitus.plugin.Hotels.managers.HotelsMessageManager;
-import kernitus.plugin.Hotels.managers.HotelsUpdateLoop;
-
-import java.io.IOException;
-import java.util.Collection;
-
+import kernitus.plugin.Hotels.managers.Mes;
+import kernitus.plugin.Hotels.tasks.HotelsLoop;
 import net.milkbowl.vault.economy.Economy;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class HotelsMain extends JavaPlugin{
 
 	public static Economy economy = null; //Creating economy variable
 
-	HotelsConfigHandler HConH = new HotelsConfigHandler();
-	HotelsCommandExecutor HCE = new HotelsCommandExecutor();
-	HotelsMessageManager HMM = new HotelsMessageManager();
+	HotelsConfigHandler HCH = new HotelsConfigHandler(this);
+	HotelsCommandExecutor HCE = new HotelsCommandExecutor(this);
 	HotelsLoop hotelsloop;
-	protected HotelsUpdateChecker updateChecker;
+	FileConfiguration config = getConfig();
+	Logger log = getServer().getLogger();
 
-	YamlConfiguration queue = HConH.getMessageQueue();
+	YamlConfiguration queue = HCH.getMessageQueue();
 
 	@Override
 	public void onEnable(){
 		setupConfig();
-		this.updateChecker = new HotelsUpdateChecker("http://dev.bukkit.org/bukkit-plugins/hotels/files.rss");
-		this.updateChecker.updateNeeded();
-		if(getConfig().getBoolean("settings.checkForUpdates")){
-			if(this.updateChecker.updateNeeded()){
-				String updateAvailable = HMM.mesnopre("main.updateAvailable").replaceAll("%version%", this.updateChecker.getVersion());
-				String updateLink = HMM.mesnopre("main.updateAvailableLink").replaceAll("%link%", this.updateChecker.getLink());
-				getLogger().info(updateAvailable);
-				getLogger().info(updateLink);
 
-				queue.set("messages.update.available", updateAvailable);
-				queue.set("messages.update.link", updateLink);
-				HConH.saveMessageQueue(queue);
-
-				Collection<? extends Player> players = getServer().getOnlinePlayers();
-				for(Player p:players){
-					if(p.isOp()||p.hasPermission("hotels.*")){
-						p.sendMessage(ChatColor.BLUE+updateAvailable);
-						p.sendMessage(ChatColor.BLUE+updateLink);
-					}
-				}
-			}
-		}
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Listeners and stuff
-		getServer().getPluginManager().registerEvents((new HotelsListener()), this);//Firing event listener
+		getServer().getPluginManager().registerEvents((new HotelsListener(this)), this);//Firing event listener
 		getCommand("Hotels").setExecutor(new HotelsCommandHandler(this));//Firing commands listener
 		setupEconomy();
 		//Economy and stuff
 		if (!setupEconomy()){
 			//If economy is turned on
 			//but no vault is found it will warn the user
-			String message = HMM.mesnopre("main.enable.noVault");
+			String message = Mes.mesnopre("main.enable.noVault");
 			if(message!=null){
 				getLogger().severe(message);
 			}
@@ -76,7 +52,7 @@ public class HotelsMain extends JavaPlugin{
 		}
 
 		//HotelsLoop stuff
-		hotelsloop = new HotelsLoop();
+		hotelsloop = new HotelsLoop(this);
 		int minutes = this.getConfig().getInt("settings.hotelsLoopTimerMinutes");
 
 		boolean isLoopRunning;
@@ -93,27 +69,11 @@ public class HotelsMain extends JavaPlugin{
 				hotelsloop.runTaskTimer(this, 200, 2*60*20);
 		}
 
-		//HotelsUpdateLoop stuff
-		HotelsUpdateLoop HUL = new HotelsUpdateLoop(this);
-		int hours = this.getConfig().getInt("settings.updateTime");
-		boolean isUpdateCheckRunning;
-		try{
-			isUpdateCheckRunning = Bukkit.getScheduler().isCurrentlyRunning(HUL.getTaskId());
-		}
-		catch(Exception e5){
-			isUpdateCheckRunning = false;
-		}
 
-		if(!isUpdateCheckRunning){//If the update checker is not running
-			if(hours>0)
-				HUL.runTaskTimerAsynchronously(this, 3*60*60*20, hours*60*60*20);
-			else
-				HUL.runTaskTimerAsynchronously(this, 3*60*60*20, 6*60*60*20);
-		}
 		//Logging to console the correct enabling of Hotels
-		String message = HMM.mesnopre("main.enable.success");
+		String message = Mes.mesnopre("main.enable.success");
 		if(message!=null){
-			getLogger().info(HMM.mesnopre("main.enable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
+			getLogger().info(Mes.mesnopre("main.enable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 		}
 		else
 			getLogger().info(pdfFile.getName()+" v"+pdfFile.getVersion()+ " has been enabled correctly");
@@ -179,7 +139,7 @@ public class HotelsMain extends JavaPlugin{
 			}
 
 			//Languages
-			switch(HConH.getLanguage()){
+			switch(HCH.getLanguage()){
 			case "en": case "enGB":
 				language.addPlotter(new Metrics.Plotter("English") {
 					@Override
@@ -236,6 +196,20 @@ public class HotelsMain extends JavaPlugin{
 		} catch (IOException e) {
 			// Failed to submit the stats
 		}
+
+		//Checking for updates
+		if(getConfig().getBoolean("checkForUpdates")){
+			getServer().getPluginManager().registerEvents((new HotelsUpdateListener(this)), this);
+
+			final HotelsMain plugin = this;
+			
+			Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable (){
+				public void run() {
+					HotelsUpdateChecker HUC = new HotelsUpdateChecker(plugin);
+					HUC.sendUpdateMessages(getLogger());
+				}
+			},20L);
+		}
 	}
 	@Override
 	public void onDisable(){
@@ -243,9 +217,9 @@ public class HotelsMain extends JavaPlugin{
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Logging to console the disabling of Hotels
-		String message = HMM.mesnopre("main.disable.success");
+		String message = Mes.mesnopre("main.disable.success");
 		if(message!=null){
-			getLogger().info(HMM.mesnopre("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
+			getLogger().info(Mes.mesnopre("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 		}
 		else
 			getLogger().info(pdfFile.getName() + " v" + pdfFile.getVersion() + " has been disabled");
@@ -259,7 +233,7 @@ public class HotelsMain extends JavaPlugin{
 
 	//Setting up config files
 	private void setupConfig(){
-		HConH.setupConfigs();//Creates config file
+		HCH.setupConfigs();//Creates config file
 	}
 
 	//Setting up the economy

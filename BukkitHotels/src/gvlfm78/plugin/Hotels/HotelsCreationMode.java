@@ -1,9 +1,5 @@
 package kernitus.plugin.Hotels;
 
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsMessageManager;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,12 +29,21 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.Mes;
+import kernitus.plugin.Hotels.managers.HotelsRegionManager;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
+
 public class HotelsCreationMode {
 
-	public HotelsCreationMode(){}
-	HotelsMessageManager HMM = new HotelsMessageManager();
+	private HotelsMain plugin;
+	private HotelsRegionManager RM;
+	public HotelsCreationMode(HotelsMain plugin){
+		this.plugin = plugin;
+		RM = new HotelsRegionManager(plugin);
+	}
 	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HConH = new HotelsConfigHandler();
+	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 
 	public void checkFolder(){
 		File file = HConH.getFile("Inventories");
@@ -70,15 +75,15 @@ public class HotelsCreationMode {
 	public void hotelSetup(String hotelName, CommandSender s){
 		Player p = (Player) s;
 		if(!hotelName.contains("-")){
-			if(HMM.hasPerm(p, "hotels.create")){
+			if(Mes.hasPerm(p, "hotels.create")){
 				Selection sel = getWorldEdit().getSelection(p);
 				if(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
-					p.sendMessage(HMM.mes("chat.creationMode.hotelCreationFailed"));
+					p.sendMessage(Mes.mes("chat.creationMode.hotelCreationFailed"));
 					return;}
 				else if(sel!=null){
 					int ownedHotels = ownedHotels(p);
 					int maxHotels = HConH.getconfigyml().getInt("settings.max_hotels_owned");
-					if(ownedHotels<maxHotels||HMM.hasPerm(p, "hotels.create.admin")){
+					if(ownedHotels<maxHotels||Mes.hasPerm(p, "hotels.create.admin")){
 						//Creating hotel region
 						if(sel instanceof CuboidSelection){
 							ProtectedRegion r = new ProtectedCuboidRegion(
@@ -96,19 +101,19 @@ public class HotelsCreationMode {
 							createHotelRegion(p,r,hotelName);
 						}
 						else
-							p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
+							p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid"));
 					}
 					else
-						p.sendMessage((HMM.mes("chat.commands.create.maxHotelsReached")).replaceAll("%max%", String.valueOf(maxHotels)));
+						p.sendMessage((Mes.mes("chat.commands.create.maxHotelsReached")).replaceAll("%max%", String.valueOf(maxHotels)));
 				}
 				else
-					p.sendMessage(HMM.mes("chat.creationMode.noSelection"));
+					p.sendMessage(Mes.mes("chat.creationMode.noSelection"));
 			}
 			else
-				p.sendMessage(HMM.mes("chat.noPermission"));
+				p.sendMessage(Mes.mes("chat.noPermission"));
 		}
 		else
-			p.sendMessage(HMM.mes("chat.creationMode.invalidChar"));
+			p.sendMessage(Mes.mes("chat.creationMode.invalidChar"));
 	}
 
 	public boolean createHotelRegion(Player p, ProtectedRegion region, String hotelName){
@@ -116,25 +121,25 @@ public class HotelsCreationMode {
 		if(!WGM.doHotelRegionsOverlap(region, world)){
 
 			WGM.addRegion(world, region);
-			WGM.hotelFlags(region,hotelName);
+			RM.hotelFlags(region,hotelName);
 			WGM.addOwner(p, region);
 			region.setPriority(5);
 			WGM.saveRegions(world);
 			String idHotelName =region.getId();
 			String[] partsofhotelName = idHotelName.split("-");
-			p.sendMessage(HMM.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
+			p.sendMessage(Mes.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
 			int ownedHotels = ownedHotels(p);
 			int maxHotels = HConH.getconfigyml().getInt("settings.max_hotels_owned");
 
 			String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
 
-			if(!HMM.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
-			p.sendMessage(HMM.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
+			if(!Mes.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
+			p.sendMessage(Mes.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
 			
 			return true;
 		}
 		else{
-			p.sendMessage(HMM.mes("chat.commands.create.hotelAlreadyPresent"));
+			p.sendMessage(Mes.mes("chat.commands.create.hotelAlreadyPresent"));
 			return false;
 		}
 	}
@@ -142,27 +147,27 @@ public class HotelsCreationMode {
 	public void createRoomRegion(Player p, ProtectedRegion region, String hotelName, String room){
 		World world = p.getWorld();
 		ProtectedRegion hotelRegion = WGM.getRegion(world, "hotel-"+hotelName);
-		if(HMM.hasPerm(p, "hotels.create")){
+		if(Mes.hasPerm(p, "hotels.create")){
 			if(!WGM.doesRoomRegionOverlap(region, world)){
-				if(WGM.isOwner(p, hotelRegion)||HMM.hasPerm(p, "hotels.create.admin")){
+				if(WGM.isOwner(p, hotelRegion)||Mes.hasPerm(p, "hotels.create.admin")){
 					WGM.addRegion(world, region);
-					WGM.roomFlags(region,room);
+					RM.roomFlags(region,room);
 					if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
 						region.setPriority(1);
 					else
 						region.setPriority(10);
-					WGM.makeRoomAccessible(region);
+					RM.makeRoomAccessible(region);
 					WGM.saveRegions(p.getWorld());
-					p.sendMessage(HMM.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
+					p.sendMessage(Mes.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
 				}
 				else
-					p.sendMessage(HMM.mes("chat.commands.youDoNotOwnThat"));
+					p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
 			}
 			else
-				p.sendMessage(HMM.mes("chat.commands.room.alreadyPresent"));
+				p.sendMessage(Mes.mes("chat.commands.room.alreadyPresent"));
 		}
 		else
-			p.sendMessage(HMM.mes("chat.noPermission"));
+			p.sendMessage(Mes.mes("chat.noPermission"));
 	}
 	public void roomSetup(String hotelName,String room,Player p){
 		Selection sel = getWorldEdit().getSelection(p);
@@ -190,19 +195,19 @@ public class HotelsCreationMode {
 							createRoomRegion(p,r,hotelName,room);
 						}
 						else
-							p.sendMessage(HMM.mes("chat.creationMode.selectionInvalid"));
+							p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid"));
 					}
 					else
-						p.sendMessage(HMM.mes("chat.creationMode.rooms.notInHotel"));
+						p.sendMessage(Mes.mes("chat.creationMode.rooms.notInHotel"));
 				}
 				else
-					p.sendMessage(HMM.mes("chat.creationMode.noSelection"));
+					p.sendMessage(Mes.mes("chat.creationMode.noSelection"));
 			}
 			else
-				p.sendMessage(HMM.mes("chat.creationMode.rooms.alreadyExists"));
+				p.sendMessage(Mes.mes("chat.creationMode.rooms.alreadyExists"));
 		}
 		else
-			p.sendMessage(HMM.mes("chat.creationMode.rooms.fail"));
+			p.sendMessage(Mes.mes("chat.creationMode.rooms.fail"));
 	}
 
 	public void resetInventoryFiles(CommandSender s){
@@ -223,7 +228,7 @@ public class HotelsCreationMode {
 			try {
 				file.createNewFile();
 			} catch (IOException e){
-				p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail"));
+				p.sendMessage(Mes.mes("chat.creationMode.inventory.storeFail"));
 			}
 
 			YamlConfiguration inv = HConH.getconfig("Inventories"+File.separator+playerUUID+".yml");
@@ -241,14 +246,14 @@ public class HotelsCreationMode {
 			try {
 				inv.save(file);
 			} catch (IOException e) {
-				p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail"));
+				p.sendMessage(Mes.mes("chat.creationMode.inventory.storeFail"));
 			}
 
 			pinv.clear();
 			pinv.setArmorContents(new ItemStack[4]);
-			p.sendMessage(HMM.mes("chat.creationMode.inventory.storeSuccess"));
+			p.sendMessage(Mes.mes("chat.creationMode.inventory.storeSuccess"));
 		}else{
-			p.sendMessage(HMM.mes("chat.creationMode.inventory.storeFail"));
+			p.sendMessage(Mes.mes("chat.creationMode.inventory.storeFail"));
 		}
 	}
 
@@ -260,7 +265,7 @@ public class HotelsCreationMode {
 		File file = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
 
 		if(file.exists()){
-			YamlConfiguration inv = HConH.getyml(file);
+			YamlConfiguration inv = HotelsConfigHandler.getyml(file);
 
 			List<ItemStack> inventoryItems = (List<ItemStack>) inv.getList("inventory");
 			pinv.setContents(inventoryItems.toArray(new ItemStack[inventoryItems.size()]));
@@ -276,12 +281,12 @@ public class HotelsCreationMode {
 				//Must be in a pre-1.9 version
 			}
 
-			p.sendMessage(HMM.mes("chat.creationMode.inventory.restoreSuccess"));
+			p.sendMessage(Mes.mes("chat.creationMode.inventory.restoreSuccess"));
 			file.delete();
 		}
 
 		else{
-			p.sendMessage(HMM.mes("chat.creationMode.inventory.restoreFail"));
+			p.sendMessage(Mes.mes("chat.creationMode.inventory.restoreFail"));
 		}
 	}
 
@@ -310,10 +315,10 @@ public class HotelsCreationMode {
 				@SuppressWarnings("deprecation")
 				ItemStack wand = new ItemStack(wanditem, 1);
 				ItemMeta im = wand.getItemMeta();
-				im.setDisplayName(HMM.mesnopre("chat.creationMode.items.wand.name"));
+				im.setDisplayName(Mes.mesnopre("chat.creationMode.items.wand.name"));
 				List<String> loreList = new ArrayList<String>();
-				loreList.add(HMM.mesnopre("chat.creationMode.items.wand.lore1"));
-				loreList.add(HMM.mesnopre("chat.creationMode.items.wand.lore2"));
+				loreList.add(Mes.mesnopre("chat.creationMode.items.wand.lore1"));
+				loreList.add(Mes.mesnopre("chat.creationMode.items.wand.lore2"));
 				im.setLore(loreList);
 				wand.setItemMeta(im);
 				pi.setItem(0, wand);
@@ -324,34 +329,34 @@ public class HotelsCreationMode {
 		if(p.getGameMode().equals(GameMode.CREATIVE)){
 			ItemStack sign = new ItemStack(Material.SIGN, 1);
 			ItemMeta sim = sign.getItemMeta();
-			sim.setDisplayName(HMM.mesnopre("chat.creationMode.items.sign.name"));
+			sim.setDisplayName(Mes.mesnopre("chat.creationMode.items.sign.name"));
 			List<String> signLoreList = new ArrayList<String>();
-			signLoreList.add(HMM.mesnopre("chat.creationMode.items.sign.lore1"));
-			signLoreList.add(HMM.mesnopre("chat.creationMode.items.sign.lore2"));
+			signLoreList.add(Mes.mesnopre("chat.creationMode.items.sign.lore1"));
+			signLoreList.add(Mes.mesnopre("chat.creationMode.items.sign.lore2"));
 			sim.setLore(signLoreList);
 			sign.setItemMeta(sim);
 			pi.setItem(1, sign);
 		}
 		//Compass
-		if(HMM.hasPerm(p,"worldedit.navigation")){
+		if(Mes.hasPerm(p,"worldedit.navigation")){
 			ItemStack compass = new ItemStack(Material.COMPASS, 1);
 			ItemMeta cim = compass.getItemMeta();
-			cim.setDisplayName(HMM.mesnopre("chat.creationMode.items.compass.name"));
+			cim.setDisplayName(Mes.mesnopre("chat.creationMode.items.compass.name"));
 			List<String> compassLoreList = new ArrayList<String>();
-			compassLoreList.add(HMM.mesnopre("chat.creationMode.items.compass.lore1"));
-			compassLoreList.add(HMM.mesnopre("chat.creationMode.items.compass.lore2"));
+			compassLoreList.add(Mes.mesnopre("chat.creationMode.items.compass.lore1"));
+			compassLoreList.add(Mes.mesnopre("chat.creationMode.items.compass.lore2"));
 			cim.setLore(compassLoreList);
 			compass.setItemMeta(cim);
 			pi.setItem(2, compass);
 		}
 		//Leather
-		if(HMM.hasPerm(p,"worldguard.region.wand")){
+		if(Mes.hasPerm(p,"worldguard.region.wand")){
 			ItemStack leather = new ItemStack(Material.LEATHER, 1);
 			ItemMeta lim = leather.getItemMeta();
-			lim.setDisplayName(HMM.mesnopre("chat.creationMode.items.leather.name"));
+			lim.setDisplayName(Mes.mesnopre("chat.creationMode.items.leather.name"));
 			List<String> leatherLoreList = new ArrayList<String>();
-			leatherLoreList.add(HMM.mesnopre("chat.creationMode.items.leather.lore1"));
-			leatherLoreList.add(HMM.mesnopre("chat.creationMode.items.leather.lore2"));
+			leatherLoreList.add(Mes.mesnopre("chat.creationMode.items.leather.lore1"));
+			leatherLoreList.add(Mes.mesnopre("chat.creationMode.items.leather.lore2"));
 			lim.setLore(leatherLoreList);
 			leather.setItemMeta(lim);
 			pi.setItem(3, leather);

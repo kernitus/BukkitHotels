@@ -20,9 +20,11 @@ import org.bukkit.plugin.Plugin;
 
 public class HotelsConfigHandler {
 
-	public HotelsConfigHandler(){}
+	private HotelsMain plugin;
 	
-	HotelsMain plugin = new HotelsMain();
+	public HotelsConfigHandler(HotelsMain plugin){
+		this.plugin = plugin;
+	}
 	
 	public void setupConfigs(){
 		//Message Queue
@@ -80,7 +82,7 @@ public class HotelsConfigHandler {
 		return new File("plugins"+File.separator+"Hotels"+File.separator+filepath);
 	}
 
-	public YamlConfiguration getyml(File file){
+	public static YamlConfiguration getyml(File file){
 		YamlConfiguration config = new YamlConfiguration();
 		FileInputStream fileinputstream;
 
@@ -109,7 +111,7 @@ public class HotelsConfigHandler {
 		return new File("plugins"+File.separator+"Hotels"+File.separator+"config.yml");
 	}
 
-	public File getLocaleFile(){
+	public static File getLocaleFile(){
 		return new File("plugins"+File.separator+"Hotels"+File.separator+"locale.yml");
 	}
 
@@ -117,10 +119,9 @@ public class HotelsConfigHandler {
 		return new File("plugins"+File.separator+"Hotels"+File.separator+"queuedMessages.yml");
 	}
 
-	public File getFlagsFile(){
+	public static File getFlagsFile(){
 		return new File("plugins"+File.separator+"Hotels"+File.separator+"flags.yml");
 	}
-	
 	public File getSignFile(String hotelName, String roomNum){
 		return getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 	}
@@ -130,28 +131,29 @@ public class HotelsConfigHandler {
 	}
 
 	public YamlConfiguration getconfig(String configName){
-		File file = getconfigFile(configName);
-		return getyml(file);
+		return getyml(getconfigFile(configName));
 	}
 
 	public YamlConfiguration getconfigyml(){
-		File file = getconfigymlFile();
-		return getyml(file);
+		return getyml(getconfigymlFile());
 	}
 
-	public YamlConfiguration getLocale(){
-		File file = getLocaleFile();
-		return getyml(file);
+	public static YamlConfiguration getLocale(){
+		return getyml(getLocaleFile());
 	}
 
 	public YamlConfiguration getMessageQueue(){
-		File file = getMessageQueueFile();
-		return getyml(file);
+		return getyml(getMessageQueueFile());
 	}
 
-	public YamlConfiguration getFlags(){
-		File file = getFlagsFile();
-		return getyml(file);
+	public static YamlConfiguration getFlags(){
+		return getyml(getFlagsFile());
+	}
+	public YamlConfiguration getSignConfig(String hotelName, String roomNum){
+		return getyml(getSignFile(hotelName, roomNum));
+	}
+	public YamlConfiguration getSignConfig(String hotelName, int roomNum){
+		return getyml(getSignFile(hotelName, String.valueOf(roomNum)));
 	}
 	
 	public String getupdateAvailable(){

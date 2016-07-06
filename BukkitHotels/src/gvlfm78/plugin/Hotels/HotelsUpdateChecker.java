@@ -1,95 +1,61 @@
 package kernitus.plugin.Hotels;
 
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.util.logging.Logger;
 
-import javax.xml.parsers.DocumentBuilderFactory;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsMessageManager;
+import kernitus.plugin.Hotels.managers.Mes;
 
 public class HotelsUpdateChecker {
-	
 
-	public HotelsUpdateChecker(){}
-	HotelsMain plugin = new HotelsMain();
-	HotelsMessageManager HMM = new HotelsMessageManager();
-	HotelsConfigHandler HConH = new HotelsConfigHandler();
-	
-	private URL filesFeed;
+	private HotelsMain plugin;
+	private final BukkitUpdateChecker BUC;
+	private final SpigotUpdateChecker SUC;
 
-	private String version;
-	private String link;
-
-	public HotelsUpdateChecker(String url){
-
-		try{
-			this.filesFeed = new URL(url);
-		}catch (MalformedURLException e){
-			e.printStackTrace();
-		}
+	public HotelsUpdateChecker(HotelsMain plugin){
+		this.plugin = plugin;
+		BUC = new BukkitUpdateChecker(plugin);
+		SUC = new SpigotUpdateChecker(plugin);
 	}
 
-	public boolean updateNeeded(){
-		try {
-			InputStream input = this.filesFeed.openConnection().getInputStream();
-			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(input);
-
-			Node latestFile = document.getElementsByTagName("item").item(0);
-			NodeList children = latestFile.getChildNodes();
-
-			this.version = children.item(1).getTextContent().replaceAll("[a-zA-Z ]", "");
-			this.link = children.item(3).getTextContent();
-
-			if(versionCompare(plugin.getDescription().getVersion(),this.version)<0){
-				return true;
+	private String[] getUpdateMessages(){
+		String[] updateMessages = new String[2];
+		if(Bukkit.getVersion().toLowerCase().contains("spigot")){
+			//Get messages from Spigot update checker
+			if(SUC.getResult().name().equalsIgnoreCase("UPDATE_AVAILABLE")){
+				//An update is available
+				updateMessages[0] = Mes.mesnopre("main.updateAvailable").replaceAll("%version%",SUC.getVersion());
+				updateMessages[1] = Mes.mesnopre("main.updateAvailableLink").replaceAll("%link%","https://www.spigotmc.org/resources/hotels.2047/updates/");
 			}
-		} catch (UnknownHostException uhe){
-			plugin.getServer().getLogger().severe(HMM.mes("main.noConnection"));
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-
-
-		return false;
+		else//Get messages from bukkit update checker
+			updateMessages = BUC.updateMessages();
+		return updateMessages;
 	}
 
-	public String getVersion(){
-		return this.version;
-	}
-
-	public String getLink(){
-		return this.link;
-	}
-
-	public Integer versionCompare(String oldVer, String newVer)
-	{
-		String[] vals1 = oldVer.split("\\.");
-		String[] vals2 = newVer.split("\\.");
-		int i = 0;
-		// set index to first non-equal ordinal or length of shortest version string
-		while (i < vals1.length && i < vals2.length && vals1[i].equals(vals2[i])) 
-		{
-			i++;
+	public void sendUpdateMessages(Player p){//Sends messages to a player
+		for(String message : getUpdateMessages()){
+			if(message!=null&&!message.isEmpty())//If there was no update/check is disabled message will be null
+				p.sendMessage(message);
 		}
-		// compare first non-equal ordinal number
-		if (i < vals1.length && i < vals2.length) 
-		{
-			int diff = Integer.valueOf(vals1[i]).compareTo(Integer.valueOf(vals2[i]));
-			return Integer.signum(diff);
+	}
+	public void sendUpdateMessages(Logger l){//Sends messages to console
+		for(String message : getUpdateMessages()){
+			message = ChatColor.stripColor(message);
+			if(message!=null&&!message.isEmpty())//If there was no update/check is disabled message will be null
+				l.info(message);
 		}
-		// the strings are equal or one string is a substring of the other
-		// e.g. "1.2.3" = "1.2.3" or "1.2.3" < "1.2.3.4"
-		else
-		{
-			return Integer.signum(vals1.length - vals2.length);
+	}
+	public void sendUpdateMessages(CommandSender s){
+		if(s instanceof Player){
+			Player p = (Player) s;
+			sendUpdateMessages(p);
+		}
+		else{
+			sendUpdateMessages(plugin.getLogger());
 		}
 	}
 }
-

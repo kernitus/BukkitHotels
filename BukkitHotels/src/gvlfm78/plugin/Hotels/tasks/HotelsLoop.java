@@ -1,4 +1,4 @@
-package kernitus.plugin.Hotels.managers;
+package kernitus.plugin.Hotels.tasks;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -24,22 +24,26 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.HotelsFileFinder;
+import kernitus.plugin.Hotels.managers.HotelsRegionManager;
+import kernitus.plugin.Hotels.managers.Mes;
+import kernitus.plugin.Hotels.managers.SignManager;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsLoop extends BukkitRunnable {
 
 	FilenameFilter SignFileFilter;
-	public HotelsLoop(){}
+	private HotelsMain plugin;
+	public HotelsLoop(HotelsMain plugin){
+		this.plugin = plugin;
+	}
 	
-	HotelsMain plugin = new HotelsMain();
-	HotelsMessageManager HMM = new HotelsMessageManager();
-	SignManager SM = new SignManager();
+	SignManager SM = new SignManager(plugin);
 	HotelsFileFinder HFF = new HotelsFileFinder();
 	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HConH = new HotelsConfigHandler();
-
-	public HotelsLoop(HotelsCommandHandler hotelsCommandHandler) {}
+	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	HotelsRegionManager HRM = new HotelsRegionManager(plugin);
 
 	@Override
 	public void run() {
@@ -62,7 +66,7 @@ public class HotelsLoop extends BukkitRunnable {
 				if(SM.updateReceptionSign(l)==true){
 					file.delete();
 					b.setType(Material.AIR);
-					plugin.getLogger().info(HMM.mesnopre("sign.delete.reception").replaceAll("%filename%", file.getName()));
+					plugin.getLogger().info(Mes.mesnopre("sign.delete.reception").replaceAll("%filename%", file.getName()));
 				}
 			}
 			else{
@@ -99,7 +103,7 @@ public class HotelsLoop extends BukkitRunnable {
 												WGM.removeMember(cf, region);
 											}
 											//If set in config, make room accessible to all players now that it is not rented
-											WGM.makeRoomAccessible(region);
+											HRM.makeRoomAccessible(region);
 											if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
 												
 												region.setFlag(DefaultFlag.BLOCK_BREAK, null);
@@ -107,12 +111,12 @@ public class HotelsLoop extends BukkitRunnable {
 												region.setPriority(1);
 											}
 
-											sign.setLine(3, ChatColor.GREEN+HMM.mesnopre("sign.vacant"));
+											sign.setLine(3, ChatColor.GREEN+Mes.mesnopre("sign.vacant"));
 											sign.update();
-											plugin.getLogger().info(HMM.mesnopre("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
+											plugin.getLogger().info(Mes.mesnopre("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
 											if(p.isOnline()){
 												Player op = Bukkit.getServer().getPlayer(UUID.fromString(config.getString("Sign.renter")));
-												op.sendMessage(HMM.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+												op.sendMessage(Mes.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 											}
 											else{
 												YamlConfiguration queue = HConH.getMessageQueue();
@@ -124,7 +128,7 @@ public class HotelsLoop extends BukkitRunnable {
 												int expiryMessagesSize = expiryMessages.size();
 												String pathToPlace = "messages.expiry."+(expiryMessagesSize+1);
 												queue.set(pathToPlace+".UUID", p.getUniqueId().toString());
-												queue.set(pathToPlace+".message", HMM.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+												queue.set(pathToPlace+".message", Mes.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
 												HConH.saveMessageQueue(queue);
 											}
 											config.set("Sign.renter", null);
@@ -166,22 +170,22 @@ public class HotelsLoop extends BukkitRunnable {
 								} catch (IOException e) {
 									e.printStackTrace();
 								}
-								sign.setLine(3, ChatColor.GREEN+HMM.mesnopre("sign.vacant"));
+								sign.setLine(3, ChatColor.GREEN+Mes.mesnopre("sign.vacant"));
 								sign.setLine(2, SM.TimeFormatter(config.getLong("Sign.time")));
 								sign.update();
 							}
 						}
 						else{
 							file.delete();
-							plugin.getLogger().info(HMM.mesnopre("sign.delete.roomNum").replaceAll("%filename%", file.getName()));}
+							plugin.getLogger().info(Mes.mesnopre("sign.delete.roomNum").replaceAll("%filename%", file.getName()));}
 					}
 					else{
 						file.delete();
-						plugin.getLogger().info(HMM.mesnopre("sign.delete.hotelName").replaceAll("%filename%", file.getName()));}
+						plugin.getLogger().info(Mes.mesnopre("sign.delete.hotelName").replaceAll("%filename%", file.getName()));}
 				}
 				else{
 					file.delete();
-					plugin.getLogger().info(HMM.mesnopre("sign.delete.location").replaceAll("%filename%", file.getName()));}
+					plugin.getLogger().info(Mes.mesnopre("sign.delete.location").replaceAll("%filename%", file.getName()));}
 			}
 		}
 		//Handling hotel files
@@ -199,7 +203,7 @@ public class HotelsLoop extends BukkitRunnable {
 				OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(buyeruuid));
 				if(op.isOnline()){
 					Player oop = (Player) op;
-					oop.sendMessage(HMM.mes("hotels.commands.buyhotel.expired").replaceAll("%hotel%", hotelName));
+					oop.sendMessage(Mes.mes("hotels.commands.buyhotel.expired").replaceAll("%hotel%", hotelName));
 				}
 				List<World> worlds = Bukkit.getWorlds();
 				for(World currentw:worlds){
@@ -211,7 +215,7 @@ public class HotelsLoop extends BukkitRunnable {
 							OfflinePlayer cof = Bukkit.getOfflinePlayer(co);
 							if(cof.isOnline()){
 								Player cop = (Player) cof;
-								cop.sendMessage(HMM.mes("hotels.commands.sellhotel.expired").replaceAll("%hotel%", hotelName));
+								cop.sendMessage(Mes.mes("hotels.commands.sellhotel.expired").replaceAll("%hotel%", hotelName));
 							}
 						}
 					}

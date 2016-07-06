@@ -1,7 +1,7 @@
 package kernitus.plugin.Hotels;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsMessageManager;
+import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
@@ -33,12 +33,14 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class HotelsListener implements Listener {
 
-	public HotelsListener(){}
-	HotelsMessageManager HMM = new HotelsMessageManager();
-	HotelsCreationMode HCM = new HotelsCreationMode();
-	SignManager SM = new SignManager();
+	private HotelsMain plugin;
+	public HotelsListener(HotelsMain plugin){
+		this.plugin = plugin;
+	}
+	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
+	SignManager SM = new SignManager(plugin);
 	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HConH = new HotelsConfigHandler();
+	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 
 	@EventHandler
 	public void onSignPlace(SignChangeEvent e){
@@ -46,7 +48,7 @@ public class HotelsListener implements Listener {
 		Player p = e.getPlayer();
 		//If sign is a hotels sign
 		if(e.getLine(0).toLowerCase().contains("[hotels]")) {
-			if(HMM.hasPerm(p,"hotels.sign.create")){
+			if(Mes.hasPerm(p,"hotels.sign.create")){
 				//Sign lines
 				String Line3 = ChatColor.stripColor(e.getLine(2)).trim();
 				String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
@@ -62,7 +64,7 @@ public class HotelsListener implements Listener {
 			}
 			else{
 				//No permission
-				p.sendMessage(HMM.mes("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
+				p.sendMessage(Mes.mes("chat.noPermission").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1")); 
 				e.setLine(0, ChatColor.DARK_RED+e.getLine(0));
 			}
 		}
@@ -75,7 +77,7 @@ public class HotelsListener implements Listener {
 			if (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN){//If block is sign
 				Player p = e.getPlayer();
 				//Permission check
-				if(HMM.hasPerm(p, "hotels.sign.use")){
+				if(Mes.hasPerm(p, "hotels.sign.use")){
 					Sign s = (Sign) e.getClickedBlock().getState();
 					if(SM.isReceptionSign(s))
 						SM.useReceptionSign(e);
@@ -83,7 +85,7 @@ public class HotelsListener implements Listener {
 						SM.useRoomSign(e);
 				}
 				else
-					p.sendMessage(HMM.mes("chat.noPermission")); 
+					p.sendMessage(Mes.mes("chat.noPermission")); 
 			}
 		}
 	}
@@ -187,7 +189,7 @@ public class HotelsListener implements Listener {
 	@EventHandler
 	public void avoidChestInteraction(InventoryClickEvent e){
 		Player p = (Player) e.getWhoClicked();
-		if(HMM.hasPerm(p, "hotels.cratemode.admin")){
+		if(Mes.hasPerm(p, "hotels.cratemode.admin")){
 			String UUID = p.getUniqueId().toString();
 			if(HCM.isInCreationMode(UUID))
 				e.setCancelled(true);
