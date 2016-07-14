@@ -129,7 +129,9 @@ public class HotelsConfigHandler {
 	public File getSignFile(String hotelName, int roomNum){
 		return getSignFile(hotelName, String.valueOf(roomNum));
 	}
-
+	public File getReceptionFile(String hotelName, int receptionFileNum){
+		return getFile("Signs"+File.separator+"Reception-"+hotelName.toLowerCase()+"-"+receptionFileNum+".yml");
+	}
 	public YamlConfiguration getconfig(String configName){
 		return getyml(getconfigFile(configName));
 	}

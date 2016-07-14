@@ -1,11 +1,13 @@
 package kernitus.plugin.Hotels.managers;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +17,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -32,12 +35,14 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+
 
 public class WorldGuardManager {
 
 	public WorldGuardManager(){}
 
-	public WorldGuardPlugin getWorldGuard(){
+	public static WorldGuardPlugin getWorldGuard(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 
 		if (p instanceof WorldGuardPlugin) return (WorldGuardPlugin) p;
@@ -58,6 +63,25 @@ public class WorldGuardManager {
 		DefaultDomain members = r.getMembers();
 		members.addPlayer(p.getName());
 		r.setMembers(members);
+	}
+	public void setMember(UUID uuid, ProtectedRegion r){
+		DefaultDomain member = new DefaultDomain();
+		member.addPlayer(uuid);
+		r.setMembers(member);
+	}
+	public void setMembers(ArrayList<UUID> uuids, ProtectedRegion r){
+		DefaultDomain members = new DefaultDomain();
+		for(UUID uuid : uuids){
+		members.addPlayer(uuid);
+		}
+		r.setMembers(members);
+	}
+	public void setOwners(ArrayList<UUID> uuids, ProtectedRegion r){
+		DefaultDomain owners = new DefaultDomain();
+		for(UUID uuid : uuids){
+		owners.addPlayer(uuid);
+		}
+		r.setOwners(owners);
 	}
 
 	public void removeOwner(OfflinePlayer p, ProtectedRegion r){
@@ -87,7 +111,7 @@ public class WorldGuardManager {
 			e.printStackTrace();
 		}
 	}
-	public RegionManager getRM(World world){
+	public static RegionManager getRM(World world){
 		return getWorldGuard().getRegionManager(world);
 	}
 	public boolean hasRegion(World world, String regionName){
@@ -128,7 +152,7 @@ public class WorldGuardManager {
 			saveRegions(world);
 		}
 	}
-	public Collection<ProtectedRegion> getRegions(World world){
+	public static Collection<ProtectedRegion> getRegions(World world){
 		return getRM(world).getRegions().values();
 	}
 	public boolean isOwner(Player p,ProtectedRegion r){
@@ -172,7 +196,7 @@ public class WorldGuardManager {
 		}
 		return false;
 	}
-	public void setFlags(ConfigurationSection section, ProtectedRegion r,String namenum){
+	public void setFlags(ConfigurationSection section, ProtectedRegion r, String name){
 		boolean isHotel;
 		if(r.getId().matches("hotel-.+-\\d+"))
 			isHotel = false;
@@ -203,22 +227,22 @@ public class WorldGuardManager {
 			case "GREETING":
 				if(Boolean.valueOf(keyValue)){
 					if(isHotel){
-						String message = Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", namenum);
+						String message = Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name);
 						flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 					}
 					else{
-						String message = Mes.mesnopre("message.room.enter").replaceAll("%room%", namenum);
+						String message = Mes.mesnopre("message.room.enter").replaceAll("%room%", name);
 						flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 					}
 				}
 				break;
 			case "FAREWELL":
 				if(isHotel){
-					String message = Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", namenum);
+					String message = Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name);
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				}
 				else{
-					String message = Mes.mesnopre("message.room.exit").replaceAll("%room%", namenum);
+					String message = Mes.mesnopre("message.room.exit").replaceAll("%room%", name);
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				}
 				break;
@@ -301,5 +325,15 @@ public class WorldGuardManager {
 		RegionGroupFlag regionGroupFlag = flag.getRegionGroupFlag();
 		RegionGroup regionGroup = RegionGroup.valueOf(group.toUpperCase());
 		region.setFlag(regionGroupFlag, regionGroup);
+	}
+	public void hotelFlags(ProtectedRegion region,String hotelName){
+		YamlConfiguration flagsConfig = HotelsConfigHandler.getFlags();
+		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
+		setFlags(section,region,hotelName);
+	}
+	public void roomFlags(ProtectedRegion region,int roomNum){
+		YamlConfiguration flagsConfig = HotelsConfigHandler.getFlags();
+		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
+		setFlags(section,region,String.valueOf(roomNum));
 	}
 }

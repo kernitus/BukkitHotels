@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -30,8 +29,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.HotelsRegionManager;
+import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsCreationMode {
@@ -59,16 +58,11 @@ public class HotelsCreationMode {
 			return false;
 	}
 	public int ownedHotels(Player p){
-		Map<String, ProtectedRegion> rgs = WGM.getRM(p.getWorld()).getRegions();
-		int count=0;
-		for(ProtectedRegion reg : rgs.values()){
-			if(reg.getOwners().contains(p.getUniqueId())||reg.getOwners().contains(p.getName())){
-				String name = reg.getId();
-				if(name.matches("hotel-\\w+")){
-					//It's a hotel region and this player is an owner
-					count++;
-				}
-			}
+		ArrayList<Hotel> hotels = HotelsAPI.getHotelsInWorld(p.getWorld());
+		int count = 0;
+		for(Hotel hotel : hotels){
+			if(hotel.isOwner(p.getUniqueId()))
+				count++;
 		}
 		return count;
 	}
@@ -121,7 +115,7 @@ public class HotelsCreationMode {
 		if(!WGM.doHotelRegionsOverlap(region, world)){
 
 			WGM.addRegion(world, region);
-			RM.hotelFlags(region,hotelName);
+			WGM.hotelFlags(region,hotelName);
 			WGM.addOwner(p, region);
 			region.setPriority(5);
 			WGM.saveRegions(world);
@@ -144,14 +138,14 @@ public class HotelsCreationMode {
 		}
 	}
 
-	public void createRoomRegion(Player p, ProtectedRegion region, String hotelName, String room){
+	public void createRoomRegion(Player p, ProtectedRegion region, String hotelName, int room){
 		World world = p.getWorld();
 		ProtectedRegion hotelRegion = WGM.getRegion(world, "hotel-"+hotelName);
 		if(Mes.hasPerm(p, "hotels.create")){
 			if(!WGM.doesRoomRegionOverlap(region, world)){
 				if(WGM.isOwner(p, hotelRegion)||Mes.hasPerm(p, "hotels.create.admin")){
 					WGM.addRegion(world, region);
-					RM.roomFlags(region,room);
+					WGM.roomFlags(region,room);
 					if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
 						region.setPriority(1);
 					else
@@ -169,12 +163,14 @@ public class HotelsCreationMode {
 		else
 			p.sendMessage(Mes.mes("chat.noPermission"));
 	}
-	public void roomSetup(String hotelName,String room,Player p){
+	public void roomSetup(String hotelName,int roomNum,Player p){
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
-		if(WGM.getRM(p.getWorld()).hasRegion("hotel-"+hotelName)){
-			if(!WGM.getRM((p.getWorld())).hasRegion("hotel-"+hotelName+"-"+room)){
-				ProtectedRegion pr = WGM.getRM(world).getRegion("hotel-"+hotelName);
+		Hotel hotel = new Hotel(world,hotelName);
+		if(hotel.exists()){
+			Room room = new Room(hotel,roomNum);
+			if(!room.exists()){//If room doesn't already exist
+				ProtectedRegion pr = hotel.getRegion();
 				if(sel!=null){
 					if((sel instanceof Polygonal2DSelection)&&(pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
 							((sel instanceof CuboidSelection)&&(pr.contains(sel.getNativeMinimumPoint())&&pr.contains(sel.getNativeMaximumPoint())))){
@@ -185,14 +181,14 @@ public class HotelsCreationMode {
 									new BlockVector(sel.getNativeMinimumPoint()), 
 									new BlockVector(sel.getNativeMaximumPoint())
 									);
-							createRoomRegion(p,r,hotelName,room);
+							createRoomRegion(p,r,hotelName,roomNum);
 						}
 						else if(sel instanceof Polygonal2DSelection){
 							int minY = sel.getMinimumPoint().getBlockY();
 							int maxY = sel.getMaximumPoint().getBlockY();
 							List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
 							ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
-							createRoomRegion(p,r,hotelName,room);
+							createRoomRegion(p,r,hotelName,roomNum);
 						}
 						else
 							p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid"));
