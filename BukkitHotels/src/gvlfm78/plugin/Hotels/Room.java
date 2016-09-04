@@ -3,18 +3,35 @@ package kernitus.plugin.Hotels;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
+import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
+import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import kernitus.plugin.Hotels.events.RoomCreateEvent;
+import kernitus.plugin.Hotels.events.RoomRentEvent;
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
@@ -134,10 +151,6 @@ public class Room {
 	//////////////////////
 	///////Setters////////
 	//////////////////////
-	public void createRegion(ProtectedRegion r){
-		WGM.addRegion(world, r);
-		WGM.saveRegions(world);
-	}
 	public void setRentTime(long timeInMins){
 		sconfig.set("Sign.time", timeInMins);
 	}
@@ -215,6 +228,151 @@ public class Room {
 
 		//Setting room flags back in case they were changed to allow players in
 		WGM.roomFlags(getRegion(),num);
+		Bukkit.getServer().getPluginManager().callEvent(new RoomRentEvent(this));
+	}
+	public boolean create(Selection sel){
+		// This method will return true if there were no errors,
+		// and false if there were
+
+		//Creating room region
+		ProtectedRegion r = null;
+
+		String hotelName = hotel.getName();
+
+		if(sel instanceof CuboidSelection){
+			r = new ProtectedCuboidRegion(
+					"Hotel-"+hotelName+"-"+num, 
+					new BlockVector(sel.getNativeMinimumPoint()), 
+					new BlockVector(sel.getNativeMaximumPoint())
+					);
+		}
+		else if(sel instanceof Polygonal2DSelection){
+			int minY = sel.getMinimumPoint().getBlockY();
+			int maxY = sel.getMaximumPoint().getBlockY();
+			List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
+			r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+num, points, minY, maxY);
+		}
+		else
+			return false;
+
+		WGM.addRegion(world, r);
+		WGM.roomFlags(r,num);
+		if(HotelsConfigHandler.getyml("config.yml").getBoolean("settings.stopOwnersEditingRentedRooms"))
+			r.setPriority(1);
+		else
+			r.setPriority(10);
+
+		WGM.makeRoomAccessible(r);
+		WGM.saveRegions(world);
+
+		//Calling RoomCreateEvent
+		Bukkit.getServer().getPluginManager().callEvent(new RoomCreateEvent(this));
+		return true;
+	}
+	private void removeSignAndFile(){
+		Block b = world.getBlockAt(getSignLocation());
+		Material mat = b.getType();
+		if(mat.equals(Material.SIGN)||mat.equals(Material.SIGN_POST)||mat.equals(Material.WALL_SIGN))
+			b.setType(Material.AIR);
+		deleteSignFile();
+	}
+	public int renumber(){
+		//Method will return errorLevel variable to know where it stopped:
+		//0: no errors
+		//1: new num too big
+		//2: hotel non existant
+		//3: room non existant
+		//4: player not hotel owner or admin
+		//5: sign file does not exist
+		//6: given world and world in sign file don't match
+		//7: block at location specified in sign file isn't a sign
+		//8: first line of sign doesn't match given hotel name
+		//9: hotel region doesn't exist
+		//10: sign is not within hotel region
+		//11: num on sign doesn't match given num
+		
+		
+		String hotelName = hotel.getName().toLowerCase();
+		if(Integer.parseInt(newnum)>100000){
+			sender.sendMessage(Mes.mes("chat.commands.renumber.newNumTooBig")); return;	}
+
+		if(WGM.hasRegion(world, "Hotel-"+hotel)){
+			sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return; }
+
+		if(WGM.hasRegion(world, "Hotel-"+hotel+"-"+oldnum)){
+			sender.sendMessage(Mes.mes("chat.commands.roomNonExistant")); return; }
+
+		if(sender instanceof Player){
+			Player p = (Player) sender;
+			if(!WGM.isOwner(p, "hotel-"+hotel, p.getWorld()) &&
+					Mes.hasPerm(p, "hotels.renumber.admin")){
+				p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return; }
+		}
+
+		File file = getSignFile();
+
+		if(!file.exists())
+			return; //Something went terribly wrong
+
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		World signworld = getWorldFromConfig();
+		
+		Location signLocation = getSignLocation();
+
+		Block b = signworld.getBlockAt(signLocation);
+
+		if(world!=signworld){
+			removeSignAndFile();
+			return;
+		}
+
+		if(!b.getType().equals(Material.SIGN)&&!b.getType().equals(Material.SIGN_POST)&&!b.getType().equals(Material.WALL_SIGN)){
+			removeSignAndFile();
+			return;
+		}
+
+		Sign s = (Sign) b.getState();
+		String Line1 = ChatColor.stripColor(s.getLine(0));
+		String Line2 = ChatColor.stripColor(s.getLine(1));
+		String signroom = Line2.split(" ")[1];
+
+		if(!Line1.toLowerCase().matches(hotelName.toLowerCase())){
+			removeSignAndFile(); return; }
+
+		if(!WGM.hasRegion(signworld, "hotel-"+hotel)){
+			removeSignAndFile(); return; }
+
+		if(!WGM.getRegion(signworld, "hotel-"+hotel).contains(signLocation.getBlockX(),signLocation.getBlockY(),signLocation.getBlockZ())){
+			removeSignAndFile(); return; }
+
+		if(!signroom.trim().toLowerCase().matches(oldnum.toLowerCase())){
+			removeSignAndFile(); return; }
+
+		s.setLine(1, Mes.mesnopre("sign.room.name")+" "+newnum+" - "+Line2.split(" ")[3]);
+		s.update();
+		config.set("Sign.room", Integer.valueOf(newnum));
+		config.set("Sign.region", "hotel-"+hotel+"-"+newnum);
+
+		saveSignConfig(file);
+		
+		this.num = newnum;
+		
+		file.renameTo(getSignFile());						
+
+		ProtectedRegion r = WGM.getRegion(world, "hotel-"+hotel+"-"+oldnum);
+		String idHotelName = r.getId();
+		String[] partsofhotelName = idHotelName.split("-");
+		String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1).toLowerCase();
+		if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
+			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.room.enter").replaceAll("%room%", String.valueOf(newnum))));
+		if(Mes.flagValue("room.map-making.FAREWELL").equalsIgnoreCase("true"))
+			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.room.exit").replaceAll("%room%", String.valueOf(newnum))));
+		WGM.renameRegion("Hotel-"+hotel+"-"+oldnum, "Hotel-"+hotel+"-"+newnum, world);
+		WGM.saveRegions(world);
+		
+		sender.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", oldnum).replaceAll("%newnum%", newnum).replaceAll("%hotel%", fromIdhotelName));
+	}
+	public void delete(){
 
 	}
 	public void addFriend(){
@@ -233,18 +391,18 @@ public class Room {
 	public boolean doesSignFileExist(){
 		return getSignFile().exists();
 	}
-	public void saveSignConfig(){
-		try {
-			sconfig.save(getSignFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 	public void saveSignConfig(Player p){//When creating a room sign
 		try {
 			sconfig.save(getSignFile());
 		} catch (IOException e) {
 			p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
+			e.printStackTrace();
+		}
+	}
+	public void saveSignConfig(File file){
+		try {
+			sconfig.save(file);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

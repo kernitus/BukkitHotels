@@ -1,7 +1,5 @@
 package kernitus.plugin.Hotels.handlers;
 
-import kernitus.plugin.Hotels.HotelsMain;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,20 +10,22 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
+
+import kernitus.plugin.Hotels.HotelsMain;
 
 public class HotelsConfigHandler {
 
 	private HotelsMain plugin;
-	
+
 	public HotelsConfigHandler(HotelsMain plugin){
 		this.plugin = plugin;
 	}
-	
+
 	public void setupConfigs(){
 		//Message Queue
 		if(!getMessageQueueFile().exists())
@@ -56,29 +56,29 @@ public class HotelsConfigHandler {
 		YamlConfiguration locale = getLocale();
 		String loclang = locale.getString("language"); //From already-generated locale.yml
 		if(loclang==null){
-			if(lang.equalsIgnoreCase("en")|lang.equalsIgnoreCase("enGB"))
-				setupLanguage("enGB",plugin);
-			else if(lang.equalsIgnoreCase("it")|lang.equalsIgnoreCase("itIT"))
-				setupLanguage("itIT",plugin);
-			else if(lang.equalsIgnoreCase("zhCN")|lang.equalsIgnoreCase("zh"))
-				setupLanguage("zhCN",plugin);
-			else if(lang.equalsIgnoreCase("zhTW"))
-				setupLanguage("zhTW",plugin);
-			else if(lang.equalsIgnoreCase("frFR")|lang.equalsIgnoreCase("fr"))
-				setupLanguage("frFR",plugin);
-			else if(lang.equalsIgnoreCase("ruRU")|lang.equalsIgnoreCase("ru"))
-				setupLanguage("ruRU",plugin);
-			else if(lang.equalsIgnoreCase("custom"))
-				return;
-			else
-				setupLanguage("enGB",plugin);
+			switch(lang.toLowerCase()){
+			case "en": case "engb":
+				setupLanguage("enGB"); break;
+			case "it": case "itit":
+				setupLanguage("itIT"); break;
+			case "zh": case "zhcn":
+				setupLanguage("zhCN"); break;
+			case "zhtw":
+				setupLanguage("zhTW"); break;
+			case "fr": case "frfr":
+				setupLanguage("frFR"); break;
+			case "ru": case "ruru":
+				setupLanguage("ruRU"); break;
+			case "custom": break;
+			default: setupLanguage("enGB");
+			}
 		}
 	}
 	public String getLanguage(){
 		return plugin.getConfig().getString("settings.language");
 	}
 
-	public File getFile(String filepath){
+	public static File getFile(String filepath){
 		return new File("plugins"+File.separator+"Hotels"+File.separator+filepath);
 	}
 
@@ -99,7 +99,7 @@ public class HotelsConfigHandler {
 		return config;
 	}
 
-	public YamlConfiguration getyml(String filepath){
+	public static YamlConfiguration getyml(String filepath){
 		return getyml(getFile(filepath));
 	}
 
@@ -125,12 +125,18 @@ public class HotelsConfigHandler {
 	public File getSignFile(String hotelName, String roomNum){
 		return getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 	}
-	
+
 	public File getSignFile(String hotelName, int roomNum){
 		return getSignFile(hotelName, String.valueOf(roomNum));
 	}
 	public File getReceptionFile(String hotelName, int receptionFileNum){
 		return getFile("Signs"+File.separator+"Reception-"+hotelName.toLowerCase()+"-"+receptionFileNum+".yml");
+	}
+	public File getInventoryFile(UUID uuid){
+		return getFile("Inventories"+File.separator+uuid+".yml");
+	}
+	public File getInventoryFile(String uuid){
+		return getFile("Inventories"+File.separator+uuid+".yml");
 	}
 	public YamlConfiguration getconfig(String configName){
 		return getyml(getconfigFile(configName));
@@ -157,14 +163,14 @@ public class HotelsConfigHandler {
 	public YamlConfiguration getSignConfig(String hotelName, int roomNum){
 		return getyml(getSignFile(hotelName, String.valueOf(roomNum)));
 	}
-	
+
 	public String getupdateAvailable(){
 		return getMessageQueue().getString("messages.update.available");
 	}
 	public String getupdateString(){
 		return getMessageQueue().getString("messages.update.link");
 	}
-	
+
 	public void saveConfiguration(File file, YamlConfiguration config){
 
 		try{
@@ -201,10 +207,10 @@ public class HotelsConfigHandler {
 	public void reloadConfigs(){
 		//Reload config.yml
 		if(getconfigymlFile().exists())
-		plugin.reloadConfig();
+			plugin.reloadConfig();
 		else
 			setupConfigyml();
-		
+
 		//Message Queue
 		if(!getMessageQueueFile().exists())
 			setupMessageQueue();
@@ -215,8 +221,8 @@ public class HotelsConfigHandler {
 		//Locale
 		localeLanguageSelector();
 	}
-	
-	public void setupLanguage(String langCode, Plugin plugin){
+
+	public void setupLanguage(String langCode){
 		plugin.saveResource("locale-"+langCode+".yml", false);
 		File loc = getLocaleFile();
 		File itLoc = getFile("locale-"+langCode+".yml");

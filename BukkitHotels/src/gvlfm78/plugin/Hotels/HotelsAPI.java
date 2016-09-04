@@ -41,6 +41,14 @@ public class HotelsAPI {
 		}
 		return hotels;
 	}
+	public static ArrayList<Hotel> getHotelsOwnedByInWorld(UUID uuid, World world){
+		ArrayList<Hotel> hotels = getHotelsInWorld(world);
+		for(Hotel hotel : hotels){
+			if(!hotel.isOwner(uuid))
+				hotels.remove(hotel);
+		}
+		return hotels;
+	}
 	public static ArrayList<Room> getAllRoomsRentedBy(UUID uuid){
 		ArrayList<Room> rented = new ArrayList<Room>();
 		

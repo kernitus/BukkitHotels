@@ -46,13 +46,13 @@ public class HotelsCommandExecutor {
 	SignManager SM = new SignManager(plugin);
 	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
 	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
 	HotelsFileFinder HFF = new HotelsFileFinder();
 	HotelsRegionManager HRM = new HotelsRegionManager(plugin);
 
 	public void cmdCreate(Player p,String hotelName){//Hotel creation command
 		UUID playerUUID = p.getUniqueId();
-		File file = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
+		File file = HCH.getInventoryFile(playerUUID+".yml");
 		if(file.exists()){
 			HCM.hotelSetup(hotelName, p);
 		}
@@ -219,7 +219,7 @@ public class HotelsCommandExecutor {
 		p.sendMessage(Mes.mes("chat.commands.creationMode.reset"));
 	}
 	public void cmdReload(CommandSender s,Plugin pluginstance){
-		HConH.reloadConfigs();
+		HCH.reloadConfigs();
 		s.sendMessage(Mes.mes("chat.commands.reload.success"));
 	}
 	public void cmdRent(CommandSender s,String hotelName, String roomNum){
@@ -235,7 +235,7 @@ public class HotelsCommandExecutor {
 				s.sendMessage(Mes.mes("chat.commands.rent.consoleRejected"));	
 	}
 	public void cmdFriendAdd(CommandSender s, String hotel, String room, String friendName){
-		File signFile = HConH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
+		File signFile = HCH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
 		if(signFile.exists()){
 			YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
 			String renterUUID = signConfig.getString("Sign.renter");
@@ -280,7 +280,7 @@ public class HotelsCommandExecutor {
 			s.sendMessage(Mes.mes("chat.commands.friend.wrongData"));
 	}
 	public void cmdFriendRemove(CommandSender s, String hotel, String room, String friendName){
-		File signFile = HConH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
+		File signFile = HCH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
 		if(signFile.exists()){
 			YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
 			String renterUUID = signConfig.getString("Sign.renter");
@@ -321,7 +321,7 @@ public class HotelsCommandExecutor {
 			s.sendMessage(Mes.mes("chat.commands.friend.wrongData"));
 	}
 	public void cmdFriendList(CommandSender s, String hotel, String room){
-		File signFile = HConH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
+		File signFile = HCH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
 		if(signFile.exists()){
 			YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
 			String renterUUID = signConfig.getString("Sign.renter");
@@ -365,99 +365,7 @@ public class HotelsCommandExecutor {
 			s.sendMessage(Mes.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
 	public void renumber(String hotel,String oldnum,String newnum, World world,CommandSender sender){
-		hotel = hotel.toLowerCase();
-		if(Integer.parseInt(newnum)<100000){
-			if(WGM.hasRegion(world, "Hotel-"+hotel)){
-				if(WGM.hasRegion(world, "Hotel-"+hotel+"-"+oldnum)){
-					if(sender instanceof Player){
-						Player p = (Player) sender;
-						if(!WGM.isOwner(p, "hotel-"+hotel, p.getWorld()))
-							if(!Mes.hasPerm(p, "hotels.renumber.admin")){
-								p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
-								return;
-							}
-					}
-					File file = HConH.getFile("Signs"+File.separator+hotel+"-"+oldnum+".yml");
-					if(file.exists()){
-						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-						World signworld = Bukkit.getWorld(config.getString("Sign.location.world"));
-						int signx = config.getInt("Sign.location.coords.x");
-						int signy = config.getInt("Sign.location.coords.y");
-						int signz = config.getInt("Sign.location.coords.z");
-						Block b = signworld.getBlockAt(signx,signy,signz);
-
-						if(world==signworld){
-							if(b.getType().equals(Material.SIGN)||b.getType().equals(Material.SIGN_POST)||b.getType().equals(Material.WALL_SIGN)){
-								Sign s = (Sign) b.getState();
-								String Line1 = ChatColor.stripColor(s.getLine(0));
-								String Line2 = ChatColor.stripColor(s.getLine(1));
-								String signroom = Line2.split(" ")[1];
-								if(Line1.toLowerCase().matches(hotel.toLowerCase())){
-									if(WGM.hasRegion(signworld, "hotel-"+hotel)){
-										if(WGM.getRegion(signworld, "hotel-"+hotel).contains(signx, signy, signz)){
-											if(signroom.trim().toLowerCase().matches(oldnum.toLowerCase())){
-												s.setLine(1, Mes.mesnopre("sign.room.name")+" "+newnum+" - "+Line2.split(" ")[3]);
-												s.update();
-												config.set("Sign.room", Integer.valueOf(newnum));
-												config.set("Sign.region", "hotel-"+hotel+"-"+newnum);
-												try {
-													config.save(file);
-												} catch (IOException e) {
-													e.printStackTrace();
-												}
-												File newfile = HConH.getFile("Signs"+File.separator+hotel+"-"+newnum+".yml");
-												file.renameTo(newfile);
-											}
-											else{
-												b.setType(Material.AIR);
-												file.delete();
-											}
-										}
-										else{
-											b.setType(Material.AIR);
-											file.delete();
-										}
-									}
-									else{
-										b.setType(Material.AIR);
-										file.delete();
-									}
-								}
-								else{
-									b.setType(Material.AIR);
-									file.delete();
-								}
-							}
-							else{
-								b.setType(Material.AIR);
-								file.delete();
-							}
-						}
-						else{
-							b.setType(Material.AIR);
-							file.delete();
-						}
-					}
-					ProtectedRegion r = WGM.getRegion(world, "hotel-"+hotel+"-"+oldnum);
-					String idHotelName = r.getId();
-					String[] partsofhotelName = idHotelName.split("-");
-					String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1).toLowerCase();
-					if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
-						r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.room.enter").replaceAll("%room%", String.valueOf(newnum))));
-					if(Mes.flagValue("room.map-making.FAREWELL").equalsIgnoreCase("true"))
-						r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.room.exit").replaceAll("%room%", String.valueOf(newnum))));
-					WGM.renameRegion("Hotel-"+hotel+"-"+oldnum, "Hotel-"+hotel+"-"+newnum, world);
-						WGM.saveRegions(world);
-						sender.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", oldnum).replaceAll("%newnum%", newnum).replaceAll("%hotel%", fromIdhotelName));
-				}
-				else
-					sender.sendMessage(Mes.mes("chat.commands.roomNonExistant"));
-			}
-			else
-				sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));
-		}
-		else
-			sender.sendMessage(Mes.mes("chat.commands.renumber.newNumTooBig"));
+		
 	}
 
 	public void renameHotel(String oldname,String newname, World world,CommandSender sender){
@@ -491,7 +399,7 @@ public class HotelsCommandExecutor {
 					String regionIdparts[] = regionId.split("-");
 					WGM.renameRegion(regionId, "Hotel-"+newname+"-"+regionIdparts[2], world);
 					//Rename sign file
-					File file = HConH.getFile("Signs"+File.separator+regionIdparts[1]+"-"+regionIdparts[2]+".yml");
+					File file = HCH.getFile("Signs"+File.separator+regionIdparts[1]+"-"+regionIdparts[2]+".yml");
 					if(file.exists()){
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 						World signworld = Bukkit.getWorld(config.getString("Sign.location.world").trim());
@@ -513,12 +421,12 @@ public class HotelsCommandExecutor {
 									} catch (IOException e) {
 										e.printStackTrace();
 									}
-									File newfile = HConH.getFile("Signs"+File.separator+newname.toLowerCase()+"-"+regionIdparts[2]+".yml");
+									File newfile = HCH.getFile("Signs"+File.separator+newname.toLowerCase()+"-"+regionIdparts[2]+".yml");
 									file.renameTo(newfile);
 
 									//Renaming
-									File hotelsFile = HConH.getFile("Hotels"+File.separator+oldname.toLowerCase()+".yml");
-									File newHotelsfile = HConH.getFile("Hotels"+File.separator+newname.toLowerCase()+".yml");
+									File hotelsFile = HCH.getFile("Hotels"+File.separator+oldname.toLowerCase()+".yml");
+									File newHotelsfile = HCH.getFile("Hotels"+File.separator+newname.toLowerCase()+".yml");
 									hotelsFile.renameTo(newHotelsfile);
 								}
 							}
@@ -536,7 +444,7 @@ public class HotelsCommandExecutor {
 			WGM.removeRegion(world,"Hotel-"+hotelName+"-"+roomNum);//Delete region
 
 				WGM.saveRegions(world);
-				File file = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+				File file = HCH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 				if(file.exists())
 					file.delete();
 				sender.sendMessage(Mes.mes("chat.commands.removeRoom.success"));
@@ -570,7 +478,7 @@ public class HotelsCommandExecutor {
 					@SuppressWarnings("deprecation")
 					Player player = Bukkit.getOfflinePlayer(toRemovePlayer).getPlayer();
 					if(player!=null){
-						File file = HConH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
+						File file = HCH.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
 						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 						String renter = config.getString("Sign.renter");
 						if(renter!=null){
@@ -579,7 +487,7 @@ public class HotelsCommandExecutor {
 								ProtectedRegion r = WGM.getRegion(w,"hotel-"+hotel+"-"+room);
 								WGM.removeMember(player, r);
 
-								if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
+								if(HCH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
 
 									r.setFlag(DefaultFlag.BLOCK_BREAK, null);
 									r.setFlag(DefaultFlag.BLOCK_PLACE, null);
@@ -678,7 +586,7 @@ public class HotelsCommandExecutor {
 					String hotelName = rId[1];
 					String roomNum = rId[2];
 
-					File file = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+					File file = HCH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 					long expiryDate = config.getLong("Sign.expiryDate");
 
@@ -751,7 +659,7 @@ public class HotelsCommandExecutor {
 					int spaceamount = 10-roomnum.length();
 					String space = " ";
 					String rep = StringUtils.repeat(space, spaceamount);
-					File file = HConH.getFile("Signs"+File.separator+hotel.toLowerCase()+"-"+roomnum+".yml");
+					File file = HCH.getFile("Signs"+File.separator+hotel.toLowerCase()+"-"+roomnum+".yml");
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 					String state = "";
 					if(config!=null){
@@ -777,7 +685,7 @@ public class HotelsCommandExecutor {
 		if(WGM.hasRegion(world, "Hotel-"+hotelName)){
 			ArrayList<String> fileslist = HFF.listFiles("plugins//Hotels//Signs");
 			for(String x: fileslist){
-				File file = HConH.getFile("Signs"+File.separator+x);
+				File file = HCH.getFile("Signs"+File.separator+x);
 				String receptionLoc = Mes.mesnopre("sign.reception");
 				if(file.getName().matches("^"+receptionLoc+"-.+-.+")){
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);

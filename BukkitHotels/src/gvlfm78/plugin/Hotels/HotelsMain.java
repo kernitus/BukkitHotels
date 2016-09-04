@@ -86,57 +86,13 @@ public class HotelsMain extends JavaPlugin{
 			int count = HCE.getHotelCount();
 
 			//Hotel amount
-			switch(count) {
-			case 0:
-				hotelAmount.addPlotter(new Metrics.Plotter("1-3") {
-					@Override
-					public int getValue() {
-						return 0;
-					}
-				}); break;
-			case 1: case 2: case 3:
-				hotelAmount.addPlotter(new Metrics.Plotter("1-3") {
-					@Override
-					public int getValue() {
-						return 1;
-					}
-				}); break;
-			case 4: case 5:
-				hotelAmount.addPlotter(new Metrics.Plotter("4-5") {
-					@Override
-					public int getValue() {
-						return 2;
-					}
-				}); break;
-			case 6: case 7: case 8: case 9: case 10:
-				hotelAmount.addPlotter(new Metrics.Plotter("6-10") {
-					@Override
-					public int getValue() {
-						return 3;
-					}
-				}); break;
-			case 11: case 12: case 13: case 14: case 15:
-				hotelAmount.addPlotter(new Metrics.Plotter("11-15") {
-					@Override
-					public int getValue() {
-						return 4;
-					}
-				});
-			case 16: case 17: case 18: case 19: case 20:
-				hotelAmount.addPlotter(new Metrics.Plotter("16-20") {
-					@Override
-					public int getValue() {
-						return 5;
-					}
-				}); break;
-			default:
-				hotelAmount.addPlotter(new Metrics.Plotter(">20") {
-					@Override
-					public int getValue() {
-						return 6;
-					}
-				}); break;
-			}
+			hotelAmount.addPlotter(new Metrics.Plotter(String.valueOf(count)) {
+				@Override
+				public int getValue() {
+					return 1;
+				}
+			});
+			
 
 			//Languages
 			switch(HCH.getLanguage()){
@@ -177,10 +133,17 @@ public class HotelsMain extends JavaPlugin{
 					}
 				}); break;
 			case "zhTW":
-				language.addPlotter(new Metrics.Plotter("Traditional Cninese") {
+				language.addPlotter(new Metrics.Plotter("Traditional Chinese") {
 					@Override
 					public int getValue() {
 						return 6;
+					}
+				}); break;
+			case "de": case "deDE":
+				language.addPlotter(new Metrics.Plotter("German") {
+					@Override
+					public int getValue() {
+						return 8;
 					}
 				}); break;
 			default:

@@ -336,4 +336,16 @@ public class WorldGuardManager {
 		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
 		setFlags(section,region,String.valueOf(roomNum));
 	}
+	public void makeRoomAccessible(ProtectedRegion region){
+		if(HotelsConfigHandler.getyml("config.yml").getBoolean("settings.allowPlayersIntoFreeRooms")){
+			region.setFlag(DefaultFlag.INTERACT, null);
+			region.setFlag(DefaultFlag.USE, null);
+			makeRoomContainersAccessible(region);
+		}
+	}
+	public void makeRoomContainersAccessible(ProtectedRegion region){
+		if(HotelsConfigHandler.getyml("config.yml").getBoolean("settings.allowPlayersToOpenContainersInFreeRooms")){
+			region.setFlag(DefaultFlag.CHEST_ACCESS, null);
+		}
+	}
 }

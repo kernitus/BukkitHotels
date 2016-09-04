@@ -26,7 +26,7 @@ public class BukkitUpdateChecker {
 	public boolean updateNeeded(){
 		if(plugin.getConfig().getBoolean("checkForUpdates")){
 			try {
-				url = new URL("http://dev.bukkit.org/bukkit-plugins/hotels/files.rss");
+				url = new URL("https://dev.bukkit.org/bukkit-plugins/hotels/files.rss");
 				InputStream input = this.url.openConnection().getInputStream();
 				Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(input);
 
