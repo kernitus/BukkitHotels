@@ -1,5 +1,15 @@
 package kernitus.plugin.Hotels.handlers;
 
+import kernitus.plugin.Hotels.Hotel;
+import kernitus.plugin.Hotels.HotelsCreationMode;
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.Room;
+import kernitus.plugin.Hotels.managers.HotelsFileFinder;
+import kernitus.plugin.Hotels.managers.Mes;
+import kernitus.plugin.Hotels.managers.SignManager;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.tasks.HotelsLoop;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,17 +35,6 @@ import org.bukkit.plugin.Plugin;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import kernitus.plugin.Hotels.Hotel;
-import kernitus.plugin.Hotels.HotelsCreationMode;
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.Room;
-import kernitus.plugin.Hotels.managers.HotelsFileFinder;
-import kernitus.plugin.Hotels.managers.HotelsRegionManager;
-import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.managers.SignManager;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
-import kernitus.plugin.Hotels.tasks.HotelsLoop;
-
 public class HotelsCommandExecutor {
 
 	private HotelsMain plugin;
@@ -48,7 +47,6 @@ public class HotelsCommandExecutor {
 	WorldGuardManager WGM = new WorldGuardManager();
 	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
 	HotelsFileFinder HFF = new HotelsFileFinder();
-	HotelsRegionManager HRM = new HotelsRegionManager(plugin);
 
 	public void cmdCreate(Player p,String hotelName){//Hotel creation command
 		UUID playerUUID = p.getUniqueId();
@@ -364,7 +362,37 @@ public class HotelsCommandExecutor {
 		else
 			s.sendMessage(Mes.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
-	public void renumber(String hotel,String oldnum,String newnum, World world,CommandSender sender){
+	public void renumber(String hotelName, String oldNum, String newNum, World world, CommandSender sender){
+		Hotel hotel = new Hotel(world,hotelName);
+		Room room = new Room(hotel,oldNum);
+		
+		if(sender instanceof Player){
+			Player p = (Player) sender;
+			if(!WGM.isOwner(p, hotelName, world) && !Mes.hasPerm(p, "hotels.renumber.admin")){
+				p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return; }
+		}
+		
+		int errorLevel = room.renumber(Integer.parseInt(newNum));
+		//Method will return errorLevel variable to know where it stopped:
+				//0: no errors
+				//1: new num too big
+				//2: hotel non existant
+				//3: room non existant
+				//4: sign file does not exist
+				//5: hotel region doesn't exist
+				//6: sign is not within hotel region
+				//7: block at signfile location is not a sign
+		switch(errorLevel){
+		case 0: sender.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", oldNum).replaceAll("%newnum%", newNum).replaceAll("%hotel%", hotelName)); break;
+		case 1: sender.sendMessage(Mes.mes("chat.commands.renumber.newNumTooBig")); break;
+		case 2: sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); break;
+		case 3: sender.sendMessage(Mes.mes("chat.commands.roomNonExistant")); break;
+		case 4: sender.sendMessage(Mes.mes("chat.sign.use")); break;
+		case 5: sender.sendMessage(Mes.mes("chat.hotelNonExistant")); break;
+		case 6: sender.sendMessage(Mes.mes("chat.sign.place.outOfRegion")); break;
+		case 7: //Block at signFile location is not a sign break;
+		
+		}
 		
 	}
 

@@ -45,6 +45,9 @@ public class Hotel {
 	public ProtectedRegion getRegion(){
 		return WGM.getHotelRegion(world, name);
 	}
+	public String getRegionId(){
+		return getRegion().getId();
+	}
 	public ArrayList<Room> getRooms(){
 		ArrayList<Room> rooms = new ArrayList<Room>();
 		for(ProtectedRegion r : WorldGuardManager.getRegions(world)){

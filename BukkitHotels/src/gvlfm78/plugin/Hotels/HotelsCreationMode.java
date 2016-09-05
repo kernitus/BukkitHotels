@@ -1,5 +1,9 @@
 package kernitus.plugin.Hotels;
 
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.Mes;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,11 +28,6 @@ import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsRegionManager;
-import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
-
 public class HotelsCreationMode {
 
 	private HotelsMain plugin;
@@ -38,7 +37,6 @@ public class HotelsCreationMode {
 	}
 	WorldGuardManager WGM = new WorldGuardManager();
 	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
-	HotelsRegionManager RM = new HotelsRegionManager(plugin);
 
 	public void checkFolder(){
 		File file = HotelsConfigHandler.getFile("Inventories");
