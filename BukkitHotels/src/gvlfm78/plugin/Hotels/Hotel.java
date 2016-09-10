@@ -1,10 +1,22 @@
 package kernitus.plugin.Hotels;
 
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.HotelsFileFinder;
+import kernitus.plugin.Hotels.managers.Mes;
+import kernitus.plugin.Hotels.managers.WorldGuardManager;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.BlockVector;
@@ -16,8 +28,6 @@ import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class Hotel {
 
@@ -141,7 +151,7 @@ public class Hotel {
 		WGM.addOwner(p, r);
 		r.setPriority(5);
 		WGM.saveRegions(world);
-		
+
 		return error;
 	}
 	public void delete(){
@@ -149,5 +159,74 @@ public class Hotel {
 	}
 	public void rename(){
 
+	}
+	public void removeAllRooms(){
+		
+		if(!exists()) return;
+
+		HotelsFileFinder HFF = new HotelsFileFinder();
+
+		ArrayList<String> fileslist = HFF.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
+
+		for(String x : fileslist){
+
+
+			File file = HotelsConfigHandler.getFile("Signs"+File.separator+x);
+			String receptionLoc = Mes.mesnopre("sign.reception");
+
+			if(file.getName().matches("^"+receptionLoc+"-.+-.+")){//Reception file
+				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+				World world = Bukkit.getWorld(config.getString("Reception.location.world").trim());
+
+				int locx = config.getInt("Reception.location.x");
+				int locy = config.getInt("Reception.location.y");
+				int locz = config.getInt("Reception.location.z");
+				Block block = world.getBlockAt(locx,locy,locz);
+
+				Material mat = block.getType();
+
+				if(!mat.equals(Material.SIGN)&&!mat.equals(Material.SIGN_POST)&&!mat.equals(Material.WALL_SIGN))
+					file.delete();
+
+				Sign sign = (Sign) block.getState();
+				String Line1 = ChatColor.stripColor(sign.getLine(0));
+				String Line2 = ChatColor.stripColor(sign.getLine(1));
+
+				if(!Line1.matches(receptionLoc))
+					file.delete();
+
+				String hotelName = Line2.split(" ")[0];
+
+				if(WGM.hasRegion(world, "Hotel-"+hotelName)){
+					if(WGM.getRegion(world,"Hotel-"+hotelName).contains(locx, locy, locz)){
+						block.setType(Material.AIR);
+						file.delete();
+					}
+					else{
+						block.setType(Material.AIR);
+						file.delete();
+					}
+				}
+				else{
+					block.setType(Material.AIR);
+					file.delete();
+				}
+
+
+			}else{
+				String[] parts = x.split("-");
+				String chotelName = parts[0];
+				if(chotelName.equalsIgnoreCase(name)){
+					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+					int locx = config.getInt("Sign.location.coords.x");
+					int locy = config.getInt("Sign.location.coords.y");
+					int locz = config.getInt("Sign.location.coords.z");
+					Block signblock = world.getBlockAt(locx, locy, locz);
+					signblock.setType(Material.AIR);
+					signblock.breakNaturally();
+					file.delete();
+				}
+			}
+		}
 	}
 }

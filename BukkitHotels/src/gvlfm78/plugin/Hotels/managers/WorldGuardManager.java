@@ -102,6 +102,9 @@ public class WorldGuardManager {
 	public void removeRegion(World w, String r){
 		getRM(w).removeRegion(r);
 	}
+	public void removeRegion(World w, ProtectedRegion r){
+		removeRegion(w, r.getId());
+	}
 
 	public void saveRegions(World world){
 		RegionManager regionManager = getRM(world);

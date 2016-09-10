@@ -287,27 +287,27 @@ public class Room {
 		//5: hotel region doesn't exist
 		//6: sign is not within hotel region
 		//7: block at signfile location is not a sign
-		
+
 		int oldNum = newNum;
 		File oldFile = getSignFile();
-		
+
 		if(newNum > 100000)
-			 return 1;
+			return 1;
 
 		if(WGM.hasRegion(world, hotel.getRegionId()))
 			return 2;
 
 		if(WGM.hasRegion(world, getRegionId()))
 			return 3;
-		
+
 		if(doesSignFileExist()) return 4;
-		
+
 		File signFile = getSignFile();
 
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(signFile);
 
 		Location signLocation = getSignLocation();
-		
+
 		Block b = world.getBlockAt(signLocation);
 
 		if(!hotel.exists()){
@@ -315,39 +315,51 @@ public class Room {
 
 		if(!hotel.getRegion().contains(signLocation.getBlockX(),signLocation.getBlockY(),signLocation.getBlockZ())){
 			removeSignAndFile(); return 6; }
-		
+
 		Material mat = b.getType();
-		
+
 		if(!(mat.equals(Material.SIGN)||mat.equals(Material.SIGN_POST)||mat.equals(Material.WALL_SIGN)))
 			return 7;
 
 		Sign s = (Sign) b;
-		
+
 		s.setLine(1, Mes.mesnopre("sign.room.name")+" "+newNum+" - "+s.getLine(1).split(" ")[3]);
 		s.update();
 		config.set("Sign.room", Integer.valueOf(newNum));
 		config.set("Sign.region", "hotel-"+hotel+"-"+newNum);
 
 		saveSignConfig();
-		
+
 		this.num = newNum;
-		
+
 		oldFile.renameTo(getSignFile());						
 
 		//Changing number in entry/exit messages
 		ProtectedRegion r = WGM.getRegion(world, hotel.getRegionId()+"-"+oldNum);
-		
+
 		if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
 			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.room.enter").replaceAll("%room%", String.valueOf(newNum))));
 		if(Mes.flagValue("room.map-making.FAREWELL").equalsIgnoreCase("true"))
 			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.room.exit").replaceAll("%room%", String.valueOf(newNum))));
 		WGM.renameRegion("Hotel-"+hotel+"-"+oldNum, "Hotel-"+hotel+"-"+newNum, world);
 		WGM.saveRegions(world);
-		
+
 		return 0;
 	}
-	public void delete(){
+	public boolean remove(){
+		if(exists()){//If region exists
+			removeRegion();
 
+			if(doesSignFileExist()) {
+				deleteSignFile();
+				return true;
+			}
+		}
+		return false;
+	}
+	public void removeRegion(){
+		WGM.removeRegion(world, getRegion());
+		WGM.saveRegions(world);
 	}
 	public void addFriend(){
 
