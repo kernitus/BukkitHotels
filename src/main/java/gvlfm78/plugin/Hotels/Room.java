@@ -6,15 +6,21 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
@@ -92,6 +98,9 @@ public class Room {
 	}
 	public Location getSignLocation(){
 		return new Location(Bukkit.getWorld(sconfig.getString("Sign.location.world")),sconfig.getInt("Sign.location.coords.x"),sconfig.getInt("Sign.location.coords.y"),sconfig.getInt("Sign.location.coords.z"));
+	}
+	public Block getBlockAtSignLocation(){
+		return world.getBlockAt(getSignLocation());
 	}
 	public Location getDefaultHome(){
 		return new Location(getWorldFromConfig(),sconfig.getDouble("Sign.defaultHome.x"),sconfig.getDouble("Sign.defaultHome.y"),sconfig.getDouble("Sign.defaultHome.z"),(float) sconfig.getDouble("Sign.defaultHome.pitch"),(float) sconfig.getDouble("Sign.defaultHome.yaw"));
@@ -233,22 +242,15 @@ public class Room {
 	public boolean doesSignFileExist(){
 		return getSignFile().exists();
 	}
-	public void saveSignConfig(){
+	public boolean saveSignConfig(){
 		try {
 			sconfig.save(getSignFile());
 		} catch (IOException e) {
-			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
-	public void saveSignConfig(Player p){//When creating a room sign
-		try {
-			sconfig.save(getSignFile());
-		} catch (IOException e) {
-			p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
-			e.printStackTrace();
-		}
-	}
-	public void createSignConfig(Player p, long timeInMins, double cost, Location signLocation){
+	public boolean createSignConfig(Player p, long timeInMins, double cost, Location signLocation){
 		if(!doesSignFileExist()){
 			setRentTime(timeInMins);
 			setHotelNameInConfig(hotel.getName());
@@ -256,9 +258,76 @@ public class Room {
 			setCost(cost);
 			setSignLocation(signLocation);
 		}
-		saveSignConfig(p);
+		return saveSignConfig();
 	}
 	public void deleteSignFile(){
 		getSignFile().delete();
+	}
+	public int renumber(int newNum){
+		Hotel hotel = getHotel();
+		String hotelName = hotel.getName();
+		
+		if(newNum>100000)
+			return 1;
+		
+		if(!hotel.exists())
+			return 2;
+		
+
+		if(!exists())
+			return 3;
+		
+		if(!doesSignFileExist()){
+			return 4;
+		}
+		
+		File signFile = getSignFile();
+
+		Block sign = getBlockAtSignLocation();
+		Material mat = sign.getType();
+
+
+		if(mat.equals(Material.SIGN)||mat.equals(Material.SIGN_POST)||mat.equals(Material.WALL_SIGN)){
+			sign.setType(Material.AIR);
+			deleteSignFile();
+			return 5;
+		}
+		
+		Sign s = (Sign) sign.getState();
+
+		String Line2 = ChatColor.stripColor(s.getLine(1));
+
+		Location signLocation = getSignLocation();
+
+		if(!hotel.getRegion().contains(signLocation.getBlockX(),signLocation.getBlockY(),signLocation.getBlockZ())){
+			sign.setType(Material.AIR);
+			deleteSignFile();
+			return 6;
+		}
+
+		s.setLine(1, Mes.mesnopre("sign.room.name")+" "+newNum+" - "+Line2.split(" ")[3]);
+		s.update();
+		
+		sconfig.set("Sign.room", Integer.valueOf(newNum));
+		sconfig.set("Sign.region", "hotel-"+hotel+"-"+newNum);
+		saveSignConfig();
+
+		File newFile = HotelsConfigHandler.getFile("Signs"+File.separator+hotelName+"-"+newNum+".yml");
+		getSignFile().renameTo(newFile);
+		
+		//Renaming region and changing number in greet/farewell messages
+		ProtectedRegion oldRegion = WGM.getRegion(world, "hotel-"+hotel+"-"+num);
+		
+		if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
+			oldRegion.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.room.enter").replaceAll("%room%", String.valueOf(newNum))));
+		if(Mes.flagValue("room.map-making.FAREWELL").equalsIgnoreCase("true"))
+			oldRegion.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.room.exit").replaceAll("%room%", String.valueOf(newNum))));
+		WGM.renameRegion("Hotel-"+hotelName+"-"+num, "Hotel-"+hotelName+"-"+newNum, world);
+		WGM.saveRegions(world);
+		
+		num = newNum;
+		sconfig = getSignConfig();
+		
+		return 0;
 	}
 }

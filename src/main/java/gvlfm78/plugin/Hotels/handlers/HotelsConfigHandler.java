@@ -78,7 +78,7 @@ public class HotelsConfigHandler {
 		return plugin.getConfig().getString("settings.language");
 	}
 
-	public File getFile(String filepath){
+	public static File getFile(String filepath){
 		return new File("plugins"+File.separator+"Hotels"+File.separator+filepath);
 	}
 

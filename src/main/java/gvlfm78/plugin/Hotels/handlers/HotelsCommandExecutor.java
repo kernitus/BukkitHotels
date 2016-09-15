@@ -364,100 +364,32 @@ public class HotelsCommandExecutor {
 		else
 			s.sendMessage(Mes.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
-	public void renumber(String hotel,String oldnum,String newnum, World world,CommandSender sender){
-		hotel = hotel.toLowerCase();
-		if(Integer.parseInt(newnum)<100000){
-			if(WGM.hasRegion(world, "Hotel-"+hotel)){
-				if(WGM.hasRegion(world, "Hotel-"+hotel+"-"+oldnum)){
-					if(sender instanceof Player){
-						Player p = (Player) sender;
-						if(!WGM.isOwner(p, "hotel-"+hotel, p.getWorld()))
-							if(!Mes.hasPerm(p, "hotels.renumber.admin")){
-								p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
-								return;
-							}
-					}
-					File file = HConH.getFile("Signs"+File.separator+hotel+"-"+oldnum+".yml");
-					if(file.exists()){
-						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-						World signworld = Bukkit.getWorld(config.getString("Sign.location.world"));
-						int signx = config.getInt("Sign.location.coords.x");
-						int signy = config.getInt("Sign.location.coords.y");
-						int signz = config.getInt("Sign.location.coords.z");
-						Block b = signworld.getBlockAt(signx,signy,signz);
-
-						if(world==signworld){
-							if(b.getType().equals(Material.SIGN)||b.getType().equals(Material.SIGN_POST)||b.getType().equals(Material.WALL_SIGN)){
-								Sign s = (Sign) b.getState();
-								String Line1 = ChatColor.stripColor(s.getLine(0));
-								String Line2 = ChatColor.stripColor(s.getLine(1));
-								String signroom = Line2.split(" ")[1];
-								if(Line1.toLowerCase().matches(hotel.toLowerCase())){
-									if(WGM.hasRegion(signworld, "hotel-"+hotel)){
-										if(WGM.getRegion(signworld, "hotel-"+hotel).contains(signx, signy, signz)){
-											if(signroom.trim().toLowerCase().matches(oldnum.toLowerCase())){
-												s.setLine(1, Mes.mesnopre("sign.room.name")+" "+newnum+" - "+Line2.split(" ")[3]);
-												s.update();
-												config.set("Sign.room", Integer.valueOf(newnum));
-												config.set("Sign.region", "hotel-"+hotel+"-"+newnum);
-												try {
-													config.save(file);
-												} catch (IOException e) {
-													e.printStackTrace();
-												}
-												File newfile = HConH.getFile("Signs"+File.separator+hotel+"-"+newnum+".yml");
-												file.renameTo(newfile);
-											}
-											else{
-												b.setType(Material.AIR);
-												file.delete();
-											}
-										}
-										else{
-											b.setType(Material.AIR);
-											file.delete();
-										}
-									}
-									else{
-										b.setType(Material.AIR);
-										file.delete();
-									}
-								}
-								else{
-									b.setType(Material.AIR);
-									file.delete();
-								}
-							}
-							else{
-								b.setType(Material.AIR);
-								file.delete();
-							}
-						}
-						else{
-							b.setType(Material.AIR);
-							file.delete();
-						}
-					}
-					ProtectedRegion r = WGM.getRegion(world, "hotel-"+hotel+"-"+oldnum);
-					String idHotelName = r.getId();
-					String[] partsofhotelName = idHotelName.split("-");
-					String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1).toLowerCase();
-					if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
-						r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.room.enter").replaceAll("%room%", String.valueOf(newnum))));
-					if(Mes.flagValue("room.map-making.FAREWELL").equalsIgnoreCase("true"))
-						r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.room.exit").replaceAll("%room%", String.valueOf(newnum))));
-					WGM.renameRegion("Hotel-"+hotel+"-"+oldnum, "Hotel-"+hotel+"-"+newnum, world);
-						WGM.saveRegions(world);
-						sender.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", oldnum).replaceAll("%newnum%", newnum).replaceAll("%hotel%", fromIdhotelName));
-				}
-				else
-					sender.sendMessage(Mes.mes("chat.commands.roomNonExistant"));
-			}
-			else
-				sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));
+	public void renumber(String hotelName, int oldNum, int newNum, World world, CommandSender sender){
+		Hotel hotel = new Hotel(world, hotelName);
+		Room room = new Room(hotel, oldNum);
+		
+		if(!(sender instanceof Player)){
+			//TODO message sender is not an instance of player
+			return;
 		}
-		else
-			sender.sendMessage(Mes.mes("chat.commands.renumber.newNumTooBig"));
+		
+		Player player = (Player) sender;
+		
+		if(!WGM.isOwner(player, "hotel-"+hotelName, player.getWorld()) || Mes.hasPerm(player, "hotels.renumber.admin")){
+			player.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
+			return;
+		}
+		
+		int errorLevel = room.renumber(newNum);
+		switch(errorLevel){
+		case 1: player.sendMessage(Mes.mes("chat.commands.renumber.newNumTooBig")); break;
+		case 2: player.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); break;
+		case 3: player.sendMessage(Mes.mes("chat.commands.roomNonExistant")); break;
+		case 4: player.sendMessage(Mes.mes("chat.use.fileNonExistant")); break;
+		case 5: player.sendMessage(Mes.mes("chat.sign.place")); break;//Not a sign
+		case 6: player.sendMessage(Mes.mes("chat.sign.place.outOfRegion")); break;
+		default: sender.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", String.valueOf(oldNum)).replaceAll("%newnum%", String.valueOf(newNum)).replaceAll("%hotel%", hotel.getName()));
+		}
 	}
 
 	public void renameHotel(String oldname,String newname, World world,CommandSender sender){

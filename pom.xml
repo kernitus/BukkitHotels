@@ -8,16 +8,18 @@
 	<description>Hotels Bukkit/Spigot plugin</description>
 	<build>
 		<sourceDirectory>BukkitHotels/src</sourceDirectory>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.5.1</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	<url>https://github.com/kernitus/BukkitHotels</url>
 	<issueManagement>
@@ -31,7 +33,7 @@
 		</repository>
 		<repository>
 			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+			<url>http://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
 			<id>vault-repo</id>
@@ -52,16 +54,16 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-        <groupId>com.sk89q</groupId>
-        <artifactId>worldguard</artifactId>
-        <version>6.1.1-SNAPSHOT</version>
-        <scope>provided</scope>
-    </dependency>
-    <dependency>
-        <groupId>com.sk89q</groupId>
-        <artifactId>worldedit</artifactId>
-        <version>6.0.0-SNAPSHOT</version>
-        <scope>provided</scope>
-    </dependency>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldguard</artifactId>
+			<version>6.1.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldedit</artifactId>
+			<version>6.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>

@@ -140,7 +140,11 @@ public class SignManager {
 									//Calculating accurate cost
 									double accCost = CostConverter(cost);									
 									
-									room.createSignConfig(p, timeInMins, accCost, e.getBlock().getLocation());
+									if(!room.createSignConfig(p, timeInMins, accCost, e.getBlock().getLocation())){
+										p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
+										e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
+										return;
+									}
 
 									e.setLine(0, ChatColor.DARK_BLUE + Line2); //Hotel Name
 									e.setLine(1, ChatColor.DARK_GREEN + Mes.mesnopre("sign.room.name") + " " + roomNum + " - " + cost.toUpperCase() + "$"); //Room Number + Cost
