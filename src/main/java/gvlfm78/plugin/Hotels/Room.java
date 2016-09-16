@@ -45,6 +45,18 @@ public class Room {
 		this.sconfig = getSignConfig();
 		this.world = hotel.getWorld();
 	}
+	public Room(World world, String hotelName, int num){
+		this.hotel = new Hotel(world, hotelName);
+		this.num = num;
+		this.sconfig = getSignConfig();
+		this.world = world;
+	}
+	public Room(World world, String hotelName, String num){
+		this.hotel = new Hotel(world, hotelName);
+		this.num = Integer.parseInt(num);
+		this.sconfig = getSignConfig();
+		this.world = world;
+	}
 
 	//////////////////////
 	///////Getters////////
@@ -266,22 +278,20 @@ public class Room {
 	public int renumber(int newNum){
 		Hotel hotel = getHotel();
 		String hotelName = hotel.getName();
-		
+
 		if(newNum>100000)
 			return 1;
-		
+
 		if(!hotel.exists())
 			return 2;
-		
+
 
 		if(!exists())
 			return 3;
-		
+
 		if(!doesSignFileExist()){
 			return 4;
 		}
-		
-		File signFile = getSignFile();
 
 		Block sign = getBlockAtSignLocation();
 		Material mat = sign.getType();
@@ -292,7 +302,7 @@ public class Room {
 			deleteSignFile();
 			return 5;
 		}
-		
+
 		Sign s = (Sign) sign.getState();
 
 		String Line2 = ChatColor.stripColor(s.getLine(1));
@@ -307,27 +317,44 @@ public class Room {
 
 		s.setLine(1, Mes.mesnopre("sign.room.name")+" "+newNum+" - "+Line2.split(" ")[3]);
 		s.update();
-		
+
 		sconfig.set("Sign.room", Integer.valueOf(newNum));
 		sconfig.set("Sign.region", "hotel-"+hotel+"-"+newNum);
 		saveSignConfig();
 
 		File newFile = HotelsConfigHandler.getFile("Signs"+File.separator+hotelName+"-"+newNum+".yml");
 		getSignFile().renameTo(newFile);
-		
+
 		//Renaming region and changing number in greet/farewell messages
 		ProtectedRegion oldRegion = WGM.getRegion(world, "hotel-"+hotel+"-"+num);
-		
+
 		if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
 			oldRegion.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.room.enter").replaceAll("%room%", String.valueOf(newNum))));
 		if(Mes.flagValue("room.map-making.FAREWELL").equalsIgnoreCase("true"))
 			oldRegion.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.room.exit").replaceAll("%room%", String.valueOf(newNum))));
 		WGM.renameRegion("Hotel-"+hotelName+"-"+num, "Hotel-"+hotelName+"-"+newNum, world);
 		WGM.saveRegions(world);
-		
+
 		num = newNum;
 		sconfig = getSignConfig();
-		
+
 		return 0;
+	}
+
+	public boolean remove(){
+
+		if(!exists())
+			return false;
+
+		WGM.removeRegion(world, getRegion());
+
+		WGM.saveRegions(world);
+
+		if(!doesSignFileExist())
+			return false;
+
+		deleteSignFile();
+
+		return true;
 	}
 }

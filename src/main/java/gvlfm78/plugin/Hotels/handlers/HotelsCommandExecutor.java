@@ -369,7 +369,7 @@ public class HotelsCommandExecutor {
 		Room room = new Room(hotel, oldNum);
 		
 		if(!(sender instanceof Player)){
-			//TODO message sender is not an instance of player
+			sender.sendMessage(Mes.mes("chat.commands.renumber.fail").replaceAll("%oldnum%", String.valueOf(oldNum)));
 			return;
 		}
 		
@@ -388,7 +388,7 @@ public class HotelsCommandExecutor {
 		case 4: player.sendMessage(Mes.mes("chat.use.fileNonExistant")); break;
 		case 5: player.sendMessage(Mes.mes("chat.sign.place")); break;//Not a sign
 		case 6: player.sendMessage(Mes.mes("chat.sign.place.outOfRegion")); break;
-		default: sender.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", String.valueOf(oldNum)).replaceAll("%newnum%", String.valueOf(newNum)).replaceAll("%hotel%", hotel.getName()));
+		default: player.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", String.valueOf(oldNum)).replaceAll("%newnum%", String.valueOf(newNum)).replaceAll("%hotel%", hotel.getName()));
 		}
 	}
 
@@ -463,16 +463,13 @@ public class HotelsCommandExecutor {
 		else
 			sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));
 	}
-	public void removeRoom(String hotelName,String roomNum,World world,CommandSender sender){
-		if(WGM.hasRegion(world, "Hotel-"+hotelName+"-"+roomNum)){//If region exists
-			WGM.removeRegion(world,"Hotel-"+hotelName+"-"+roomNum);//Delete region
-
-				WGM.saveRegions(world);
-				File file = HConH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
-				if(file.exists())
-					file.delete();
-				sender.sendMessage(Mes.mes("chat.commands.removeRoom.success"));
-		}
+	public void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
+		Room room = new Room(world, hotelName, roomNum);
+		boolean wentWell = room.remove();
+		if(wentWell)
+			sender.sendMessage(Mes.mes("chat.commands.removeRoom.success"));
+		else
+			sender.sendMessage(Mes.mes("chat.commands.removeRoom.fail"));
 	}
 	public void removeRegions(String hotelName,World world,CommandSender sender){
 		if(WGM.hasRegion(world, "Hotel-"+hotelName)){
