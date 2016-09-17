@@ -3,6 +3,7 @@ package kernitus.plugin.Hotels;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -238,12 +239,6 @@ public class Room {
 		WGM.roomFlags(getRegion(),num);
 
 	}
-	public void addFriend(){
-
-	}
-	public void removeFriend(){
-
-	}
 	///Config stuff
 	private File getSignFile(){
 		return new File("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+hotel.getName()+"-"+num+".yml");
@@ -356,5 +351,28 @@ public class Room {
 		deleteSignFile();
 
 		return true;
+	}
+	public int addFriend(OfflinePlayer friend){
+
+		if(!doesSignFileExist())
+			return 1;
+
+		if(!isRented())
+			return 2;	
+		
+		if(!friend.hasPlayedBefore())
+			return 3;
+
+		//Adding player as region member
+
+		WGM.addMember(friend, getRegion());
+		//Adding player to config under friends list
+		List<String> stringList = sconfig.getStringList("Sign.friends");
+		stringList.add(friend.getUniqueId().toString());
+		sconfig.set("Sign.friends", stringList);
+
+		saveSignConfig();
+		
+		return 0;
 	}
 }

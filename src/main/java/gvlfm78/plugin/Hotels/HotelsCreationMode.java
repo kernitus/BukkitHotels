@@ -42,20 +42,19 @@ public class HotelsCreationMode {
 		RM = new HotelsRegionManager(plugin);
 	}
 	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
+	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
 
 	public void checkFolder(){
-		File file = HConH.getFile("Inventories");
+		File file = HotelsConfigHandler.getFile("Inventories");
 		if(!file.exists()){
 			file.mkdir();
 		}
 	}
 	public boolean isInCreationMode(String uuid){
-		File file = HConH.getFile("Inventories"+File.separator+uuid+".yml");
-		if(file.exists())
-			return true;
-		else
-			return false;
+		return HCH.getInventoryFile(UUID.fromString(uuid)).exists();
+	}
+	public boolean isInCreationMode(UUID uuid){
+		return HCH.getInventoryFile(uuid).exists();
 	}
 	public int ownedHotels(Player p){
 		ArrayList<Hotel> hotels = HotelsAPI.getHotelsInWorld(p.getWorld());
@@ -76,7 +75,7 @@ public class HotelsCreationMode {
 					return;}
 				else if(sel!=null){
 					int ownedHotels = ownedHotels(p);
-					int maxHotels = HConH.getconfigyml().getInt("settings.max_hotels_owned");
+					int maxHotels = HCH.getconfigyml().getInt("settings.max_hotels_owned");
 					if(ownedHotels<maxHotels||Mes.hasPerm(p, "hotels.create.admin")){
 						//Creating hotel region
 						if(sel instanceof CuboidSelection){
@@ -123,7 +122,7 @@ public class HotelsCreationMode {
 			String[] partsofhotelName = idHotelName.split("-");
 			p.sendMessage(Mes.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
 			int ownedHotels = ownedHotels(p);
-			int maxHotels = HConH.getconfigyml().getInt("settings.max_hotels_owned");
+			int maxHotels = HCH.getconfigyml().getInt("settings.max_hotels_owned");
 
 			String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
 
@@ -146,7 +145,7 @@ public class HotelsCreationMode {
 				if(WGM.isOwner(p, hotelRegion)||Mes.hasPerm(p, "hotels.create.admin")){
 					WGM.addRegion(world, region);
 					WGM.roomFlags(region,room);
-					if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
+					if(HCH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
 						region.setPriority(1);
 					else
 						region.setPriority(10);
@@ -209,7 +208,7 @@ public class HotelsCreationMode {
 	public void resetInventoryFiles(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
-		File invFile = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
+		File invFile = HotelsConfigHandler.getFile("Inventories"+File.separator+playerUUID+".yml");
 		if(invFile.exists())
 			invFile.delete();
 	}
@@ -218,7 +217,7 @@ public class HotelsCreationMode {
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
 		PlayerInventory pinv = p.getInventory();
-		File file = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
+		File file = HotelsConfigHandler.getFile("Inventories"+File.separator+playerUUID+".yml");
 
 		if(!file.exists()){
 			try {
@@ -227,7 +226,7 @@ public class HotelsCreationMode {
 				p.sendMessage(Mes.mes("chat.creationMode.inventory.storeFail"));
 			}
 
-			YamlConfiguration inv = HConH.getconfig("Inventories"+File.separator+playerUUID+".yml");
+			YamlConfiguration inv = HCH.getconfig("Inventories"+File.separator+playerUUID+".yml");
 
 			inv.set("inventory", pinv.getContents());
 			inv.set("armour", pinv.getArmorContents());
@@ -258,7 +257,7 @@ public class HotelsCreationMode {
 		Player p = (Player) s;
 		UUID playerUUID = p.getUniqueId();
 		PlayerInventory pinv = p.getInventory();
-		File file = HConH.getFile("Inventories"+File.separator+playerUUID+".yml");
+		File file = HotelsConfigHandler.getFile("Inventories"+File.separator+playerUUID+".yml");
 
 		if(file.exists()){
 			YamlConfiguration inv = HotelsConfigHandler.getyml(file);

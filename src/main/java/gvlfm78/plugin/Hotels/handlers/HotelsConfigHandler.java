@@ -1,7 +1,5 @@
 package kernitus.plugin.Hotels.handlers;
 
-import kernitus.plugin.Hotels.HotelsMain;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,11 +10,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+
+import kernitus.plugin.Hotels.HotelsMain;
 
 public class HotelsConfigHandler {
 
@@ -132,6 +133,9 @@ public class HotelsConfigHandler {
 	public File getReceptionFile(String hotelName, int receptionFileNum){
 		return getFile("Signs"+File.separator+"Reception-"+hotelName.toLowerCase()+"-"+receptionFileNum+".yml");
 	}
+	public File getInventoryFile(UUID uuid){
+		return getFile("Inventories"+File.separator+uuid+".yml");
+	}
 	public YamlConfiguration getconfig(String configName){
 		return getyml(getconfigFile(configName));
 	}
@@ -156,6 +160,9 @@ public class HotelsConfigHandler {
 	}
 	public YamlConfiguration getSignConfig(String hotelName, int roomNum){
 		return getyml(getSignFile(hotelName, String.valueOf(roomNum)));
+	}
+	public YamlConfiguration getInventoryConfig(UUID uuid){
+		return getyml(getInventoryFile(uuid));
 	}
 	
 	public String getupdateAvailable(){
