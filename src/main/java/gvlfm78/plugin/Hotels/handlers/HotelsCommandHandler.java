@@ -21,6 +21,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
@@ -178,19 +179,25 @@ public class HotelsCommandHandler implements CommandExecutor {
 						if(args.length>1){
 							if(args[1].equalsIgnoreCase("add")){
 								if(args.length>4)
-									HCE.cmdFriendAdd(sender,args[2],args[3],args[4]);
+									HCE.cmdFriendAdd(p,args[2],args[3],args[4]);
 								else
 									sender.sendMessage(Mes.mes("chat.commands.friend.usage"));
 							}
 							else if(args[1].equalsIgnoreCase("remove")){
 								if(args.length>4)
-									HCE.cmdFriendRemove(sender,args[2],args[3],args[4]);
+									HCE.cmdFriendRemove(p,args[2],args[3],args[4]);
 								else
 									sender.sendMessage(Mes.mes("chat.commands.friend.usage"));
 							}
 							else if(args[1].equalsIgnoreCase("list")){
-								if(args.length>3)
-									HCE.cmdFriendList(sender,args[2],args[3]);
+								if(args.length>3){
+									Room room = new Room(args[2],args[3]);
+									if(!(sender instanceof Player) || (sender instanceof Player && room.isRenter(((Player) sender).getUniqueId()))){
+										HCE.cmdFriendList(sender,args[2],args[3]);
+									}
+									else
+										sender.sendMessage(Mes.mes("chat.commands.friend.notRenter"));	
+								}
 								else
 									sender.sendMessage(Mes.mes("chat.commands.friend.usage"));
 							}
@@ -332,8 +339,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 					if(sender instanceof Player){
 						if(args.length==3){
 							Player p = (Player) sender;
-							World world = p.getWorld();
-							HCE.renameHotel(args[1],args[2],world,sender);
+							if(!WGM.isOwner(p, "hotel-"+args[1], p.getWorld())){
+								if(Mes.hasPerm(p, "hotels.rename.admin"))
+									HCE.renameHotel(args[1],args[2],p.getWorld(),sender);
+								else
+									p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
+							}
 						}
 						else if(args.length>3){
 							World world = Bukkit.getWorld(args[3]);

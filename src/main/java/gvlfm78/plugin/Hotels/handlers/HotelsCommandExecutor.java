@@ -232,97 +232,66 @@ public class HotelsCommandExecutor {
 		}	
 	}
 	public void cmdFriendAdd(Player player, String hotelName, String roomNum, String friendName){
-		
+
 		Room room = new Room(player.getWorld(), hotelName, roomNum);
-		
-		if(!room.getRenter().getUniqueId().equals(player.getUniqueId())){
+
+		if(!room.isRenter(player.getUniqueId())){
 			player.sendMessage(Mes.mes("chat.commands.friend.notRenter")); return; }
-		
+
 		@SuppressWarnings("deprecation")
 		OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(friendName);
-		
+
 		if(player.getUniqueId().equals(friend.getUniqueId())){
 			player.sendMessage(Mes.mes("chat.commands.friend.addYourself")); return; }
-		
+
 		switch(room.addFriend(friend)){
 		case 1: player.sendMessage(Mes.mes("chat.commands.friend.wrongData")); break;
 		case 2: player.sendMessage(Mes.mes("chat.commands.friend.noRenter")); break;
 		case 3: player.sendMessage(Mes.mes("chat.commands.friend.nonExistant")); break;
 		default: player.sendMessage(Mes.mes("chat.commands.friend.addSuccess").replaceAll("%friend%", friend.getName()));
 		}
-		
-	}
-	public void cmdFriendRemove(CommandSender s, String hotel, String room, String friendName){
-		File signFile = HotelsConfigHandler.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
-		if(signFile.exists()){
-			YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
-			String renterUUID = signConfig.getString("Sign.renter");
-			Player pl = (Player) s;
-			if(renterUUID!=null){
-				if(pl.getUniqueId().equals(UUID.fromString(renterUUID))){
-					@SuppressWarnings("deprecation")
-					OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(friendName);
-					if(signConfig.getStringList("Sign.friends").contains(friend.getUniqueId().toString())){
-						//Removing player as region member
-						World fromConfigWorld = Bukkit.getWorld(signConfig.getString("Sign.location.world"));
-						String fromConfigRegionName = signConfig.getString("Sign.region");
-						ProtectedRegion r = WGM.getRegion(fromConfigWorld, fromConfigRegionName);
-						WGM.removeMember(friend, r);
-						//Removing player from config under friends list
-						List<String> stringList = signConfig.getStringList("Sign.friends");
-						stringList.remove(friend.getUniqueId().toString());
-						signConfig.set("Sign.friends", stringList);
 
-						try {
-							signConfig.save(signFile);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						//Friend /name/ removed successfully
-						s.sendMessage(Mes.mes("chat.commands.friend.removeSuccess").replaceAll("%friend%", friend.getName()));
-					}
-					else
-						s.sendMessage(Mes.mes("chat.commands.friend.friendNotInList"));
-				}
-				else
-					s.sendMessage(Mes.mes("chat.commands.friend.notRenter"));
-			}
-			else
-				s.sendMessage(Mes.mes("chat.commands.friend.noRenter"));
-		}
-		else
-			s.sendMessage(Mes.mes("chat.commands.friend.wrongData"));
 	}
-	public void cmdFriendList(CommandSender s, String hotel, String room){
-		File signFile = HotelsConfigHandler.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
-		if(signFile.exists()){
-			YamlConfiguration signConfig = YamlConfiguration.loadConfiguration(signFile);
-			String renterUUID = signConfig.getString("Sign.renter");
-			Player pl = (Player) s;
-			if(renterUUID!=null){
-				if(pl.getUniqueId().equals(UUID.fromString(renterUUID))){
-					List<String> stringList = signConfig.getStringList("Sign.friends");
-					if(!stringList.isEmpty()){
-						hotel = hotel.substring(0, 1).toUpperCase() + hotel.substring(1).toLowerCase();
-						s.sendMessage(Mes.mes("chat.commands.friend.list.heading").replaceAll("%room%", room).replaceAll("%hotel%", hotel));
-						for(String currentFriend : stringList){
-							OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
-							String friendName = friend.getName();
-							s.sendMessage(Mes.mes("chat.commands.friend.list.line").replaceAll("%name%", friendName));
-						}
-						s.sendMessage(Mes.mes("chat.commands.friend.list.footer"));
-					}
-					else
-						s.sendMessage(Mes.mes("chat.commands.friend.noFriends"));	
-				}
-				else
-					s.sendMessage(Mes.mes("chat.commands.friend.notRenter"));	
-			}
-			else
-				s.sendMessage(Mes.mes("chat.commands.friend.noRenter"));
+	public void cmdFriendRemove(Player player, String hotelName, String roomNum, String friendName){
+		Room room = new Room(player.getWorld(), hotelName, roomNum);
+
+		if(!room.isRenter(player.getUniqueId())){
+			player.sendMessage(Mes.mes("chat.commands.friend.notRenter")); return; }
+
+		@SuppressWarnings("deprecation")
+		OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(friendName);
+
+		switch(room.removeFriend(friend)){
+		case 1: player.sendMessage(Mes.mes("chat.commands.friend.wrongData")); break;
+		case 2: player.sendMessage(Mes.mes("chat.commands.friend.noRenter")); break;
+		case 3: player.sendMessage(Mes.mes("chat.commands.friend.friendNotInList")); break;
+		default: player.sendMessage(Mes.mes("chat.commands.friend.removeSuccess").replaceAll("%friend%", friend.getName())); break;
 		}
-		else
-			s.sendMessage(Mes.mes("chat.commands.friend.wrongData"));
+	}
+	public void cmdFriendList(CommandSender s, String hotelName, String roomNum){
+		Room room = new Room(hotelName, roomNum);
+
+		if(!room.doesSignFileExist()){
+			s.sendMessage(Mes.mes("chat.commands.friend.wrongData")); return; }
+
+		if(room.isFree()){
+			s.sendMessage(Mes.mes("chat.commands.friend.noRenter")); return; }
+
+
+		List<String> stringList = room.getFriendsList();
+
+		if(stringList.isEmpty()){
+			s.sendMessage(Mes.mes("chat.commands.friend.noFriends"));	
+		}
+
+		s.sendMessage(Mes.mes("chat.commands.friend.list.heading").replaceAll("%room%", roomNum).replaceAll("%hotel%", hotelName));
+
+		for(String currentFriend : stringList){
+			OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
+			String friendName = friend.getName();
+			s.sendMessage(Mes.mes("chat.commands.friend.list.line").replaceAll("%name%", friendName));
+		}
+		s.sendMessage(Mes.mes("chat.commands.friend.list.footer"));
 	}
 	public void cmdRoomListPlayer(Player p, String hotel, World w){
 		if(WGM.hasRegion(w, "hotel-"+hotel))
@@ -365,76 +334,8 @@ public class HotelsCommandExecutor {
 		}
 	}
 
-	public void renameHotel(String oldname,String newname, World world,CommandSender sender){
-		oldname = oldname.toLowerCase();
-		newname = newname.toLowerCase();
-		if(WGM.hasRegion(world, "hotel-"+oldname)){
-			if(sender instanceof Player){
-				Player p = (Player) sender;
-				if(!WGM.isOwner(p, "hotel-"+oldname, p.getWorld()))
-					if(!Mes.hasPerm(p, "hotels.rename.admin")){
-						p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
-						return;
-					}
-			}
-			WGM.renameRegion("hotel-"+oldname, "hotel-"+newname, world);
-			ProtectedRegion r = WGM.getRegion(world, "hotel-"+newname);
-			String idHotelName = r.getId();
-			String[] partsofhotelName = idHotelName.split("-");
-			String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1).toLowerCase();
-			if(Mes.flagValue("hotel.map-making.GREETING").equalsIgnoreCase("true"))
-				r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", fromIdhotelName)));
-			if(Mes.flagValue("hotel.map-making.FAREWELL")!=null)
-				r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", fromIdhotelName)));
-			sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , fromIdhotelName));
-			//Rename rooms
-			Collection<ProtectedRegion> regionlist = WorldGuardManager.getRegions(world);
-
-			for(ProtectedRegion region : regionlist){
-				String regionId = region.getId();
-				if(regionId.matches("hotel-"+oldname+"-"+"[0-9]+")){
-					String regionIdparts[] = regionId.split("-");
-					WGM.renameRegion(regionId, "Hotel-"+newname+"-"+regionIdparts[2], world);
-					//Rename sign file
-					File file = HotelsConfigHandler.getFile("Signs"+File.separator+regionIdparts[1]+"-"+regionIdparts[2]+".yml");
-					if(file.exists()){
-						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-						World signworld = Bukkit.getWorld(config.getString("Sign.location.world").trim());
-						int signx = config.getInt("Sign.location.coords.x");
-						int signy = config.getInt("Sign.location.coords.y");
-						int signz = config.getInt("Sign.location.coords.z");
-						Block b = signworld.getBlockAt(signx,signy,signz);
-						if(b.getType().equals(Material.SIGN)||b.getType().equals(Material.SIGN_POST)||b.getType().equals(Material.WALL_SIGN)){
-							Sign s = (Sign) b.getState();
-							String Line1 = ChatColor.stripColor(s.getLine(0));
-							if(Line1.toLowerCase().matches(oldname.toLowerCase())){
-								if(WGM.getRegion(signworld, "hotel-"+newname).contains(signx, signy, signz)){
-									s.setLine(0, ChatColor.DARK_BLUE+newname);
-									s.update();
-									config.set("Sign.hotel", newname);
-									config.set("Sign.region", "hotel-"+newname+"-"+regionIdparts[2]);
-									try {
-										config.save(file);
-									} catch (IOException e) {
-										e.printStackTrace();
-									}
-									File newfile = HotelsConfigHandler.getFile("Signs"+File.separator+newname.toLowerCase()+"-"+regionIdparts[2]+".yml");
-									file.renameTo(newfile);
-
-									//Renaming
-									File hotelsFile = HotelsConfigHandler.getFile("Hotels"+File.separator+oldname.toLowerCase()+".yml");
-									File newHotelsfile = HotelsConfigHandler.getFile("Hotels"+File.separator+newname.toLowerCase()+".yml");
-									hotelsFile.renameTo(newHotelsfile);
-								}
-							}
-						}
-					}
-				}
-				WGM.saveRegions(world);
-			}
-		}
-		else
-			sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));
+	public void renameHotel(String oldName, String newName, World world, CommandSender sender){
+		
 	}
 	public void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
 		Room room = new Room(world, hotelName, roomNum);

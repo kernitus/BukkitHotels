@@ -58,6 +58,20 @@ public class Room {
 		this.sconfig = getSignConfig();
 		this.world = world;
 	}
+	public Room(String hotelName, int num){
+		//To use only when world is unknown, due to extra calculations involved to find it
+		this.hotel = new Hotel(hotelName);
+		this.num = num;
+		this.sconfig = getSignConfig();
+		this.world = hotel.getWorld();
+	}
+	public Room(String hotelName, String num){
+		//To use only when world is unknown, due to extra calculations involved to find it
+		this.hotel = new Hotel(hotelName);
+		this.num = Integer.parseInt(num);
+		this.sconfig = getSignConfig();
+		this.world = hotel.getWorld();
+	}
 
 	//////////////////////
 	///////Getters////////
@@ -152,7 +166,9 @@ public class Room {
 
 		return false; //Hasn't returned by now, room must be rented
 	}
-
+	public List<String> getFriendsList(){
+		return sconfig.getStringList("Sign.friends");
+	}
 	//////////////////////
 	///////Setters////////
 	//////////////////////
@@ -359,7 +375,7 @@ public class Room {
 
 		if(!isRented())
 			return 2;	
-		
+
 		if(!friend.hasPlayedBefore())
 			return 3;
 
@@ -367,8 +383,30 @@ public class Room {
 
 		WGM.addMember(friend, getRegion());
 		//Adding player to config under friends list
-		List<String> stringList = sconfig.getStringList("Sign.friends");
+		List<String> stringList = getFriendsList();
 		stringList.add(friend.getUniqueId().toString());
+		sconfig.set("Sign.friends", stringList);
+
+		saveSignConfig();
+
+		return 0;
+	}
+	public int removeFriend(OfflinePlayer friend){
+		if(!doesSignFileExist())
+			return 1;
+
+		if(!isRented())
+			return 2;
+
+		if(!getFriendsList().contains(friend.getUniqueId().toString()))
+			return 3;
+
+		//Removing player as region member
+		WGM.removeMember(friend, getRegion());
+		
+		//Removing player from config under friends list
+		List<String> stringList = sconfig.getStringList("Sign.friends");
+		stringList.remove(friend.getUniqueId().toString());
 		sconfig.set("Sign.friends", stringList);
 
 		saveSignConfig();
