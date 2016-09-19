@@ -237,8 +237,7 @@ public class HotelsMain extends JavaPlugin{
 	}
 
 	//Setting up the economy
-	private boolean setupEconomy()
-	{
+	private boolean setupEconomy(){
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
 		if (economyProvider != null) {
 			economy = economyProvider.getProvider();

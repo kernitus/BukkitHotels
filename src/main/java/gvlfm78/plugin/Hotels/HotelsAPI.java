@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,7 +44,7 @@ public class HotelsAPI {
 	}
 	public static ArrayList<Room> getAllRoomsRentedBy(UUID uuid){
 		ArrayList<Room> rented = new ArrayList<Room>();
-		
+
 		ArrayList<Hotel> hotels = getAllHotels();
 		for(Hotel hotel : hotels){
 			ArrayList<Room> rooms = hotel.getRooms();
@@ -53,5 +54,21 @@ public class HotelsAPI {
 			}
 		}
 		return rented;
+	}
+	public static int getHotelCount(){
+		//Loop through all worlds, all regions, find hotel- matching and add to count, return count
+		int count = 0;
+
+		List<World> worlds = Bukkit.getWorlds();
+
+		for(World world : worlds){//Loop through all worlds
+			Collection <ProtectedRegion> regions = WorldGuardManager.getRegions(world);
+
+			for(ProtectedRegion region : regions){//Loop through all regions in world
+				if(region.getId().matches("^hotel-\\w+$"))//If it's a hotel
+					count++;
+			}
+		}
+		return count;
 	}
 }

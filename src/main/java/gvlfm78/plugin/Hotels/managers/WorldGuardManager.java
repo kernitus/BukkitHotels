@@ -72,14 +72,14 @@ public class WorldGuardManager {
 	public void setMembers(ArrayList<UUID> uuids, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
 		for(UUID uuid : uuids){
-		members.addPlayer(uuid);
+			members.addPlayer(uuid);
 		}
 		r.setMembers(members);
 	}
 	public void setOwners(ArrayList<UUID> uuids, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
 		for(UUID uuid : uuids){
-		owners.addPlayer(uuid);
+			owners.addPlayer(uuid);
 		}
 		r.setOwners(owners);
 	}
@@ -338,5 +338,17 @@ public class WorldGuardManager {
 		YamlConfiguration flagsConfig = HotelsConfigHandler.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
 		setFlags(section,region,String.valueOf(roomNum));
+	}
+	public static void makeRoomAccessible(ProtectedRegion region){
+		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.allowPlayersIntoFreeRooms")){
+			region.setFlag(DefaultFlag.INTERACT, null);
+			region.setFlag(DefaultFlag.USE, null);
+			makeRoomContainersAccessible(region);
+		}
+	}
+	public static void makeRoomContainersAccessible(ProtectedRegion region){
+		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.allowPlayersToOpenContainersInFreeRooms")){
+			region.setFlag(DefaultFlag.CHEST_ACCESS, null);
+		}
 	}
 }

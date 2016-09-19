@@ -100,7 +100,7 @@ public class HotelsConfigHandler {
 		return config;
 	}
 
-	public YamlConfiguration getyml(String filepath){
+	public static YamlConfiguration getyml(String filepath){
 		return getyml(getFile(filepath));
 	}
 
@@ -140,7 +140,7 @@ public class HotelsConfigHandler {
 		return getyml(getconfigFile(configName));
 	}
 
-	public YamlConfiguration getconfigyml(){
+	public static YamlConfiguration getconfigyml(){
 		return getyml(getconfigymlFile());
 	}
 

@@ -22,8 +22,10 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.HotelsRegionManager;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.tasks.HotelsLoop;
 
 public class Room {
 
@@ -367,6 +369,46 @@ public class Room {
 		deleteSignFile();
 
 		return true;
+	}
+	public int removePlayer(OfflinePlayer playerToRemove){
+		if(world==null)
+			return 1;
+
+		if(!hotel.exists())
+			return 2;
+
+		if(!exists())
+			return 3;
+		
+		if(!playerToRemove.hasPlayedBefore())
+			return 4;
+		
+		if(isFree())
+			return 5;
+		
+		ProtectedRegion r = getRegion();
+		WGM.removeMember(playerToRemove, r);
+
+		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
+			r.setFlag(DefaultFlag.BLOCK_BREAK, null);
+			r.setFlag(DefaultFlag.BLOCK_PLACE, null);
+			r.setPriority(1);
+		}
+
+		//Config stuff
+		sconfig.set("Sign.renter", null);
+		sconfig.set("Sign.timeRentedAt", null);
+		sconfig.set("Sign.expiryDate", null);
+		sconfig.set("Sign.friends", null);
+		sconfig.set("Sign.extended", null);
+		saveSignConfig();
+		
+		//TODO Run Hotels Loop Once
+		
+		//Make free room accessible to all players if set in config
+		WorldGuardManager.makeRoomAccessible(r);
+		
+		return 0;
 	}
 	public int addFriend(OfflinePlayer friend){
 

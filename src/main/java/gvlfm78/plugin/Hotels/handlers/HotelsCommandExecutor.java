@@ -1,7 +1,6 @@
 package kernitus.plugin.Hotels.handlers;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -22,19 +22,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.Hotel;
+import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
-import kernitus.plugin.Hotels.managers.HotelsRegionManager;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
-import kernitus.plugin.Hotels.tasks.HotelsLoop;
 
 public class HotelsCommandExecutor {
 
@@ -48,7 +46,6 @@ public class HotelsCommandExecutor {
 	WorldGuardManager WGM = new WorldGuardManager();
 	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
 	HotelsFileFinder HFF = new HotelsFileFinder();
-	HotelsRegionManager HRM = new HotelsRegionManager(plugin);
 
 	public void cmdCreate(Player p,String hotelName){//Hotel creation command
 		UUID playerUUID = p.getUniqueId();
@@ -335,7 +332,7 @@ public class HotelsCommandExecutor {
 	}
 
 	public void renameHotel(String oldName, String newName, World world, CommandSender sender){
-		
+
 	}
 	public void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
 		Room room = new Room(world, hotelName, roomNum);
@@ -366,64 +363,24 @@ public class HotelsCommandExecutor {
 				sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 		}
 	}
-	public void removePlayer(World w, String hotel, String room,String toRemovePlayer,CommandSender sender){
-		if(w!=null){
-			if(WGM.hasRegion(w, "hotel-"+hotel)){
-				if(WGM.hasRegion(w, "hotel-"+hotel+"-"+room)){
-					@SuppressWarnings("deprecation")
-					Player player = Bukkit.getOfflinePlayer(toRemovePlayer).getPlayer();
-					if(player!=null){
-						File file = HotelsConfigHandler.getFile("Signs"+File.separator+hotel+"-"+room+".yml");
-						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-						String renter = config.getString("Sign.renter");
-						if(renter!=null){
-							Player pfromfile = Bukkit.getOfflinePlayer(UUID.fromString(renter)).getPlayer();
-							if(player.equals(pfromfile)){
-								ProtectedRegion r = WGM.getRegion(w,"hotel-"+hotel+"-"+room);
-								WGM.removeMember(player, r);
+	public void removePlayer(World world, String hotelName, String roomNum, String toRemovePlayer, CommandSender sender){
 
-								if(HCH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
+		Room room = new Room(world, hotelName, roomNum);
 
-									r.setFlag(DefaultFlag.BLOCK_BREAK, null);
-									r.setFlag(DefaultFlag.BLOCK_PLACE, null);
-									r.setPriority(1);
-								}
+		@SuppressWarnings("deprecation")
+		OfflinePlayer player = Bukkit.getOfflinePlayer(toRemovePlayer);
 
-								//Config stuff
-								config.set("Sign.renter", null);
-								config.set("Sign.timeRentedAt", null);
-								config.set("Sign.expiryDate", null);
-								config.set("Sign.friends", null);
-								config.set("Sign.extended", null);
-								try {
-									config.save(file);
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-								//Hotelsloop
-								HotelsLoop hotelsloop = new HotelsLoop(plugin);
-								hotelsloop.run();
-								//Make free room accessible to all players if set in config
-								HRM.makeRoomAccessible(r);
-								sender.sendMessage(Mes.mes("chat.commands.remove.success").replaceAll("%player%", player.getName()).replaceAll("%room%", room).replaceAll("%hotel%", hotel));
-							}
-							else
-								sender.sendMessage(Mes.mes("chat.commands.remove.playerNotRenter"));	
-						}
-						else
-							sender.sendMessage(Mes.mes("chat.commands.remove.noRenter"));
-					}
-					else
-						sender.sendMessage(Mes.mes("chat.commands.userNonExistant"));
-				}
-				else
-					sender.sendMessage(Mes.mes("chat.commands.roomNonExistant"));
-			}
-			else
-				sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));
+		if(!room.isRenter(player.getUniqueId())){
+			sender.sendMessage(Mes.mes("chat.commands.remove.playerNotRenter")); return; }
+
+		switch(room.removePlayer(player)){
+		case 1: sender.sendMessage(Mes.mes("chat.commands.worldNonExistant")); break;
+		case 2: sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); break;
+		case 3: sender.sendMessage(Mes.mes("chat.commands.roomNonExistant")); break;
+		case 4: sender.sendMessage(Mes.mes("chat.commands.userNonExistant")); break;
+		case 5: sender.sendMessage(Mes.mes("chat.commands.remove.noRenter")); break;
+		default: sender.sendMessage(Mes.mes("chat.commands.remove.success").replaceAll("%player%", toRemovePlayer).replaceAll("%room%", roomNum).replaceAll("%hotel%", hotelName)); break;
 		}
-		else
-			sender.sendMessage(Mes.mes("chat.commands.worldNonExistant"));
 	}
 	public void check(String playername, CommandSender sender){
 		Collection<ProtectedRegion> regions;
@@ -502,79 +459,59 @@ public class HotelsCommandExecutor {
 		else
 			sender.sendMessage(Mes.mes("chat.commands.userNonExistant"));
 	}
-	public int getHotelCount(){
-		//Loop through all worlds, all regions, find hotel- matching and add to count, return count
-		int count = 0;
-
-		List<World> worlds = Bukkit.getWorlds();
-
-		for(World world : worlds){//Loop through all worlds
-			Collection <ProtectedRegion> regions = WorldGuardManager.getRegions(world);
-			for(ProtectedRegion region:regions){//Loop through all regions in world
-				String id = region.getId();
-				if(id.matches("^hotel-\\w+$"))//If it's a hotel
-					count++;
-			}
-		}
-		return count;
-	}
 	public void listHotels(World w, CommandSender sender){
 		sender.sendMessage(Mes.mes("chat.commands.listHotels.heading"));
-		Collection <ProtectedRegion> regions = WorldGuardManager.getRegions(w);
 
-		for(ProtectedRegion r:regions){
-			String id = r.getId();
-			if(id.startsWith("hotel-")){ //If it's a hotel
-				if(!id.matches("^hotel-.+-.+")){ //if it's not a room
-					String hotelName = (id.replaceFirst("hotel-", "")).toLowerCase();
-					Hotel hotel = new Hotel(w,hotelName);
-					hotelName = hotelName.substring(0, 1).toUpperCase() + hotelName.substring(1).toLowerCase();
-					int spaceamount = 10-hotelName.length();
-					String space = " ";
-					String rep = StringUtils.repeat(space, spaceamount);
-					sender.sendMessage(Mes.mes("chat.commands.listHotels.line").replaceAll("%hotel%", hotelName)
-							.replaceAll("%total%", String.valueOf(hotel.getTotalRoomCount()))
-							.replaceAll("%free%", String.valueOf(hotel.getFreeRoomCount()))
-							.replaceAll("%space%", rep)
-							);
-				}
-			}
+		ArrayList<Hotel> hotels = HotelsAPI.getHotelsInWorld(w);
+
+		for(Hotel hotel : hotels){
+			String name = hotel.getName();
+
+			name = WordUtils.capitalizeFully(name);
+
+			int spaceAmount = 10-name.length();
+
+			String space = " ";
+			String repeated = StringUtils.repeat(space, spaceAmount);
+			sender.sendMessage(Mes.mes("chat.commands.listHotels.line").replaceAll("%hotel%", name)
+					.replaceAll("%total%", String.valueOf(hotel.getTotalRoomCount()))
+					.replaceAll("%free%", String.valueOf(hotel.getFreeRoomCount()))
+					.replaceAll("%space%", repeated)
+					);
 		}
 	}
-	public void listRooms(String hotel, World w, CommandSender sender){
-		String hotelName = hotel.substring(0, 1).toUpperCase() + hotel.substring(1).toLowerCase();
+	public void listRooms(String hotelName, World w, CommandSender sender){
+		Hotel hotel = new Hotel(w, hotelName);
+
+		ArrayList<Room> rooms = hotel.getRooms();
+
+		hotelName = WordUtils.capitalizeFully(hotelName);
+
 		sender.sendMessage(Mes.mes("chat.commands.listRooms.heading").replaceAll("%hotel%", hotelName));
-		Collection <ProtectedRegion> regions = WorldGuardManager.getRegions(w);
-		boolean roomsFound = false;
-		for(ProtectedRegion r : regions){
-			String id = r.getId();
-			if(id.startsWith("hotel-")){ //If it's a hotel
-				if(id.matches("^hotel-"+hotel.toLowerCase()+"-.+")){ //If it's a room of the specified hotel
-					String roomnum = (id.replaceAll("hotel-.+-", ""));
-					int spaceamount = 10-roomnum.length();
-					String space = " ";
-					String rep = StringUtils.repeat(space, spaceamount);
-					File file = HotelsConfigHandler.getFile("Signs"+File.separator+hotel.toLowerCase()+"-"+roomnum+".yml");
-					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-					String state = "";
-					if(config!=null){
-						String renter = config.getString("Sign.renter");
-						if(renter==null) //Vacant
-							state = ChatColor.GREEN+Mes.mesnopre("sign.vacant");
-						else //Occupied
-							state = ChatColor.BLUE+Mes.mesnopre("sign.occupied");
-						sender.sendMessage(Mes.mes("chat.commands.listRooms.line")
-								.replaceAll("%room%", roomnum)
-								.replaceAll("%state%", state)
-								.replaceAll("%space%", rep)
-								);
-						roomsFound = true;
-					}
-				}
+
+		if(rooms.size()<=0){
+			sender.sendMessage(Mes.mes("chat.commands.listRooms.noRooms"));
+			return;
+		}
+
+		for(Room room : rooms){
+			String roomNum = String.valueOf(room.getNum());
+			int spaceamount = 10-roomNum.length();
+			String space = " ";
+			String rep = StringUtils.repeat(space, spaceamount);
+			String state = "";
+			if(room.doesSignFileExist()){
+				if(room.isFree()) //Vacant
+					state = ChatColor.GREEN+Mes.mesnopre("sign.vacant");
+				else //Occupied
+					state = ChatColor.BLUE+Mes.mesnopre("sign.occupied");
+				sender.sendMessage(Mes.mes("chat.commands.listRooms.line")
+						.replaceAll("%room%", roomNum)
+						.replaceAll("%state%", state)
+						.replaceAll("%space%", rep)
+						);
 			}
 		}
-		if(roomsFound==false)
-			sender.sendMessage(Mes.mes("chat.commands.listRooms.noRooms"));
 	}
 	public void removeSigns(String hotelName,World world,CommandSender sender){
 		if(WGM.hasRegion(world, "Hotel-"+hotelName)){
