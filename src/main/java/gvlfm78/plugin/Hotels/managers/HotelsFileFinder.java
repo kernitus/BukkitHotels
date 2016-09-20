@@ -5,11 +5,8 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 
 public class HotelsFileFinder {
-
-	public HotelsFileFinder() {}
 	
-
-	public ArrayList<String> listFiles(String dir) {
+	public static ArrayList<String> listFiles(String dir) {
 		 
 	    File directory = new File(dir);
 	 

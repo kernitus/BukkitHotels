@@ -108,7 +108,7 @@ public class HotelsConfigHandler {
 		return new File("plugins"+File.separator+"Hotels"+File.separator+configName+".yml");
 	}
 
-	public File getconfigymlFile(){
+	public static File getconfigymlFile(){
 		return new File("plugins"+File.separator+"Hotels"+File.separator+"config.yml");
 	}
 
@@ -130,8 +130,14 @@ public class HotelsConfigHandler {
 	public File getSignFile(String hotelName, int roomNum){
 		return getSignFile(hotelName, String.valueOf(roomNum));
 	}
-	public File getReceptionFile(String hotelName, int receptionFileNum){
+	public static File getReceptionFile(String hotelName, int receptionFileNum){
 		return getFile("Signs"+File.separator+"Reception-"+hotelName.toLowerCase()+"-"+receptionFileNum+".yml");
+	}
+	public static File getReceptionFile(String fileName){
+		return getFile("Signs"+File.separator+fileName);
+	}
+	public static File getHotelFile(String hotelName){
+		return getFile("Hotels"+File.separator+hotelName+".yml");
 	}
 	public File getInventoryFile(UUID uuid){
 		return getFile("Inventories"+File.separator+uuid+".yml");
@@ -163,6 +169,9 @@ public class HotelsConfigHandler {
 	}
 	public YamlConfiguration getInventoryConfig(UUID uuid){
 		return getyml(getInventoryFile(uuid));
+	}
+	public static YamlConfiguration getHotelConfig(String hotelName){
+		return getyml(getHotelFile(hotelName));
 	}
 	
 	public String getupdateAvailable(){

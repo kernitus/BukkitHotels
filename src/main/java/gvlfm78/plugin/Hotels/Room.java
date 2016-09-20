@@ -22,10 +22,8 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsRegionManager;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
-import kernitus.plugin.Hotels.tasks.HotelsLoop;
 
 public class Room {
 
@@ -288,6 +286,20 @@ public class Room {
 	public void deleteSignFile(){
 		getSignFile().delete();
 	}
+	public void deleteSignAndFile(){
+		Location loc = getSignLocation();
+		Block b = world.getBlockAt(loc);
+		Material mat = b.getType();
+		if(mat.equals(Material.SIGN)||mat.equals(Material.WALL_SIGN)||mat.equals(Material.SIGN_POST)){
+			Sign s = (Sign) b.getState();
+			String Line1 = ChatColor.stripColor(s.getLine(0));
+			if(Line1.matches("Reception")||Line1.matches(Mes.mesnopre("Sign.reception"))){
+				if(WGM.getRegion(world,"Hotel-"+hotel.getName()).contains(loc.getBlockX(),loc.getBlockY(),loc.getBlockZ())){
+					deleteSignFile();
+				}
+			}
+		}
+	}
 	public int renumber(int newNum){
 		Hotel hotel = getHotel();
 		String hotelName = hotel.getName();
@@ -379,13 +391,13 @@ public class Room {
 
 		if(!exists())
 			return 3;
-		
+
 		if(!playerToRemove.hasPlayedBefore())
 			return 4;
-		
+
 		if(isFree())
 			return 5;
-		
+
 		ProtectedRegion r = getRegion();
 		WGM.removeMember(playerToRemove, r);
 
@@ -402,13 +414,18 @@ public class Room {
 		sconfig.set("Sign.friends", null);
 		sconfig.set("Sign.extended", null);
 		saveSignConfig();
-		
+
 		//TODO Run Hotels Loop Once
-		
+
 		//Make free room accessible to all players if set in config
 		WorldGuardManager.makeRoomAccessible(r);
-		
+
 		return 0;
+	}
+	public void renameRoom(String newHotelName){
+		WGM.renameRegion(getRegion().getId(), "Hotel-"+newHotelName+String.valueOf(num), world);
+		WGM.saveRegions(world);
+		hotel = new Hotel(world, newHotelName);
 	}
 	public int addFriend(OfflinePlayer friend){
 
@@ -445,14 +462,19 @@ public class Room {
 
 		//Removing player as region member
 		WGM.removeMember(friend, getRegion());
-		
+
 		//Removing player from config under friends list
 		List<String> stringList = sconfig.getStringList("Sign.friends");
 		stringList.remove(friend.getUniqueId().toString());
 		sconfig.set("Sign.friends", stringList);
 
 		saveSignConfig();
-		
+
 		return 0;
+	}
+	public void delete(){
+		WGM.removeRegion(world, getRegion());
+		WGM.saveRegions(world);
+		deleteSignAndFile();
 	}
 }

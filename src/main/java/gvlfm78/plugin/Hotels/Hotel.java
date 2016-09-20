@@ -20,6 +20,7 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
@@ -97,22 +98,44 @@ public class Hotel {
 		}
 		return false;
 	}
+	public ArrayList<File> getAllReceptionSignFiles(){
+		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
+		ArrayList<File> files = new ArrayList<File>();
+
+		for(String x : fileList){
+			File file = HotelsConfigHandler.getReceptionFile(x);
+			if(file.getName().matches("^Reception-.+-.+"))
+				files.add(file);
+		}
+		return files;
+	}
+	public File getHotelFile(){
+		return HotelsConfigHandler.getHotelFile(name);
+	}
+	public YamlConfiguration getHotelConfig(){
+		return HotelsConfigHandler.getHotelConfig(name);
+	}
+	public DefaultDomain getOwners(){
+		return getRegion().getOwners();
+	}
 	public int rename(String newName){
 
 		if(exists()){
+			return 1;
 			sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));
 		}
 
-		WGM.renameRegion("hotel-"+oldname, "hotel-"+newname, world);
-		ProtectedRegion r = WGM.getRegion(world, "hotel-"+newname);
-		String idHotelName = r.getId();
-		String[] partsofhotelName = idHotelName.split("-");
-		String fromIdhotelName = partsofhotelName[1].substring(0, 1).toUpperCase() + partsofhotelName[1].substring(1).toLowerCase();
+		WGM.renameRegion("hotel-"+name, "hotel-"+newName, world);
+		name = newName;
+		ProtectedRegion r = getRegion();
+
 		if(Mes.flagValue("hotel.map-making.GREETING").equalsIgnoreCase("true"))
-			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", fromIdhotelName)));
+			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name)));
 		if(Mes.flagValue("hotel.map-making.FAREWELL")!=null)
-			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", fromIdhotelName)));
-		sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , fromIdhotelName));
+			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name)));
+
+		sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , name));
+
 		//Rename rooms
 		Collection<ProtectedRegion> regionlist = WorldGuardManager.getRegions(world);
 
@@ -159,8 +182,64 @@ public class Hotel {
 			WGM.saveRegions(world);
 		}
 	}
-	public DefaultDomain getOwners(){
-		return getRegion().getOwners();
+	public void removeAllSigns(){
+		deleteAllReceptionSigns();
+
+		for(Room room : getRooms()){
+			room.deleteSignAndFile();
+		}
+	}
+	public void deleteAllReceptionSigns(){
+		for(File file : getAllReceptionSignFiles()){
+			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+			World worldFromSign = Bukkit.getWorld(config.getString("Reception.location.world"));
+			int locx = config.getInt("Reception.location.x");
+			int locy = config.getInt("Reception.location.y");
+			int locz = config.getInt("Reception.location.z");
+			Block b = worldFromSign.getBlockAt(locx,locy,locz);
+			if(world==worldFromSign){
+				Material mat = b.getType();
+				if(mat.equals(Material.SIGN)||mat.equals(Material.SIGN_POST)||mat.equals(Material.WALL_SIGN)){
+					Sign s = (Sign) b.getState();
+					String Line1 = ChatColor.stripColor(s.getLine(0));
+					if(Line1.matches("Reception")||Line1.matches(Mes.mesnopre("Sign.reception"))){
+						if(getRegion().contains(locx, locy, locz)){
+							b.setType(Material.AIR);
+						}
+					}
+				}
+			}
+			file.delete();
+		}
+	}
+	public void deleteHotelFile(){
+		getHotelFile().delete();
+	}
+	public boolean createHotelFile(){
+		try {
+			getHotelFile().createNewFile();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+	public boolean saveHotelConfig(YamlConfiguration config){
+		try {
+			config.save(getHotelFile());
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+	public void delete(){
+		//Remove all reception signs and files
+		deleteAllReceptionSigns();
+		//Remove all rooms including regions, signs and files
+		for(Room room : getRooms()){
+			room.delete();
+		}
+		//Remove Hotel file if existant
+		deleteHotelFile();
 	}
 	public boolean isOwner(UUID uuid){
 		return getOwners().contains(uuid);

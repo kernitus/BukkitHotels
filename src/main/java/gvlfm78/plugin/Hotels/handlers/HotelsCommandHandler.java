@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
@@ -414,6 +415,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 						if(sender instanceof Player){
 							Player p = (Player) sender;
 							World world = p.getWorld();
+							Hotel hotel = new Hotel(world, args[1]);
+							if(!hotel.exists())
+								
 							if(WGM.isOwner(p, "hotel-"+args[1], world)||Mes.hasPerm(p, "hotels.delete.admin")){
 								if(Mes.hasPerm(p, "hotels.delete.admin")||!SM.doesHotelHaveRentedRooms(args[1], world)){
 									HCE.removeSigns(args[1],world,sender);

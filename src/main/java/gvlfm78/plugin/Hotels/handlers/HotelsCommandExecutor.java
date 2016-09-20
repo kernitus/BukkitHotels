@@ -469,10 +469,7 @@ public class HotelsCommandExecutor {
 
 			name = WordUtils.capitalizeFully(name);
 
-			int spaceAmount = 10-name.length();
-
-			String space = " ";
-			String repeated = StringUtils.repeat(space, spaceAmount);
+			String repeated = StringUtils.repeat(" ", 10-name.length());
 			sender.sendMessage(Mes.mes("chat.commands.listHotels.line").replaceAll("%hotel%", name)
 					.replaceAll("%total%", String.valueOf(hotel.getTotalRoomCount()))
 					.replaceAll("%free%", String.valueOf(hotel.getFreeRoomCount()))
@@ -496,9 +493,8 @@ public class HotelsCommandExecutor {
 
 		for(Room room : rooms){
 			String roomNum = String.valueOf(room.getNum());
-			int spaceamount = 10-roomNum.length();
-			String space = " ";
-			String rep = StringUtils.repeat(space, spaceamount);
+
+			String rep = StringUtils.repeat(" ", 10-roomNum.length());
 			String state = "";
 			if(room.doesSignFileExist()){
 				if(room.isFree()) //Vacant
@@ -513,65 +509,12 @@ public class HotelsCommandExecutor {
 			}
 		}
 	}
-	public void removeSigns(String hotelName,World world,CommandSender sender){
-		if(WGM.hasRegion(world, "Hotel-"+hotelName)){
-			ArrayList<String> fileslist = HFF.listFiles("plugins//Hotels//Signs");
-			for(String x: fileslist){
-				File file = HotelsConfigHandler.getFile("Signs"+File.separator+x);
-				String receptionLoc = Mes.mesnopre("sign.reception");
-				if(file.getName().matches("^"+receptionLoc+"-.+-.+")){
-					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-					World worldsign = Bukkit.getWorld(config.getString("Reception.location.world").trim());
-					int locx = config.getInt("Reception.location.x");
-					int locy = config.getInt("Reception.location.y");
-					int locz = config.getInt("Reception.location.z");
-					Block b = worldsign.getBlockAt(locx,locy,locz);
-					if(world==worldsign){
-						if(b.getType().equals(Material.SIGN)||b.getType().equals(Material.SIGN_POST)||b.getType().equals(Material.WALL_SIGN)){
-							Sign s = (Sign) b.getState();
-							String Line1 = ChatColor.stripColor(s.getLine(0));
-							String Line2 = ChatColor.stripColor(s.getLine(1));
-							if(Line1.matches("Reception")){
-								String[] Line1split = Line2.split(" ");
-								String hotelname = Line1split[0];
-								if(WGM.hasRegion(worldsign, "Hotel-"+hotelname)){
-									if(WGM.getRegion(worldsign,"Hotel-"+hotelname).contains(locx, locy, locz)){
-										b.setType(Material.AIR);
-										file.delete();
-									}
-									else{
-										b.setType(Material.AIR);
-										file.delete();
-									}
-								}
-								else{
-									b.setType(Material.AIR);
-									file.delete();
-								}
-							}
-							else
-								file.delete();
-						}
-						else
-							file.delete();
-					}
-				}else{
-					String[] parts = x.split("-");
-					String chotelName = parts[0];
-					if(chotelName.equalsIgnoreCase(hotelName)){
-						YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-						int locx = config.getInt("Sign.location.coords.x");
-						int locy = config.getInt("Sign.location.coords.y");
-						int locz = config.getInt("Sign.location.coords.z");
-						Block signblock = world.getBlockAt(locx, locy, locz);
-						signblock.setType(Material.AIR);
-						signblock.breakNaturally();
-						file.delete();
-					}
-				}
-			}
+	public void removeSigns(String hotelName, World world, CommandSender sender){
+		Hotel hotel = new Hotel(world, hotelName);
+		if(!hotel.exists())
+			
+		//remove all signs after checking if hotel exists
 			sender.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
-		}
 	}
 	public int nextNewRoom(World w, String hotel){
 		if(WGM.hasRegion(w, "Hotel-"+hotel)){
