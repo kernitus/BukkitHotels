@@ -257,7 +257,7 @@ public class Room {
 	}
 	///Config stuff
 	private File getSignFile(){
-		return new File("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+hotel.getName()+"-"+num+".yml");
+		return new File("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+hotel.getName().toLowerCase()+"-"+num+".yml");
 	}
 	private YamlConfiguration getSignConfig(){
 		return YamlConfiguration.loadConfiguration(getSignFile());

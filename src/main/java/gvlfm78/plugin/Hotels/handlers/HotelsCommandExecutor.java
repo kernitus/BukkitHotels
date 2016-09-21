@@ -12,11 +12,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -332,7 +329,11 @@ public class HotelsCommandExecutor {
 	}
 
 	public void renameHotel(String oldName, String newName, World world, CommandSender sender){
-
+		Hotel hotel = new Hotel(world, oldName);
+		if(!hotel.exists()){
+			sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return; }
+		hotel.rename(newName);
+		sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , newName));
 	}
 	public void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
 		Room room = new Room(world, hotelName, roomNum);

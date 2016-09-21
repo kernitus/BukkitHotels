@@ -3,7 +3,6 @@ package kernitus.plugin.Hotels;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -13,7 +12,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -110,21 +108,27 @@ public class Hotel {
 		return files;
 	}
 	public File getHotelFile(){
-		return HotelsConfigHandler.getHotelFile(name);
+		return HotelsConfigHandler.getHotelFile(name.toLowerCase());
 	}
 	public YamlConfiguration getHotelConfig(){
-		return HotelsConfigHandler.getHotelConfig(name);
+		return HotelsConfigHandler.getHotelConfig(name.toLowerCase());
 	}
 	public DefaultDomain getOwners(){
 		return getRegion().getOwners();
 	}
-	public int rename(String newName){
+	public boolean isBlockWithinHotelRegion(Block b){
+		return getRegion().contains(b.getX(),b.getY(),b.getZ());
+	}
+	public void rename(String newName){
+		//Rename rooms
+		ArrayList<Room> rooms = getRooms();
 
-		if(exists()){
-			return 1;
-			sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));
+		for(Room room : rooms){
+			room.renameRoom(newName);
+			File hotelsFile = getHotelFile();
+			File newHotelsfile = HotelsConfigHandler.getHotelFile(newName.toLowerCase()+".yml");
+			hotelsFile.renameTo(newHotelsfile);
 		}
-
 		WGM.renameRegion("hotel-"+name, "hotel-"+newName, world);
 		name = newName;
 		ProtectedRegion r = getRegion();
@@ -133,54 +137,6 @@ public class Hotel {
 			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name)));
 		if(Mes.flagValue("hotel.map-making.FAREWELL")!=null)
 			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name)));
-
-		sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , name));
-
-		//Rename rooms
-		Collection<ProtectedRegion> regionlist = WorldGuardManager.getRegions(world);
-
-		for(ProtectedRegion region : regionlist){
-			String regionId = region.getId();
-			if(regionId.matches("hotel-"+oldname+"-"+"[0-9]+")){
-				String regionIdparts[] = regionId.split("-");
-				WGM.renameRegion(regionId, "Hotel-"+newname+"-"+regionIdparts[2], world);
-				//Rename sign file
-				File file = HotelsConfigHandler.getFile("Signs"+File.separator+regionIdparts[1]+"-"+regionIdparts[2]+".yml");
-				if(file.exists()){
-					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-					World signworld = Bukkit.getWorld(config.getString("Sign.location.world").trim());
-					int signx = config.getInt("Sign.location.coords.x");
-					int signy = config.getInt("Sign.location.coords.y");
-					int signz = config.getInt("Sign.location.coords.z");
-					Block b = signworld.getBlockAt(signx,signy,signz);
-					if(b.getType().equals(Material.SIGN)||b.getType().equals(Material.SIGN_POST)||b.getType().equals(Material.WALL_SIGN)){
-						Sign s = (Sign) b.getState();
-						String Line1 = ChatColor.stripColor(s.getLine(0));
-						if(Line1.toLowerCase().matches(oldname.toLowerCase())){
-							if(WGM.getRegion(signworld, "hotel-"+newname).contains(signx, signy, signz)){
-								s.setLine(0, ChatColor.DARK_BLUE+newname);
-								s.update();
-								config.set("Sign.hotel", newname);
-								config.set("Sign.region", "hotel-"+newname+"-"+regionIdparts[2]);
-								try {
-									config.save(file);
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-								File newfile = HotelsConfigHandler.getFile("Signs"+File.separator+newname.toLowerCase()+"-"+regionIdparts[2]+".yml");
-								file.renameTo(newfile);
-
-								//Renaming
-								File hotelsFile = HotelsConfigHandler.getFile("Hotels"+File.separator+oldname.toLowerCase()+".yml");
-								File newHotelsfile = HotelsConfigHandler.getFile("Hotels"+File.separator+newname.toLowerCase()+".yml");
-								hotelsFile.renameTo(newHotelsfile);
-							}
-						}
-					}
-				}
-			}
-			WGM.saveRegions(world);
-		}
 	}
 	public void removeAllSigns(){
 		deleteAllReceptionSigns();
