@@ -337,32 +337,10 @@ public class HotelsCommandExecutor {
 	}
 	public void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
 		Room room = new Room(world, hotelName, roomNum);
-		boolean wentWell = room.remove();
-		if(wentWell)
+		if(room.remove())
 			sender.sendMessage(Mes.mes("chat.commands.removeRoom.success"));
 		else
 			sender.sendMessage(Mes.mes("chat.commands.removeRoom.fail"));
-	}
-	public void removeRegions(String hotelName,World world,CommandSender sender){
-		if(WGM.hasRegion(world, "Hotel-"+hotelName)){
-			WGM.removeRegion(world,"Hotel-"+hotelName);
-			Collection<ProtectedRegion> regionlist = WorldGuardManager.getRegions(world);
-
-			for(ProtectedRegion values : regionlist){
-				if(values.getId().matches("hotel-"+hotelName+"-"+"[0-9]+")){
-					ProtectedRegion goodregion = values;
-					WorldGuardManager.getRM(world).removeRegion(goodregion.getId());
-				}
-			}
-			WGM.saveRegions(world);
-			sender.sendMessage(Mes.mes("chat.commands.removeRegions.success"));
-		}
-		else{
-			if(sender instanceof Player)
-				sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));
-			else
-				sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
-		}
 	}
 	public void removePlayer(World world, String hotelName, String roomNum, String toRemovePlayer, CommandSender sender){
 
@@ -384,40 +362,18 @@ public class HotelsCommandExecutor {
 		}
 	}
 	public void check(String playername, CommandSender sender){
-		Collection<ProtectedRegion> regions;
-		List<World> worlds = Bukkit.getWorlds();
-		Map<ProtectedRegion,World> hotels = new HashMap<ProtectedRegion,World>();
-		List<ProtectedRegion> rooms = new ArrayList<ProtectedRegion>();
+
 		@SuppressWarnings("deprecation")
 		OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
-		if(p!=null&&p.hasPlayedBefore()){
-
-			for(World w:worlds){//Looping through all the regions in all the worlds & separating rooms from hotels
-				regions = WorldGuardManager.getRegions(w);
-
-				if(regions.size()>0){
-					for(ProtectedRegion r : regions){
-						if(r.getId().toLowerCase().startsWith("hotel-")){ //If it's a hotel
-							if(r.getId().toLowerCase().matches("^hotel-.+-.+")){//If it's a room
-								if(r.getMembers().contains(WorldGuardManager.getWorldGuard().wrapOfflinePlayer(p)))//They are the renter
-									rooms.add(r);//Add to hotels list
-							}
-							else{
-								if(r.getOwners().contains(WorldGuardManager.getWorldGuard().wrapOfflinePlayer(p)))//They are the owner
-									hotels.put(r,w);//Add to rooms list
-							}
-						}
-					}
-				}
-			}
+		if(p!=null && p.hasPlayedBefore()){
 			//Printing out owned hotels first
+			ArrayList<Hotel> hotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId());
+			
 			sender.sendMessage(Mes.mes("chat.commands.check.headerHotels").replaceAll("%player%", playername));
 			if(hotels.size()>0){
-				for(ProtectedRegion hr:hotels.keySet()){
-					String[] rId = hr.getId().toLowerCase().split("-");
-					String hotelName = rId[1];
-					World world = hotels.get(hr);
-					Hotel hotel = new Hotel(world,hotelName);
+				for(Hotel hotel : hotels){
+					String hotelName = hotel.getName();
+					World world = hotel.getWorld();
 					int total = hotel.getTotalRoomCount();
 					int free = hotel.getFreeRoomCount();
 					sender.sendMessage(Mes.mes("chat.commands.check.lineHotels")
@@ -432,16 +388,16 @@ public class HotelsCommandExecutor {
 				sender.sendMessage(Mes.mes("chat.commands.check.noHotels"));
 
 			//And printing out rented rooms
+			ArrayList<Room> rooms = HotelsAPI.getRoomsRentedBy(p.getUniqueId());
+			
 			sender.sendMessage(Mes.mes("chat.commands.check.headerRooms").replaceAll("%player%", playername));
 			if(rooms.size()>0){
-				for(ProtectedRegion r:rooms){//looping through rented rooms
-					String[] rId = r.getId().toLowerCase().split("-");
-					String hotelName = rId[1];
-					String roomNum = rId[2];
+				for(Room room : rooms){//looping through rented rooms
+					Hotel hotel = room.getHotel();
+					String hotelName = hotel.getName();
+					String roomNum = String.valueOf(room.getNum());
 
-					File file = HotelsConfigHandler.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
-					YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-					long expiryDate = config.getLong("Sign.expiryDate");
+					long expiryDate = room.getExpiryMinute();
 
 					if(expiryDate>0){
 						long currentmins = System.currentTimeMillis()/1000/60;
@@ -466,9 +422,7 @@ public class HotelsCommandExecutor {
 		ArrayList<Hotel> hotels = HotelsAPI.getHotelsInWorld(w);
 
 		for(Hotel hotel : hotels){
-			String name = hotel.getName();
-
-			name = WordUtils.capitalizeFully(name);
+			String name = WordUtils.capitalizeFully(hotel.getName());
 
 			String repeated = StringUtils.repeat(" ", 10-name.length());
 			sender.sendMessage(Mes.mes("chat.commands.listHotels.line").replaceAll("%hotel%", name)
@@ -510,13 +464,7 @@ public class HotelsCommandExecutor {
 			}
 		}
 	}
-	public void removeSigns(String hotelName, World world, CommandSender sender){
-		Hotel hotel = new Hotel(world, hotelName);
-		if(!hotel.exists())
-			
-		//remove all signs after checking if hotel exists
-			sender.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
-	}
+	//TODO delete hotel sender.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
 	public int nextNewRoom(World w, String hotel){
 		if(WGM.hasRegion(w, "Hotel-"+hotel)){
 			Collection <ProtectedRegion> regions = WorldGuardManager.getRegions(w);

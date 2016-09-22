@@ -42,7 +42,7 @@ public class HotelsAPI {
 		}
 		return hotels;
 	}
-	public static ArrayList<Room> getAllRoomsRentedBy(UUID uuid){
+	public static ArrayList<Room> getRoomsRentedBy(UUID uuid){
 		ArrayList<Room> rented = new ArrayList<Room>();
 
 		ArrayList<Hotel> hotels = getAllHotels();
