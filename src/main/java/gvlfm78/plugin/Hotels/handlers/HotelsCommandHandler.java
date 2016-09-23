@@ -57,10 +57,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 			//Command checks
 			if(args[0].equalsIgnoreCase("commands")){//Commands list
-				if(plugin.getConfig().getBoolean("settings.commands.onlyDisplayAllowed")==false)
-					HCE.cmdCommandsAll(sender);
-				else
+				if(plugin.getConfig().getBoolean("settings.commands.onlyDisplayAllowed"))
 					HCE.cmdCommandsOnly(sender);
+				else
+					HCE.cmdCommandsAll(sender);
 			}
 			else if(args[0].equalsIgnoreCase("create")|args[0].equalsIgnoreCase("c")){//Create command
 				if(sender instanceof Player){
@@ -81,18 +81,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 			else if(args[0].equalsIgnoreCase("help")){//Help pages
 				if(Mes.hasPerm(sender, "hotels.create")){
 					if(args.length>1){
-						if(args[1].equalsIgnoreCase("1"))
-							HCE.cmdHelp1(sender);
-						else if(args[1].equalsIgnoreCase("2"))
-							HCE.cmdHelp2(sender);
-						else if(args[1].equalsIgnoreCase("3"))
-							HCE.cmdHelp3(sender);
-						else if(args[1].equalsIgnoreCase("4"))
-							HCE.cmdHelp4(sender);
-						else if(args[1].equalsIgnoreCase("5"))
-							HCE.cmdHelp5(sender);
-						else
-							HCE.cmdHelp1(sender);
+						switch(args[1]){
+						case "1": HCE.cmdHelp1(sender); break;
+						case "2": HCE.cmdHelp2(sender); break;
+						case "3": HCE.cmdHelp3(sender); break;
+						case "4": HCE.cmdHelp4(sender); break;
+						case "5": HCE.cmdHelp5(sender); break;
+						default: HCE.cmdHelp1(sender);
+						}
 					}
 					else
 						HCE.cmdHelp1(sender);
@@ -125,27 +121,20 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 			else if(args[0].equalsIgnoreCase("check")){
 				if(sender instanceof Player){
-					if(args.length==1){
-						String p = sender.getName();
-						HCE.check(p, sender);
-					}
+					if(args.length==1)
+						HCE.check(sender.getName(), sender);
 					else if(args.length>=2){
-						if(args[1]==sender.getName()){
-							String p = args[1];							
-							HCE.check(p, sender);
+						if(args[1]==sender.getName()){						
+							HCE.check(args[1], sender);
 						}
-						else if(sender.hasPermission("hotels.check.others")){
-							String p = args[1];							
-							HCE.check(p, sender);
-						}
+						else if(sender.hasPermission("hotels.check.others"))					
+							HCE.check(args[1], sender);
 						else
 							sender.sendMessage(Mes.mes("chat.noPermission"));
 					}
-				}else{
-					if(args.length>=2){
-						String p = args[1];							
-						HCE.check(p, sender);
-					}
+				} else{
+					if(args.length>=2)					
+						HCE.check(args[1], sender);
 					else
 						sender.sendMessage(Mes.mes("chat.commands.noPlayer"));
 				}
@@ -414,20 +403,20 @@ public class HotelsCommandHandler implements CommandExecutor {
 							World world = p.getWorld();
 							Hotel hotel = new Hotel(world, args[1]);
 							if(!hotel.exists())
-								
-							if(WGM.isOwner(p, "hotel-"+args[1], world)||Mes.hasPerm(p, "hotels.delete.admin")){
-								if(Mes.hasPerm(p, "hotels.delete.admin")||!SM.doesHotelHaveRentedRooms(args[1], world)){
-									HCE.removeSigns(args[1],world,sender);
-									HCE.removeRegions(args[1],world,sender);
-									File file = HConH.getFile("Hotels"+File.separator+args[1].toLowerCase()+".yml");
-									if(file.exists())
-										file.delete();
+
+								if(WGM.isOwner(p, "hotel-"+args[1], world)||Mes.hasPerm(p, "hotels.delete.admin")){
+									if(Mes.hasPerm(p, "hotels.delete.admin")||!SM.doesHotelHaveRentedRooms(args[1], world)){
+										HCE.removeSigns(args[1],world,sender);
+										HCE.removeRegions(args[1],world,sender);
+										File file = HConH.getFile("Hotels"+File.separator+args[1].toLowerCase()+".yml");
+										if(file.exists())
+											file.delete();
+									}
+									else
+										p.sendMessage(Mes.mes("chat.commands.deleteHotel.hasRentedRooms"));
 								}
 								else
-									p.sendMessage(Mes.mes("chat.commands.deleteHotel.hasRentedRooms"));
-							}
-							else
-								p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
+									p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
 						}
 						else if((args.length == 3)){
 							World world = Bukkit.getWorld(args[2]);
