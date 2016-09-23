@@ -13,7 +13,7 @@ public class Mes {
 		if(mes!=null){
 			//Prefix
 			String prefix = (HotelsConfigHandler.getLocale().getString("chat.prefix")+" ");
-			mes = (prefix+mes).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
+			mes = ChatColor.translateAlternateColorCodes('&',(prefix+mes));
 		}
 		else
 			mes = ChatColor.DARK_RED + "Message "+ChatColor.GOLD+path+ChatColor.DARK_RED+" is null!";
@@ -23,7 +23,7 @@ public class Mes {
 	public static String mesnopre(String path){
 		String mes = HotelsConfigHandler.getLocale().getString(path);
 		if(mes!=null){
-			mes = mes.replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1");
+			mes = ChatColor.translateAlternateColorCodes('&',mes);
 		}
 		else
 			mes = ChatColor.DARK_RED + "Message "+ChatColor.GOLD+path+ChatColor.DARK_RED+" is null!";

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -42,20 +43,16 @@ public class HotelsCommandHandler implements CommandExecutor {
 	HotelsFileFinder HFF = new HotelsFileFinder();
 	HotelsCommandExecutor HCE = new HotelsCommandExecutor(plugin);
 
-	//Prefix
-	YamlConfiguration locale = HotelsConfigHandler.getLocale();
-	String prefix = (locale.getString("chat.prefix")+" ");
-
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdLbl,String[] args){
 		if(cmd.getLabel().equalsIgnoreCase("Hotels")){
 			if(args.length<1){//Fallback screen
-				sender.sendMessage(("&4==========Hotels==========").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				sender.sendMessage(("&2"+plugin.getDescription().getName()+" plugin by kernitus").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				sender.sendMessage(("&2"+plugin.getDescription().getName()+" version "+plugin.getDescription().getVersion()).replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				sender.sendMessage(("&4Type &3/hotels help &4for help with creating a hotel").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				sender.sendMessage(("&4Type &3/hotels commands &4for help with the commands").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				sender.sendMessage(("&4==========================").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', ("&4==========Hotels==========")));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',("&2"+plugin.getDescription().getName()+" plugin by kernitus")));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',("&2"+plugin.getDescription().getName()+" version "+plugin.getDescription().getVersion())));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',("&4Type &3/hotels help &4for help with creating a hotel")));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',("&4Type &3/hotels commands &4for help with the commands")));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&',("&4==========================")));
 				return false;
 			}
 			//Command checks

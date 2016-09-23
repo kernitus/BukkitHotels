@@ -1,11 +1,7 @@
 package kernitus.plugin.Hotels.handlers;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
@@ -15,18 +11,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
-import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
@@ -42,7 +34,6 @@ public class HotelsCommandExecutor {
 	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
 	WorldGuardManager WGM = new WorldGuardManager();
 	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
-	HotelsFileFinder HFF = new HotelsFileFinder();
 
 	public void cmdCreate(Player p,String hotelName){//Hotel creation command
 		UUID playerUUID = p.getUniqueId();
@@ -287,16 +278,13 @@ public class HotelsCommandExecutor {
 		}
 		s.sendMessage(Mes.mes("chat.commands.friend.list.footer"));
 	}
-	public void cmdRoomListPlayer(Player p, String hotel, World w){
-		if(WGM.hasRegion(w, "hotel-"+hotel))
-			listRooms(hotel,w,p);
-		else
-			p.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));
+	public void cmdRoomListPlayer(Player p, String hotelName, World w){
+		cmdRoomListPlayer(p, hotelName, w);
 	}
-	public void cmdRoomListPlayer(CommandSender s, String hotel, World w){
-		if(WGM.hasRegion(w, "hotel-"+hotel)){
-			listRooms(hotel,w,s);
-		}
+	public void cmdRoomListPlayer(CommandSender s, String hotelName, World w){
+		Hotel hotel = new Hotel(w, hotelName);
+		if(hotel.exists())
+			listRooms(hotel,s);
 		else
 			s.sendMessage(Mes.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
@@ -368,12 +356,11 @@ public class HotelsCommandExecutor {
 		if(p!=null && p.hasPlayedBefore()){
 			//Printing out owned hotels first
 			ArrayList<Hotel> hotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId());
-			
+
 			sender.sendMessage(Mes.mes("chat.commands.check.headerHotels").replaceAll("%player%", playername));
 			if(hotels.size()>0){
 				for(Hotel hotel : hotels){
 					String hotelName = hotel.getName();
-					World world = hotel.getWorld();
 					int total = hotel.getTotalRoomCount();
 					int free = hotel.getFreeRoomCount();
 					sender.sendMessage(Mes.mes("chat.commands.check.lineHotels")
@@ -389,7 +376,7 @@ public class HotelsCommandExecutor {
 
 			//And printing out rented rooms
 			ArrayList<Room> rooms = HotelsAPI.getRoomsRentedBy(p.getUniqueId());
-			
+
 			sender.sendMessage(Mes.mes("chat.commands.check.headerRooms").replaceAll("%player%", playername));
 			if(rooms.size()>0){
 				for(Room room : rooms){//looping through rented rooms
@@ -432,12 +419,11 @@ public class HotelsCommandExecutor {
 					);
 		}
 	}
-	public void listRooms(String hotelName, World w, CommandSender sender){
-		Hotel hotel = new Hotel(w, hotelName);
+	public void listRooms(Hotel hotel, CommandSender sender){
 
 		ArrayList<Room> rooms = hotel.getRooms();
 
-		hotelName = WordUtils.capitalizeFully(hotelName);
+		String hotelName = WordUtils.capitalizeFully(hotel.getName());
 
 		sender.sendMessage(Mes.mes("chat.commands.listRooms.heading").replaceAll("%hotel%", hotelName));
 
@@ -465,14 +451,4 @@ public class HotelsCommandExecutor {
 		}
 	}
 	//TODO delete hotel sender.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
-	public int nextNewRoom(World w, String hotel){
-		if(WGM.hasRegion(w, "Hotel-"+hotel)){
-			Collection <ProtectedRegion> regions = WorldGuardManager.getRegions(w);
-			for(int i=0; i<regions.size(); i++){
-				if(!WGM.hasRegion(w, "Hotel-"+hotel+"-"+(i+1)))
-					return i+1;
-			}
-		}
-		return 0;
-	}
 }
