@@ -203,7 +203,7 @@ public class Hotel {
 	public boolean isOwner(String name){
 		return getOwners().contains(name);
 	}
-	public int getNextFreeRoom(){
+	public int getNextNewRoom(){
 		for(Room room : getRooms()){
 			if(!room.exists())
 				return room.getNum();

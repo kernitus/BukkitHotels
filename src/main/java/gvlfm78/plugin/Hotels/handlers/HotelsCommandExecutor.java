@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -288,9 +288,10 @@ public class HotelsCommandExecutor {
 		else
 			s.sendMessage(Mes.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
-	public void renumber(String hotelName, int oldNum, int newNum, World world, CommandSender sender){
-		Hotel hotel = new Hotel(world, hotelName);
-		Room room = new Room(hotel, oldNum);
+	public void renumber(Room room, String newNum, CommandSender sender){
+		int oldNum = room.getNum();
+		Hotel hotel = room.getHotel();
+		String hotelName = hotel.getName();
 
 		if(!(sender instanceof Player)){
 			sender.sendMessage(Mes.mes("chat.commands.renumber.fail").replaceAll("%oldnum%", String.valueOf(oldNum)));

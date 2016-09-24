@@ -300,6 +300,9 @@ public class Room {
 			}
 		}
 	}
+	public int renumber(String newNum){
+		return renumber(Integer.parseInt(newNum));
+	}
 	public int renumber(int newNum){
 		Hotel hotel = getHotel();
 		String hotelName = hotel.getName();
