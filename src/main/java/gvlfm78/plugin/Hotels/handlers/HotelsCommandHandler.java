@@ -21,6 +21,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.Hotel;
+import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
@@ -497,7 +498,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 
 				if(room!=null){//They're in a room region
-					YamlConfiguration sconfig = room.sconfig;
+					YamlConfiguration sconfig = room.sconfig;//TODO Have sethome methods in room & hotel
 					if(Mes.hasPerm(p, "hotels.sethome.admin") || WGM.isOwner(p, hotel.getRegion().getId(), w)){
 						sconfig.set("Sign.defaultHome.x", x);
 						sconfig.set("Sign.defaultHome.y", y);
@@ -546,176 +547,94 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 			else if(args[0].equalsIgnoreCase("home")||args[0].equalsIgnoreCase("hm")){
 				if(sender instanceof Player){
-					Player p = (Player) sender;
-					World w = p.getWorld();
-					if(Mes.hasPerm(p, "hotels.home")){
-						if(args.length>1){
-							if(args.length>2){
-								String hotelName = args[1].toLowerCase();
-								String roomNum = args[2].toLowerCase();
-								Map<String, ProtectedRegion> regionlist = WorldGuardManager.getRM(w).getRegions();
-								int regionsFound = 0;
-								for(ProtectedRegion region : regionlist.values()){
-									String regionId = region.getId();
-									if(regionId.matches("hotel-"+hotelName+"-"+roomNum)){
-										regionsFound++;
-										//Room matching command has been found, check if there is user home set
-										File signFile = HotelsConfigHandler.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
-										YamlConfiguration signConfig = HotelsConfigHandler.getyml(signFile);
-										String uhx = signConfig.getString("Sign.userHome.x");
-										String uhy = signConfig.getString("Sign.userHome.y");
-										String uhz = signConfig.getString("Sign.userHome.z");
-										String uhpitch = signConfig.getString("Sign.userHome.pitch");
-										String uhyaw = signConfig.getString("Sign.userHome.yaw");
-										if(uhx!=null&&uhy!=null&&uhz!=null&&uhpitch!=null&&uhyaw!=null){
-											double x = Double.parseDouble(uhx);
-											double y = Double.parseDouble(uhy);
-											double z = Double.parseDouble(uhz);
-											float pitch = Float.parseFloat(uhpitch);
-											float yaw = Float.parseFloat(uhyaw);
-											//Checking if player is renter or has permission
-											if((Mes.hasPerm(p, "hotels.home.admin"))||p.getUniqueId().toString().matches(signConfig.getString("Sign.renter"))){
-												Location daloc = new Location(w, x, y, z, yaw, pitch);
-												p.teleport(daloc);
-											}
-											else
-												sender.sendMessage(Mes.mes("chat.commands.home.notRenterNoPermission"));
-										}
-										else{ //Else check if there is a default home
-											String dhx = signConfig.getString("Sign.defaultHome.x");
-											String dhy = signConfig.getString("Sign.defaultHome.y");
-											String dhz = signConfig.getString("Sign.defaultHome.z");
-											String dhpitch = signConfig.getString("Sign.defaultHome.pitch");
-											String dhyaw = signConfig.getString("Sign.defaultHome.yaw");
-											if(dhx!=null&&dhy!=null&&dhz!=null&&dhpitch!=null&&dhyaw!=null){
-												double x = Double.parseDouble(dhx);
-												double y = Double.parseDouble(dhy);
-												double z = Double.parseDouble(dhz);
-												float pitch = Float.parseFloat(dhpitch);
-												float yaw = Float.parseFloat(dhyaw);
-												if(Mes.hasPerm(p, "hotels.home.admin")||signConfig.getString("Sign.renter")==null||p.getUniqueId().toString().matches(signConfig.getString("Sign.renter"))){
-													Location daloc = new Location(w, x, y, z, yaw, pitch);
-													p.teleport(daloc);
-												}
-												else
-													sender.sendMessage(Mes.mes("chat.commands.home.notRenterNoPermission"));
-											}
-											else{ //No home is set
-												sender.sendMessage(Mes.mes("chat.commands.home.noHomeSet"));
-												//For future: if set in config, find centre of region and send player there
-											}
-										}
-									}
-								}
-								if(regionsFound<1)
-									sender.sendMessage(Mes.mes("chat.commands.home.regionNotFound"));
-							}//Try hotel home
-							else{
-								String hotelName = args[1].toLowerCase();
-								Map<String, ProtectedRegion> regionlist = WorldGuardManager.getRM(w).getRegions();
-								int regionsFound = 0;
-								for(ProtectedRegion region : regionlist.values()){
-									String regionId = region.getId();
-									if(regionId.matches("hotel-"+hotelName)){
-										regionsFound++;
-										File hotelFile = HotelsConfigHandler.getFile("Hotels"+File.separator+hotelName+".yml");
-										YamlConfiguration hotelConfig = HotelsConfigHandler.getyml(hotelFile);
-										String hx = hotelConfig.getString("Hotel.home.x");
-										String hy = hotelConfig.getString("Hotel.home.y");
-										String hz = hotelConfig.getString("Hotel.home.z");
-										String hpitch = hotelConfig.getString("Hotel.home.pitch");
-										String hyaw = hotelConfig.getString("Hotel.home.yaw");
-										if(hx!=null&&hy!=null&&hz!=null&&hpitch!=null&&hyaw!=null){
-											double x = Double.parseDouble(hx);
-											double y = Double.parseDouble(hy);
-											double z = Double.parseDouble(hz);
-											float pitch = Float.parseFloat(hpitch);
-											float yaw = Float.parseFloat(hyaw);
-											Location daloc = new Location(w, x, y, z);
-											daloc.setPitch(pitch);
-											daloc.setYaw(yaw);
-											p.teleport(daloc);
-										}
-										else
-											sender.sendMessage(Mes.mes("chat.commands.home.noHomeSet"));	
-									}
-								}
-								if(regionsFound<1)
-									sender.sendMessage(Mes.mes("chat.commands.home.regionNotFound"));
-							}
+					sender.sendMessage(Mes.mes("chat.commands.home.consoleRejected")); return false; }
+				Player p = (Player) sender;
+				World w = p.getWorld();
+				if(Mes.hasPerm(p, "hotels.home")){
+					sender.sendMessage(Mes.mes("chat.noPermission")); return false; }
+				if(args.length<2){
+					sender.sendMessage(Mes.mes("chat.commands.home.usage")); return false; }
+				if(args.length>2){
+					Room room = new Room(w, args[1], args[2]);
+					if(!room.exists()){
+						sender.sendMessage(Mes.mes("chat.commands.home.regionNotFound")); return false; }
+
+					if(Mes.hasPerm(p, "hotels.home.admin") || room.isRenter(p.getUniqueId())){//They have permission
+						//Check if there is a user home
+						Location userLoc = room.getUserHome();
+						Location defLoc = room.getDefaultHome();
+						if(userLoc!=null)
+							p.teleport(userLoc);
+						else if(defLoc!=null){
+							p.teleport(defLoc);
 						}
 						else
-							sender.sendMessage(Mes.mes("chat.commands.home.usage"));
+							sender.sendMessage(Mes.mes("chat.commands.home.noHomeSet"));
 					}
 					else
-						sender.sendMessage(Mes.mes("chat.noPermission"));
+						sender.sendMessage(Mes.mes("chat.commands.home.notRenterNoPermission"));
+				}//Haven't specified room, try hotel home
+				else{
+
+					Hotel hotel = new Hotel(w,args[1]);
+					if(!hotel.exists()){
+						sender.sendMessage(Mes.mes("chat.commands.home.regionNotFound")); return false;	}
+					Location loc = hotel.getHome();
+
+					if(loc!=null)
+						p.teleport(loc);
+					else
+						sender.sendMessage(Mes.mes("chat.commands.home.noHomeSet"));	
 				}
-				else
-					sender.sendMessage(Mes.mes("chat.commands.home.consoleRejected"));
 			}
 			else if(args[0].equalsIgnoreCase("reload")){
 				HConH.reloadConfigs();
 				sender.sendMessage(Mes.mes("chat.commands.reload.success"));
 			}
+
 			else if(args[0].equalsIgnoreCase("sellhotel")||args[0].equalsIgnoreCase("sellh")){
-				if(sender instanceof Player){
-					Player player = (Player) sender;
-					if(Mes.hasPerm(player, "hotels.sell.hotel")){
-						if(args.length>=4){//If they have all necessary arguments
-							World world = player.getWorld();
-							if(WGM.hasRegion(world, "hotel-"+args[1])){//If specified hotel exists
-								if(WGM.isOwner(player, "hotel-"+args[1], world)){
-									@SuppressWarnings("deprecation")
-									Player buyer = Bukkit.getPlayerExact(args[2]);
-									if(buyer!=null&&buyer.isOnline()){
-										int price;
-										try{
-											price = Integer.parseInt(args[3]);
-										}
-										catch(NumberFormatException e){
-											sender.sendMessage(Mes.mes("chat.commands.sellhotel.invalidPrice"));
-											return false;
-										}
-										String hotelName = args[1].toLowerCase();
-										File hotelFile = HotelsConfigHandler.getFile("Hotels"+File.separator+hotelName+".yml");
-										YamlConfiguration hotelconf = YamlConfiguration.loadConfiguration(hotelFile);
-										String previousBuyer = hotelconf.getString("Hotel.sell.buyer");
-										if(previousBuyer==null||previousBuyer.isEmpty()||!buyer.getUniqueId().toString().equals(previousBuyer)){
-											hotelconf.set("Hotel.sell.buyer", buyer.getUniqueId().toString());
-											hotelconf.set("Hotel.sell.price", price);
-											try {
-												hotelconf.save(hotelFile);
-											} catch (IOException e) {
-												e.printStackTrace();
-											}
-											sender.sendMessage(Mes.mes("chat.commands.sellhotel.sellingAsked").replaceAll("%buyer%", buyer.getName()));
-											buyer.sendMessage(Mes.mes("chat.commands.sellhotel.selling")
-													.replaceAll("%seller%", player.getName())
-													.replaceAll("%hotel%", args[1])
-													.replaceAll("%price%", String.valueOf(price))
-													);
-										}
-										else
-											sender.sendMessage(Mes.mes("chat.commands.sellhotel.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName()));
-									}
-									else
-										sender.sendMessage(Mes.mes("chat.commands.sellhotel.buyerNotOnline"));
-								}
-								else
-									sender.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
-							}
-							else
-								sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));	
-						}
-						else
-							sender.sendMessage(Mes.mes("chat.commands.sellhotel.usage"));
-					}
-					else
-						sender.sendMessage(Mes.mes("chat.noPermission"));
+				if(!(sender instanceof Player)){
+					sender.sendMessage(Mes.mesnopre("chat.commands.sellhotel.consoleRejected")); return false;}
+
+				Player player = (Player) sender;
+				if(!Mes.hasPerm(player, "hotels.sell.hotel")){
+					sender.sendMessage(Mes.mes("chat.noPermission")); return false; }
+				if(args.length<3){//If they have all necessary arguments
+					sender.sendMessage(Mes.mes("chat.commands.sellhotel.usage")); return false; }
+
+				World world = player.getWorld();
+				Hotel hotel = new Hotel(world,args[1]);
+				if(!hotel.exists()){//If specified hotel exists
+					sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+				if(!hotel.isOwner(player.getUniqueId())){
+					sender.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return false; }
+
+				@SuppressWarnings("deprecation")
+				Player buyer = Bukkit.getPlayerExact(args[2]);
+				if(buyer==null || !buyer.isOnline()){
+					sender.sendMessage(Mes.mes("chat.commands.sellhotel.buyerNotOnline")); return false; }
+				int price;
+				try{
+					price = Integer.parseInt(args[3]);
 				}
-				else
-					sender.sendMessage(Mes.mesnopre("chat.commands.sellhotel.consoleRejected"));
+				catch(NumberFormatException e){
+					sender.sendMessage(Mes.mes("chat.commands.sellhotel.invalidPrice"));
+					return false;
+				}
+				if(hotel.getBuyer()!=null || buyer.getUniqueId().equals(hotel.getBuyer().getUniqueId())){
+					sender.sendMessage(Mes.mes("chat.commands.sellhotel.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName())); return false; }
+
+				hotel.setBuyer(buyer.getUniqueId());
+				hotel.setPrice(price);
+
+				sender.sendMessage(Mes.mes("chat.commands.sellhotel.sellingAsked").replaceAll("%buyer%", buyer.getName()));
+				buyer.sendMessage(Mes.mes("chat.commands.sellhotel.selling")
+						.replaceAll("%seller%", player.getName())
+						.replaceAll("%hotel%", args[1])
+						.replaceAll("%price%", String.valueOf(price))
+						);
 			}
+			
 			else if(args[0].equalsIgnoreCase("buyhotel")||args[0].equalsIgnoreCase("buyh")){
 				if(sender instanceof Player){
 					Player player = (Player) sender;

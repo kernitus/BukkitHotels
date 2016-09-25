@@ -7,7 +7,9 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -116,6 +118,16 @@ public class Hotel {
 	public DefaultDomain getOwners(){
 		return getRegion().getOwners();
 	}
+	public Location getHome(){
+		YamlConfiguration hconf = getHotelConfig();
+		return new Location(world, hconf.getDouble("Hotel.home.x"),hconf.getDouble("Hotel.home.y"),hconf.getDouble("Hotel.home.z"),(float) hconf.getDouble("Hotel.home.pitch"),(float) hconf.getDouble("Hotel.home.yaw"));
+	}
+	public OfflinePlayer getBuyer(){
+		return Bukkit.getOfflinePlayer(UUID.fromString(getHotelConfig().getString("Hotel.sell.buyer")));
+	}
+	public double getPrice(){
+		return getHotelConfig().getDouble("Hotel.sell.price");
+	}
 	public boolean isBlockWithinHotelRegion(Block b){
 		return getRegion().contains(b.getX(),b.getY(),b.getZ());
 	}
@@ -218,5 +230,15 @@ public class Hotel {
 		uuids.add(uuid);
 		WGM.setOwners(uuids, getRegion());
 		WGM.saveRegions(world);
+	}
+	public void setBuyer(UUID uuid){
+		YamlConfiguration hconf = getHotelConfig();
+		hconf.set("Hotel.sell.buyer", uuid);
+		saveHotelConfig(hconf);
+	}
+	public void setPrice(double price){
+		YamlConfiguration hconf = getHotelConfig();
+		hconf.set("Hotel.sell.price", price);
+		saveHotelConfig(hconf);
 	}
 }
