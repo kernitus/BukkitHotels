@@ -29,17 +29,14 @@ import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsRegionManager;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsCreationMode {
 
 	private HotelsMain plugin;
-	private HotelsRegionManager RM;
 	public HotelsCreationMode(HotelsMain plugin){
 		this.plugin = plugin;
-		RM = new HotelsRegionManager(plugin);
 	}
 	WorldGuardManager WGM = new WorldGuardManager();
 	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
@@ -75,7 +72,7 @@ public class HotelsCreationMode {
 					return;}
 				else if(sel!=null){
 					int ownedHotels = ownedHotels(p);
-					int maxHotels = HCH.getconfigyml().getInt("settings.max_hotels_owned");
+					int maxHotels = HotelsConfigHandler.getconfigyml().getInt("settings.max_hotels_owned");
 					if(ownedHotels<maxHotels||Mes.hasPerm(p, "hotels.create.admin")){
 						//Creating hotel region
 						if(sel instanceof CuboidSelection){
@@ -114,7 +111,7 @@ public class HotelsCreationMode {
 		if(!WGM.doHotelRegionsOverlap(region, world)){
 
 			WGM.addRegion(world, region);
-			WGM.hotelFlags(region,hotelName);
+			WGM.hotelFlags(region, hotelName, world);
 			WGM.addOwner(p, region);
 			region.setPriority(5);
 			WGM.saveRegions(world);
@@ -122,13 +119,13 @@ public class HotelsCreationMode {
 			String[] partsofhotelName = idHotelName.split("-");
 			p.sendMessage(Mes.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
 			int ownedHotels = ownedHotels(p);
-			int maxHotels = HCH.getconfigyml().getInt("settings.max_hotels_owned");
+			int maxHotels = HotelsConfigHandler.getconfigyml().getInt("settings.max_hotels_owned");
 
 			String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
 
 			if(!Mes.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
-			p.sendMessage(Mes.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
-			
+				p.sendMessage(Mes.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
+
 			return true;
 		}
 		else{
@@ -144,12 +141,12 @@ public class HotelsCreationMode {
 			if(!WGM.doesRoomRegionOverlap(region, world)){
 				if(WGM.isOwner(p, hotelRegion)||Mes.hasPerm(p, "hotels.create.admin")){
 					WGM.addRegion(world, region);
-					WGM.roomFlags(region,room);
-					if(HCH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
+					WGM.roomFlags(region, room, world);
+					if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
 						region.setPriority(1);
 					else
 						region.setPriority(10);
-					RM.makeRoomAccessible(region);
+					WorldGuardManager.makeRoomAccessible(region);
 					WGM.saveRegions(p.getWorld());
 					p.sendMessage(Mes.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
 				}

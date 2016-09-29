@@ -43,7 +43,6 @@ public class HotelsLoop extends BukkitRunnable {
 	HotelsFileFinder HFF = new HotelsFileFinder();
 	WorldGuardManager WGM = new WorldGuardManager();
 	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	HotelsRegionManager HRM = new HotelsRegionManager(plugin);
 
 	@Override
 	public void run() {
@@ -51,9 +50,9 @@ public class HotelsLoop extends BukkitRunnable {
 		if(!(dir.exists()))
 			dir.mkdir();
 
-		ArrayList<String> fileslist = HFF.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
+		ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
 		for(String x: fileslist){
-			File file = HConH.getFile("Signs"+File.separator+x);
+			File file = HotelsConfigHandler.getFile("Signs"+File.separator+x);
 			if(file.getName().matches("Reception-.+-.+")){
 				//It's a reception sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -91,7 +90,7 @@ public class HotelsLoop extends BukkitRunnable {
 								if(expirydate!=0){
 									if(expirydate<=((System.currentTimeMillis())/1000/60)){//If rent has expired
 										String r = config.getString("Sign.region");
-										ProtectedRegion region = WGM.getRM(world).getRegion(r);
+										ProtectedRegion region = WorldGuardManager.getRM(world).getRegion(r);
 										if(config.getString("Sign.renter")!=null){
 											OfflinePlayer p = Bukkit.getServer().getOfflinePlayer(UUID.fromString(config.getString("Sign.renter")));
 											WGM.removeMember(p, region);
@@ -103,8 +102,8 @@ public class HotelsLoop extends BukkitRunnable {
 												WGM.removeMember(cf, region);
 											}
 											//If set in config, make room accessible to all players now that it is not rented
-											HRM.makeRoomAccessible(region);
-											if(HConH.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
+											WorldGuardManager.makeRoomAccessible(region);
+											if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
 												
 												region.setFlag(DefaultFlag.BLOCK_BREAK, null);
 												region.setFlag(DefaultFlag.BLOCK_PLACE, null);
@@ -193,9 +192,9 @@ public class HotelsLoop extends BukkitRunnable {
 		if(!(hdir.exists()))
 			hdir.mkdir();
 
-		ArrayList<String> hfileslist = HFF.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Hotels");
+		ArrayList<String> hfileslist = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Hotels");
 		for(String h:hfileslist){
-			File file = HConH.getFile("Hotels"+File.separator+h);
+			File file = HotelsConfigHandler.getFile("Hotels"+File.separator+h);
 			YamlConfiguration hcon = YamlConfiguration.loadConfiguration(file);
 			String buyeruuid = hcon.getString("Hotel.sell.buyer");
 			if(buyeruuid!=null){

@@ -46,7 +46,6 @@ public class SignManager {
 	HotelsFileFinder HFF = new HotelsFileFinder();
 	WorldGuardManager WGM = new WorldGuardManager();
 	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
-	HotelsRegionManager HRM = new HotelsRegionManager(plugin);
 
 	public void placeReceptionSign(SignChangeEvent e){
 		Player p = e.getPlayer();
@@ -68,7 +67,7 @@ public class SignManager {
 				//Updating sign file
 				File receptionFile = null;
 				for(int i = 1; receptionFile.exists(); i++){
-					receptionFile = HCH.getReceptionFile(hotelName,i);
+					receptionFile = HotelsConfigHandler.getReceptionFile(hotelName,i);
 				}
 				if(!receptionFile.exists()){
 					try {
@@ -431,14 +430,14 @@ public class SignManager {
 	}
 
 	public int getTimesRented(UUID ptocheck){
-		File dir = HCH.getFile("Signs");
+		File dir = HotelsConfigHandler.getFile("Signs");
 		if(!(dir.exists()))
 			dir.mkdir();
 
-		ArrayList<String> filesList = HFF.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
+		ArrayList<String> filesList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
 		int rents = 0;
 		for(String x: filesList){
-			File file = HCH.getFile("Signs"+File.separator+x);
+			File file = HotelsConfigHandler.getFile("Signs"+File.separator+x);
 			if(!file.getName().matches("^"+Mes.mesnopre("sign.reception")+"-.+-.+")){
 				//Not a reception sign, therefore a room sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -530,7 +529,7 @@ public class SignManager {
 	}
 
 	public long getRemainingTime(String hotelName, String roomNum){
-		File file = HCH.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+		File file = HotelsConfigHandler.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		long expiryDate = config.getLong("Sign.expiryDate");
 		long currentMins = System.currentTimeMillis()/1000/60;

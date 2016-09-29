@@ -146,7 +146,7 @@ public class HotelsListener implements Listener {
 	}
 	public int totalRooms(String hotelName,World w){
 		int tot = 0;
-		Collection<ProtectedRegion> regions = WGM.getRM(w).getRegions().values();
+		Collection<ProtectedRegion> regions = WorldGuardManager.getRM(w).getRegions().values();
 		for(ProtectedRegion region : regions){
 			if(region.getId().matches("^hotel-"+hotelName+"-.+")){
 				tot++;
@@ -157,7 +157,7 @@ public class HotelsListener implements Listener {
 
 	public int freeRooms(String hotelName,World w){
 		int free = 0;
-		Collection <ProtectedRegion> regions = WGM.getRegions(w);
+		Collection <ProtectedRegion> regions = WorldGuardManager.getRegions(w);
 		for(ProtectedRegion region : regions){
 			String ID = region.getId();
 			if(ID.matches("^hotel-"+hotelName+"-.+")){

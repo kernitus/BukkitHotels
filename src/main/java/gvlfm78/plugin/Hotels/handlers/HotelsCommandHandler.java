@@ -2,8 +2,6 @@ package kernitus.plugin.Hotels.handlers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -21,7 +19,6 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.Hotel;
-import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
@@ -102,14 +99,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 					Player p = (Player) sender;
 					if(args.length>=2){
 						if(Mes.hasPerm(p, "hotels.createmode")){
-							if(args[1].equalsIgnoreCase("enter"))
-								HCE.cmdCreateModeEnter(p);
-							else if(args[1].equalsIgnoreCase("exit"))
-								HCE.cmdCreateModeExit(p);
-							else if(args[1].equalsIgnoreCase("reset"))
-								HCE.cmdCreateModeReset(p);
-							else
-								p.sendMessage(Mes.mes("chat.commands.creationMode.noarg"));
+							switch(args[1].toLowerCase()){
+							case "enter": HCE.cmdCreateModeEnter(p); break;
+							case "exit": HCE.cmdCreateModeExit(p); break;
+							case "reset": HCE.cmdCreateModeReset(p); break;
+							default: p.sendMessage(Mes.mes("chat.commands.creationMode.noarg"));
+							}
 						}
 						else
 							p.sendMessage(Mes.mes("chat.noPermission"));
@@ -120,14 +115,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 				else
 					sender.sendMessage(Mes.mes("chat.commands.creationMode.consoleRejected"));
 			}
+
 			else if(args[0].equalsIgnoreCase("check")){
 				if(sender instanceof Player){
 					if(args.length==1)
 						HCE.check(sender.getName(), sender);
 					else if(args.length>=2){
-						if(args[1]==sender.getName()){						
+						if(args[1]==sender.getName())					
 							HCE.check(args[1], sender);
-						}
 						else if(sender.hasPermission("hotels.check.others"))					
 							HCE.check(args[1], sender);
 						else
@@ -140,6 +135,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						sender.sendMessage(Mes.mes("chat.commands.noPlayer"));
 				}
 			}
+
 			else if(args[0].equalsIgnoreCase("reload")){
 				if(Mes.hasPerm(sender, "hotels.reload"))
 					HCE.cmdReload(sender,plugin);
@@ -157,7 +153,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 					}
 					else
 						sender.sendMessage(Mes.mes("chat.noPermission"));
-				}else
+				}
+				else
 					sender.sendMessage(Mes.mes("chat.commands.rent.consoleRejected").replaceAll("(?i)&([a-fk-r0-9])", ""));
 			}
 			else if((args[0].equalsIgnoreCase("friend"))||(args[0].equalsIgnoreCase("f"))){
@@ -180,9 +177,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 							else if(args[1].equalsIgnoreCase("list")){
 								if(args.length>3){
 									Room room = new Room(args[2],args[3]);
-									if(!(sender instanceof Player) || (sender instanceof Player && room.isRenter(((Player) sender).getUniqueId()))){
+									if(!(sender instanceof Player) || (sender instanceof Player && room.isRenter(((Player) sender).getUniqueId())))
 										HCE.cmdFriendList(sender,args[2],args[3]);
-									}
 									else
 										sender.sendMessage(Mes.mes("chat.commands.friend.notRenter"));	
 								}
@@ -262,13 +258,15 @@ public class HotelsCommandHandler implements CommandExecutor {
 							if(args.length!=4){
 								Player p = (Player) sender;
 								World world = p.getWorld();
-								String hotelname = args[1].toLowerCase();
-								String roomnum = args[2];
-								if(WGM.hasRegion(world, "hotel-"+hotelname)){
-									if(WGM.isOwner(p, "hotel-"+hotelname, p.getWorld())||Mes.hasPerm(p, "hotels.delete.room.admin")){
-										if(WGM.hasRegion(world, "hotel-"+hotelname+"-"+roomnum)){
-											if(Mes.hasPerm(p, "hotels.delete.rooms.admin")||SM.isRoomFree(hotelname, roomnum, world)){
-												HCE.removeRoom(args[1],roomnum, world,sender);
+								String hotelName = args[1].toLowerCase();
+								String roomNum = args[2];
+								Hotel hotel = new Hotel(world, hotelName);
+								if(hotel.exists()){
+									if(hotel.isOwner(p.getUniqueId()) || Mes.hasPerm(p, "hotels.delete.room.admin")){
+										Room room = new Room(hotel, roomNum);
+										if(room.exists()){
+											if(Mes.hasPerm(p, "hotels.delete.rooms.admin") || room.isFree()){
+												HCE.removeRoom(args[1], roomNum, world,sender);
 											}
 											else
 												sender.sendMessage(Mes.mes("chat.commands.deleteRoom.roomRented"));
@@ -384,8 +382,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 			else if(args[0].equalsIgnoreCase("delete")||args[0].equalsIgnoreCase("del")){
 				if(!Mes.hasPerm(sender, "hotels.delete")){
-					sender.sendMessage(Mes.mes("chat.noPermission"));
-				}
+					sender.sendMessage(Mes.mes("chat.noPermission")); return false;	}
+
 				if(args.length > 1){//They must specify the hotel name
 					if(sender instanceof Player){//Get world from player
 						Player p = (Player) sender;
@@ -395,8 +393,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 							p.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
 
 						if(hotel.isOwner(p.getUniqueId())||Mes.hasPerm(p, "hotels.delete.admin")){
-							if(Mes.hasPerm(p, "hotels.delete.admin")||!hotel.hasRentedRooms())
+							if(Mes.hasPerm(p, "hotels.delete.admin")||!hotel.hasRentedRooms()){
 								hotel.delete();
+								p.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
+							}
 							else
 								p.sendMessage(Mes.mes("chat.commands.deleteHotel.hasRentedRooms"));
 						}
@@ -468,7 +468,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(Mes.hasPerm(p, "hotels.sethome")){
 					sender.sendMessage(Mes.mes("chat.noPermission")); return false;	}
 
-				String playerUUID = p.getUniqueId().toString();
 				Location loc = p.getLocation();
 				double x = loc.getX();
 				double y = loc.getY();
@@ -481,8 +480,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(regions.size()<=0){
 					sender.sendMessage(Mes.mes("chat.commands.sethome.notInHotelRegion")); return false; }
 
-				Hotel hotel;
-				Room room;
+				Hotel hotel = null;
+				Room room = null;
 
 				for(ProtectedRegion r : regions){
 					String hotelName = r.getId().replaceFirst("hotel-", "");
@@ -634,7 +633,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						.replaceAll("%price%", String.valueOf(price))
 						);
 			}
-			
+
 			else if(args[0].equalsIgnoreCase("buyhotel")||args[0].equalsIgnoreCase("buyh")){
 				if(sender instanceof Player){
 					Player player = (Player) sender;

@@ -83,7 +83,7 @@ public class HotelsMain extends JavaPlugin{
 
 			Graph hotelAmount = metrics.createGraph("Amount of Hotels");
 			Graph language = metrics.createGraph("Language");
-			int count = HCE.getHotelCount();
+			int count = HotelsAPI.getHotelCount();
 
 			//Hotel amount
 			switch(count) {

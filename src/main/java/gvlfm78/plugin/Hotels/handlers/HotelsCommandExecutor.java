@@ -319,8 +319,7 @@ public class HotelsCommandExecutor {
 
 	public void renameHotel(String oldName, String newName, World world, CommandSender sender){
 		Hotel hotel = new Hotel(world, oldName);
-		if(!hotel.exists()){
-			sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return; }
+		if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return; }
 		hotel.rename(newName);
 		sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , newName));
 	}
@@ -354,55 +353,51 @@ public class HotelsCommandExecutor {
 
 		@SuppressWarnings("deprecation")
 		OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
-		if(p!=null && p.hasPlayedBefore()){
-			//Printing out owned hotels first
-			ArrayList<Hotel> hotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId());
+		if(p!=null && p.hasPlayedBefore()){ sender.sendMessage(Mes.mes("chat.commands.userNonExistant")); return; }
 
-			sender.sendMessage(Mes.mes("chat.commands.check.headerHotels").replaceAll("%player%", playername));
-			if(hotels.size()>0){
-				for(Hotel hotel : hotels){
-					String hotelName = hotel.getName();
-					int total = hotel.getTotalRoomCount();
-					int free = hotel.getFreeRoomCount();
-					sender.sendMessage(Mes.mes("chat.commands.check.lineHotels")
-							.replaceAll("%player%", playername)
-							.replaceAll("%hotel%", hotelName)
-							.replaceAll("%total%", String.valueOf(total))
-							.replaceAll("%free%", String.valueOf(free))
-							);
-				}
+		//Printing out owned hotels first
+		ArrayList<Hotel> hotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId());
+
+		sender.sendMessage(Mes.mes("chat.commands.check.headerHotels").replaceAll("%player%", playername));
+		if(hotels.size()>0){
+			for(Hotel hotel : hotels){
+				String hotelName = hotel.getName();
+				int total = hotel.getTotalRoomCount();
+				int free = hotel.getFreeRoomCount();
+				sender.sendMessage(Mes.mes("chat.commands.check.lineHotels")
+						.replaceAll("%player%", playername)
+						.replaceAll("%hotel%", hotelName)
+						.replaceAll("%total%", String.valueOf(total))
+						.replaceAll("%free%", String.valueOf(free))
+						);
 			}
-			else
-				sender.sendMessage(Mes.mes("chat.commands.check.noHotels"));
-
-			//And printing out rented rooms
-			ArrayList<Room> rooms = HotelsAPI.getRoomsRentedBy(p.getUniqueId());
-
-			sender.sendMessage(Mes.mes("chat.commands.check.headerRooms").replaceAll("%player%", playername));
-			if(rooms.size()>0){
-				for(Room room : rooms){//looping through rented rooms
-					Hotel hotel = room.getHotel();
-					String hotelName = hotel.getName();
-					String roomNum = String.valueOf(room.getNum());
-
-					long expiryDate = room.getExpiryMinute();
-
-					if(expiryDate>0){
-						long currentmins = System.currentTimeMillis()/1000/60;
-						String timeleft = SM.TimeFormatter(expiryDate-currentmins);
-						sender.sendMessage(Mes.mes("chat.commands.check.lineRooms")
-								.replaceAll("%hotel%", hotelName).replaceAll("%room%", roomNum).replaceAll("%timeleft%", String.valueOf(timeleft)));
-					}
-					else//Room is permanently rented
-						sender.sendMessage(Mes.mes("chat.commands.check.lineRooms")
-								.replaceAll("%hotel%", hotelName).replaceAll("%room%", roomNum).replaceAll("%timeleft%", Mes.mesnopre("sign.permanent")));
-				}
-			}
-			else
-				sender.sendMessage(Mes.mes("chat.commands.check.noRooms"));
 		}
 		else
-			sender.sendMessage(Mes.mes("chat.commands.userNonExistant"));
+			sender.sendMessage(Mes.mes("chat.commands.check.noHotels"));
+
+		//And printing out rented rooms
+		ArrayList<Room> rooms = HotelsAPI.getRoomsRentedBy(p.getUniqueId());
+
+		sender.sendMessage(Mes.mes("chat.commands.check.headerRooms").replaceAll("%player%", playername));
+		if(rooms.size()<0){ sender.sendMessage(Mes.mes("chat.commands.check.noRooms")); return; }
+
+		for(Room room : rooms){//looping through rented rooms
+			Hotel hotel = room.getHotel();
+			String hotelName = hotel.getName();
+			String roomNum = String.valueOf(room.getNum());
+
+			long expiryDate = room.getExpiryMinute();
+
+			if(expiryDate>0){
+				long currentmins = System.currentTimeMillis()/1000/60;
+				String timeleft = SM.TimeFormatter(expiryDate-currentmins);
+				sender.sendMessage(Mes.mes("chat.commands.check.lineRooms")
+						.replaceAll("%hotel%", hotelName).replaceAll("%room%", roomNum).replaceAll("%timeleft%", String.valueOf(timeleft)));
+			}
+			else//Room is permanently rented
+				sender.sendMessage(Mes.mes("chat.commands.check.lineRooms")
+						.replaceAll("%hotel%", hotelName).replaceAll("%room%", roomNum).replaceAll("%timeleft%", Mes.mesnopre("sign.permanent")));
+		}
 	}
 	public void listHotels(World w, CommandSender sender){
 		sender.sendMessage(Mes.mes("chat.commands.listHotels.heading"));
@@ -428,16 +423,14 @@ public class HotelsCommandExecutor {
 
 		sender.sendMessage(Mes.mes("chat.commands.listRooms.heading").replaceAll("%hotel%", hotelName));
 
-		if(rooms.size()<=0){
-			sender.sendMessage(Mes.mes("chat.commands.listRooms.noRooms"));
-			return;
-		}
+		if(rooms.size()<=0){ sender.sendMessage(Mes.mes("chat.commands.listRooms.noRooms")); return; }
 
 		for(Room room : rooms){
 			String roomNum = String.valueOf(room.getNum());
 
 			String rep = StringUtils.repeat(" ", 10-roomNum.length());
 			String state = "";
+			
 			if(room.doesSignFileExist()){
 				if(room.isFree()) //Vacant
 					state = ChatColor.GREEN+Mes.mesnopre("sign.vacant");

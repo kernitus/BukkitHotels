@@ -13,11 +13,13 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.WeatherType;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -55,13 +57,13 @@ public class WorldGuardManager {
 
 	public void addOwner(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain owners = r.getOwners();
-		owners.addPlayer(p.getName());
+		owners.addPlayer(p.getUniqueId());
 		r.setOwners(owners);
 	}
 
 	public void addMember(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain members = r.getMembers();
-		members.addPlayer(p.getName());
+		members.addPlayer(p.getUniqueId());
 		r.setMembers(members);
 	}
 	public void setMember(UUID uuid, ProtectedRegion r){
@@ -71,28 +73,26 @@ public class WorldGuardManager {
 	}
 	public void setMembers(ArrayList<UUID> uuids, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
-		for(UUID uuid : uuids){
+		for(UUID uuid : uuids)
 			members.addPlayer(uuid);
-		}
 		r.setMembers(members);
 	}
 	public void setOwners(ArrayList<UUID> uuids, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
-		for(UUID uuid : uuids){
+		for(UUID uuid : uuids)
 			owners.addPlayer(uuid);
-		}
 		r.setOwners(owners);
 	}
 
 	public void removeOwner(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain owners = r.getOwners();
-		owners.removePlayer(p.getName());
+		owners.removePlayer(p.getUniqueId());
 		r.setOwners(owners);
 	}
 
 	public void removeMember(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain members = r.getMembers();
-		members.removePlayer(p.getName());
+		members.removePlayer(p.getUniqueId());
 		r.setMembers(members);
 	}
 
@@ -107,9 +107,8 @@ public class WorldGuardManager {
 	}
 
 	public void saveRegions(World world){
-		RegionManager regionManager = getRM(world);
 		try {
-			regionManager.save();
+			getRM(world).save();
 		} catch (StorageException e) {
 			e.printStackTrace();
 		}
@@ -140,9 +139,8 @@ public class WorldGuardManager {
 				newr2 = new ProtectedPolygonalRegion(newname, oldr.getPoints(), oldr.getMinimumPoint().getBlockY(), oldr.getMaximumPoint().getBlockY());
 			}
 			else{
-				System.out.println("There was a problem renaming the region "+oldname);
-				return;
-			}
+				System.out.println("There was a problem renaming the region "+oldname); return; }
+
 			addRegion(world, newr2);
 			ProtectedRegion newr = getRegion(world, newname);
 			Map<Flag<?>, Object> flags = oldr.getFlags();
@@ -159,33 +157,20 @@ public class WorldGuardManager {
 		return getRM(world).getRegions().values();
 	}
 	public boolean isOwner(Player p,ProtectedRegion r){
-		if(r.getOwners().contains(p.getName())||r.getOwners().contains(p.getUniqueId()))
-			return true;
-		else
-			return false;
+		return r.getOwners().contains(p.getName())||r.getOwners().contains(p.getUniqueId());
 	}
 	public boolean isOwner(Player p, String id,World w){
-		if(hasRegion(w,id)){
-			ProtectedRegion r = getRegion(w, id);
-			return isOwner(p,r);
-		}
-		else
-			return false;
+		return hasRegion(w,id) && isOwner(p, getRegion(w, id));
 	}
 	public boolean doTwoRegionsOverlap(ProtectedRegion r1, ProtectedRegion r2){
-		List<BlockVector2D> points = r1.getPoints();
-		if(r2.containsAny(points))
-			return true;
-		else
-			return false;
+		return r2.containsAny(r1.getPoints());
 	}
 	public boolean doHotelRegionsOverlap(ProtectedRegion region, World world){
 		Collection<ProtectedRegion> regions = getRegions(world);
 		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
 		for(ProtectedRegion reg : inter){
-			if(reg.getId().startsWith("hotel-")){
+			if(reg.getId().startsWith("hotel-"))
 				return true;
-			}
 		}
 		return false;
 	}
@@ -193,18 +178,14 @@ public class WorldGuardManager {
 		Collection<ProtectedRegion> regions = getRegions(world);
 		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
 		for(ProtectedRegion reg : inter){
-			if(reg.getId().matches("hotel-\\w+-\\d+")){//It's a room region
+			if(reg.getId().matches("hotel-\\w+-\\d+"))//It's a room region
 				return true;
-			}
 		}
 		return false;
 	}
-	public void setFlags(ConfigurationSection section, ProtectedRegion r, String name){
-		boolean isHotel;
-		if(r.getId().matches("hotel-.+-\\d+"))
-			isHotel = false;
-		else
-			isHotel = true;
+	public void setFlags(ConfigurationSection section, ProtectedRegion r, String name, World world){
+
+		boolean isHotel = r.getId().matches("hotel-.+-\\d+");
 
 		Map <Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
 		Map <Flag<?>, Object> groupFlags = new HashMap<Flag<?>, Object>();
@@ -213,8 +194,9 @@ public class WorldGuardManager {
 		for(String key : section.getKeys(true)){
 			String pureKey = key.replaceAll(".+\\.", "");
 			String keyValue = section.getString(key);
-			if(keyValue==null||keyValue.equalsIgnoreCase("none")||keyValue.startsWith("MemorySection"))
+			if(keyValue==null || keyValue.equalsIgnoreCase("none") || keyValue.startsWith("MemorySection"))
 				continue;
+
 			if(keyValue.contains("-g ")){		
 				final Pattern pattern = Pattern.compile("(\\s?)(-g\\s)(\\w+)(\\s?)");
 				final Matcher matcher = pattern.matcher(keyValue);
@@ -229,25 +211,21 @@ public class WorldGuardManager {
 			switch(pureKey){
 			case "GREETING":
 				if(Boolean.valueOf(keyValue)){
-					if(isHotel){
-						String message = Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name);
-						flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
-					}
-					else{
-						String message = Mes.mesnopre("message.room.enter").replaceAll("%room%", name);
-						flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
-					}
+					String message;
+					if(isHotel)
+						message = Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name);
+					else
+						message = Mes.mesnopre("message.room.enter").replaceAll("%room%", name);
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				}
 				break;
 			case "FAREWELL":
-				if(isHotel){
-					String message = Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name);
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
-				}
-				else{
-					String message = Mes.mesnopre("message.room.exit").replaceAll("%room%", name);
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
-				}
+				String message;
+				if(isHotel)
+					message = Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name);
+				else
+					message = Mes.mesnopre("message.room.exit").replaceAll("%room%", name);
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				break;
 				//String
 			case "DENY-MESSAGE": case "ENTRY-DENY-MESSAGE": case "EXIT-DENY-MESSAGE": case "TIME-LOCK":
@@ -284,60 +262,61 @@ public class WorldGuardManager {
 				break;
 				//Set of entities
 			case "DENY-SPAWN":
-				/*List<String> entityList = section.getStringList(key);
-				Set<EntityType> entitySet = new HashSet<EntityType>(entityList);
-				r.setFlag(DefaultFlag.DENY_SPAWN, entitySet);
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet);*/
+				List<String> entityList = section.getStringList(key);
+				Set<EntityType> entitySet = new HashSet<EntityType>();
+				for(String entity : entityList)
+					entitySet.add(EntityType.valueOf(entity));
+
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet);
 				break;
 			case "BLOCKED-CMDS": case "ALLOWED-CMDS":
 				String[] cmdsValues = keyValue.split(",");
 				Set<String> cmdsSet = new HashSet<String>();
-				for(String cmd: cmdsValues){
-					cmd = "/"+cmd;
-					cmdsSet.add(cmd);
-				}
+				for(String cmd: cmdsValues)
+					cmdsSet.add("/"+cmd);
+
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), cmdsSet);
 				break;
 			case "TELEPORT": case "SPAWN":
-				/*int x = section.getInt(key+".x");
-				int y = section.getInt(key+".y");
-				int z = section.getInt(key+".z");
+				int x = section.getInt(key + ".x");
+				int y = section.getInt(key + ".y");
+				int z = section.getInt(key + ".z");
 				int yaw = 0;
 				int pitch = 0;
-				Location locationFlag = new Location(world,x,y,z,yaw,pitch);
-				r.setFlag(DefaultFlag.SPAWN_LOC, locationFlag);*/
+				Location locationFlag = new Location(world, x, y, z, yaw, pitch);
+				if(locationFlag!=null)
+					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), locationFlag);
 				break;
 			default:
 				if(keyValue.equalsIgnoreCase("ALLOW"))
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.ALLOW);
 				else if(keyValue.equalsIgnoreCase("DENY"))
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.DENY);
-				else{
-					System.out.println("REJECTED: "+pureKey+" veleue: "+keyValue);
-				}
+				else
+					System.out.println("REJECTED: " + pureKey + " veleue: " + keyValue);
 				break;
 			}
 		}
 		r.setFlags(flags);
-		for(Flag<?> flag:groupFlags.keySet()){
+		for(Flag<?> flag : groupFlags.keySet()){
 			String groupFlagValue = groupFlagValues.get(flag);
-			groupFlags(r,flag,groupFlagValue);
+			groupFlags(r, flag, groupFlagValue);
 		}
 	}
-	public void groupFlags(ProtectedRegion region,Flag<?> flag,String group){
+	public void groupFlags(ProtectedRegion region,Flag<?> flag, String group){
 		RegionGroupFlag regionGroupFlag = flag.getRegionGroupFlag();
 		RegionGroup regionGroup = RegionGroup.valueOf(group.toUpperCase());
 		region.setFlag(regionGroupFlag, regionGroup);
 	}
-	public void hotelFlags(ProtectedRegion region,String hotelName){
+	public void hotelFlags(ProtectedRegion region, String hotelName, World world){
 		YamlConfiguration flagsConfig = HotelsConfigHandler.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
-		setFlags(section,region,hotelName);
+		setFlags(section, region, hotelName, world);
 	}
-	public void roomFlags(ProtectedRegion region,int roomNum){
+	public void roomFlags(ProtectedRegion region, int roomNum, World world){
 		YamlConfiguration flagsConfig = HotelsConfigHandler.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
-		setFlags(section,region,String.valueOf(roomNum));
+		setFlags(section, region, String.valueOf(roomNum), world);
 	}
 	public static void makeRoomAccessible(ProtectedRegion region){
 		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.allowPlayersIntoFreeRooms")){
@@ -347,8 +326,7 @@ public class WorldGuardManager {
 		}
 	}
 	public static void makeRoomContainersAccessible(ProtectedRegion region){
-		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.allowPlayersToOpenContainersInFreeRooms")){
+		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.allowPlayersToOpenContainersInFreeRooms"))
 			region.setFlag(DefaultFlag.CHEST_ACCESS, null);
-		}
 	}
 }
