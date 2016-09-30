@@ -23,7 +23,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -132,12 +131,10 @@ public class WorldGuardManager {
 		if(hasRegion(world, oldname)){//If old region exists
 			ProtectedRegion oldr = getRegion(world, oldname);//Get old region
 			ProtectedRegion newr2;
-			if(oldr instanceof ProtectedCuboidRegion){
+			if(oldr instanceof ProtectedCuboidRegion)
 				newr2 = new ProtectedCuboidRegion(newname, oldr.getMinimumPoint(), oldr.getMaximumPoint());
-			}
-			else if(oldr instanceof ProtectedPolygonalRegion){
+			else if(oldr instanceof ProtectedPolygonalRegion)
 				newr2 = new ProtectedPolygonalRegion(newname, oldr.getPoints(), oldr.getMinimumPoint().getBlockY(), oldr.getMaximumPoint().getBlockY());
-			}
 			else{
 				System.out.println("There was a problem renaming the region "+oldname); return; }
 

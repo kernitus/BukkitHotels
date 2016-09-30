@@ -480,4 +480,20 @@ public class Room {
 		WGM.saveRegions(world);
 		deleteSignAndFile();
 	}
+	public void createRegion(ProtectedRegion region, Player p){
+		World world = p.getWorld();
+		ProtectedRegion hotelRegion = WGM.getRegion(world, "hotel-"+hotel.getName());
+		if(!Mes.hasPerm(p, "hotels.create")){ p.sendMessage(Mes.mes("chat.noPermission")); return; }
+		if(WGM.doesRoomRegionOverlap(region, world)){ p.sendMessage(Mes.mes("chat.commands.room.alreadyPresent")); return; }
+		if(!WGM.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){ p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return; }
+		WGM.addRegion(world, region);
+		WGM.roomFlags(region, num, world);
+		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
+			region.setPriority(1);
+		else
+			region.setPriority(10);
+		WorldGuardManager.makeRoomAccessible(region);
+		WGM.saveRegions(p.getWorld());
+		p.sendMessage(Mes.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
+	}
 }

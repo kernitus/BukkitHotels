@@ -14,6 +14,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -221,6 +222,26 @@ public class Hotel {
 				return room.getNum();
 		}
 		return 0;
+	}
+	public void create(ProtectedRegion region, Player p){
+		World world = p.getWorld();
+		if(WGM.doHotelRegionsOverlap(region, world)){ p.sendMessage(Mes.mes("chat.commands.create.hotelAlreadyPresent")); return; }
+
+		WGM.addRegion(world, region);
+		WGM.hotelFlags(region, name, world);
+		WGM.addOwner(p, region);
+		region.setPriority(5);
+		WGM.saveRegions(world);
+		String idHotelName = region.getId();
+		String[] partsofhotelName = idHotelName.split("-");
+		p.sendMessage(Mes.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
+		int ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
+		int maxHotels = HotelsConfigHandler.getconfigyml().getInt("settings.max_hotels_owned");
+
+		String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
+
+		if(!Mes.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
+			p.sendMessage(Mes.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
 	}
 	//////////////////////////
 	////////Setters///////////

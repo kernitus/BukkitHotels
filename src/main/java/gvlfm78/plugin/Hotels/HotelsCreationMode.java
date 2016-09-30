@@ -43,9 +43,8 @@ public class HotelsCreationMode {
 
 	public void checkFolder(){
 		File file = HotelsConfigHandler.getFile("Inventories");
-		if(!file.exists()){
+		if(!file.exists())
 			file.mkdir();
-		}
 	}
 	public boolean isInCreationMode(String uuid){
 		return HCH.getInventoryFile(UUID.fromString(uuid)).exists();
@@ -53,153 +52,78 @@ public class HotelsCreationMode {
 	public boolean isInCreationMode(UUID uuid){
 		return HCH.getInventoryFile(uuid).exists();
 	}
-	public int ownedHotels(Player p){
-		ArrayList<Hotel> hotels = HotelsAPI.getHotelsInWorld(p.getWorld());
-		int count = 0;
-		for(Hotel hotel : hotels){
-			if(hotel.isOwner(p.getUniqueId()))
-				count++;
-		}
-		return count;
-	}
+
 	public void hotelSetup(String hotelName, CommandSender s){
 		Player p = (Player) s;
-		if(!hotelName.contains("-")){
-			if(Mes.hasPerm(p, "hotels.create")){
-				Selection sel = getWorldEdit().getSelection(p);
-				if(WGM.hasRegion(p.getWorld(), "Hotel-"+hotelName)){
-					p.sendMessage(Mes.mes("chat.creationMode.hotelCreationFailed"));
-					return;}
-				else if(sel!=null){
-					int ownedHotels = ownedHotels(p);
-					int maxHotels = HotelsConfigHandler.getconfigyml().getInt("settings.max_hotels_owned");
-					if(ownedHotels<maxHotels||Mes.hasPerm(p, "hotels.create.admin")){
-						//Creating hotel region
-						if(sel instanceof CuboidSelection){
-							ProtectedRegion r = new ProtectedCuboidRegion(
-									"Hotel-"+hotelName, 
-									new BlockVector(sel.getNativeMinimumPoint()), 
-									new BlockVector(sel.getNativeMaximumPoint())
-									);
-							createHotelRegion(p,r,hotelName);
-						}
-						else if(sel instanceof Polygonal2DSelection){
-							int minY = sel.getMinimumPoint().getBlockY();
-							int maxY = sel.getMaximumPoint().getBlockY();
-							List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
-							ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName, points, minY, maxY);
-							createHotelRegion(p,r,hotelName);
-						}
-						else
-							p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid"));
-					}
-					else
-						p.sendMessage((Mes.mes("chat.commands.create.maxHotelsReached")).replaceAll("%max%", String.valueOf(maxHotels)));
-				}
-				else
-					p.sendMessage(Mes.mes("chat.creationMode.noSelection"));
-			}
-			else
-				p.sendMessage(Mes.mes("chat.noPermission"));
+
+		if(hotelName.contains("-")){ p.sendMessage(Mes.mes("chat.creationMode.invalidChar")); return;}
+
+		if(Mes.hasPerm(p, "hotels.create")){ p.sendMessage(Mes.mes("chat.noPermission")); return; }
+
+		Selection sel = getWorldEdit().getSelection(p);
+		Hotel hotel = new Hotel(p.getWorld(), hotelName);
+
+		if(hotel.exists()){	p.sendMessage(Mes.mes("chat.creationMode.hotelCreationFailed")); return;}
+
+		if(sel==null){ p.sendMessage(Mes.mes("chat.creationMode.noSelection")); return; }
+
+		int ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
+		int maxHotels = plugin.getConfig().getInt("settings.max_hotels_owned");
+		if(ownedHotels>maxHotels && !Mes.hasPerm(p, "hotels.create.admin")){
+			p.sendMessage((Mes.mes("chat.commands.create.maxHotelsReached")).replaceAll("%max%", String.valueOf(maxHotels))); return;
+		}
+		//Creating hotel region
+		if(sel instanceof CuboidSelection){
+			ProtectedRegion r = new ProtectedCuboidRegion(
+					"Hotel-"+hotelName, 
+					new BlockVector(sel.getNativeMinimumPoint()), 
+					new BlockVector(sel.getNativeMaximumPoint())
+					);
+			hotel.create(r, p);
+		}
+		else if(sel instanceof Polygonal2DSelection){
+			int minY = sel.getMinimumPoint().getBlockY();
+			int maxY = sel.getMaximumPoint().getBlockY();
+			List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
+			ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName, points, minY, maxY);
+			hotel.create(r, p);
 		}
 		else
-			p.sendMessage(Mes.mes("chat.creationMode.invalidChar"));
+			p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid"));
 	}
 
-	public boolean createHotelRegion(Player p, ProtectedRegion region, String hotelName){
-		World world = p.getWorld();
-		if(!WGM.doHotelRegionsOverlap(region, world)){
-
-			WGM.addRegion(world, region);
-			WGM.hotelFlags(region, hotelName, world);
-			WGM.addOwner(p, region);
-			region.setPriority(5);
-			WGM.saveRegions(world);
-			String idHotelName =region.getId();
-			String[] partsofhotelName = idHotelName.split("-");
-			p.sendMessage(Mes.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
-			int ownedHotels = ownedHotels(p);
-			int maxHotels = HotelsConfigHandler.getconfigyml().getInt("settings.max_hotels_owned");
-
-			String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
-
-			if(!Mes.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
-				p.sendMessage(Mes.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
-
-			return true;
-		}
-		else{
-			p.sendMessage(Mes.mes("chat.commands.create.hotelAlreadyPresent"));
-			return false;
-		}
-	}
-
-	public void createRoomRegion(Player p, ProtectedRegion region, String hotelName, int room){
-		World world = p.getWorld();
-		ProtectedRegion hotelRegion = WGM.getRegion(world, "hotel-"+hotelName);
-		if(Mes.hasPerm(p, "hotels.create")){
-			if(!WGM.doesRoomRegionOverlap(region, world)){
-				if(WGM.isOwner(p, hotelRegion)||Mes.hasPerm(p, "hotels.create.admin")){
-					WGM.addRegion(world, region);
-					WGM.roomFlags(region, room, world);
-					if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
-						region.setPriority(1);
-					else
-						region.setPriority(10);
-					WorldGuardManager.makeRoomAccessible(region);
-					WGM.saveRegions(p.getWorld());
-					p.sendMessage(Mes.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(room)).replaceAll("%hotel%", hotelName));
-				}
-				else
-					p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
-			}
-			else
-				p.sendMessage(Mes.mes("chat.commands.room.alreadyPresent"));
-		}
-		else
-			p.sendMessage(Mes.mes("chat.noPermission"));
-	}
 	public void roomSetup(String hotelName,int roomNum,Player p){
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
-		Hotel hotel = new Hotel(world,hotelName);
-		if(hotel.exists()){
-			Room room = new Room(hotel,roomNum);
-			if(!room.exists()){//If room doesn't already exist
-				ProtectedRegion pr = hotel.getRegion();
-				if(sel!=null){
-					if((sel instanceof Polygonal2DSelection)&&(pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
-							((sel instanceof CuboidSelection)&&(pr.contains(sel.getNativeMinimumPoint())&&pr.contains(sel.getNativeMaximumPoint())))){
-						//Creating room region
-						if(sel instanceof CuboidSelection){
-							ProtectedRegion r = new ProtectedCuboidRegion(
-									"Hotel-"+hotelName+"-"+room, 
-									new BlockVector(sel.getNativeMinimumPoint()), 
-									new BlockVector(sel.getNativeMaximumPoint())
-									);
-							createRoomRegion(p,r,hotelName,roomNum);
-						}
-						else if(sel instanceof Polygonal2DSelection){
-							int minY = sel.getMinimumPoint().getBlockY();
-							int maxY = sel.getMaximumPoint().getBlockY();
-							List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
-							ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
-							createRoomRegion(p,r,hotelName,roomNum);
-						}
-						else
-							p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid"));
-					}
-					else
-						p.sendMessage(Mes.mes("chat.creationMode.rooms.notInHotel"));
-				}
-				else
-					p.sendMessage(Mes.mes("chat.creationMode.noSelection"));
+		Hotel hotel = new Hotel(world, hotelName);
+		if(!hotel.exists()){ p.sendMessage(Mes.mes("chat.creationMode.rooms.fail")); return; }
+		Room room = new Room(hotel, roomNum);
+		if(room.exists()){ p.sendMessage(Mes.mes("chat.creationMode.rooms.alreadyExists")); return; }
+		ProtectedRegion pr = hotel.getRegion();
+		if(sel==null){ p.sendMessage(Mes.mes("chat.creationMode.noSelection")); return; }
+		if((sel instanceof Polygonal2DSelection) && (pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
+				((sel instanceof CuboidSelection) && (pr.contains(sel.getNativeMinimumPoint())&&pr.contains(sel.getNativeMaximumPoint())))){
+			//Creating room region
+			if(sel instanceof CuboidSelection){
+				ProtectedRegion r = new ProtectedCuboidRegion(
+						"Hotel-"+hotelName+"-"+room, 
+						new BlockVector(sel.getNativeMinimumPoint()), 
+						new BlockVector(sel.getNativeMaximumPoint())
+						);
+				createRoomRegion(p,r,hotelName,roomNum);
+			}
+			else if(sel instanceof Polygonal2DSelection){
+				int minY = sel.getMinimumPoint().getBlockY();
+				int maxY = sel.getMaximumPoint().getBlockY();
+				List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
+				ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
+				createRoomRegion(p,r,hotelName,roomNum);
 			}
 			else
-				p.sendMessage(Mes.mes("chat.creationMode.rooms.alreadyExists"));
+				p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid"));
 		}
 		else
-			p.sendMessage(Mes.mes("chat.creationMode.rooms.fail"));
+			p.sendMessage(Mes.mes("chat.creationMode.rooms.notInHotel"));
 	}
 
 	public void resetInventoryFiles(CommandSender s){
