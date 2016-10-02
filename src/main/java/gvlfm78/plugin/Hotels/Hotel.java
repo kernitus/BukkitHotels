@@ -31,10 +31,12 @@ public class Hotel {
 
 	private World world;
 	private String name;
+	public YamlConfiguration hconfig;
 
 	public Hotel(World world, String name){
 		this.world = world;
 		this.name = name;
+		this.hconfig = getHotelConfig();
 	}
 	public Hotel(String name){
 		//To use only when world is unknown, due to extra calculations involved to find it
@@ -43,6 +45,7 @@ public class Hotel {
 			if(hotel.getName().equalsIgnoreCase(name))
 				this.world = hotel.getWorld();
 		}
+		this.hconfig = getHotelConfig();
 	}
 	///////////////////////
 	////////Getters////////
@@ -120,14 +123,20 @@ public class Hotel {
 		return getRegion().getOwners();
 	}
 	public Location getHome(){
-		YamlConfiguration hconf = getHotelConfig();
-		return new Location(world, hconf.getDouble("Hotel.home.x"),hconf.getDouble("Hotel.home.y"),hconf.getDouble("Hotel.home.z"),(float) hconf.getDouble("Hotel.home.pitch"),(float) hconf.getDouble("Hotel.home.yaw"));
+		return new Location(world, hconfig.getDouble("Hotel.home.x"),hconfig.getDouble("Hotel.home.y"),hconfig.getDouble("Hotel.home.z"),(float) hconfig.getDouble("Hotel.home.pitch"),(float) hconfig.getDouble("Hotel.home.yaw"));
 	}
 	public OfflinePlayer getBuyer(){
 		return Bukkit.getOfflinePlayer(UUID.fromString(getHotelConfig().getString("Hotel.sell.buyer")));
 	}
 	public double getPrice(){
 		return getHotelConfig().getDouble("Hotel.sell.price");
+	}
+	public int getNextNewRoom(){
+		for(Room room : getRooms()){
+			if(!room.exists())
+				return room.getNum();
+		}
+		return 0;
 	}
 	public boolean isBlockWithinHotelRegion(Block b){
 		return getRegion().contains(b.getX(),b.getY(),b.getZ());
@@ -148,7 +157,7 @@ public class Hotel {
 
 		if(Mes.flagValue("hotel.map-making.GREETING").equalsIgnoreCase("true"))
 			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name)));
-		if(Mes.flagValue("hotel.map-making.FAREWELL")!=null)
+		if(Mes.flagValue("hotel.map-making.FAREWELL") != null)
 			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name)));
 	}
 	public void removeAllSigns(){
@@ -192,9 +201,9 @@ public class Hotel {
 			return false;
 		}
 	}
-	public boolean saveHotelConfig(YamlConfiguration config){
+	public boolean saveHotelConfig(){
 		try {
-			config.save(getHotelFile());
+			hconfig.save(getHotelFile());
 			return true;
 		} catch (IOException e) {
 			return false;
@@ -215,13 +224,6 @@ public class Hotel {
 	}
 	public boolean isOwner(String name){
 		return getOwners().contains(name);
-	}
-	public int getNextNewRoom(){
-		for(Room room : getRooms()){
-			if(!room.exists())
-				return room.getNum();
-		}
-		return 0;
 	}
 	public void create(ProtectedRegion region, Player p){
 		World world = p.getWorld();
@@ -253,13 +255,19 @@ public class Hotel {
 		WGM.saveRegions(world);
 	}
 	public void setBuyer(UUID uuid){
-		YamlConfiguration hconf = getHotelConfig();
-		hconf.set("Hotel.sell.buyer", uuid);
-		saveHotelConfig(hconf);
+		hconfig.set("Hotel.sell.buyer", uuid);
 	}
 	public void setPrice(double price){
-		YamlConfiguration hconf = getHotelConfig();
-		hconf.set("Hotel.sell.price", price);
-		saveHotelConfig(hconf);
+		hconfig.set("Hotel.sell.price", price);
+	}
+	public void removePrice(){
+		hconfig.set("Hotel.sell.price", null);
+	}
+	public void setHome(Location loc){
+		hconfig.set("Hotel.home.x", loc.getX());
+		hconfig.set("Hotel.home.y", loc.getY());
+		hconfig.set("Hotel.home.z", loc.getZ());
+		hconfig.set("Hotel.home.pitch", loc.getPitch());
+		hconfig.set("Hotel.home.yaw", loc.getYaw());
 	}
 }

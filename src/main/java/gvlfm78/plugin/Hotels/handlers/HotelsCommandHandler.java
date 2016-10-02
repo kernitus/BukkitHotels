@@ -1,7 +1,5 @@
 package kernitus.plugin.Hotels.handlers;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -12,7 +10,6 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -469,12 +466,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(Mes.mes("chat.noPermission")); return false;	}
 
 				Location loc = p.getLocation();
-				double x = loc.getX();
-				double y = loc.getY();
-				double z = loc.getZ();
 				World w = p.getWorld();
-				float pitch = loc.getPitch();
-				float yaw = loc.getYaw();
 				ApplicableRegionSet regions = WorldGuardManager.getRM(w).getApplicableRegions(loc);
 
 				if(regions.size()<=0){
@@ -497,23 +489,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 
 				if(room!=null){//They're in a room region
-					YamlConfiguration sconfig = room.sconfig;//TODO Have sethome methods in room & hotel
 					if(Mes.hasPerm(p, "hotels.sethome.admin") || WGM.isOwner(p, hotel.getRegion().getId(), w)){
-						sconfig.set("Sign.defaultHome.x", x);
-						sconfig.set("Sign.defaultHome.y", y);
-						sconfig.set("Sign.defaultHome.z", z);
-						sconfig.set("Sign.defaultHome.pitch", pitch);
-						sconfig.set("Sign.defaultHome.yaw", yaw);
+						room.setDefaultHome(p.getLocation());
 						if(room.saveSignConfig())
 							sender.sendMessage(Mes.mes("chat.commands.sethome.defaultHomeSet"));
 					}
 					else { //It's a user doing this
 						if(room.isRenter(p.getUniqueId())){//They are the room renter
-							sconfig.set("Sign.userHome.x", x);
-							sconfig.set("Sign.userHome.y", y);
-							sconfig.set("Sign.userHome.z", z);
-							sconfig.set("Sign.userHome.pitch", pitch);
-							sconfig.set("Sign.userHome.yaw", yaw);
+							room.setUserHome(p.getLocation());
 							if(room.saveSignConfig())
 								sender.sendMessage(Mes.mes("chat.commands.sethome.userHomeSet"));
 						}
@@ -525,13 +508,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 					if(HCM.isInCreationMode(p.getUniqueId().toString())){
 						if(Mes.hasPerm(p, "hotels.sethome.admin")||WGM.isOwner(p, hotel.getRegion().getId(), w)){
 
-							YamlConfiguration hotelConfig = hotel.getHotelConfig();
-							hotelConfig.set("Hotel.home.x", x);
-							hotelConfig.set("Hotel.home.y", y);
-							hotelConfig.set("Hotel.home.z", z);
-							hotelConfig.set("Hotel.home.pitch", pitch);
-							hotelConfig.set("Hotel.home.yaw", yaw);
-							if(hotel.saveHotelConfig(hotelConfig))
+							hotel.setHome(p.getLocation());
+
+							if(hotel.saveHotelConfig())
 								sender.sendMessage(Mes.mes("chat.commands.sethome.hotelHomeSet"));
 						}
 						else
@@ -635,69 +614,62 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 
 			else if(args[0].equalsIgnoreCase("buyhotel")||args[0].equalsIgnoreCase("buyh")){
-				if(sender instanceof Player){
-					Player player = (Player) sender;
-					if(args.length>=2){
-						World world = player.getWorld();
-						if(WGM.hasRegion(world, "hotel-"+args[1])){
-							String hotelName = args[1].toLowerCase();
-							File hotelFile = HotelsConfigHandler.getFile("Hotels"+File.separator+hotelName+".yml");
-							YamlConfiguration hotelconf = YamlConfiguration.loadConfiguration(hotelFile);
-							String configBuyer = hotelconf.getString("Hotel.sell.buyer");
-							if(configBuyer!=null&&!configBuyer.isEmpty()&&configBuyer.matches(player.getUniqueId().toString())){
-								//They are the buyer the hotel owner has specified
-								double balance = HotelsMain.economy.getBalance(player);
-								int price = hotelconf.getInt("Hotel.sell.price");
-								if((balance-price)>=0){
-									//Player has enough money
-									HotelsMain.economy.withdrawPlayer(player, price);
-									ProtectedRegion region = WGM.getRegion(world, "hotel-"+args[1]);
-									Set<String> owners = region.getOwners().getPlayers();
-									String onlineOwner = "";
-									for(String name:owners){//Paying all owners
-										@SuppressWarnings("deprecation")
-										OfflinePlayer p = Bukkit.getOfflinePlayer(name);
-										if(p.isOnline()){
-											Player op = (Player) p;
-											WGM.removeOwner(op, region);
-											HotelsMain.economy.depositPlayer(op, price);
-											onlineOwner = op.getName();
-											op.sendMessage(Mes.mes("chat.commands.sellhotel.success")
-													.replaceAll("%hotel%", hotelName)
-													.replaceAll("%buyer%", player.getName())
-													.replaceAll("%price%", String.valueOf(price))
-													);
-										}
-									}
-									WGM.addOwner(player, region);
-									player.sendMessage(Mes.mes("chat.commands.buyhotel.success")
-											.replaceAll("%hotel%", hotelName)
-											.replaceAll("%seller%", onlineOwner)
-											.replaceAll("%price%", String.valueOf(price))
-											);
+				if(!(sender instanceof Player)){ sender.sendMessage(Mes.mesnopre("chat.commands.buyhotel.consoleRejected")); return false; }
 
-									hotelconf.set("Hotel.sell.buyer", null);
-									hotelconf.set("Hotel.sell.price", null);
-									try {
-										hotelconf.save(hotelFile);
-									} catch (IOException e) {
-										e.printStackTrace();
-									}
-								}
-								else
-									sender.sendMessage(Mes.mes("chat.commands.buyhotel.notEnoughMoney"));
-							}
-							else
-								sender.sendMessage(Mes.mes("chat.commands.buyhotel.notOnSale"));	
-						}
-						else
-							sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant"));	
+				Player player = (Player) sender;
+				if(args.length<2){ sender.sendMessage(Mes.mesnopre("chat.commands.buyhotel.usage")); return false; }
+
+				World world = player.getWorld();
+				Hotel hotel = new Hotel(world, args[1]);
+
+				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+
+
+				OfflinePlayer buyerFromConfig = hotel.getBuyer();
+
+				if(!buyerFromConfig.hasPlayedBefore() || !buyerFromConfig.equals(player) || buyerFromConfig == null){ sender.sendMessage(Mes.mes("chat.commands.buyhotel.notOnSale")); return false; }
+
+				//They are the buyer the hotel owner has specified
+				double balance = HotelsMain.economy.getBalance(player);
+				double price = hotel.getPrice();
+
+				if((balance-price)<0){ sender.sendMessage(Mes.mes("chat.commands.buyhotel.notEnoughMoney")); return false; }
+
+				//Player has enough money
+				HotelsMain.economy.withdrawPlayer(player, price);
+				ProtectedRegion region = hotel.getRegion();
+				Set<String> owners = region.getOwners().getPlayers();
+				String onlineOwner = "";
+
+				for(String name : owners){//Paying all owners
+					@SuppressWarnings("deprecation")
+					OfflinePlayer op = Bukkit.getOfflinePlayer(name);
+					if(op.isOnline()){
+						Player p = (Player) op;
+
+						onlineOwner = p.getName();
+
+						p.sendMessage(Mes.mes("chat.commands.sellhotel.success")
+								.replaceAll("%hotel%", hotel.getName())
+								.replaceAll("%buyer%", player.getName())
+								.replaceAll("%price%", String.valueOf(price))
+								);
 					}
-					else
-						sender.sendMessage(Mes.mesnopre("chat.commands.buyhotel.usage"));
+					WGM.removeOwner(op, region); //Removing old owner
+
+					HotelsMain.economy.depositPlayer(op, price); //Paying old owner
 				}
-				else
-					sender.sendMessage(Mes.mesnopre("chat.commands.buyhotel.consoleRejected"));
+
+				WGM.addOwner(player, region);
+				player.sendMessage(Mes.mes("chat.commands.buyhotel.success")
+						.replaceAll("%hotel%", hotel.getName())
+						.replaceAll("%seller%", onlineOwner)
+						.replaceAll("%price%", String.valueOf(price))
+						);
+
+				hotel.setBuyer(null);
+				hotel.removePrice();
+				hotel.saveHotelConfig();
 
 			}
 			//Other command

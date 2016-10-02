@@ -252,7 +252,7 @@ public class Room {
 		setTimeRentedAt(currentMin);
 
 		//Setting room flags back in case they were changed to allow players in
-		WGM.roomFlags(getRegion(),num);
+		WGM.roomFlags(getRegion(),num,world);
 
 	}
 	///Config stuff
