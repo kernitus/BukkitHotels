@@ -444,5 +444,4 @@ public class HotelsCommandExecutor {
 			}
 		}
 	}
-	//TODO delete hotel sender.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
 }

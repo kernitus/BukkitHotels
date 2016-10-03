@@ -12,21 +12,20 @@ public class Mes {
 		String mes = HotelsConfigHandler.getLocale().getString(path);
 		if(mes!=null){
 			//Prefix
-			String prefix = (HotelsConfigHandler.getLocale().getString("chat.prefix")+" ");
-			mes = ChatColor.translateAlternateColorCodes('&',(prefix+mes));
+			String prefix = (HotelsConfigHandler.getLocale().getString("chat.prefix") + " ");
+			mes = ChatColor.translateAlternateColorCodes('&', (prefix+mes));
 		}
 		else
-			mes = ChatColor.DARK_RED + "Message "+ChatColor.GOLD+path+ChatColor.DARK_RED+" is null!";
+			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
 		return mes;
 	}
 
 	public static String mesnopre(String path){
 		String mes = HotelsConfigHandler.getLocale().getString(path);
-		if(mes!=null){
-			mes = ChatColor.translateAlternateColorCodes('&',mes);
-		}
+		if(mes!=null)
+			mes = ChatColor.translateAlternateColorCodes('&', mes);
 		else
-			mes = ChatColor.DARK_RED + "Message "+ChatColor.GOLD+path+ChatColor.DARK_RED+" is null!";
+			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
 		return mes;
 	}
 	public static boolean hasPerm(CommandSender sender, String perm){
@@ -34,28 +33,15 @@ public class Mes {
 			Player player = (Player) sender;
 			return hasPerm(player, perm);
 		}
-		else
-			return true;
+		return true;
 	}
 	public static boolean hasPerm(Player player, String perm){
-		if(player.isOp())
-			return true;
-		else{
-			if(player.hasPermission("hotels.*"))
-				return true;
-			else if(player.hasPermission(perm))
-				return true;
-			else if(player.hasPermission(perm+".user"))
-				return true;
-			else if(player.hasPermission(perm+".admin"))
-				return true;
-		}
-		return false;
+		return player.hasPermission("hotels.*") || player.hasPermission(perm) || player.hasPermission(perm+".user") || player.hasPermission(perm+".admin");
 	}
 	public static String flagValue(String path){
 		String mes = HotelsConfigHandler.getFlags().getString(path);
 		if(mes==null)
-			mes = ChatColor.DARK_RED + "Message "+ChatColor.GOLD+path+ChatColor.DARK_RED+" is null!";
+			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED +" is null!";
 		return mes;
 	}
 }

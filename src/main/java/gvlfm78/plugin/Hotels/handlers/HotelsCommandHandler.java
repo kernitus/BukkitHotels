@@ -672,10 +672,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 				hotel.saveHotelConfig();
 
 			}
-			//Other command
-			else {
+			//Other argument
+			else
 				sender.sendMessage(Mes.mes("chat.commands.unknownArg"));
-			}
 		}
 		//Command is not /hotels
 		return false;
