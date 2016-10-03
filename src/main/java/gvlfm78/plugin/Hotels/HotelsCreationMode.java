@@ -41,11 +41,6 @@ public class HotelsCreationMode {
 	WorldGuardManager WGM = new WorldGuardManager();
 	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
 
-	public void checkFolder(){
-		File file = HotelsConfigHandler.getFile("Inventories");
-		if(!file.exists())
-			file.mkdir();
-	}
 	public boolean isInCreationMode(String uuid){
 		return HCH.getInventoryFile(UUID.fromString(uuid)).exists();
 	}
@@ -56,14 +51,14 @@ public class HotelsCreationMode {
 	public void hotelSetup(String hotelName, CommandSender s){
 		Player p = (Player) s;
 
-		if(hotelName.contains("-")){ p.sendMessage(Mes.mes("chat.creationMode.invalidChar")); return;}
+		if(hotelName.contains("-")){ p.sendMessage(Mes.mes("chat.creationMode.invalidChar")); return; }
 
 		if(Mes.hasPerm(p, "hotels.create")){ p.sendMessage(Mes.mes("chat.noPermission")); return; }
 
 		Selection sel = getWorldEdit().getSelection(p);
 		Hotel hotel = new Hotel(p.getWorld(), hotelName);
 
-		if(hotel.exists()){	p.sendMessage(Mes.mes("chat.creationMode.hotelCreationFailed")); return;}
+		if(hotel.exists()){	p.sendMessage(Mes.mes("chat.creationMode.hotelCreationFailed")); return; }
 
 		if(sel==null){ p.sendMessage(Mes.mes("chat.creationMode.noSelection")); return; }
 
