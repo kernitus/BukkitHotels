@@ -180,7 +180,6 @@ public class HotelsCommandExecutor {
 	}
 
 	public void cmdCreateModeEnter(Player p){
-		HCM.checkFolder();
 		if(!HCM.isInCreationMode(p.getUniqueId())){
 			HCM.saveInventory(p);
 			HCM.giveItems(p);

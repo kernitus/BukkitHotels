@@ -97,22 +97,22 @@ public class HotelsCreationMode {
 		ProtectedRegion pr = hotel.getRegion();
 		if(sel==null){ p.sendMessage(Mes.mes("chat.creationMode.noSelection")); return; }
 		if((sel instanceof Polygonal2DSelection) && (pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
-				((sel instanceof CuboidSelection) && (pr.contains(sel.getNativeMinimumPoint())&&pr.contains(sel.getNativeMaximumPoint())))){
+				((sel instanceof CuboidSelection) && (pr.contains(sel.getNativeMinimumPoint()) && pr.contains(sel.getNativeMaximumPoint())))){
 			//Creating room region
 			if(sel instanceof CuboidSelection){
 				ProtectedRegion r = new ProtectedCuboidRegion(
-						"Hotel-"+hotelName+"-"+room, 
+						"Hotel-"+hotelName+"-"+room.getNum(), 
 						new BlockVector(sel.getNativeMinimumPoint()), 
 						new BlockVector(sel.getNativeMaximumPoint())
 						);
-				createRoomRegion(p,r,hotelName,roomNum);
+				room.createRegion(r, p);				
 			}
 			else if(sel instanceof Polygonal2DSelection){
 				int minY = sel.getMinimumPoint().getBlockY();
 				int maxY = sel.getMaximumPoint().getBlockY();
 				List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
 				ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
-				createRoomRegion(p,r,hotelName,roomNum);
+				room.createRegion(r, p);
 			}
 			else
 				p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid"));

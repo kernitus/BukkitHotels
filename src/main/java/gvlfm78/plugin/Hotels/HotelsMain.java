@@ -23,7 +23,12 @@ import net.milkbowl.vault.economy.Economy;
 public class HotelsMain extends JavaPlugin{
 
 	public static Economy economy = null; //Creating economy variable
-
+	
+	//Task loops
+	RoomTask roomTask;
+	ReceptionTask receptionTask;
+	HotelTask hotelTask;
+	
 	HotelsConfigHandler HCH = new HotelsConfigHandler(this);
 	HotelsCommandExecutor HCE = new HotelsCommandExecutor(this);
 	FileConfiguration config = getConfig();
@@ -51,9 +56,9 @@ public class HotelsMain extends JavaPlugin{
 				getLogger().severe("No Vault dependency found!");
 		}
 		
-		//ROom sign checker and updater
-		RoomTask roomTask = new RoomTask(this);
-		int roomMins = getConfig().getInt("settings.roomTaskTimerMinutes");//TODO Add this to config
+		//Room sign checker and updater
+		roomTask = new RoomTask(this);
+		int roomMins = getConfig().getInt("settings.roomTaskTimerMinutes");
 
 		boolean isRoomRunning;
 		try{
@@ -68,8 +73,8 @@ public class HotelsMain extends JavaPlugin{
 			roomTask.runTaskTimer(this, 200, roomMins*60*20);
 		}
 		//Hotel buy/sell checker and updater
-		HotelTask hotelTask = new HotelTask();
-		int hotelMins = getConfig().getInt("settings.hotelTaskTimerMinutes");//TODO Add this to config
+		hotelTask = new HotelTask();
+		int hotelMins = getConfig().getInt("settings.hotelTaskTimerMinutes");
 
 		boolean ishotelRunning;
 		try{
@@ -84,8 +89,8 @@ public class HotelsMain extends JavaPlugin{
 			hotelTask.runTaskTimer(this, 500, hotelMins*60*20);
 		}
 		//Reception sign updater
-		ReceptionTask receptionTask = new ReceptionTask(this);
-		int receptionMins = getConfig().getInt("settings.receptionTaskTimerMinutes");//TODO Add this to config
+		receptionTask = new ReceptionTask(this);
+		int receptionMins = getConfig().getInt("settings.receptionTaskTimerMinutes");
 
 		boolean isRecRunning;
 		try{
@@ -241,7 +246,9 @@ public class HotelsMain extends JavaPlugin{
 	}
 	@Override
 	public void onDisable(){
-		hotelsloop.cancel();
+		roomTask.cancel();
+		hotelTask.cancel();
+		receptionTask.cancel();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Logging to console the disabling of Hotels
