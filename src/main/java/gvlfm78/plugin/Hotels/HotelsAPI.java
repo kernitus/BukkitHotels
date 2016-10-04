@@ -44,8 +44,7 @@ public class HotelsAPI {
 	public static ArrayList<Room> getRoomsRentedBy(UUID uuid){
 		ArrayList<Room> rented = new ArrayList<Room>();
 
-		ArrayList<Hotel> hotels = getAllHotels();
-		for(Hotel hotel : hotels){
+		for(Hotel hotel : getAllHotels()){
 			ArrayList<Room> rooms = hotel.getRooms();
 			for(Room room : rooms){
 				if(room.isRenter(uuid))

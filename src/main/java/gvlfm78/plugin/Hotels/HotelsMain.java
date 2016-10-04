@@ -16,6 +16,7 @@ import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.tasks.HotelTask;
+import kernitus.plugin.Hotels.tasks.ReceptionTask;
 import kernitus.plugin.Hotels.tasks.RoomTask;
 import net.milkbowl.vault.economy.Economy;
 
@@ -50,9 +51,9 @@ public class HotelsMain extends JavaPlugin{
 				getLogger().severe("No Vault dependency found!");
 		}
 		
-		//HotelsLoop stuff
+		//ROom sign checker and updater
 		RoomTask roomTask = new RoomTask(this);
-		int roomMins = this.getConfig().getInt("settings.roomTaskTimerMinutes");//TODO Add this to config
+		int roomMins = getConfig().getInt("settings.roomTaskTimerMinutes");//TODO Add this to config
 
 		boolean isRoomRunning;
 		try{
@@ -64,25 +65,39 @@ public class HotelsMain extends JavaPlugin{
 		if(!isRoomRunning){
 			if(roomMins<=0)
 				roomMins = 2;
-
 			roomTask.runTaskTimer(this, 200, roomMins*60*20);
 		}
-		
+		//Hotel buy/sell checker and updater
 		HotelTask hotelTask = new HotelTask();
-		int hotelMins = this.getConfig().getInt("settings.hotelTaskTimerMinutes");//TODO Add this to config
+		int hotelMins = getConfig().getInt("settings.hotelTaskTimerMinutes");//TODO Add this to config
 
-		boolean isLoopRunning;
+		boolean ishotelRunning;
 		try{
-			isLoopRunning = Bukkit.getScheduler().isCurrentlyRunning(roomTask.getTaskId());
+			ishotelRunning = Bukkit.getScheduler().isCurrentlyRunning(hotelTask.getTaskId());
 		}
 		catch(Exception e5){
-			isLoopRunning = false;
+			ishotelRunning = false;
 		}
-		if(!isLoopRunning){
+		if(!ishotelRunning){
 			if(hotelMins<=0)
 				hotelMins = 2;
+			hotelTask.runTaskTimer(this, 500, hotelMins*60*20);
+		}
+		//Reception sign updater
+		ReceptionTask receptionTask = new ReceptionTask(this);
+		int receptionMins = getConfig().getInt("settings.receptionTaskTimerMinutes");//TODO Add this to config
 
-			roomTask.runTaskTimer(this, 200, hotelMins*60*20);
+		boolean isRecRunning;
+		try{
+			isRecRunning = Bukkit.getScheduler().isCurrentlyRunning(receptionTask.getTaskId());
+		}
+		catch(Exception e5){
+			isRecRunning = false;
+		}
+		if(!isRecRunning){
+			if(receptionMins<=0)
+				receptionMins = 2;
+			receptionTask.runTaskTimer(this, 400, receptionMins*60*20);
 		}
 
 

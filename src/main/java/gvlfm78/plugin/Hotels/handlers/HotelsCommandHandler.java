@@ -657,6 +657,13 @@ public class HotelsCommandHandler implements CommandExecutor {
 					}
 					WGM.removeOwner(op, region); //Removing old owner
 
+					String taxString = plugin.getConfig().getString("tax");
+					if(taxString.matches("\\d+%"))
+						taxString = taxString.replaceAll("%", "");
+					else
+						//TODO 
+					
+					
 					HotelsMain.economy.depositPlayer(op, price); //Paying old owner
 				}
 

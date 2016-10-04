@@ -15,8 +15,12 @@ max_rooms_owned: 3
 max_rooms_owned_per_hotel: 2
 # Maximum times a player can extend their rent (per rented room)
 max_rent_extend: 3
-# How often Hotels checks for expired rooms, updates reception signs etc.
-hotelsLoopTimerMinutes: 2
+# How often Hotels checks for expired rooms and updates room signs
+roomTaskTimerMinutes: 2
+# How often Hotels updates reception signs
+receptionTaskTimerMinutes: 2
+# How often Hotels checks for expired hotel sale offers
+hotelTaskTimerMinutes: 2
 # Tax on revenue from hotels. It is applied to the money players spend in a hotel
 # before the money is given to the hotel owner.
 # Can either be a percentage (25%) or a set amount every time (50)
