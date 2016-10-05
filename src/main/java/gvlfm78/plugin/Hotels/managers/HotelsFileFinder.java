@@ -12,8 +12,7 @@ public class HotelsFileFinder {
 	 
 	    if (!directory.isDirectory()) {
 	    	
-	      //No Directory
-	      return null;
+	     directory.mkdir();
 	    }
 	 
 	    //create a FilenameFilter and override its accept-method

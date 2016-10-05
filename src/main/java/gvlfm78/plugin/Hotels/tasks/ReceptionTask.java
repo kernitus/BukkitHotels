@@ -29,7 +29,7 @@ public class ReceptionTask extends BukkitRunnable{
 	@Override
 	public void run(){
 
-		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+"Receptions");
+		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+"Reception");
 		for(String x : fileList){//Looping through all files in Signs directory
 			File file = HotelsConfigHandler.getFile("Signs" + File.separator + x);
 			if(file.getName().matches("Reception-.+-.+")){

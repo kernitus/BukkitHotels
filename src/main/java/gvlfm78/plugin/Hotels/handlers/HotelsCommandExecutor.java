@@ -12,7 +12,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
@@ -200,7 +199,7 @@ public class HotelsCommandExecutor {
 		HCM.resetInventoryFiles(p);
 		p.sendMessage(Mes.mes("chat.commands.creationMode.reset"));
 	}
-	public void cmdReload(CommandSender s,Plugin pluginstance){
+	public void cmdReload(CommandSender s){
 		HCH.reloadConfigs();
 		s.sendMessage(Mes.mes("chat.commands.reload.success"));
 	}

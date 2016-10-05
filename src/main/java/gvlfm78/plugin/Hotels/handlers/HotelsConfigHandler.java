@@ -22,11 +22,11 @@ import kernitus.plugin.Hotels.HotelsMain;
 public class HotelsConfigHandler {
 
 	private HotelsMain plugin;
-	
+
 	public HotelsConfigHandler(HotelsMain plugin){
 		this.plugin = plugin;
 	}
-	
+
 	public void setupConfigs(){
 		//Message Queue
 		if(!getMessageQueueFile().exists())
@@ -76,7 +76,7 @@ public class HotelsConfigHandler {
 		}
 	}
 	public String getLanguage(){
-		return plugin.getConfig().getString("settings.language");
+		return plugin.getConfig().getString("language");
 	}
 
 	public static File getFile(String filepath){
@@ -126,7 +126,7 @@ public class HotelsConfigHandler {
 	public File getSignFile(String hotelName, String roomNum){
 		return getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 	}
-	
+
 	public File getSignFile(String hotelName, int roomNum){
 		return getSignFile(hotelName, String.valueOf(roomNum));
 	}
@@ -173,14 +173,14 @@ public class HotelsConfigHandler {
 	public static YamlConfiguration getHotelConfig(String hotelName){
 		return getyml(getHotelFile(hotelName));
 	}
-	
+
 	public String getupdateAvailable(){
 		return getMessageQueue().getString("messages.update.available");
 	}
 	public String getupdateString(){
 		return getMessageQueue().getString("messages.update.link");
 	}
-	
+
 	public void saveConfiguration(File file, YamlConfiguration config){
 
 		try{
@@ -217,10 +217,10 @@ public class HotelsConfigHandler {
 	public void reloadConfigs(){
 		//Reload config.yml
 		if(getconfigymlFile().exists())
-		plugin.reloadConfig();
+			plugin.reloadConfig();
 		else
 			setupConfigyml();
-		
+
 		//Message Queue
 		if(!getMessageQueueFile().exists())
 			setupMessageQueue();
@@ -231,14 +231,14 @@ public class HotelsConfigHandler {
 		//Locale
 		localeLanguageSelector();
 	}
-	
+
 	public void setupLanguage(String langCode, Plugin plugin){
-		plugin.saveResource("locale-"+langCode+".yml", false);
+		plugin.saveResource("locale-" + langCode + ".yml", false);
 		File loc = getLocaleFile();
-		File itLoc = getFile("locale-"+langCode+".yml");
+		File itLoc = getFile("locale-" + langCode + ".yml");
 		loc.delete();
 		itLoc.renameTo(loc);
-		plugin.getLogger().info(langCode+" Language strings generated");
+		plugin.getLogger().info(langCode + " Language strings generated");
 	}
 
 	public void setupFlags(){
