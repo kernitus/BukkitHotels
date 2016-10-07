@@ -24,12 +24,15 @@ public class ReceptionTask extends BukkitRunnable{
 		this.plugin = plugin;
 	}
 	private SignManager SM = new SignManager(plugin);
-	
+
 	//Task to update reception signs
 	@Override
 	public void run(){
 
-		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+"Reception");
+		
+		
+		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+"Reception"); // E:\Plugin\Server\plugins\Hotels\Signs
+		if(fileList==null) return;
 		for(String x : fileList){//Looping through all files in Signs directory
 			File file = HotelsConfigHandler.getFile("Signs" + File.separator + x);
 			if(file.getName().matches("Reception-.+-.+")){
@@ -49,5 +52,4 @@ public class ReceptionTask extends BukkitRunnable{
 			}
 		}
 	}
-
 }

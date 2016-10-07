@@ -20,6 +20,7 @@ public class HotelTask extends BukkitRunnable{
 	@Override
 	public void run(){
 		//Hotel files
+		
 		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins" + File.separator + "Hotels" + File.separator + "Hotels");
 		for(String fileName : fileList){
 			File file = HotelsConfigHandler.getFile("Hotels" + File.separator + fileName);
