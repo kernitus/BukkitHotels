@@ -1,7 +1,6 @@
 package kernitus.plugin.Hotels.managers;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -38,14 +37,16 @@ import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 public class SignManager {
 
-	FilenameFilter SignFileFilter;
 	private HotelsMain plugin;
+	private WorldGuardManager WGM;
+	private HotelsConfigHandler HCH;
+
 	public SignManager(HotelsMain plugin){
 		this.plugin = plugin;
+
+		WGM = new WorldGuardManager();
+		HCH = new HotelsConfigHandler(plugin);
 	}
-	HotelsFileFinder HFF = new HotelsFileFinder();
-	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
 
 	public void placeReceptionSign(SignChangeEvent e){
 		Player p = e.getPlayer();
@@ -64,11 +65,13 @@ public class SignManager {
 				e.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(tot) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.total")));
 				e.setLine(3, (ChatColor.GREEN + String.valueOf(free) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.free")));
 
-				//Updating sign file
-				File receptionFile = null;
-				for(int i = 1; receptionFile.exists(); i++){
-					receptionFile = HotelsConfigHandler.getReceptionFile(hotelName,i);
-				}
+				int i = 1;
+				File receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, i);
+				while(receptionFile.exists()){
+					i++;
+					receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, i);
+				}//Loop will stop once a non-existant file is found
+				System.out.println("Vadavorod");
 				if(!receptionFile.exists()){
 					try {
 						receptionFile.createNewFile();
@@ -78,7 +81,7 @@ public class SignManager {
 					}
 					YamlConfiguration config = YamlConfiguration.loadConfiguration(receptionFile);
 					config.addDefault("Reception.hotel", hotelName);
-					config.addDefault("Reception.location.world", e.getBlock().getWorld().getName());
+					config.addDefault("Reception.location.world", e.getBlock().getWorld().getName().toLowerCase());
 					config.addDefault("Reception.location.x", e.getBlock().getX());
 					config.addDefault("Reception.location.y", e.getBlock().getY());
 					config.addDefault("Reception.location.z", e.getBlock().getZ());
@@ -128,8 +131,8 @@ public class SignManager {
 							if(hotel.getRegion().contains(e.getBlock().getX(),e.getBlock().getY(),e.getBlock().getZ())){
 								//Sign is within hotel region
 								if(room.exists()){ //Room region exists
-									
-										//Successful Sign
+
+									//Successful Sign
 
 									//Creating sign config file:
 
@@ -138,7 +141,7 @@ public class SignManager {
 
 									//Calculating accurate cost
 									double accCost = CostConverter(cost);									
-									
+
 									if(!room.createSignConfig(p, timeInMins, accCost, e.getBlock().getLocation())){
 										p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
 										e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
@@ -147,7 +150,7 @@ public class SignManager {
 
 									e.setLine(0, ChatColor.DARK_BLUE + Line2); //Hotel Name
 									e.setLine(1, ChatColor.DARK_GREEN + Mes.mesnopre("sign.room.name") + " " + roomNum + " - " + cost.toUpperCase() + "$"); //Room Number + Cost
-									
+
 									if(immutedTime.matches("0"))
 										e.setLine(2,Mes.mesnopre("sign.permanent"));
 									else
@@ -206,7 +209,7 @@ public class SignManager {
 		String Line1 = ChatColor.stripColor(s.getLine(0)); //Line1
 		String Line2 = ChatColor.stripColor(s.getLine(1)); //Line2
 		String hotelName = (ChatColor.stripColor(Line1)); //Hotel name
-		
+
 		Hotel hotel = new Hotel(world,hotelName);
 
 		//If Hotel exists
@@ -247,7 +250,7 @@ public class SignManager {
 		World world = p.getWorld();
 		Hotel hotel = new Hotel(world,hotelName);
 		Room room = new Room(hotel,roomNum);
-		
+
 		if(room.exists()){
 			OfflinePlayer renter = room.getRenter();
 			if(room.isFree()){
@@ -258,13 +261,13 @@ public class SignManager {
 						if(account>=price){//If player has enough money
 							//If player is under max owned rooms limit
 							if(getTimesRented(p.getUniqueId())<plugin.getConfig().getInt("settings.max_rooms_owned")){
-								
+
 								//Renter has passed all conditions and is able to rent this room
 								HotelsMain.economy.withdrawPlayer(p, price);//Taking money from renter
 								payOwners(price,room,false); //Pay the hotel owners the net profit
 
 								ProtectedRegion region = room.getRegion();
-								
+
 								room.rent(p);
 								room.saveSignConfig();
 
@@ -389,18 +392,18 @@ public class SignManager {
 		String Line1 = (ChatColor.stripColor(s.getLine(0)));
 		World w = b.getWorld();
 		Player p = e.getPlayer();
-		
+
 		Hotel hotel = new Hotel(w,"hotel-"+Line1);
-		
+
 		if(hotel.exists()){
 			//Room sign has been broken?
 			if(hotel.getRegion().contains(b.getX(), b.getY(), b.getZ())){//If sign is in hotel
 				String Line2 = ChatColor.stripColor(s.getLine(1));
 				String[] Line2split = Line2.split(" ");
 				int roomNum = Integer.parseInt(Line2split[1]);
-				
+
 				Room room = new Room(hotel,roomNum);
-				
+
 				if(room.exists()){//If room exists
 					ProtectedRegion roomRegion = room.getRegion();
 
@@ -457,14 +460,14 @@ public class SignManager {
 
 		Location loc = room.getSignLocation();
 		Block block = loc.getBlock();
-		
+
 		if(block.getType()==Material.SIGN||block.getType()==Material.WALL_SIGN||block.getType()==Material.SIGN_POST){
 			Sign s = (Sign) block.getState();
 
 			if(room.getTime()>0){
 				int extended = room.getTimesExtended();
 				int max = plugin.getConfig().getInt("settings.max_rent_extend");
-				
+
 				if(extended < max){
 					double account = HotelsMain.economy.getBalance(p);
 					double price = room.getCost();
@@ -485,7 +488,7 @@ public class SignManager {
 
 						room.setNewExpiryDate();
 						room.saveSignConfig();
-						
+
 						s.setLine(2, TimeFormatter(room.getExpiryMinute()-(System.currentTimeMillis()/1000/60)));
 						s.update();
 						extended+=1;
@@ -568,7 +571,7 @@ public class SignManager {
 		final Pattern p = Pattern.compile("(\\d+)([hmd])");
 		final Matcher m = p.matcher(immutedtime);
 		long totalMins = 0;
-		
+
 		while (m.find()){
 			final int duration = Integer.parseInt(m.group(1));
 			final TimeUnit interval = toTimeUnit(m.group(2));
@@ -587,7 +590,7 @@ public class SignManager {
 		}
 	}
 	public double CostConverter(String immutedcost){
-		
+
 		final Pattern p = Pattern.compile("(\\d+)([thkmb]||)");
 		final Matcher m = p.matcher(immutedcost);
 		double totalCost = 0;

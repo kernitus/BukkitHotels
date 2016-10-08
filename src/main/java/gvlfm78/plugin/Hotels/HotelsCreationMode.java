@@ -30,16 +30,17 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsCreationMode {
 
 	private HotelsMain plugin;
+	private HotelsConfigHandler HCH;
+	
 	public HotelsCreationMode(HotelsMain plugin){
 		this.plugin = plugin;
+		
+	HCH = new HotelsConfigHandler(plugin);
 	}
-	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
 
 	public boolean isInCreationMode(String uuid){
 		return HCH.getInventoryFile(UUID.fromString(uuid)).exists();

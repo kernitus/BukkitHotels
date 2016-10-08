@@ -20,25 +20,25 @@ import kernitus.plugin.Hotels.managers.SignManager;
 public class ReceptionTask extends BukkitRunnable{
 
 	private HotelsMain plugin;
+	private SignManager SM;
+	
 	public ReceptionTask(HotelsMain plugin){
 		this.plugin = plugin;
+		SM = new SignManager(plugin);
 	}
-	private SignManager SM = new SignManager(plugin);
 
 	//Task to update reception signs
 	@Override
-	public void run(){
-
-		
-		
-		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+"Reception"); // E:\Plugin\Server\plugins\Hotels\Signs
+	public void run(){		
+		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+"Reception");
 		if(fileList==null) return;
 		for(String x : fileList){//Looping through all files in Signs directory
-			File file = HotelsConfigHandler.getFile("Signs" + File.separator + x);
+			File file = HotelsConfigHandler.getReceptionFile(x);
+			Mes.debugConsole("Reception sign getting checked: " + file.getName() + " Path: " + file.getAbsolutePath());
 			if(file.getName().matches("Reception-.+-.+")){
 				//It's a reception sign
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-				World world = Bukkit.getWorld(config.getString("Reception.location.world"));
+				World world = Bukkit.getWorld(config.getString("Reception.location.world").toLowerCase());
 				int locx = config.getInt("Reception.location.x");
 				int locy = config.getInt("Reception.location.y");
 				int locz = config.getInt("Reception.location.z");

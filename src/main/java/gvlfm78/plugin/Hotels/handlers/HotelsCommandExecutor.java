@@ -24,15 +24,16 @@ import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsCommandExecutor {
 
-	private HotelsMain plugin;
+	private SignManager SM;
+	private HotelsCreationMode HCM;
+	private WorldGuardManager WGM;
+	
 	public HotelsCommandExecutor(HotelsMain plugin){
-		this.plugin = plugin;
+		
+		SM = new SignManager(plugin);
+		HCM = new HotelsCreationMode(plugin);
+		WGM = new WorldGuardManager();
 	}
-
-	SignManager SM = new SignManager(plugin);
-	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
-	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HCH = new HotelsConfigHandler(plugin);
 
 	public void cmdCreate(Player p,String hotelName){//Hotel creation command
 		UUID playerUUID = p.getUniqueId();
@@ -198,10 +199,6 @@ public class HotelsCommandExecutor {
 	public void cmdCreateModeReset(Player p){
 		HCM.resetInventoryFiles(p);
 		p.sendMessage(Mes.mes("chat.commands.creationMode.reset"));
-	}
-	public void cmdReload(CommandSender s){
-		HCH.reloadConfigs();
-		s.sendMessage(Mes.mes("chat.commands.reload.success"));
 	}
 	public void cmdRent(CommandSender sender ,String hotelName, String roomNum){
 

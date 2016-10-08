@@ -19,11 +19,12 @@ public class HotelTask extends BukkitRunnable{
 
 	@Override
 	public void run(){
-		//Hotel files
-		
 		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins" + File.separator + "Hotels" + File.separator + "Hotels");
 		for(String fileName : fileList){
 			File file = HotelsConfigHandler.getFile("Hotels" + File.separator + fileName);
+			
+			Mes.debugConsole("Hotel sign getting checked: " + file.getName() + " Path: " + file.getAbsolutePath());
+			
 			YamlConfiguration hconf = YamlConfiguration.loadConfiguration(file);
 			String buyeruuid = hconf.getString("Hotel.sell.buyer");
 			if(buyeruuid != null){

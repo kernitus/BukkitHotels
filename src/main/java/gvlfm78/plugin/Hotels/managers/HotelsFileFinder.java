@@ -2,7 +2,6 @@ package kernitus.plugin.Hotels.managers;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class HotelsFileFinder {
@@ -11,18 +10,8 @@ public class HotelsFileFinder {
 
 		File directory = new File(dir);
 
-		try {
-			
-			if(!directory.exists())
-				directory.createNewFile();
-
-			if (!directory.isDirectory())
-				directory.createNewFile();
-			
-		} catch (IOException e) {
-
-			e.printStackTrace();
-		}
+		if(!directory.exists() || !directory.isDirectory())
+			directory.mkdir();
 
 		//create a FilenameFilter and override its accept-method
 		FilenameFilter filefilter = new FilenameFilter() {

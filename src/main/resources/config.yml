@@ -36,3 +36,8 @@ allowPlayersToOpenContainersInFreeRooms: false
 stopOwnersEditingRentedRooms: true
 # If doing /ht commands should only display the commands a player has permission for
 onlyDisplayAllowedCommands: true
+
+
+# Enabled this option for troubleshooting purposes only.
+# This will make debug messages appear
+debug: false

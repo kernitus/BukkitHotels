@@ -1,5 +1,7 @@
 package kernitus.plugin.Hotels.managers;
 
+import java.util.logging.Logger;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,7 +15,7 @@ public class Mes {
 		if(mes!=null){
 			//Prefix
 			String prefix = (HotelsConfigHandler.getLocale().getString("chat.prefix") + " ");
-			mes = ChatColor.translateAlternateColorCodes('&', (prefix+mes));
+			mes = ChatColor.translateAlternateColorCodes('&', (prefix + mes));
 		}
 		else
 			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
@@ -43,5 +45,16 @@ public class Mes {
 		if(mes==null)
 			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED +" is null!";
 		return mes;
+	}
+	public static void debugConsole(String mes){
+		if(HotelsConfigHandler.getconfigyml().isBoolean("debug")){
+			Logger.getLogger("Minecraft").info("[Hotels] " + mes );
+		}
+	}
+	public static void debugPlayer(Player p, String mes){
+		if(HotelsConfigHandler.getconfigyml().isBoolean("debug")){
+			String prefix = (HotelsConfigHandler.getLocale().getString("chat.prefix") + " ");
+			p.sendMessage(ChatColor.translateAlternateColorCodes('&', (prefix + mes) ));
+		}
 	}
 }

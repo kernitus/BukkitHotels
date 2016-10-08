@@ -24,18 +24,19 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsListener implements Listener {
 
-	private HotelsMain plugin;
-	public HotelsListener(HotelsMain plugin){
-		this.plugin = plugin;
+	private HotelsCreationMode HCM;
+	private SignManager SM;
+	private HotelsConfigHandler HCH;
+
+
+	public HotelsListener(HotelsMain plugin){	
+		HCM = new HotelsCreationMode(plugin);
+		SM = new SignManager(plugin);
+		HCH = new HotelsConfigHandler(plugin);
 	}
-	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
-	SignManager SM = new SignManager(plugin);
-	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 
 	@EventHandler
 	public void onSignPlace(SignChangeEvent e){
@@ -94,8 +95,8 @@ public class HotelsListener implements Listener {
 		//Player joined the server, send update notification to ops
 		Player p = e.getPlayer();
 		if(p.hasPermission("hotel.*")){
-			String ava = HConH.getupdateAvailable();
-			String lin = HConH.getupdateString();
+			String ava = HCH.getupdateAvailable();
+			String lin = HCH.getupdateString();
 			if(ava != null)
 				p.sendMessage(ChatColor.BLUE + ava);
 			if(lin != null)
@@ -103,7 +104,7 @@ public class HotelsListener implements Listener {
 		}
 		//Notifying players if any of their rooms have expired while they were offline
 		UUID playerUUID = p.getUniqueId();
-		YamlConfiguration queue = HConH.getMessageQueue();
+		YamlConfiguration queue = HCH.getMessageQueue();
 		ConfigurationSection allExpiryMessages = queue.getConfigurationSection("messages.expiry");
 		if(allExpiryMessages != null){
 			Set<String> keys = allExpiryMessages.getKeys(false);
@@ -113,7 +114,7 @@ public class HotelsListener implements Listener {
 					if(playerUUID.equals(configUUID)){
 						p.sendMessage(queue.getString("messages.expiry." + key + ".message"));
 						queue.set("messages.expiry." + key, null);
-						HConH.saveMessageQueue(queue);
+						HCH.saveMessageQueue(queue);
 					}
 				}
 			}
@@ -128,7 +129,7 @@ public class HotelsListener implements Listener {
 					if(playerUUID.equals(configUUID)){
 						p.sendMessage(queue.getString("messages.revenue." + key + ".message"));
 						queue.set("messages.revenue." + key, null);
-						HConH.saveMessageQueue(queue);
+						HCH.saveMessageQueue(queue);
 					}
 				}
 			}

@@ -1,7 +1,6 @@
 package kernitus.plugin.Hotels.tasks;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +31,18 @@ import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class RoomTask extends BukkitRunnable {
 
-	FilenameFilter SignFileFilter;
 	private HotelsMain plugin;
+	private SignManager SM;
+	private WorldGuardManager WGM;
+	private HotelsConfigHandler HCH;
+	
 	public RoomTask(HotelsMain plugin){
 		this.plugin = plugin;
+		
+		SM = new SignManager(plugin);
+		WGM = new WorldGuardManager();
+		HCH = new HotelsConfigHandler(plugin);
 	}
-
-	SignManager SM = new SignManager(plugin);
-	HotelsFileFinder HFF = new HotelsFileFinder();
-	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
 
 	@Override
 	public void run() {
@@ -52,11 +53,13 @@ public class RoomTask extends BukkitRunnable {
 			File file = HotelsConfigHandler.getFile("Signs" + File.separator + fileName);
 
 			if(!fileName.matches("\\w+-\\d+.yml")){ file.delete(); }//Delete all non-room signs in folder
+			
+			Mes.debugConsole("Room sign getting checked: " + file.getName() + " Path: " + file.getAbsolutePath());
 
 			//Room sign
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 			String hotelName = config.getString("Sign.hotel");
-			World world = Bukkit.getWorld(config.getString("Sign.location.world"));
+			World world = Bukkit.getWorld(config.getString("Sign.location.world").toLowerCase());
 			int roomNum = config.getInt("Sign.room");
 
 			Room room = new Room(world, hotelName, roomNum); //Creating room object
@@ -123,17 +126,17 @@ public class RoomTask extends BukkitRunnable {
 						op.sendMessage(Mes.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName));
 					}
 					else{
-						YamlConfiguration queue = HConH.getMessageQueue();
+						YamlConfiguration queue = HCH.getMessageQueue();
 						if(!queue.contains("messages.expiry")){
 							queue.createSection("messages.expiry");
-							HConH.saveMessageQueue(queue);
+							HCH.saveMessageQueue(queue);
 						}
 						Set<String> expiryMessages = queue.getConfigurationSection("messages.expiry").getKeys(false);
 						int expiryMessagesSize = expiryMessages.size();
 						String pathToPlace = "messages.expiry." + (expiryMessagesSize + 1);
 						queue.set(pathToPlace + ".UUID", p.getUniqueId().toString());
 						queue.set(pathToPlace  +".message", Mes.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName));
-						HConH.saveMessageQueue(queue);
+						HCH.saveMessageQueue(queue);
 					}
 					config.set("Sign.renter", null);
 					config.set("Sign.timeRentedAt", null);

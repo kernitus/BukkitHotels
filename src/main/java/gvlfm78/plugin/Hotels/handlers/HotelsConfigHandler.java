@@ -105,23 +105,23 @@ public class HotelsConfigHandler {
 	}
 
 	public File getconfigFile(String configName){
-		return new File("plugins"+File.separator+"Hotels"+File.separator+configName+".yml");
+		return getFile(configName+".yml");
 	}
 
 	public static File getconfigymlFile(){
-		return new File("plugins"+File.separator+"Hotels"+File.separator+"config.yml");
+		return getFile("config.yml");
 	}
 
 	public static File getLocaleFile(){
-		return new File("plugins"+File.separator+"Hotels"+File.separator+"locale.yml");
+		return getFile("locale.yml");
 	}
 
 	public File getMessageQueueFile(){
-		return new File("plugins"+File.separator+"Hotels"+File.separator+"queuedMessages.yml");
+		return getFile("queuedMessages.yml");
 	}
 
 	public static File getFlagsFile(){
-		return new File("plugins"+File.separator+"Hotels"+File.separator+"flags.yml");
+		return getFile("flags.yml");
 	}
 	public File getSignFile(String hotelName, String roomNum){
 		return getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
@@ -131,10 +131,10 @@ public class HotelsConfigHandler {
 		return getSignFile(hotelName, String.valueOf(roomNum));
 	}
 	public static File getReceptionFile(String hotelName, int receptionFileNum){
-		return getFile("Signs"+File.separator+"Reception-"+hotelName.toLowerCase()+"-"+receptionFileNum+".yml");
+		return getFile("Signs"+File.separator+"Reception"+File.separator+"Reception-"+hotelName.toLowerCase()+"-"+receptionFileNum+".yml");
 	}
 	public static File getReceptionFile(String fileName){
-		return getFile("Signs"+File.separator+fileName);
+		return getFile("Signs"+File.separator+"Reception"+File.separator+fileName);
 	}
 	public static File getHotelFile(String hotelName){
 		return getFile("Hotels"+File.separator+hotelName+".yml");

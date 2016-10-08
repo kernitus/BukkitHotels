@@ -41,8 +41,6 @@ import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 public class WorldGuardManager {
 
-	public WorldGuardManager(){}
-
 	public static WorldGuardPlugin getWorldGuard(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 

@@ -19,24 +19,27 @@ import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
-import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsCommandHandler implements CommandExecutor {
 
+
+
 	private HotelsMain plugin;
+	private HotelsConfigHandler HCH;
+	private HotelsCreationMode HCM;
+	private HotelsCommandExecutor HCE;
+	private WorldGuardManager WGM;
+	
 	public HotelsCommandHandler(HotelsMain plugin){
 		this.plugin = plugin;
+		
+		HCH = new HotelsConfigHandler(plugin);
+		HCM = new HotelsCreationMode(plugin);
+		HCE = new HotelsCommandExecutor(plugin);
+		WGM = new WorldGuardManager();
 	}
-
-	SignManager SM = new SignManager(plugin);
-	HotelsCreationMode HCM = new HotelsCreationMode(plugin);
-	WorldGuardManager WGM = new WorldGuardManager();
-	HotelsConfigHandler HConH = new HotelsConfigHandler(plugin);
-	HotelsFileFinder HFF = new HotelsFileFinder();
-	HotelsCommandExecutor HCE = new HotelsCommandExecutor(plugin);
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdLbl,String[] args){
@@ -134,8 +137,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 
 			else if(args[0].equalsIgnoreCase("reload")){
-				if(Mes.hasPerm(sender, "hotels.reload"))
-					HCE.cmdReload(sender);
+				if(Mes.hasPerm(sender, "hotels.reload")){
+					HCH.reloadConfigs();
+					sender.sendMessage(Mes.mes("chat.commands.reload.success"));
+				}
 				else
 					sender.sendMessage(Mes.mes("chat.noPermission"));
 			}
@@ -565,11 +570,6 @@ public class HotelsCommandHandler implements CommandExecutor {
 						sender.sendMessage(Mes.mes("chat.commands.home.noHomeSet"));	
 				}
 			}
-			else if(args[0].equalsIgnoreCase("reload")){
-				HConH.reloadConfigs();
-				sender.sendMessage(Mes.mes("chat.commands.reload.success"));
-			}
-
 			else if(args[0].equalsIgnoreCase("sellhotel")||args[0].equalsIgnoreCase("sellh")){
 				if(!(sender instanceof Player)){
 					sender.sendMessage(Mes.mesnopre("chat.commands.sellhotel.consoleRejected")); return false;}
@@ -662,9 +662,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 						taxString = taxString.replaceAll("%", "");
 					else
 						//TODO 
-					
-					
-					HotelsMain.economy.depositPlayer(op, price); //Paying old owner
+
+
+						HotelsMain.economy.depositPlayer(op, price); //Paying old owner
 				}
 
 				WGM.addOwner(player, region);
