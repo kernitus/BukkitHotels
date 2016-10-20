@@ -139,7 +139,7 @@ public class HotelsConfigHandler {
 	public static File getHotelFile(String hotelName){
 		return getFile("Hotels"+File.separator+hotelName+".yml");
 	}
-	public File getInventoryFile(UUID uuid){
+	public static File getInventoryFile(UUID uuid){
 		return getFile("Inventories"+File.separator+uuid+".yml");
 	}
 	public YamlConfiguration getconfig(String configName){
@@ -167,7 +167,7 @@ public class HotelsConfigHandler {
 	public YamlConfiguration getSignConfig(String hotelName, int roomNum){
 		return getyml(getSignFile(hotelName, String.valueOf(roomNum)));
 	}
-	public YamlConfiguration getInventoryConfig(UUID uuid){
+	public static YamlConfiguration getInventoryConfig(UUID uuid){
 		return getyml(getInventoryFile(uuid));
 	}
 	public static YamlConfiguration getHotelConfig(String hotelName){

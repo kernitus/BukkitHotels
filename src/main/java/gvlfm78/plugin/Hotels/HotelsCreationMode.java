@@ -34,19 +34,16 @@ import kernitus.plugin.Hotels.managers.Mes;
 public class HotelsCreationMode {
 
 	private HotelsMain plugin;
-	private HotelsConfigHandler HCH;
-	
+
 	public HotelsCreationMode(HotelsMain plugin){
 		this.plugin = plugin;
-		
-	HCH = new HotelsConfigHandler(plugin);
 	}
 
 	public boolean isInCreationMode(String uuid){
-		return HCH.getInventoryFile(UUID.fromString(uuid)).exists();
+		return HotelsConfigHandler.getInventoryFile(UUID.fromString(uuid)).exists();
 	}
 	public boolean isInCreationMode(UUID uuid){
-		return HCH.getInventoryFile(uuid).exists();
+		return HotelsConfigHandler.getInventoryFile(uuid).exists();
 	}
 
 	public void hotelSetup(String hotelName, CommandSender s){
@@ -69,23 +66,25 @@ public class HotelsCreationMode {
 			p.sendMessage((Mes.mes("chat.commands.create.maxHotelsReached")).replaceAll("%max%", String.valueOf(maxHotels))); return;
 		}
 		//Creating hotel region
+		
+		ProtectedRegion r;
+		
 		if(sel instanceof CuboidSelection){
-			ProtectedRegion r = new ProtectedCuboidRegion(
+			r = new ProtectedCuboidRegion(
 					"Hotel-"+hotelName, 
 					new BlockVector(sel.getNativeMinimumPoint()), 
 					new BlockVector(sel.getNativeMaximumPoint())
 					);
-			hotel.create(r, p);
 		}
 		else if(sel instanceof Polygonal2DSelection){
 			int minY = sel.getMinimumPoint().getBlockY();
 			int maxY = sel.getMaximumPoint().getBlockY();
 			List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
-			ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName, points, minY, maxY);
-			hotel.create(r, p);
+			r = new ProtectedPolygonalRegion("Hotel-"+hotelName, points, minY, maxY);
 		}
-		else
-			p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid"));
+		else{
+			p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid")); return; }
+		hotel.create(r, p);//TODO Call hotel created event
 	}
 
 	public void roomSetup(String hotelName,int roomNum,Player p){
@@ -100,23 +99,24 @@ public class HotelsCreationMode {
 		if((sel instanceof Polygonal2DSelection) && (pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
 				((sel instanceof CuboidSelection) && (pr.contains(sel.getNativeMinimumPoint()) && pr.contains(sel.getNativeMaximumPoint())))){
 			//Creating room region
+			ProtectedRegion r;
 			if(sel instanceof CuboidSelection){
-				ProtectedRegion r = new ProtectedCuboidRegion(
+				r = new ProtectedCuboidRegion(
 						"Hotel-"+hotelName+"-"+room.getNum(), 
 						new BlockVector(sel.getNativeMinimumPoint()), 
 						new BlockVector(sel.getNativeMaximumPoint())
-						);
-				room.createRegion(r, p);				
+						);				
 			}
 			else if(sel instanceof Polygonal2DSelection){
 				int minY = sel.getMinimumPoint().getBlockY();
 				int maxY = sel.getMaximumPoint().getBlockY();
 				List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
-				ProtectedRegion r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
-				room.createRegion(r, p);
+				r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
 			}
-			else
-				p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid"));
+			else{
+				p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid")); return; }
+			room.createRegion(r, p);
+			
 		}
 		else
 			p.sendMessage(Mes.mes("chat.creationMode.rooms.notInHotel"));
@@ -125,7 +125,7 @@ public class HotelsCreationMode {
 	public void resetInventoryFiles(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
-		File invFile = HotelsConfigHandler.getFile("Inventories"+File.separator+playerUUID+".yml");
+		File invFile = HotelsConfigHandler.getInventoryFile(playerUUID);
 		if(invFile.exists())
 			invFile.delete();
 	}
@@ -134,7 +134,7 @@ public class HotelsCreationMode {
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
 		PlayerInventory pinv = p.getInventory();
-		File file = HotelsConfigHandler.getFile("Inventories"+File.separator+playerUUID+".yml");
+		File file = HotelsConfigHandler.getInventoryFile(playerUUID);
 
 		if(!file.exists()){
 			try {
@@ -143,7 +143,7 @@ public class HotelsCreationMode {
 				p.sendMessage(Mes.mes("chat.creationMode.inventory.storeFail"));
 			}
 
-			YamlConfiguration inv = HCH.getconfig("Inventories"+File.separator+playerUUID+".yml");
+			YamlConfiguration inv = HotelsConfigHandler.getInventoryConfig(playerUUID);
 
 			inv.set("inventory", pinv.getContents());
 			inv.set("armour", pinv.getArmorContents());
@@ -215,8 +215,8 @@ public class HotelsCreationMode {
 	}
 
 	public void giveItems(CommandSender s){
-		Player p = ((Player) s);
-		File file = new File("plugins"+File.separator+"Worldedit"+File.separator+"config.yml");
+		Player p = (Player) s;
+		File file = new File("plugins" + File.separator + "Worldedit" + File.separator + "config.yml");
 		PlayerInventory pi = p.getInventory();
 
 		//Wand
