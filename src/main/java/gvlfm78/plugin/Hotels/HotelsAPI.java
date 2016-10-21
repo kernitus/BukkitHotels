@@ -28,9 +28,8 @@ public class HotelsAPI {
 	public static ArrayList<Hotel> getAllHotels(){
 		ArrayList<Hotel> hotels = new ArrayList<Hotel>();
 		List<World> worlds = Bukkit.getWorlds();
-		for(World w : worlds){
+		for(World w : worlds)
 			hotels.addAll(getHotelsInWorld(w));
-		}
 		return hotels;
 	}
 	public static ArrayList<Hotel> getHotelsOwnedBy(UUID uuid){

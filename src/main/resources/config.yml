@@ -18,9 +18,9 @@ max_rent_extend: 3
 # How often Hotels checks for expired rooms and updates room signs
 roomTaskTimerMinutes: 2
 # How often Hotels updates reception signs
-receptionTaskTimerMinutes: 2
+receptionTaskTimerMinutes: 5
 # How often Hotels checks for expired hotel sale offers
-hotelTaskTimerMinutes: 2
+hotelTaskTimerMinutes: 3
 # Tax on revenue from hotels. It is applied to the money players spend in a hotel
 # before the money is given to the hotel owner.
 # Can either be a percentage (25%) or a set amount every time (50)

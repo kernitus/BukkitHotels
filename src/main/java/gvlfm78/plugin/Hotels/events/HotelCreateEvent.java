@@ -3,15 +3,15 @@ package kernitus.plugin.Hotels.events;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import kernitus.plugin.Hotels.Room;
+import kernitus.plugin.Hotels.Hotel;
 
-public class RoomCreateEvent extends Event{
+public class HotelCreateEvent extends Event{
 
-	private Room room;
 	private static final HandlerList handlers = new HandlerList();
+	private Hotel hotel;
 	
-	public RoomCreateEvent(Room room){
-		this.room = room;
+	public HotelCreateEvent(Hotel hotel){
+		this.hotel = hotel;
 	}
 	
 	@Override
@@ -23,7 +23,7 @@ public class RoomCreateEvent extends Event{
 	    return handlers;
 	}
 	
-	public Room getRoom(){
-		return room;
+	public Hotel getHotel(){
+		return hotel;
 	}
 }
