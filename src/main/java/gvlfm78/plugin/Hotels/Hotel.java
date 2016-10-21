@@ -20,6 +20,8 @@ import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import kernitus.plugin.Hotels.events.HotelDeleteEvent;
+import kernitus.plugin.Hotels.events.HotelRenameEvent;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
@@ -142,6 +144,7 @@ public class Hotel {
 		return getRegion().contains(b.getX(),b.getY(),b.getZ());
 	}
 	public void rename(String newName){
+		String oldName = name;
 		//Rename rooms
 		ArrayList<Room> rooms = getRooms();
 
@@ -151,7 +154,7 @@ public class Hotel {
 			File newHotelsfile = HotelsConfigHandler.getHotelFile(newName.toLowerCase()+".yml");
 			hotelsFile.renameTo(newHotelsfile);
 		}
-		WGM.renameRegion("hotel-"+name, "hotel-"+newName, world);
+		WGM.renameRegion("hotel-" + name, "hotel-" + newName, world);
 		name = newName;
 		ProtectedRegion r = getRegion();
 
@@ -159,6 +162,7 @@ public class Hotel {
 			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name)));
 		if(Mes.flagValue("hotel.map-making.FAREWELL") != null)
 			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name)));
+		Bukkit.getPluginManager().callEvent(new HotelRenameEvent(this, oldName));
 	}
 	public void removeAllSigns(){
 		deleteAllReceptionSigns();
@@ -218,6 +222,7 @@ public class Hotel {
 		}
 		//Remove Hotel file if existant
 		deleteHotelFile();
+		Bukkit.getPluginManager().callEvent(new HotelDeleteEvent(this));
 	}
 	public boolean isOwner(UUID uuid){
 		return getOwners().contains(uuid);

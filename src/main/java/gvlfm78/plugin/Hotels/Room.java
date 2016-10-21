@@ -21,6 +21,9 @@ import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import kernitus.plugin.Hotels.events.RoomDeleteEvent;
+import kernitus.plugin.Hotels.events.RoomRentEvent;
+import kernitus.plugin.Hotels.events.RoomRenumberEvent;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
@@ -253,7 +256,7 @@ public class Room {
 
 		//Setting room flags back in case they were changed to allow players in
 		WGM.roomFlags(getRegion(),num,world);
-
+		Bukkit.getPluginManager().callEvent(new RoomRentEvent(this));
 	}
 	///Config stuff
 	private File getSignFile(){
@@ -304,6 +307,7 @@ public class Room {
 		return renumber(Integer.parseInt(newNum));
 	}
 	public int renumber(int newNum){
+		int oldNum = num;
 		Hotel hotel = getHotel();
 		String hotelName = hotel.getName();
 
@@ -366,6 +370,8 @@ public class Room {
 		num = newNum;
 		sconfig = getSignConfig();
 
+		Bukkit.getPluginManager().callEvent(new RoomRenumberEvent(this, oldNum));
+		
 		return 0;
 	}
 
@@ -479,6 +485,7 @@ public class Room {
 		WGM.removeRegion(world, getRegion());
 		WGM.saveRegions(world);
 		deleteSignAndFile();
+		Bukkit.getPluginManager().callEvent(new RoomDeleteEvent(this));
 	}
 	public void createRegion(ProtectedRegion region, Player p){
 		World world = p.getWorld();
