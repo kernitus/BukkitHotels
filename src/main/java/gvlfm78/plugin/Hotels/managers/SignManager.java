@@ -52,58 +52,56 @@ public class SignManager {
 		Player p = e.getPlayer();
 		//Sign Lines
 		String hotelName = ChatColor.stripColor(e.getLine(1)).trim();
-		if(!hotelName.isEmpty()){
-			World world = p.getWorld();
-			Hotel hotel = new Hotel(world,hotelName);
-			if (hotel.exists()){ //Hotel exists
-				String tot = String.valueOf(hotel.getTotalRoomCount()); //Getting total amount of rooms in hotel
-				String free = String.valueOf(hotel.getFreeRoomCount()); //Getting amount of free rooms in hotel
-
-				//Setting all sign lines
-				e.setLine(0, (ChatColor.GREEN + Mes.mesnopre("sign.reception")));
-				e.setLine(1, (ChatColor.DARK_BLUE + hotelName + " Hotel"));
-				e.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(tot) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.total")));
-				e.setLine(3, (ChatColor.GREEN + String.valueOf(free) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.free")));
-
-				int i = 1;
-				File receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, i);
-				while(receptionFile.exists()){
-					i++;
-					receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, i);
-				}//Loop will stop once a non-existant file is found
-				System.out.println("Vadavorod");
-				if(!receptionFile.exists()){
-					try {
-						receptionFile.createNewFile();
-					} catch (IOException e1){
-						p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
-						e1.printStackTrace();
-					}
-					YamlConfiguration config = YamlConfiguration.loadConfiguration(receptionFile);
-					config.addDefault("Reception.hotel", hotelName);
-					config.addDefault("Reception.location.world", e.getBlock().getWorld().getName().toLowerCase());
-					config.addDefault("Reception.location.x", e.getBlock().getX());
-					config.addDefault("Reception.location.y", e.getBlock().getY());
-					config.addDefault("Reception.location.z", e.getBlock().getZ());
-					config.options().copyDefaults(true);
-					try {
-						config.save(receptionFile);
-					} catch (IOException e1) {
-						p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
-						e1.printStackTrace();
-					}
-				}		
-			}
-			else{
-				e.setLine(0, ("&4[Hotels]").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
-				p.sendMessage(Mes.mes("chat.sign.place.noHotel"));
-			}
-		}
-		else{
-			e.setLine(0, ("&4[Hotels]").replaceAll("(?i)&([a-fk-r0-9])", "\u00A7$1"));
+		if(hotelName.isEmpty()){
+			e.setLine(0, (ChatColor.DARK_RED+"[Hotels]"));
 			p.sendMessage(Mes.mes("chat.sign.place.emptySign"));
 		}
-		return;
+		World world = p.getWorld();
+		Hotel hotel = new Hotel(world,hotelName);
+		if (!hotel.exists()){ //Hotel exists
+			e.setLine(0, (ChatColor.DARK_RED+"[Hotels]"));
+			p.sendMessage(Mes.mes("chat.sign.place.noHotel"));
+		}
+		
+		String tot = String.valueOf(hotel.getTotalRoomCount()); //Getting total amount of rooms in hotel
+		String free = String.valueOf(hotel.getFreeRoomCount()); //Getting amount of free rooms in hotel
+
+		//Setting all sign lines
+		e.setLine(0, (ChatColor.GREEN + Mes.mesnopre("sign.reception")));
+		e.setLine(1, (ChatColor.DARK_BLUE + hotelName + " Hotel"));
+		e.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(tot) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.total")));
+		e.setLine(3, (ChatColor.GREEN + String.valueOf(free) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.free")));
+		
+		int i = 1;
+		File receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, i);
+		while(receptionFile.exists()){
+			i++;
+			receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, i);
+		}//Loop will stop once a non-existant file is found
+		
+		if(!receptionFile.exists()){
+			try {
+				receptionFile.createNewFile();
+			} catch (IOException e1){
+				p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
+				e1.printStackTrace();
+			}
+			
+			YamlConfiguration config = YamlConfiguration.loadConfiguration(receptionFile);
+			config.addDefault("Reception.hotel", hotelName);
+			config.addDefault("Reception.location.world", e.getBlock().getWorld().getUID());
+			config.addDefault("Reception.location.x", e.getBlock().getX());
+			config.addDefault("Reception.location.y", e.getBlock().getY());
+			config.addDefault("Reception.location.z", e.getBlock().getZ());
+			config.options().copyDefaults(true);
+			try {
+				config.save(receptionFile);
+			} catch (IOException e1) {
+				p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
+				e1.printStackTrace();
+			}
+			
+		}
 	}
 
 	public void placeRoomSign(SignChangeEvent e){
@@ -567,7 +565,7 @@ public class SignManager {
 		}
 		return true;
 	}
-	public long TimeConverter(String immutedtime){
+	public static long TimeConverter(String immutedtime){
 		final Pattern p = Pattern.compile("(\\d+)([hmd])");
 		final Matcher m = p.matcher(immutedtime);
 		long totalMins = 0;
@@ -581,7 +579,7 @@ public class SignManager {
 		return totalMins;
 	}
 
-	public TimeUnit toTimeUnit(@Nonnull final String c){
+	public static TimeUnit toTimeUnit(@Nonnull final String c){
 		switch (c){
 		case "m": return TimeUnit.MINUTES;
 		case "h": return TimeUnit.HOURS;
@@ -589,7 +587,7 @@ public class SignManager {
 		default: throw new IllegalArgumentException(String.format("%s is not a valid time code [mhd]", c));
 		}
 	}
-	public double CostConverter(String immutedcost){
+	public static double CostConverter(String immutedcost){
 
 		final Pattern p = Pattern.compile("(\\d+)([thkmb]||)");
 		final Matcher m = p.matcher(immutedcost);
@@ -603,7 +601,7 @@ public class SignManager {
 		return totalCost;
 	}
 
-	public double toCost(@Nonnull final String c){
+	public static double toCost(@Nonnull final String c){
 		switch (c){
 		case "t": return 10;
 		case "h": return 100;
@@ -615,7 +613,7 @@ public class SignManager {
 		default: throw new IllegalArgumentException(String.format("%s is not a valid cost code [thkmb]", c));
 		}
 	}
-	public String TimeFormatter(long input){
+	public static String TimeFormatter(long input){
 		if(input>0){
 			//Formats time in minutes to days, hours and minutes
 			long[] ftime = new long[3];

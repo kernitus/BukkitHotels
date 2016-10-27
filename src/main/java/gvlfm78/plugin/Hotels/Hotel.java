@@ -6,13 +6,10 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -104,14 +101,16 @@ public class Hotel {
 		}
 		return false;
 	}
-	public ArrayList<File> getAllReceptionSignFiles(){
-		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs");
-		ArrayList<File> files = new ArrayList<File>();
+	public ArrayList<ReceptionSign> getAllReceptionSigns(){
+		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+name.toLowerCase());
+		ArrayList<ReceptionSign> files = new ArrayList<ReceptionSign>();
 
 		for(String x : fileList){
-			File file = HotelsConfigHandler.getReceptionFile(x);
-			if(file.getName().matches("^Reception-.+-.+"))
-				files.add(file);
+			File file = HotelsConfigHandler.getReceptionFile(name, x.replace(".yml", ""));
+			if(file.getName().matches("\\d+")){
+				ReceptionSign rs = new ReceptionSign(this, x.replace(".yml", ""));
+				files.add(rs);
+			}
 		}
 		return files;
 	}
@@ -172,27 +171,8 @@ public class Hotel {
 		}
 	}
 	public void deleteAllReceptionSigns(){
-		for(File file : getAllReceptionSignFiles()){
-			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-			World worldFromSign = Bukkit.getWorld(config.getString("Reception.location.world"));
-			int locx = config.getInt("Reception.location.x");
-			int locy = config.getInt("Reception.location.y");
-			int locz = config.getInt("Reception.location.z");
-			Block b = worldFromSign.getBlockAt(locx,locy,locz);
-			if(world==worldFromSign){
-				Material mat = b.getType();
-				if(mat.equals(Material.SIGN)||mat.equals(Material.SIGN_POST)||mat.equals(Material.WALL_SIGN)){
-					Sign s = (Sign) b.getState();
-					String Line1 = ChatColor.stripColor(s.getLine(0));
-					if(Line1.matches("Reception")||Line1.matches(Mes.mesnopre("Sign.reception"))){
-						if(getRegion().contains(locx, locy, locz)){
-							b.setType(Material.AIR);
-						}
-					}
-				}
-			}
-			file.delete();
-		}
+		for(ReceptionSign rs : getAllReceptionSigns())
+			rs.deleteSignAndConfig();
 	}
 	public void deleteHotelFile(){
 		getHotelFile().delete();
@@ -249,6 +229,11 @@ public class Hotel {
 
 		if(!Mes.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
 			p.sendMessage(Mes.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
+	}
+	public void updateReceptionSigns(){
+		ArrayList<ReceptionSign> rss = getAllReceptionSigns();
+		for(ReceptionSign rs : rss)
+			rs.update();
 	}
 	//////////////////////////
 	////////Setters///////////

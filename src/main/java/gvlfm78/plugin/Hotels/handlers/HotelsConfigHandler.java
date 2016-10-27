@@ -123,18 +123,18 @@ public class HotelsConfigHandler {
 	public static File getFlagsFile(){
 		return getFile("flags.yml");
 	}
-	public File getSignFile(String hotelName, String roomNum){
+	public static File getSignFile(String hotelName, String roomNum){
 		return getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 	}
 
-	public File getSignFile(String hotelName, int roomNum){
+	public static File getSignFile(String hotelName, int roomNum){
 		return getSignFile(hotelName, String.valueOf(roomNum));
 	}
-	public static File getReceptionFile(String hotelName, int receptionFileNum){
-		return getFile("Signs"+File.separator+"Reception"+File.separator+"Reception-"+hotelName.toLowerCase()+"-"+receptionFileNum+".yml");
+	public static File getReceptionFile(String hotelName, int receptionNum){
+		return getReceptionFile(hotelName, String.valueOf(receptionNum));
 	}
-	public static File getReceptionFile(String fileName){
-		return getFile("Signs"+File.separator+"Reception"+File.separator+fileName);
+	public static File getReceptionFile(String hotelName, String receptionNum){
+		return getFile("Signs"+File.separator+"Reception"+File.separator+hotelName.toLowerCase()+File.separator+receptionNum+".yml");
 	}
 	public static File getHotelFile(String hotelName){
 		return getFile("Hotels"+File.separator+hotelName+".yml");

@@ -32,14 +32,12 @@ import kernitus.plugin.Hotels.managers.WorldGuardManager;
 public class RoomTask extends BukkitRunnable {
 
 	private HotelsMain plugin;
-	private SignManager SM;
 	private WorldGuardManager WGM;
 	private HotelsConfigHandler HCH;
-	
+
 	public RoomTask(HotelsMain plugin){
 		this.plugin = plugin;
-		
-		SM = new SignManager(plugin);
+
 		WGM = new WorldGuardManager();
 		HCH = new HotelsConfigHandler(plugin);
 	}
@@ -48,12 +46,13 @@ public class RoomTask extends BukkitRunnable {
 	public void run() {
 
 		ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins" + File.separator + "Hotels" + File.separator + "Signs");
+		Room room = null;
 
 		for(String fileName : fileslist){
 			File file = HotelsConfigHandler.getFile("Signs" + File.separator + fileName);
 
 			if(!fileName.matches("\\w+-\\d+.yml")){ file.delete(); }//Delete all non-room signs in folder
-			
+
 			Mes.debugConsole("Room sign getting checked: " + file.getName() + " Path: " + file.getAbsolutePath());
 
 			//Room sign
@@ -62,7 +61,7 @@ public class RoomTask extends BukkitRunnable {
 			World world = Bukkit.getWorld(config.getString("Sign.location.world").toLowerCase());
 			int roomNum = config.getInt("Sign.room");
 
-			Room room = new Room(world, hotelName, roomNum); //Creating room object
+			room = new Room(world, hotelName, roomNum); //Creating room object
 
 			Block signBlock = room.getBlockAtSignLocation();
 
@@ -93,7 +92,7 @@ public class RoomTask extends BukkitRunnable {
 					//Updating time remaining till expiry
 					long currentMins = System.currentTimeMillis()/1000/60;
 					//Time remaining
-					sign.setLine(2, SM.TimeFormatter(expiryDate-currentMins));
+					sign.setLine(2, SignManager.TimeFormatter(expiryDate-currentMins));
 					sign.update();
 				}
 				else{//Rent has expired
@@ -152,7 +151,7 @@ public class RoomTask extends BukkitRunnable {
 						e.printStackTrace();
 					}
 					//Resetting time on sign to default
-					sign.setLine(2, SM.TimeFormatter(config.getLong("Sign.time")));
+					sign.setLine(2, SignManager.TimeFormatter(config.getLong("Sign.time")));
 					sign.update();
 				}
 			}
@@ -168,9 +167,10 @@ public class RoomTask extends BukkitRunnable {
 					e.printStackTrace();
 				}
 				sign.setLine(3, ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
-				sign.setLine(2, SM.TimeFormatter(config.getLong("Sign.time")));
+				sign.setLine(2, SignManager.TimeFormatter(config.getLong("Sign.time")));
 				sign.update();
 			}
 		}
+		if(room!=null) room.getHotel().updateReceptionSigns();
 	}
 }

@@ -141,11 +141,14 @@ public class Room {
 	public int getTimesExtended(){
 		return sconfig.getInt("Sign.extended");
 	}
-	public int getExpiryMinute(){
-		return sconfig.getInt("Sign.expiryDate");
+	public long getExpiryMinute(){
+		return sconfig.getLong("Sign.expiryDate");
 	}
-	public int getRentMinute(){
-		return sconfig.getInt("Sign.timeRentedAt");
+	public long getRentMinute(){
+		return sconfig.getLong("Sign.timeRentedAt");
+	}
+	public long getRentTime(){
+		return sconfig.getLong("Sign.time");
 	}
 	public ArrayList<OfflinePlayer> getRenters(){
 		return null;
@@ -161,7 +164,7 @@ public class Room {
 	public boolean isFreeOrNotSetup(){
 		if(exists()){
 			OfflinePlayer renter = getRenter();
-			if(renter==null||!renter.hasPlayedBefore())
+			if(renter==null || !renter.hasPlayedBefore())
 				return true;
 		}
 		else
@@ -188,7 +191,7 @@ public class Room {
 	private void setRoomNumInConfig(int num){
 		sconfig.set("Sign.room", num);
 	}
-	public void setCost(Double cost){
+	public void setCost(double cost){
 		sconfig.set("Sign.cost", cost);
 	}
 	private void setSignLocation(Location l){
@@ -255,7 +258,11 @@ public class Room {
 		setTimeRentedAt(currentMin);
 
 		//Setting room flags back in case they were changed to allow players in
-		WGM.roomFlags(getRegion(),num,world);
+		WGM.roomFlags(getRegion(), num, world);
+
+		//Update this hotel's reception signs
+		hotel.updateReceptionSigns();
+
 		Bukkit.getPluginManager().callEvent(new RoomRentEvent(this));
 	}
 	///Config stuff
@@ -371,7 +378,7 @@ public class Room {
 		sconfig = getSignConfig();
 
 		Bukkit.getPluginManager().callEvent(new RoomRenumberEvent(this, oldNum));
-		
+
 		return 0;
 	}
 
