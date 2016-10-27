@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -23,6 +22,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
+import kernitus.plugin.Hotels.events.RentExpiryEvent;
+import kernitus.plugin.Hotels.events.RoomSignUpdateEvent;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
@@ -37,7 +38,7 @@ public class RoomTask extends BukkitRunnable {
 
 	public RoomTask(HotelsMain plugin){
 		this.plugin = plugin;
-
+		
 		WGM = new WorldGuardManager();
 		HCH = new HotelsConfigHandler(plugin);
 	}
@@ -63,10 +64,10 @@ public class RoomTask extends BukkitRunnable {
 
 			room = new Room(world, hotelName, roomNum); //Creating room object
 
-			Block signBlock = room.getBlockAtSignLocation();
+			Block signBlock = room.getBlockAtSignLocation(); //Getting block at location where sign should be
 
-			if(!signBlock.getType().equals(Material.WALL_SIGN) && !signBlock.getType().equals(Material.SIGN_POST) && !signBlock.getType().equals(Material.SIGN)){
-				file.delete();
+			if(!room.isBlockAtSignLocationSign()){
+				file.delete();//If block is not a sign, delete it
 				plugin.getLogger().info(Mes.mesnopre("sign.delete.location").replaceAll("%filename%", file.getName())); 
 				return; }
 
@@ -85,27 +86,34 @@ public class RoomTask extends BukkitRunnable {
 
 			//Room numbers match
 			if(config.get("Sign.expiryDate")!=null){
-				long expiryDate = config.getLong("Sign.expiryDate");
-				if(expiryDate==0){ return; }
+				long expiryDate = room.getExpiryMinute();
+				if(expiryDate==0){ return; }//Rent is permanent
 
-				if(expiryDate > (System.currentTimeMillis()/1000/60)){//If rent has not expired, update tim remaining on sign
+				if(expiryDate > (System.currentTimeMillis()/1000/60)){//If rent has not expired, update time remaining on sign
 					//Updating time remaining till expiry
 					long currentMins = System.currentTimeMillis()/1000/60;
 					//Time remaining
-					sign.setLine(2, SignManager.TimeFormatter(expiryDate-currentMins));
+					long remainingTime = expiryDate-currentMins;
+					String formattedRemainingTime = SignManager.TimeFormatter(remainingTime);
+					RoomSignUpdateEvent rsue = new RoomSignUpdateEvent(room, sign, remainingTime, formattedRemainingTime);
+					Bukkit.getPluginManager().callEvent(rsue); //Call Room Sign Update event
+					if(rsue.isCancelled()){ return; } //If event has been cancelled return
+					formattedRemainingTime = rsue.getFormattedRemainingTime(); //Getting FRT from event in case another plugin modified it
+
+					sign.setLine(2, formattedRemainingTime);
+
 					sign.update();
 				}
 				else{//Rent has expired
-					String regionName = config.getString("Sign.region");
-					ProtectedRegion region = WorldGuardManager.getRM(world).getRegion(regionName);
-					if(config.getString("Sign.renter")==null){ return; }
+					ProtectedRegion region = room.getRegion();
+					if(!room.isRented()){ return; } //Rent expired but there's no renter, something went wrong, just quit
 
-					OfflinePlayer p = Bukkit.getServer().getOfflinePlayer(UUID.fromString(config.getString("Sign.renter")));
-					WGM.removeMember(p, region);
+					OfflinePlayer p = room.getRenter(); //Getting renter
+					WGM.removeMember(p, region); //Removing renter as member of room region
 
 					//Removing friends
-					List<String> stringList = config.getStringList("Sign.friends");
-					for(String currentFriend : stringList){
+					List<String> friendList = room.getFriendsList();
+					for(String currentFriend : friendList){
 						OfflinePlayer cf = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
 						WGM.removeMember(cf, region);
 					}
@@ -119,12 +127,13 @@ public class RoomTask extends BukkitRunnable {
 
 					sign.setLine(3, ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
 					sign.update();
+					
 					plugin.getLogger().info(Mes.mesnopre("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
 					if(p.isOnline()){
-						Player op = Bukkit.getServer().getPlayer(UUID.fromString(config.getString("Sign.renter")));
+						Player op = (Player) p;
 						op.sendMessage(Mes.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(roomNum)).replaceAll("%hotel%", hotelName));
 					}
-					else{
+					else{ //Player is offline, place their expiry message in the message queue //TODO Make class for easy usage of message queue
 						YamlConfiguration queue = HCH.getMessageQueue();
 						if(!queue.contains("messages.expiry")){
 							queue.createSection("messages.expiry");
@@ -153,6 +162,9 @@ public class RoomTask extends BukkitRunnable {
 					//Resetting time on sign to default
 					sign.setLine(2, SignManager.TimeFormatter(config.getLong("Sign.time")));
 					sign.update();
+					
+					Bukkit.getPluginManager().callEvent(new RentExpiryEvent(room, p, friendList));
+					
 				}
 			}
 			else{

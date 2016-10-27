@@ -132,6 +132,10 @@ public class Room {
 	public Block getBlockAtSignLocation(){
 		return world.getBlockAt(getSignLocation());
 	}
+	public boolean isBlockAtSignLocationSign(){
+		Material mat = getBlockAtSignLocation().getType();
+		return mat.equals(Material.WALL_SIGN) || mat.equals(Material.SIGN) || mat.equals(Material.SIGN_POST);
+	}
 	public Location getDefaultHome(){
 		return new Location(getWorldFromConfig(),sconfig.getDouble("Sign.defaultHome.x"),sconfig.getDouble("Sign.defaultHome.y"),sconfig.getDouble("Sign.defaultHome.z"),(float) sconfig.getDouble("Sign.defaultHome.pitch"),(float) sconfig.getDouble("Sign.defaultHome.yaw"));
 	}
