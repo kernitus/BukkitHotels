@@ -24,13 +24,10 @@ import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsCommandExecutor {
 
-	private SignManager SM;
 	private HotelsCreationMode HCM;
 	private WorldGuardManager WGM;
 	
 	public HotelsCommandExecutor(HotelsMain plugin){
-		
-		SM = new SignManager(plugin);
 		HCM = new HotelsCreationMode(plugin);
 		WGM = new WorldGuardManager();
 	}
@@ -385,7 +382,7 @@ public class HotelsCommandExecutor {
 
 			if(expiryDate>0){
 				long currentmins = System.currentTimeMillis()/1000/60;
-				String timeleft = SM.TimeFormatter(expiryDate-currentmins);
+				String timeleft = SignManager.TimeFormatter(expiryDate-currentmins);
 				sender.sendMessage(Mes.mes("chat.commands.check.lineRooms")
 						.replaceAll("%hotel%", hotelName).replaceAll("%room%", roomNum).replaceAll("%timeleft%", String.valueOf(timeleft)));
 			}

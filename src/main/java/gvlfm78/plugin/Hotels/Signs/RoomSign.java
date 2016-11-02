@@ -1,4 +1,4 @@
-package kernitus.plugin.Hotels;
+package kernitus.plugin.Hotels.Signs;
 
 import java.io.File;
 
@@ -11,11 +11,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import kernitus.plugin.Hotels.Hotel;
+import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
 
-public class RoomSign {
+public class RoomSign extends AbstractSign{
 
 	private Room room;
 
@@ -43,7 +45,7 @@ public class RoomSign {
 	public void update(){
 		Block b = getBlock();
 		Material mat = b.getType();
-		if(!mat.equals(Material.SIGN)) return;
+		if(!mat.equals(Material.SIGN_POST) && !mat.equals(Material.WALL_SIGN)) return;
 		Sign s = (Sign) b;
 
 		if(!room.isFree())
@@ -60,7 +62,7 @@ public class RoomSign {
 	public Sign getSign(){
 		Block b = getBlock();
 		Material mat = b.getType();
-		if(mat.equals(Material.SIGN))
+		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN))
 			return (Sign) b;
 		else return null;
 	}
@@ -85,14 +87,8 @@ public class RoomSign {
 	public File getFile(){
 		return HotelsConfigHandler.getSignFile(room.getHotel().getName(), room.getNum());
 	}
-	public YamlConfiguration getConfig(){
-		return YamlConfiguration.loadConfiguration(getFile());
-	}
 	public Room getRoom(){
 		return room;
-	}
-	public void deleteConfig(){
-		getFile().delete();
 	}
 	public String getHotelNameFromSign(){
 		String firstLine = getSignLines()[0];
@@ -110,7 +106,7 @@ public class RoomSign {
 	public void removeSign(){
 		Block b = getBlock();
 		Material mat = b.getType();
-		if(mat.equals(Material.SIGN)){
+		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){
 			Hotel hotel = room.getHotel();
 			if(getHotelNameFromSign().matches(hotel.getName())){
 				if(hotel.getRegion().contains(b.getX(), b.getY(), b.getZ()))
@@ -118,9 +114,4 @@ public class RoomSign {
 			}
 		}
 	}
-	public void deleteSignAndConfig(){
-		removeSign();
-		deleteConfig();
-	}
-
 }

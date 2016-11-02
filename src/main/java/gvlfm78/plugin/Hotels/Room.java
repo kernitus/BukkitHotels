@@ -21,11 +21,16 @@ import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import kernitus.plugin.Hotels.events.RentExpiryEvent;
 import kernitus.plugin.Hotels.events.RoomDeleteEvent;
 import kernitus.plugin.Hotels.events.RoomRentEvent;
 import kernitus.plugin.Hotels.events.RoomRenumberEvent;
+import kernitus.plugin.Hotels.events.RoomSignUpdateEvent;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
+import kernitus.plugin.Hotels.handlers.MessageType;
 import kernitus.plugin.Hotels.managers.Mes;
+import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class Room {
@@ -62,14 +67,14 @@ public class Room {
 		this.world = world;
 	}
 	public Room(String hotelName, int num){
-		//To use only when world is unknown, due to extra calculations involved to find it
+		//Use only when world is unknown, due to extra calculations involved to find it
 		this.hotel = new Hotel(hotelName);
 		this.num = num;
 		this.sconfig = getSignConfig();
 		this.world = hotel.getWorld();
 	}
 	public Room(String hotelName, String num){
-		//To use only when world is unknown, due to extra calculations involved to find it
+		//Use only when world is unknown, due to extra calculations involved to find it
 		this.hotel = new Hotel(hotelName);
 		this.num = Integer.parseInt(num);
 		this.sconfig = getSignConfig();
@@ -134,7 +139,7 @@ public class Room {
 	}
 	public boolean isBlockAtSignLocationSign(){
 		Material mat = getBlockAtSignLocation().getType();
-		return mat.equals(Material.WALL_SIGN) || mat.equals(Material.SIGN) || mat.equals(Material.SIGN_POST);
+		return mat.equals(Material.WALL_SIGN) || mat.equals(Material.SIGN_POST);
 	}
 	public Location getDefaultHome(){
 		return new Location(getWorldFromConfig(),sconfig.getDouble("Sign.defaultHome.x"),sconfig.getDouble("Sign.defaultHome.y"),sconfig.getDouble("Sign.defaultHome.z"),(float) sconfig.getDouble("Sign.defaultHome.pitch"),(float) sconfig.getDouble("Sign.defaultHome.yaw"));
@@ -287,16 +292,7 @@ public class Room {
 		}
 		return true;
 	}
-	public boolean createSignConfig(Player p, long timeInMins, double cost, Location signLocation){
-		if(!doesSignFileExist()){
-			setRentTime(timeInMins);
-			setHotelNameInConfig(hotel.getName());
-			setRoomNumInConfig(num);
-			setCost(cost);
-			setSignLocation(signLocation);
-		}
-		return saveSignConfig();
-	}
+
 	public void deleteSignFile(){
 		getSignFile().delete();
 	}
@@ -304,19 +300,21 @@ public class Room {
 		Location loc = getSignLocation();
 		Block b = world.getBlockAt(loc);
 		Material mat = b.getType();
-		if(mat.equals(Material.SIGN)||mat.equals(Material.WALL_SIGN)||mat.equals(Material.SIGN_POST)){
+		if(mat.equals(Material.WALL_SIGN) || mat.equals(Material.SIGN_POST)){
 			Sign s = (Sign) b.getState();
 			String Line1 = ChatColor.stripColor(s.getLine(0));
-			if(Line1.matches("Reception")||Line1.matches(Mes.mesnopre("Sign.reception"))){
-				if(WGM.getRegion(world,"Hotel-"+hotel.getName()).contains(loc.getBlockX(),loc.getBlockY(),loc.getBlockZ())){
+			if(Line1.matches("Reception") || Line1.matches(Mes.mesnopre("Sign.reception"))){
+				if(WGM.getRegion(world,"Hotel-"+hotel.getName()).contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())){
 					deleteSignFile();
 				}
 			}
 		}
 	}
+	
 	public int renumber(String newNum){
 		return renumber(Integer.parseInt(newNum));
 	}
+	
 	public int renumber(int newNum){
 		int oldNum = num;
 		Hotel hotel = getHotel();
@@ -340,7 +338,7 @@ public class Room {
 		Material mat = sign.getType();
 
 
-		if(mat.equals(Material.SIGN)||mat.equals(Material.SIGN_POST)||mat.equals(Material.WALL_SIGN)){
+		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){
 			sign.setType(Material.AIR);
 			deleteSignFile();
 			return 5;
@@ -385,7 +383,42 @@ public class Room {
 
 		return 0;
 	}
+	
+	public boolean createSignConfig(Player p, long timeInMins, double cost, Location signLocation){
+		if(!doesSignFileExist()){
+			setRentTime(timeInMins);
+			setHotelNameInConfig(hotel.getName());
+			setRoomNumInConfig(num);
+			setCost(cost);
+			setSignLocation(signLocation);
+		}
+		return saveSignConfig();
+	}
+	
+	public void updateSign(){
+		Block b = getBlockAtSignLocation();
+		Material mat = b.getType();
+		if(!exists() || !(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)) ) return;
 
+		Sign s = (Sign) b;
+
+		long currentMins = System.currentTimeMillis()/1000/60;
+		//Time remaining
+		long remainingTime = getExpiryMinute() - currentMins;
+		String formattedRemainingTime = SignManager.TimeFormatter(remainingTime);
+
+		RoomSignUpdateEvent rsue = new RoomSignUpdateEvent(this, s, remainingTime, formattedRemainingTime);
+
+		Bukkit.getPluginManager().callEvent(rsue); //Call Room Sign Update event
+		if(rsue.isCancelled()){ return; } //If event has been cancelled return
+
+		formattedRemainingTime = rsue.getFormattedRemainingTime(); //Getting FRT from event in case another plugin modified it
+
+		s.setLine(2, formattedRemainingTime);
+
+		s.update();
+	}
+	
 	public boolean remove(){
 
 		if(!exists())
@@ -402,6 +435,7 @@ public class Room {
 
 		return true;
 	}
+	
 	public int removePlayer(OfflinePlayer playerToRemove){
 		if(world==null)
 			return 1;
@@ -442,11 +476,13 @@ public class Room {
 
 		return 0;
 	}
+	
 	public void renameRoom(String newHotelName){
 		WGM.renameRegion(getRegion().getId(), "Hotel-"+newHotelName+String.valueOf(num), world);
 		WGM.saveRegions(world);
 		hotel = new Hotel(world, newHotelName);
 	}
+	
 	public int addFriend(OfflinePlayer friend){
 
 		if(!doesSignFileExist())
@@ -470,6 +506,7 @@ public class Room {
 
 		return 0;
 	}
+	
 	public int removeFriend(OfflinePlayer friend){
 		if(!doesSignFileExist())
 			return 1;
@@ -492,12 +529,14 @@ public class Room {
 
 		return 0;
 	}
+	
 	public void delete(){
 		WGM.removeRegion(world, getRegion());
 		WGM.saveRegions(world);
 		deleteSignAndFile();
 		Bukkit.getPluginManager().callEvent(new RoomDeleteEvent(this));
 	}
+	
 	public void createRegion(ProtectedRegion region, Player p){
 		World world = p.getWorld();
 		ProtectedRegion hotelRegion = WGM.getRegion(world, "hotel-"+hotel.getName());
@@ -513,5 +552,128 @@ public class Room {
 		WorldGuardManager.makeRoomAccessible(region);
 		WGM.saveRegions(p.getWorld());
 		p.sendMessage(Mes.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
+	}
+	
+	public void unrent(){
+		ProtectedRegion region = getRegion();
+		String hotelName = getHotel().getName();
+		
+		if(!isBlockAtSignLocationSign()) return;
+		Sign sign = (Sign) getBlockAtSignLocation();
+
+		OfflinePlayer p = getRenter(); //Getting renter
+		List<String> friendList = getFriendsList(); //Getting friend list
+
+		//Calling rent expiry event
+		RentExpiryEvent ree = new RentExpiryEvent(this, p, friendList);
+		Bukkit.getPluginManager().callEvent(ree);
+		
+		if(ree.isCancelled()) return;
+		
+		//Removing renter
+		WGM.removeMember(p, region); //Removing renter as member of room region
+		//Removing friends
+		for(String currentFriend : friendList){
+			OfflinePlayer cf = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
+			WGM.removeMember(cf, region);
+		}
+
+		//If set in config, make room accessible to all players now that it is not rented
+		WorldGuardManager.makeRoomAccessible(region);
+		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
+			region.setFlag(DefaultFlag.BLOCK_BREAK, null);
+			region.setFlag(DefaultFlag.BLOCK_PLACE, null);
+			region.setPriority(1);
+		}
+
+		Mes.debugConsole(Mes.mesnopre("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
+
+		if(p.isOnline())
+			( (Player) p).sendMessage(Mes.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
+
+		else //Player is offline, place their expiry message in the message queue
+			HotelsMessageQueue.addMessage(MessageType.expiry, p.getUniqueId(), Mes.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
+
+		sconfig.set("Sign.renter", null);
+		sconfig.set("Sign.timeRentedAt", null);
+		sconfig.set("Sign.expiryDate", null);
+		sconfig.set("Sign.friends", null);
+		sconfig.set("Sign.extended", null);
+		sconfig.set("Sign.userHome.x", null);
+		sconfig.set("Sign.userHome.y", null);
+		sconfig.set("Sign.userHome.z", null);
+
+		saveSignConfig();
+
+		//Setting sign to say "Vacant"
+		sign.setLine(3, ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
+		//Resetting time on sign to default
+		sign.setLine(2, SignManager.TimeFormatter(sconfig.getLong("Sign.time")));
+		sign.update();
+	}
+	
+	public boolean checkRent(){ //Checks if rent has expired, if so unrents
+		File file = getSignFile();
+		if(!exists()){
+			file.delete();
+			Mes.debugConsole("Room sign " + file.getName()+" was deleted as the room doesn't exist");
+			return true;
+		}
+
+		Block signBlock = getBlockAtSignLocation(); //Getting block at location where sign should be
+
+		if(!isBlockAtSignLocationSign()){
+			file.delete();//If block is not a sign, delete it
+			Mes.debugConsole(Mes.mesnopre("sign.delete.location").replaceAll("%filename%", file.getName()));
+			return true;
+		}
+
+		String hotelName = getHotel().getName();
+
+		Sign sign = (Sign) signBlock.getState(); //Getting sign object
+		if(!hotelName.equalsIgnoreCase(ChatColor.stripColor(sign.getLine(0)))){//If hotelName on sign doesn't match that in config
+			file.delete();
+			Mes.debugConsole(Mes.mesnopre("sign.delete.hotelName").replaceAll("%filename%", file.getName()));
+			return true;
+		}
+
+		String[] Line2parts = ChatColor.stripColor(sign.getLine(1)).split("\\s");
+		int roomNumfromSign = Integer.valueOf(Line2parts[1].trim()); //Room Number 
+		if(getRoomNumFromConfig()!=roomNumfromSign){ //If roomNum on sign doesn't match that in config
+			file.delete();
+			Mes.debugConsole(Mes.mesnopre("sign.delete.roomNum").replaceAll("%filename%", file.getName()));
+			return true;
+		}
+
+
+		if(sconfig.get("Sign.expiryDate") != null){
+
+			long expiryDate = getExpiryMinute();
+			if(expiryDate==0){ return true; }//Rent is permanent
+
+			if(expiryDate > (System.currentTimeMillis()/1000/60))//If rent has not expired, update time remaining on sign
+				updateSign();
+
+			else{//Rent has expired
+				if(!isRented()) return true;  //Rent expired but there's no renter, something went wrong, just quit
+				unrent();
+				return true;
+			}
+		}
+
+		//The expiry date is null
+		sconfig.set("Sign.renter", null);
+		sconfig.set("Sign.timeRentedAt", null);
+		sconfig.set("Sign.expiryDate", null);
+		sconfig.set("Sign.friends", null);
+		sconfig.set("Sign.extended", null);
+
+		saveSignConfig();
+
+		sign.setLine(3, ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
+		sign.setLine(2, SignManager.TimeFormatter(sconfig.getLong("Sign.time")));
+		sign.update();
+
+		return true;
 	}
 }

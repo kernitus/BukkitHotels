@@ -4,20 +4,17 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import kernitus.plugin.Hotels.Metrics.Graph;
-import kernitus.plugin.Hotels.handlers.HotelsCommandExecutor;
 import kernitus.plugin.Hotels.handlers.HotelsCommandHandler;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.tasks.HotelTask;
-import kernitus.plugin.Hotels.tasks.ReceptionTask;
 import kernitus.plugin.Hotels.tasks.RoomTask;
+import kernitus.plugin.Hotels.updateChecker.HotelsUpdateChecker;
+import kernitus.plugin.Hotels.updateChecker.HotelsUpdateListener;
 import net.milkbowl.vault.economy.Economy;
 
 public class HotelsMain extends JavaPlugin{
@@ -26,19 +23,13 @@ public class HotelsMain extends JavaPlugin{
 	
 	//Task loops
 	RoomTask roomTask;
-	ReceptionTask receptionTask;
-	HotelTask hotelTask;
 	
 	HotelsConfigHandler HCH = new HotelsConfigHandler(this);
-	HotelsCommandExecutor HCE = new HotelsCommandExecutor(this);
-	FileConfiguration config = getConfig();
 	Logger log = getServer().getLogger();
-
-	YamlConfiguration queue = HCH.getMessageQueue();
 
 	@Override
 	public void onEnable(){
-		setupConfig();
+		HCH.setupConfigs();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Listeners and stuff
@@ -57,7 +48,7 @@ public class HotelsMain extends JavaPlugin{
 		}
 		
 		//Room sign checker and updater
-		roomTask = new RoomTask(this);
+		roomTask = new RoomTask();
 		int roomMins = getConfig().getInt("settings.roomTaskTimerMinutes");
 
 		boolean isRoomRunning;
@@ -72,39 +63,6 @@ public class HotelsMain extends JavaPlugin{
 				roomMins = 2;
 			roomTask.runTaskTimer(this, 200, roomMins*60*20);
 		}
-		//Hotel buy/sell checker and updater
-		hotelTask = new HotelTask();
-		int hotelMins = getConfig().getInt("settings.hotelTaskTimerMinutes");
-
-		boolean ishotelRunning;
-		try{
-			ishotelRunning = Bukkit.getScheduler().isCurrentlyRunning(hotelTask.getTaskId());
-		}
-		catch(Exception e5){
-			ishotelRunning = false;
-		}
-		if(!ishotelRunning){
-			if(hotelMins<=0)
-				hotelMins = 2;
-			hotelTask.runTaskTimer(this, 500, hotelMins*60*20);
-		}
-		//Reception sign updater
-		receptionTask = new ReceptionTask(this);
-		int receptionMins = getConfig().getInt("settings.receptionTaskTimerMinutes");
-
-		boolean isRecRunning;
-		try{
-			isRecRunning = Bukkit.getScheduler().isCurrentlyRunning(receptionTask.getTaskId());
-		}
-		catch(Exception e5){
-			isRecRunning = false;
-		}
-		if(!isRecRunning){
-			if(receptionMins<=0)
-				receptionMins = 2;
-			receptionTask.runTaskTimer(this, 400, receptionMins*60*20);
-		}
-
 
 		//Logging to console the correct enabling of Hotels
 		String message = Mes.mesnopre("main.enable.success");
@@ -247,8 +205,6 @@ public class HotelsMain extends JavaPlugin{
 	@Override
 	public void onDisable(){
 		roomTask.cancel();
-		hotelTask.cancel();
-		receptionTask.cancel();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Logging to console the disabling of Hotels
@@ -261,13 +217,8 @@ public class HotelsMain extends JavaPlugin{
 
 	@Override
 	public void onLoad(){
-		setupConfig();
+		HCH.setupConfigs();
 		setupEconomy();
-	}
-
-	//Setting up config files
-	private void setupConfig(){
-		HCH.setupConfigs();//Creates config file
 	}
 
 	//Setting up the economy

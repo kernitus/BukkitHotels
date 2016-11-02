@@ -1,10 +1,12 @@
-package kernitus.plugin.Hotels;
+package kernitus.plugin.Hotels.updateChecker;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+
+import kernitus.plugin.Hotels.HotelsMain;
 
 public class HotelsUpdateListener implements Listener{
 

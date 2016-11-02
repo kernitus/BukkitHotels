@@ -15,6 +15,7 @@ public class HotelsAPI {
 
 	public static ArrayList<Hotel> getHotelsInWorld(World w){
 		ArrayList<Hotel> hotels = new ArrayList<Hotel>();
+		
 		for(ProtectedRegion r : WorldGuardManager.getRegions(w)){
 			String id = r.getId();
 			if(id.matches("hotel-\\w+$")){
@@ -23,21 +24,27 @@ public class HotelsAPI {
 				hotels.add(hotel);
 			}
 		}
+		
 		return hotels;
 	}
 	public static ArrayList<Hotel> getAllHotels(){
 		ArrayList<Hotel> hotels = new ArrayList<Hotel>();
 		List<World> worlds = Bukkit.getWorlds();
+		
 		for(World w : worlds)
 			hotels.addAll(getHotelsInWorld(w));
+		
 		return hotels;
 	}
 	public static ArrayList<Hotel> getHotelsOwnedBy(UUID uuid){
 		ArrayList<Hotel> hotels = getAllHotels();
+		
 		for(Hotel hotel : hotels){
 			if(!hotel.isOwner(uuid))
 				hotels.remove(hotel);
 		}
+		
+		hotels.trimToSize();
 		return hotels;
 	}
 	public static ArrayList<Room> getRoomsRentedBy(UUID uuid){
@@ -50,6 +57,7 @@ public class HotelsAPI {
 					rented.add(room);
 			}
 		}
+		
 		return rented;
 	}
 	public static int getHotelCount(){

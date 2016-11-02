@@ -21,6 +21,7 @@ import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.trade.HotelBuyer;
 
 public class HotelsCommandHandler implements CommandExecutor {
 
@@ -570,27 +571,31 @@ public class HotelsCommandHandler implements CommandExecutor {
 						sender.sendMessage(Mes.mes("chat.commands.home.noHomeSet"));	
 				}
 			}
-			else if(args[0].equalsIgnoreCase("sellhotel")||args[0].equalsIgnoreCase("sellh")){
+			else if(args[0].equalsIgnoreCase("sellhotel") || args[0].equalsIgnoreCase("sellh")){
 				if(!(sender instanceof Player)){
 					sender.sendMessage(Mes.mesnopre("chat.commands.sellhotel.consoleRejected")); return false;}
 
 				Player player = (Player) sender;
-				if(!Mes.hasPerm(player, "hotels.sell.hotel")){
-					sender.sendMessage(Mes.mes("chat.noPermission")); return false; }
+				
+				if(!Mes.hasPerm(player, "hotels.sell.hotel")){ sender.sendMessage(Mes.mes("chat.noPermission")); return false; }
+				
 				if(args.length<3){//If they have all necessary arguments
 					sender.sendMessage(Mes.mes("chat.commands.sellhotel.usage")); return false; }
 
 				World world = player.getWorld();
 				Hotel hotel = new Hotel(world,args[1]);
+				
 				if(!hotel.exists()){//If specified hotel exists
 					sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+				
 				if(!hotel.isOwner(player.getUniqueId())){
 					sender.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return false; }
 
 				@SuppressWarnings("deprecation")
 				Player buyer = Bukkit.getPlayerExact(args[2]);
-				if(buyer==null || !buyer.isOnline()){
+				if(buyer == null || !buyer.isOnline()){
 					sender.sendMessage(Mes.mes("chat.commands.sellhotel.buyerNotOnline")); return false; }
+				
 				int price;
 				try{
 					price = Integer.parseInt(args[3]);
@@ -599,13 +604,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(Mes.mes("chat.commands.sellhotel.invalidPrice"));
 					return false;
 				}
-				if(hotel.getBuyer()!=null || buyer.getUniqueId().equals(hotel.getBuyer().getUniqueId())){
+				
+				if(hotel.getBuyer()!=null || buyer.getUniqueId().equals(hotel.getBuyer().getPlayer().getUniqueId())){
 					sender.sendMessage(Mes.mes("chat.commands.sellhotel.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName())); return false; }
 
-				hotel.setBuyer(buyer.getUniqueId());
-				hotel.setPrice(price);
+				hotel.setBuyer(buyer.getUniqueId(), price);
 
 				sender.sendMessage(Mes.mes("chat.commands.sellhotel.sellingAsked").replaceAll("%buyer%", buyer.getName()));
+				
 				buyer.sendMessage(Mes.mes("chat.commands.sellhotel.selling")
 						.replaceAll("%seller%", player.getName())
 						.replaceAll("%hotel%", args[1])
@@ -625,13 +631,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
 
 
-				OfflinePlayer buyerFromConfig = hotel.getBuyer();
+				HotelBuyer hb = hotel.getBuyer();
+				Player buyer = hb.getPlayer();
 
-				if(!buyerFromConfig.hasPlayedBefore() || !buyerFromConfig.equals(player) || buyerFromConfig == null){ sender.sendMessage(Mes.mes("chat.commands.buyhotel.notOnSale")); return false; }
+				if(!buyer.hasPlayedBefore() || !buyer.equals(player) || buyer == null){ sender.sendMessage(Mes.mes("chat.commands.buyhotel.notOnSale")); return false; }
 
 				//They are the buyer the hotel owner has specified
 				double balance = HotelsMain.economy.getBalance(player);
-				double price = hotel.getPrice();
+				double price = hb.getPrice();
 
 				if((balance-price)<0){ sender.sendMessage(Mes.mes("chat.commands.buyhotel.notEnoughMoney")); return false; }
 
@@ -674,8 +681,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						.replaceAll("%price%", String.valueOf(price))
 						);
 
-				hotel.setBuyer(null);
-				hotel.removePrice();
+				hotel.removeBuyer();
 				hotel.saveHotelConfig();
 
 			}

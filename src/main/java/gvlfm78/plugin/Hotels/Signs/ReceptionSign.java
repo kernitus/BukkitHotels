@@ -1,4 +1,4 @@
-package kernitus.plugin.Hotels;
+package kernitus.plugin.Hotels.Signs;
 
 import java.io.File;
 
@@ -11,10 +11,11 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 
-public class ReceptionSign{
+public class ReceptionSign extends AbstractSign{
 
 	private Hotel hotel;
 	private String num;
@@ -30,7 +31,7 @@ public class ReceptionSign{
 	public void update(){
 		Block b = getBlock();
 		Material mat = b.getType();
-		if(!mat.equals(Material.SIGN)) return;
+		if(!mat.equals(Material.SIGN_POST) && !mat.equals(Material.WALL_SIGN)) return;
 		Sign s = (Sign) b;
 
 		s.setLine(0, (ChatColor.GREEN + Mes.mesnopre("sign.reception")));
@@ -46,7 +47,7 @@ public class ReceptionSign{
 	public Sign getSign(){
 		Block b = getBlock();
 		Material mat = b.getType();
-		if(mat.equals(Material.SIGN))
+		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN))
 			return (Sign) b;
 		else return null;
 	}
@@ -65,17 +66,11 @@ public class ReceptionSign{
 	public File getFile(){
 		return HotelsConfigHandler.getReceptionFile(hotel.getName(), num);
 	}
-	public YamlConfiguration getConfig(){
-		return YamlConfiguration.loadConfiguration(getFile());
-	}
 	public String getNumber(){
 		return num;
 	}
 	public Hotel getHotel(){
 		return hotel;
-	}
-	public void deleteConfig(){
-		getFile().delete();
 	}
 	public void removeSign(){
 		Sign s = getSign();
@@ -88,9 +83,5 @@ public class ReceptionSign{
 					b.setType(Material.AIR);
 			}
 		}
-	}
-	public void deleteSignAndConfig(){
-		removeSign();
-		deleteConfig();
 	}
 }

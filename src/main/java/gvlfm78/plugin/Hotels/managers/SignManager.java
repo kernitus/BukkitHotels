@@ -34,18 +34,17 @@ import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
+import kernitus.plugin.Hotels.handlers.MessageType;
 
 public class SignManager {
 
 	private HotelsMain plugin;
 	private WorldGuardManager WGM;
-	private HotelsConfigHandler HCH;
 
 	public SignManager(HotelsMain plugin){
 		this.plugin = plugin;
-
 		WGM = new WorldGuardManager();
-		HCH = new HotelsConfigHandler(plugin);
 	}
 
 	public void placeReceptionSign(SignChangeEvent e){
@@ -62,7 +61,7 @@ public class SignManager {
 			e.setLine(0, (ChatColor.DARK_RED+"[Hotels]"));
 			p.sendMessage(Mes.mes("chat.sign.place.noHotel"));
 		}
-		
+
 		String tot = String.valueOf(hotel.getTotalRoomCount()); //Getting total amount of rooms in hotel
 		String free = String.valueOf(hotel.getFreeRoomCount()); //Getting amount of free rooms in hotel
 
@@ -71,14 +70,14 @@ public class SignManager {
 		e.setLine(1, (ChatColor.DARK_BLUE + hotelName + " Hotel"));
 		e.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(tot) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.total")));
 		e.setLine(3, (ChatColor.GREEN + String.valueOf(free) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.free")));
-		
+
 		int i = 1;
 		File receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, i);
 		while(receptionFile.exists()){
 			i++;
 			receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, i);
 		}//Loop will stop once a non-existant file is found
-		
+
 		if(!receptionFile.exists()){
 			try {
 				receptionFile.createNewFile();
@@ -86,7 +85,7 @@ public class SignManager {
 				p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
 				e1.printStackTrace();
 			}
-			
+
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(receptionFile);
 			config.addDefault("Reception.hotel", hotelName);
 			config.addDefault("Reception.location.world", e.getBlock().getWorld().getUID());
@@ -100,7 +99,7 @@ public class SignManager {
 				p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
 				e1.printStackTrace();
 			}
-			
+
 		}
 	}
 
@@ -279,7 +278,8 @@ public class SignManager {
 
 								Location loc = room.getSignLocation();
 								Block block = loc.getBlock();
-								if(block.getType()==Material.SIGN||block.getType()==Material.WALL_SIGN||block.getType()==Material.SIGN_POST){
+								Material mat = block.getType();
+								if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){
 									Sign s = (Sign) block.getState();
 									s.setLine(3, ChatColor.RED + p.getName()); //Writing renter name on sign
 									s.update();
@@ -365,23 +365,8 @@ public class SignManager {
 						.replaceAll("%room%", String.valueOf(room.getNum()))
 						);
 			}
-			else{//Placing message in message queue
-				YamlConfiguration queue = HCH.getMessageQueue();
-				if(!queue.contains("messages.revenue")){
-					queue.createSection("messages.revenue");
-					HCH.saveMessageQueue(queue);
-				}
-				Set<String> revenueMessages = queue.getConfigurationSection("messages.revenue").getKeys(false);
-				int expiryMessagesSize = revenueMessages.size();
-				String pathToPlace = "messages.revenue."+(expiryMessagesSize+1);
-				queue.set(pathToPlace+".UUID", owner.getUniqueId().toString());
-				queue.set(pathToPlace+".message", Mes.mes(chatMessage)
-						.replaceAll("%revenue%", new DecimalFormat("#.00").format(revenue))
-						.replaceAll("%room%", String.valueOf(room.getNum()))
-						.replaceAll("%hotel%", hotel.getName())
-						);
-				HCH.saveMessageQueue(queue);
-			}
+			else//Placing message in message queue
+				HotelsMessageQueue.addMessage(MessageType.revenue, owner.getUniqueId(), Mes.mes(chatMessage).replaceAll("%revenue%", new DecimalFormat("#.00").format(revenue)).replaceAll("%room%", String.valueOf(room.getNum())).replaceAll("%hotel%", hotel.getName()));
 		}
 	}
 	public void breakRoomSign(BlockBreakEvent e){
@@ -458,8 +443,8 @@ public class SignManager {
 
 		Location loc = room.getSignLocation();
 		Block block = loc.getBlock();
-
-		if(block.getType()==Material.SIGN||block.getType()==Material.WALL_SIGN||block.getType()==Material.SIGN_POST){
+		Material mat = block.getType();
+		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){
 			Sign s = (Sign) block.getState();
 
 			if(room.getTime()>0){
@@ -540,7 +525,8 @@ public class SignManager {
 	public boolean updateReceptionSign(Location l){
 		//Updates the reception sign at given location
 		Block b = l.getBlock();
-		if(b.getType().equals(Material.WALL_SIGN)||b.getType().equals(Material.SIGN)||l.getBlock().getType().equals(Material.SIGN_POST)){
+		Material mat = b.getType();
+		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){
 			Sign s = (Sign) b.getState();
 			String Line1 = ChatColor.stripColor(s.getLine(0));
 			String Line2 = ChatColor.stripColor(s.getLine(1));

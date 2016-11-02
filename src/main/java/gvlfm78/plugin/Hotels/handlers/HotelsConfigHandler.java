@@ -53,26 +53,31 @@ public class HotelsConfigHandler {
 	}
 
 	public void localeLanguageSelector(){
-		String lang = getLanguage();
+		String lang = getLanguage().toLowerCase();
 		YamlConfiguration locale = getLocale();
 		String loclang = locale.getString("language"); //From already-generated locale.yml
-		if(loclang==null){
-			if(lang.equalsIgnoreCase("en")|lang.equalsIgnoreCase("enGB"))
-				setupLanguage("enGB",plugin);
-			else if(lang.equalsIgnoreCase("it")|lang.equalsIgnoreCase("itIT"))
-				setupLanguage("itIT",plugin);
-			else if(lang.equalsIgnoreCase("zhCN")|lang.equalsIgnoreCase("zh"))
-				setupLanguage("zhCN",plugin);
-			else if(lang.equalsIgnoreCase("zhTW"))
-				setupLanguage("zhTW",plugin);
-			else if(lang.equalsIgnoreCase("frFR")|lang.equalsIgnoreCase("fr"))
-				setupLanguage("frFR",plugin);
-			else if(lang.equalsIgnoreCase("ruRU")|lang.equalsIgnoreCase("ru"))
-				setupLanguage("ruRU",plugin);
-			else if(lang.equalsIgnoreCase("custom"))
-				return;
-			else
-				setupLanguage("enGB",plugin);
+		
+		if(loclang!=null) return;
+
+		switch(lang){
+
+		case "en": case "enGB":
+			setupLanguage("enGB", plugin); break;
+		case "it": case "itIT":
+			setupLanguage("itIT", plugin); break;
+		case "zhCN": case "zh":
+			setupLanguage("zhCN", plugin); break;
+		case "zhTW":
+			setupLanguage("zhTW", plugin); break;
+		case "frFR": case "fr":
+			setupLanguage("frFR", plugin); break;
+		case "ruRU": case "ru":
+			setupLanguage("ruRU", plugin); break;
+
+		case "custom": break;
+
+		default: setupLanguage("enGB",plugin);
+
 		}
 	}
 	public String getLanguage(){
@@ -116,7 +121,7 @@ public class HotelsConfigHandler {
 		return getFile("locale.yml");
 	}
 
-	public File getMessageQueueFile(){
+	public static File getMessageQueueFile(){
 		return getFile("queuedMessages.yml");
 	}
 
@@ -154,7 +159,7 @@ public class HotelsConfigHandler {
 		return getyml(getLocaleFile());
 	}
 
-	public YamlConfiguration getMessageQueue(){
+	public static YamlConfiguration getMessageQueue(){
 		return getyml(getMessageQueueFile());
 	}
 
@@ -181,7 +186,7 @@ public class HotelsConfigHandler {
 		return getMessageQueue().getString("messages.update.link");
 	}
 
-	public void saveConfiguration(File file, YamlConfiguration config){
+	public static void saveConfiguration(File file, YamlConfiguration config){
 
 		try{
 			Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
@@ -199,7 +204,7 @@ public class HotelsConfigHandler {
 		saveConfiguration(file,config);
 	}
 
-	public void saveMessageQueue(YamlConfiguration config){
+	public static void saveMessageQueue(YamlConfiguration config){
 		File file = getMessageQueueFile();
 		saveConfiguration(file,config);
 	}

@@ -1,4 +1,4 @@
-package kernitus.plugin.Hotels;
+package kernitus.plugin.Hotels.updateChecker;
 
 import java.io.BufferedReader;
 import java.io.IOException;

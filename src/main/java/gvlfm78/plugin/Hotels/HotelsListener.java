@@ -1,14 +1,8 @@
 package kernitus.plugin.Hotels;
 
-import java.util.Set;
-import java.util.UUID;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,10 +14,13 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
+import kernitus.plugin.Hotels.trade.TradesHolder;
 
 public class HotelsListener implements Listener {
 
@@ -65,16 +62,14 @@ public class HotelsListener implements Listener {
 	@EventHandler
 	public void onSignUse(PlayerInteractEvent e){
 		//Player right clicks sign, checking if it's a hotel sign
-		if (e.getAction() == Action.RIGHT_CLICK_BLOCK) { //They Right clicked
-			if (e.getClickedBlock().getType() == Material.SIGN_POST || e.getClickedBlock().getType() == Material.WALL_SIGN){//If block is sign
+		if(e.getAction() == Action.RIGHT_CLICK_BLOCK) { //They Right clicked
+			Block b = e.getClickedBlock();
+			Material mat = b.getType();
+			if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){//If block is sign
 				Player p = e.getPlayer();
 				//Permission check
 				if(Mes.hasPerm(p, "hotels.sign.use")){
-					Sign s = (Sign) e.getClickedBlock().getState();//Getting sign object
-					if(SM.isReceptionSign(s))//If it's a reception sign
-						SM.useReceptionSign(e);//Update the reception sign, as they right clicked on it
-					else
-						SM.useRoomSign(e);
+					SM.useRoomSign(e);
 				}
 				else
 					p.sendMessage(Mes.mes("chat.noPermission")); 
@@ -86,14 +81,16 @@ public class HotelsListener implements Listener {
 	public void onSignBreak(BlockBreakEvent e){
 		//Player broke a sign, checking if it's a hotel sign
 		Block b = e.getBlock();
-		if(b.getType().equals(Material.SIGN) || b.getType().equals(Material.SIGN_POST) || b.getType().equals(Material.WALL_SIGN))
+		Material mat = b.getType();
+		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN))
 			SM.breakRoomSign(e);
 	}
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
-		//Player joined the server, send update notification to ops
+		//Player joined the server, send update notification to OPs
 		Player p = e.getPlayer();
+		
 		if(p.hasPermission("hotel.*")){
 			String ava = HCH.getupdateAvailable();
 			String lin = HCH.getupdateString();
@@ -102,38 +99,14 @@ public class HotelsListener implements Listener {
 			if(lin != null)
 				p.sendMessage(ChatColor.BLUE + lin);
 		}
-		//Notifying players if any of their rooms have expired while they were offline
-		UUID playerUUID = p.getUniqueId();
-		YamlConfiguration queue = HCH.getMessageQueue();
-		ConfigurationSection allExpiryMessages = queue.getConfigurationSection("messages.expiry");
-		if(allExpiryMessages != null){
-			Set<String> keys = allExpiryMessages.getKeys(false);
-			if(keys != null){
-				for(String key : keys){
-					UUID configUUID = UUID.fromString(queue.getString("messages.expiry." + key + ".UUID"));
-					if(playerUUID.equals(configUUID)){
-						p.sendMessage(queue.getString("messages.expiry." + key + ".message"));
-						queue.set("messages.expiry." + key, null);
-						HCH.saveMessageQueue(queue);
-					}
-				}
-			}
-		}
-		//Notifying hotel owners of any revenue they made while offline
-		ConfigurationSection allRevenueMessages = queue.getConfigurationSection("messages.revenue");
-		if(allRevenueMessages != null){
-			Set<String> keys = allRevenueMessages.getKeys(false);
-			if(keys != null){
-				for(String key : keys){
-					UUID configUUID = UUID.fromString(queue.getString("messages.revenue." + key + ".UUID"));
-					if(playerUUID.equals(configUUID)){
-						p.sendMessage(queue.getString("messages.revenue." + key + ".message"));
-						queue.set("messages.revenue." + key, null);
-						HCH.saveMessageQueue(queue);
-					}
-				}
-			}
-		}
+		//Send player all queued up messages for them
+		HotelsMessageQueue.sendPlayerAllMessages(p);
+	}
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent e){
+		//Removing them from Trades hashmap if they were in it
+		Player p = e.getPlayer();
+		TradesHolder.removeFromAll(p);
 	}
 	//When a player tries to drop an item/block
 	@EventHandler
@@ -152,7 +125,7 @@ public class HotelsListener implements Listener {
 	@EventHandler
 	public void avoidChestInteraction(InventoryClickEvent e){
 		Player p = (Player) e.getWhoClicked();
-		if(Mes.hasPerm(p, "hotels.cratemode.admin")){
+		if(Mes.hasPerm(p, "hotels.createmode.admin")){
 			String UUID = p.getUniqueId().toString();
 			if(HCM.isInCreationMode(UUID))
 				e.setCancelled(true);

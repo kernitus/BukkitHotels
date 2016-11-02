@@ -1,4 +1,4 @@
-package kernitus.plugin.Hotels;
+package kernitus.plugin.Hotels.updateChecker;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.managers.Mes;
 
 public class BukkitUpdateChecker {

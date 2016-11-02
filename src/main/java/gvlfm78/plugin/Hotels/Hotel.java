@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,12 +16,15 @@ import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
+import kernitus.plugin.Hotels.Signs.ReceptionSign;
 import kernitus.plugin.Hotels.events.HotelDeleteEvent;
 import kernitus.plugin.Hotels.events.HotelRenameEvent;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.trade.HotelBuyer;
+import kernitus.plugin.Hotels.trade.TradesHolder;
 
 public class Hotel {
 
@@ -38,7 +40,7 @@ public class Hotel {
 		this.hconfig = getHotelConfig();
 	}
 	public Hotel(String name){
-		//To use only when world is unknown, due to extra calculations involved to find it
+		//Use only when world is unknown, due to extra calculations involved to find it
 		this.name = name;
 		for(Hotel hotel : HotelsAPI.getAllHotels()){
 			if(hotel.getName().equalsIgnoreCase(name))
@@ -126,11 +128,8 @@ public class Hotel {
 	public Location getHome(){
 		return new Location(world, hconfig.getDouble("Hotel.home.x"),hconfig.getDouble("Hotel.home.y"),hconfig.getDouble("Hotel.home.z"),(float) hconfig.getDouble("Hotel.home.pitch"),(float) hconfig.getDouble("Hotel.home.yaw"));
 	}
-	public OfflinePlayer getBuyer(){
-		return Bukkit.getOfflinePlayer(UUID.fromString(getHotelConfig().getString("Hotel.sell.buyer")));
-	}
-	public double getPrice(){
-		return getHotelConfig().getDouble("Hotel.sell.price");
+	public HotelBuyer getBuyer(){
+		return TradesHolder.getBuyerFromHotel(this);
 	}
 	public int getNextNewRoom(){
 		for(Room room : getRooms()){
@@ -161,6 +160,9 @@ public class Hotel {
 			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name)));
 		if(Mes.flagValue("hotel.map-making.FAREWELL") != null)
 			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name)));
+		
+		updateReceptionSigns();
+		
 		Bukkit.getPluginManager().callEvent(new HotelRenameEvent(this, oldName));
 	}
 	public void removeAllSigns(){
@@ -244,14 +246,11 @@ public class Hotel {
 		WGM.setOwners(uuids, getRegion());
 		WGM.saveRegions(world);
 	}
-	public void setBuyer(UUID uuid){
-		hconfig.set("Hotel.sell.buyer", uuid);
+	public void setBuyer(UUID uuid, double price){
+		TradesHolder.addHotelBuyer(Bukkit.getPlayer(uuid), this, price);
 	}
-	public void setPrice(double price){
-		hconfig.set("Hotel.sell.price", price);
-	}
-	public void removePrice(){
-		hconfig.set("Hotel.sell.price", null);
+	public void removeBuyer(){
+		TradesHolder.removeHotelBuyer(TradesHolder.getBuyerFromHotel(this).getPlayer());
 	}
 	public void setHome(Location loc){
 		hconfig.set("Hotel.home.x", loc.getX());

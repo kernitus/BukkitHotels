@@ -1,4 +1,4 @@
-package kernitus.plugin.Hotels;
+package kernitus.plugin.Hotels.updateChecker;
 
 import java.util.logging.Logger;
 
@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.managers.Mes;
 
 public class HotelsUpdateChecker {
