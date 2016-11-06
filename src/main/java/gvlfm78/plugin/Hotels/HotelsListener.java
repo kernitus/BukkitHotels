@@ -1,5 +1,6 @@
 package kernitus.plugin.Hotels;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,23 +17,20 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.trade.TradesHolder;
+import kernitus.plugin.Hotels.updateChecker.HotelsUpdateChecker;
 
 public class HotelsListener implements Listener {
 
-	private HotelsCreationMode HCM;
+	private HotelsMain plugin;
 	private SignManager SM;
-	private HotelsConfigHandler HCH;
 
-
-	public HotelsListener(HotelsMain plugin){	
-		HCM = new HotelsCreationMode(plugin);
+	public HotelsListener(HotelsMain plugin){
+		this.plugin = plugin;
 		SM = new SignManager(plugin);
-		HCH = new HotelsConfigHandler(plugin);
 	}
 
 	@EventHandler
@@ -68,9 +66,8 @@ public class HotelsListener implements Listener {
 			if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){//If block is sign
 				Player p = e.getPlayer();
 				//Permission check
-				if(Mes.hasPerm(p, "hotels.sign.use")){
+				if(Mes.hasPerm(p, "hotels.sign.use"))
 					SM.useRoomSign(e);
-				}
 				else
 					p.sendMessage(Mes.mes("chat.noPermission")); 
 			}
@@ -89,16 +86,21 @@ public class HotelsListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
 		//Player joined the server, send update notification to OPs
-		Player p = e.getPlayer();
-		
+		final Player p = e.getPlayer();
+
+		//Sending update messages
 		if(p.hasPermission("hotel.*")){
-			String ava = HCH.getupdateAvailable();
-			String lin = HCH.getupdateString();
-			if(ava != null)
-				p.sendMessage(ChatColor.BLUE + ava);
-			if(lin != null)
-				p.sendMessage(ChatColor.BLUE + lin);
+			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable () {
+				public void run() {
+
+					HotelsUpdateChecker updateChecker = new HotelsUpdateChecker(plugin);
+
+					// Checking for updates
+					updateChecker.sendUpdateMessages(p);
+				}
+			},20L);
 		}
+
 		//Send player all queued up messages for them
 		HotelsMessageQueue.sendPlayerAllMessages(p);
 	}
@@ -107,28 +109,39 @@ public class HotelsListener implements Listener {
 		//Removing them from Trades hashmap if they were in it
 		Player p = e.getPlayer();
 		TradesHolder.removeFromAll(p);
+
+		//Exiting them from creation mode
+		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
+			p.sendMessage(Mes.mes("chat.commands.creationMode.exit"));
+			HotelsCreationMode.loadInventory(p);
+		}
 	}
 	//When a player tries to drop an item/block
 	@EventHandler
 	public void avoidDrop(PlayerDropItemEvent e) {
-		String UUID = e.getPlayer().getUniqueId().toString();
-		if(HCM.isInCreationMode(UUID))
+		Player p = e.getPlayer();
+		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
 			e.setCancelled(true);
+			p.sendMessage(Mes.mes("chat.creationMode.deniedAction"));
+		}
 	}
 	//When a player tries to pickup an item/block
 	@EventHandler
 	public void avoidPickup(PlayerPickupItemEvent e) {
-		String UUID  = e.getPlayer().getUniqueId().toString();
-		if(HCM.isInCreationMode(UUID))
+		Player p = e.getPlayer();
+		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
 			e.setCancelled(true);
+			p.sendMessage(Mes.mes("chat.creationMode.deniedAction"));
+		}
 	}
 	@EventHandler
 	public void avoidChestInteraction(InventoryClickEvent e){
 		Player p = (Player) e.getWhoClicked();
 		if(Mes.hasPerm(p, "hotels.createmode.admin")){
-			String UUID = p.getUniqueId().toString();
-			if(HCM.isInCreationMode(UUID))
+			if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
 				e.setCancelled(true);
+				p.sendMessage(Mes.mes("chat.creationMode.deniedAction"));
+			}
 		}
 	}
 }

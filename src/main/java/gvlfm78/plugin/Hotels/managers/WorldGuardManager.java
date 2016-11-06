@@ -180,7 +180,7 @@ public class WorldGuardManager {
 	}
 	public void setFlags(ConfigurationSection section, ProtectedRegion r, String name, World world){
 
-		boolean isHotel = r.getId().matches("hotel-.+-\\d+");
+		boolean isHotel = !r.getId().matches("hotel-.+-\\d+");
 
 		Map <Flag<?>, Object> flags = new HashMap<Flag<?>, Object>();
 		Map <Flag<?>, Object> groupFlags = new HashMap<Flag<?>, Object>();

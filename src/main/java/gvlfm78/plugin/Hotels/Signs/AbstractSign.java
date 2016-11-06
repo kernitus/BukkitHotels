@@ -3,6 +3,7 @@ package kernitus.plugin.Hotels.Signs;
 import java.io.File;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,6 +21,8 @@ public abstract class AbstractSign {
 	abstract File getFile();
 	
 	abstract void removeSign();
+	
+	abstract World getWorldFromConfig();
 	
 	public YamlConfiguration getConfig(){
 		return YamlConfiguration.loadConfiguration(getFile());

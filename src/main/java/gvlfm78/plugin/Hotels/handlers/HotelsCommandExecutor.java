@@ -24,18 +24,16 @@ import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsCommandExecutor {
 
-	private HotelsCreationMode HCM;
 	private WorldGuardManager WGM;
-	
+
 	public HotelsCommandExecutor(HotelsMain plugin){
-		HCM = new HotelsCreationMode(plugin);
 		WGM = new WorldGuardManager();
 	}
 
 	public void cmdCreate(Player p,String hotelName){//Hotel creation command
 		UUID playerUUID = p.getUniqueId();
-		if(HCM.isInCreationMode(playerUUID))
-			HCM.hotelSetup(hotelName, p);
+		if(HotelsCreationMode.isInCreationMode(playerUUID))
+			HotelsCreationMode.hotelSetup(hotelName, p);
 		else
 			p.sendMessage(Mes.mes("chat.commands.create.fail"));
 	}
@@ -177,24 +175,24 @@ public class HotelsCommandExecutor {
 	}
 
 	public void cmdCreateModeEnter(Player p){
-		if(!HCM.isInCreationMode(p.getUniqueId())){
-			HCM.saveInventory(p);
-			HCM.giveItems(p);
+		if(!HotelsCreationMode.isInCreationMode(p.getUniqueId())){
+			HotelsCreationMode.saveInventory(p);
+			HotelsCreationMode.giveItems(p);
 			p.sendMessage(Mes.mes("chat.commands.creationMode.enter"));
 		}
 		else
 			p.sendMessage(Mes.mes("chat.commands.creationMode.alreadyIn"));
 	}
 	public void cmdCreateModeExit(Player p){
-		if(HCM.isInCreationMode(p.getUniqueId())){
+		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
 			p.sendMessage(Mes.mes("chat.commands.creationMode.exit"));
-			HCM.loadInventory(p);
+			HotelsCreationMode.loadInventory(p);
 		}
 		else
 			p.sendMessage(Mes.mes("chat.commands.creationMode.notAlreadyIn"));
 	}
 	public void cmdCreateModeReset(Player p){
-		HCM.resetInventoryFiles(p);
+		HotelsCreationMode.resetInventoryFiles(p);
 		p.sendMessage(Mes.mes("chat.commands.creationMode.reset"));
 	}
 	public void cmdRent(CommandSender sender ,String hotelName, String roomNum){
@@ -204,7 +202,7 @@ public class HotelsCommandExecutor {
 		else{
 			Player p = (Player) sender;
 			World world = p.getWorld();
-			Room room = new Room(world,hotelName,roomNum);
+			Room room = new Room(world, hotelName, roomNum);
 			room.rent(p);
 		}	
 	}
@@ -257,9 +255,8 @@ public class HotelsCommandExecutor {
 
 		List<String> stringList = room.getFriendsList();
 
-		if(stringList.isEmpty()){
+		if(stringList.isEmpty())
 			s.sendMessage(Mes.mes("chat.commands.friend.noFriends"));	
-		}
 
 		s.sendMessage(Mes.mes("chat.commands.friend.list.heading").replaceAll("%room%", roomNum).replaceAll("%hotel%", hotelName));
 
@@ -268,10 +265,11 @@ public class HotelsCommandExecutor {
 			String friendName = friend.getName();
 			s.sendMessage(Mes.mes("chat.commands.friend.list.line").replaceAll("%name%", friendName));
 		}
+		
 		s.sendMessage(Mes.mes("chat.commands.friend.list.footer"));
 	}
 	public void cmdRoomListPlayer(Player p, String hotelName, World w){
-		cmdRoomListPlayer(p, hotelName, w);
+		cmdRoomListPlayer(((CommandSender) p), hotelName, w);
 	}
 	public void cmdRoomListPlayer(CommandSender s, String hotelName, World w){
 		Hotel hotel = new Hotel(w, hotelName);
@@ -422,7 +420,7 @@ public class HotelsCommandExecutor {
 
 			String rep = StringUtils.repeat(" ", 10-roomNum.length());
 			String state = "";
-			
+
 			if(room.doesSignFileExist()){
 				if(room.isFree()) //Vacant
 					state = ChatColor.GREEN+Mes.mesnopre("sign.vacant");

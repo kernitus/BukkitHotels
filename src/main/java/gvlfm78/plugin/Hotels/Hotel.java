@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -36,7 +37,7 @@ public class Hotel {
 
 	public Hotel(World world, String name){
 		this.world = world;
-		this.name = name;
+		this.name = name.toLowerCase();
 		this.hconfig = getHotelConfig();
 	}
 	public Hotel(String name){
@@ -67,7 +68,7 @@ public class Hotel {
 		ArrayList<Room> rooms = new ArrayList<Room>();
 		for(ProtectedRegion r : WorldGuardManager.getRegions(world)){
 			String id = r.getId();
-			if(id.matches("hotel-"+name+"-"+"\\d+")){
+			if(id.matches("hotel-"+name+"-\\d+")){
 				String num = id.replaceFirst("hotel-"+name+"-", "");
 				Room room = new Room(this, num);
 				rooms.add(room);
@@ -85,7 +86,6 @@ public class Hotel {
 		for(Room room : rooms){
 			if(room.isFree())
 				freeRooms.add(room);
-
 		}
 		return freeRooms;
 	}
@@ -104,17 +104,12 @@ public class Hotel {
 		return false;
 	}
 	public ArrayList<ReceptionSign> getAllReceptionSigns(){
-		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+name.toLowerCase());
-		ArrayList<ReceptionSign> files = new ArrayList<ReceptionSign>();
+		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+"Reception"+File.separator+name.toLowerCase());
+		ArrayList<ReceptionSign> signs = new ArrayList<ReceptionSign>();
 
-		for(String x : fileList){
-			File file = HotelsConfigHandler.getReceptionFile(name, x.replace(".yml", ""));
-			if(file.getName().matches("\\d+")){
-				ReceptionSign rs = new ReceptionSign(this, x.replace(".yml", ""));
-				files.add(rs);
-			}
-		}
-		return files;
+		for(String x : fileList)
+				signs.add(new ReceptionSign(this, x.replace(".yml", "")));
+		return signs;
 	}
 	public File getHotelFile(){
 		return HotelsConfigHandler.getHotelFile(name.toLowerCase());
@@ -258,5 +253,17 @@ public class Hotel {
 		hconfig.set("Hotel.home.z", loc.getZ());
 		hconfig.set("Hotel.home.pitch", loc.getPitch());
 		hconfig.set("Hotel.home.yaw", loc.getYaw());
+	}
+	public void addOwner(OfflinePlayer p){
+		WGM.addOwner(p, getRegion());
+	}
+	public void addOwner(UUID uuid){
+		addOwner(Bukkit.getOfflinePlayer(uuid));
+	}
+	public void removeOwner(OfflinePlayer p){
+		WGM.removeOwner(p, getRegion());
+	}
+	public void removeOwner(UUID uuid){
+		removeOwner(Bukkit.getOfflinePlayer(uuid));
 	}
 }

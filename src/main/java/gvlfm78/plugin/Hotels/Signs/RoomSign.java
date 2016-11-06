@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels.Signs;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -52,7 +53,7 @@ public class RoomSign extends AbstractSign{
 			s.setLine(2, SignManager.TimeFormatter(room.getExpiryMinute()-System.currentTimeMillis()/1000/60));
 		else{
 			s.setLine(2, SignManager.TimeFormatter(room.getTime()));
-			s.setLine(3,ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
+			s.setLine(3, ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
 		}
 		s.update();
 	}
@@ -62,22 +63,39 @@ public class RoomSign extends AbstractSign{
 	public Sign getSign(){
 		Block b = getBlock();
 		Material mat = b.getType();
-		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN))
-			return (Sign) b;
-		else return null;
+		return (mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)) ? (Sign) b : null;
 	}
 	public String[] getSignLines(){
 		Sign s = getSign();
-		if(s!=null)
-			return s.getLines();
-		else return new String[4];
+		return s!=null ? s.getLines() : new String[4];
+	}
+	public World getWorldFromConfig(){
+		String world = getConfig().getString("Sign.location.world"); //Could be name or UUID
+
+		if(world==null || world.isEmpty()) return null; //String useless, can't proceed
+
+		World w = null;
+		//Checking if it's a world name
+		w = Bukkit.getWorld(world);
+		if(w!=null) return w;
+
+		//Checking if it's a world UUID
+		UUID id = UUID.fromString(world);
+		if(id!=null)
+			w = Bukkit.getWorld(id);
+
+		if(w!=null) return w; //Successfully got world from UUID
+
+		//Failed, return null
+		return null;
 	}
 	public Location getLocation(){
-		YamlConfiguration config = getConfig();
-		String worldUUID = config.getString("Room.location.world");
-		if(worldUUID==null) return null;
+		World world = getWorldFromConfig();
 
-		World world = Bukkit.getWorld(worldUUID);
+		if(world==null) return null;
+
+		YamlConfiguration config = getConfig();
+
 		int x = config.getInt("Room.location.x");
 		int y = config.getInt("Room.location.y");
 		int z = config.getInt("Room.location.z");
@@ -92,10 +110,7 @@ public class RoomSign extends AbstractSign{
 	}
 	public String getHotelNameFromSign(){
 		String firstLine = getSignLines()[0];
-		if(firstLine!=null)
-			return firstLine.split(" ")[0];
-		else return null;
-
+		return firstLine!=null ? firstLine.split(" ")[0] : null;
 	}
 	public int getRoomNumFromSign(){
 		String secondLine = getSignLines()[1];

@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels.Signs;
 
 import java.io.File;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,7 +16,7 @@ import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 
-public class ReceptionSign extends AbstractSign{
+public class ReceptionSign extends AbstractSign {
 
 	private Hotel hotel;
 	private String num;
@@ -29,11 +30,10 @@ public class ReceptionSign extends AbstractSign{
 		this.num = num;
 	}
 	public void update(){
-		Block b = getBlock();
-		Material mat = b.getType();
-		if(!mat.equals(Material.SIGN_POST) && !mat.equals(Material.WALL_SIGN)) return;
-		Sign s = (Sign) b;
+		Sign s = getSign();
 
+		if(s==null) return;
+		
 		s.setLine(0, (ChatColor.GREEN + Mes.mesnopre("sign.reception")));
 		s.setLine(1, (ChatColor.DARK_BLUE + hotel.getName() + " Hotel"));
 		s.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(hotel.getTotalRoomCount()) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.total")));
@@ -42,24 +42,46 @@ public class ReceptionSign extends AbstractSign{
 		s.update();
 	}
 	public Block getBlock(){
-		return getLocation().getBlock();
+		Location l = getLocation();
+		return l!=null ? l.getBlock() : null;
 	}
 	public Sign getSign(){
 		Block b = getBlock();
+		if(b==null) return null;
+
 		Material mat = b.getType();
-		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN))
-			return (Sign) b;
-		else return null;
+		return (mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)) ? (Sign) b.getState() : null;
+	}
+	public World getWorldFromConfig(){
+		String world = getConfig().getString("location.world"); //Could be name or UUID
+
+		if(world==null || world.isEmpty()) return null; //String useless, can't proceed
+
+		World w = null;
+		//Checking if it's a world name
+		w = Bukkit.getWorld(world);
+		if(w!=null) return w;
+
+		//Checking if it's a world UUID
+		UUID id = UUID.fromString(world);
+		if(id!=null)
+			w = Bukkit.getWorld(id);
+
+		if(w!=null) return w; //Successfully got world from UUID
+
+		//Failed, return null
+		return null;
 	}
 	public Location getLocation(){
-		YamlConfiguration config = getConfig();
-		String worldUUID = config.getString("Reception.location.world");
-		if(worldUUID==null) return null;
+		World world = getWorldFromConfig();
 
-		World world = Bukkit.getWorld(worldUUID);
-		int x = config.getInt("Reception.location.x");
-		int y = config.getInt("Reception.location.y");
-		int z = config.getInt("Reception.location.z");
+		if(world==null) return null;
+
+		YamlConfiguration config = getConfig();
+
+		int x = config.getInt("location.x");
+		int y = config.getInt("location.y");
+		int z = config.getInt("location.z");
 
 		return new Location(world, x, y, z);
 	}

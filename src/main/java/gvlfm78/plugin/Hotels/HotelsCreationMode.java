@@ -35,20 +35,14 @@ import kernitus.plugin.Hotels.managers.Mes;
 
 public class HotelsCreationMode {
 
-	private HotelsMain plugin;
-
-	public HotelsCreationMode(HotelsMain plugin){
-		this.plugin = plugin;
+	public static boolean isInCreationMode(String uuid){
+		return isInCreationMode(UUID.fromString(uuid));
 	}
-
-	public boolean isInCreationMode(String uuid){
-		return HotelsConfigHandler.getInventoryFile(UUID.fromString(uuid)).exists();
-	}
-	public boolean isInCreationMode(UUID uuid){
+	public static boolean isInCreationMode(UUID uuid){
 		return HotelsConfigHandler.getInventoryFile(uuid).exists();
 	}
 
-	public void hotelSetup(String hotelName, CommandSender s){
+	public static void hotelSetup(String hotelName, CommandSender s){
 		Player p = (Player) s;
 
 		if(hotelName.contains("-")){ p.sendMessage(Mes.mes("chat.creationMode.invalidChar")); return; }
@@ -63,14 +57,14 @@ public class HotelsCreationMode {
 		if(sel==null){ p.sendMessage(Mes.mes("chat.creationMode.noSelection")); return; }
 
 		int ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
-		int maxHotels = plugin.getConfig().getInt("settings.max_hotels_owned");
+		int maxHotels = HotelsConfigHandler.getconfigyml().getInt("settings.max_hotels_owned");
 		if(ownedHotels>maxHotels && !Mes.hasPerm(p, "hotels.create.admin")){
 			p.sendMessage((Mes.mes("chat.commands.create.maxHotelsReached")).replaceAll("%max%", String.valueOf(maxHotels))); return;
 		}
 		//Creating hotel region
-		
+
 		ProtectedRegion r;
-		
+
 		if(sel instanceof CuboidSelection){
 			r = new ProtectedCuboidRegion(
 					"Hotel-"+hotelName, 
@@ -90,13 +84,18 @@ public class HotelsCreationMode {
 		Bukkit.getPluginManager().callEvent(new HotelCreateEvent(hotel)); //Call HotelCreateEvent
 	}
 
-	public void roomSetup(String hotelName,int roomNum,Player p){
+	public static void roomSetup(String hotelName, int roomNum, Player p){
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
 		Hotel hotel = new Hotel(world, hotelName);
 		if(!hotel.exists()){ p.sendMessage(Mes.mes("chat.creationMode.rooms.fail")); return; }
 		Room room = new Room(hotel, roomNum);
 		if(room.exists()){ p.sendMessage(Mes.mes("chat.creationMode.rooms.alreadyExists")); return; }
+		
+		RoomCreateEvent rce = new RoomCreateEvent(room);
+		Bukkit.getPluginManager().callEvent(rce);// Call RoomCreateEvent
+		if(rce.isCancelled()) return;
+		
 		ProtectedRegion pr = hotel.getRegion();
 		if(sel==null){ p.sendMessage(Mes.mes("chat.creationMode.noSelection")); return; }
 		if((sel instanceof Polygonal2DSelection) && (pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
@@ -119,14 +118,12 @@ public class HotelsCreationMode {
 			else{
 				p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid")); return; }
 			room.createRegion(r, p);
-		    Bukkit.getPluginManager().callEvent(new RoomCreateEvent(room));// Call RoomCreateEvent
-			
 		}
 		else
 			p.sendMessage(Mes.mes("chat.creationMode.rooms.notInHotel"));
 	}
 
-	public void resetInventoryFiles(CommandSender s){
+	public static void resetInventoryFiles(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
 		File invFile = HotelsConfigHandler.getInventoryFile(playerUUID);
@@ -134,7 +131,7 @@ public class HotelsCreationMode {
 			invFile.delete();
 	}
 
-	public void saveInventory(CommandSender s){
+	public static void saveInventory(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
 		PlayerInventory pinv = p.getInventory();
@@ -174,51 +171,45 @@ public class HotelsCreationMode {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void loadInventory(CommandSender s){
+	public static void loadInventory(CommandSender s){
 		Player p = (Player) s;
 		UUID playerUUID = p.getUniqueId();
-		PlayerInventory pinv = p.getInventory();
-		File file = HotelsConfigHandler.getFile("Inventories"+File.separator+playerUUID+".yml");
+		PlayerInventory inv = p.getInventory();
 
-		if(file.exists()){
-			YamlConfiguration inv = HotelsConfigHandler.getyml(file);
+		File invFile = HotelsConfigHandler.getInventoryFile(playerUUID);
+		if(!invFile.exists()){ p.sendMessage(Mes.mes("chat.creationMode.inventory.restoreFail")); return; }
 
-			List<ItemStack> inventoryItems = (List<ItemStack>) inv.getList("inventory");
-			pinv.setContents(inventoryItems.toArray(new ItemStack[inventoryItems.size()]));
+		YamlConfiguration invConfig = YamlConfiguration.loadConfiguration(invFile);		
 
-			List<ItemStack> armourItems = (List<ItemStack>) inv.getList("armour");
-			pinv.setArmorContents(armourItems.toArray(new ItemStack[armourItems.size()]));
+		List<ItemStack> inventoryItems = (List<ItemStack>) invConfig.getList("inventory");
+		inv.setContents(inventoryItems.toArray(new ItemStack[inventoryItems.size()]));
 
-			try{
-				List<ItemStack> extraItems = (List<ItemStack>) inv.getList("extra");
-				pinv.setExtraContents(extraItems.toArray(new ItemStack[extraItems.size()]));
-			}
-			catch(Exception et){
-				//Must be in a pre-1.9 version
-			}
+		List<ItemStack> armourItems = (List<ItemStack>) invConfig.getList("armour");
+		inv.setArmorContents(armourItems.toArray(new ItemStack[armourItems.size()]));
 
-			p.sendMessage(Mes.mes("chat.creationMode.inventory.restoreSuccess"));
-			file.delete();
+		try{
+			List<ItemStack> extraItems = (List<ItemStack>) invConfig.getList("extra");
+			inv.setExtraContents(extraItems.toArray(new ItemStack[extraItems.size()]));
+		}
+		catch(Exception et){
+			//Must be in a pre-1.9 version
 		}
 
-		else{
-			p.sendMessage(Mes.mes("chat.creationMode.inventory.restoreFail"));
-		}
+		p.sendMessage(Mes.mes("chat.creationMode.inventory.restoreSuccess"));
+		invFile.delete();
 	}
 
-	public WorldEditPlugin getWorldEdit(){
+	public static WorldEditPlugin getWorldEdit(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
-
-		if (p instanceof WorldEditPlugin) return (WorldEditPlugin) p;
-		else return null;
+		return (p instanceof WorldEditPlugin) ? (WorldEditPlugin) p : null;
 	}
 
-	public Selection getSelection(CommandSender s){
+	public static Selection getSelection(CommandSender s){
 		Player p = ((Player) s);
 		return getWorldEdit().getSelection(p);
 	}
 
-	public void giveItems(CommandSender s){
+	public static void giveItems(CommandSender s){
 		Player p = (Player) s;
 		File file = new File("plugins" + File.separator + "Worldedit" + File.separator + "config.yml");
 		PlayerInventory pi = p.getInventory();
@@ -226,19 +217,19 @@ public class HotelsCreationMode {
 		//Wand
 		if(file.exists()){
 			YamlConfiguration weconfig = YamlConfiguration.loadConfiguration(file);
-			if(!(weconfig == null)&&(weconfig.contains("wand-item"))&&!(weconfig.get("wand-item") == null)){
-				int wanditem = (int) weconfig.get("wand-item");
+			if( weconfig!=null && weconfig.contains("wand-item") && weconfig.get("wand-item")!=null){
+				int wanditem = weconfig.getInt("wand-item");
 				@SuppressWarnings("deprecation")
 				ItemStack wand = new ItemStack(wanditem, 1);
 				ItemMeta im = wand.getItemMeta();
 				im.setDisplayName(Mes.mesnopre("chat.creationMode.items.wand.name"));
+				
 				List<String> loreList = new ArrayList<String>();
 				loreList.add(Mes.mesnopre("chat.creationMode.items.wand.lore1"));
 				loreList.add(Mes.mesnopre("chat.creationMode.items.wand.lore2"));
 				im.setLore(loreList);
 				wand.setItemMeta(im);
 				pi.setItem(0, wand);
-
 			}
 		}
 		//Sign

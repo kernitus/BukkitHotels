@@ -169,7 +169,7 @@ public class HotelsConfigHandler {
 	public YamlConfiguration getSignConfig(String hotelName, String roomNum){
 		return getyml(getSignFile(hotelName, roomNum));
 	}
-	public YamlConfiguration getSignConfig(String hotelName, int roomNum){
+	public static YamlConfiguration getSignConfig(String hotelName, int roomNum){
 		return getyml(getSignFile(hotelName, String.valueOf(roomNum)));
 	}
 	public static YamlConfiguration getInventoryConfig(UUID uuid){
@@ -177,13 +177,6 @@ public class HotelsConfigHandler {
 	}
 	public static YamlConfiguration getHotelConfig(String hotelName){
 		return getyml(getHotelFile(hotelName));
-	}
-
-	public String getupdateAvailable(){
-		return getMessageQueue().getString("messages.update.available");
-	}
-	public String getupdateString(){
-		return getMessageQueue().getString("messages.update.link");
 	}
 
 	public static void saveConfiguration(File file, YamlConfiguration config){

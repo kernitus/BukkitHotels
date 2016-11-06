@@ -70,6 +70,7 @@ chat:
     noSelection: '&4Seleziona un''area con la bacchetta di WorldEdit'
     selectionInvalid: '&4Selezione non valida. Seleziona di nuovo l''area'
     invalidChar: '&4Il nome non può contenere il carattere &6&l-'
+    deniedAction: '&4Non puoi fare ciò in modalità di creazione!'
     rooms:
       alreadyExists: '&4Questa stanza già esiste!'
       notInHotel: '&4La stanza non è nell''hotel specificato!'

@@ -70,6 +70,7 @@ chat:
     noSelection: '&4請使用WE魔杖(默認是木斧)選擇壹個區域'
     selectionInvalid: '&4無效的選區!請重新選擇!'
     invalidChar: '&4名稱中不能包含字符 &6&l-'
+    deniedAction: '&4你不能在處於創建模式時這麽做!'
     rooms:
       alreadyExists: '&4這個房間已經存在了!'
       notInHotel: '&4此房間不在指定的旅館中!'
