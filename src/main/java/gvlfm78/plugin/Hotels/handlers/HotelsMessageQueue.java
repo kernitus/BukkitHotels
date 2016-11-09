@@ -54,7 +54,9 @@ public class HotelsMessageQueue {
 			if(keys != null){
 
 				for(String key : keys){
-					UUID configUUID = UUID.fromString(queue.getString("messages." + type + "." + key + ".UUID"));
+					String uuidString = queue.getString("messages." + type + "." + key + ".UUID");
+					if(uuidString==null || uuidString.isEmpty()) continue;
+					UUID configUUID = UUID.fromString(uuidString);
 					if(uuid.equals(configUUID)){
 						expiryMessages.add(queue.getString("messages." + type + "." + key + ".message"));
 
