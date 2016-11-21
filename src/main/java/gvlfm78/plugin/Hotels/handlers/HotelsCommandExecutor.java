@@ -310,7 +310,6 @@ public class HotelsCommandExecutor {
 	public void renameHotel(String oldName, String newName, World world, CommandSender sender){
 		Hotel hotel = new Hotel(world, oldName);
 		if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return; }
-		hotel.rename(newName);
 		sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , newName));
 	}
 	public void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){

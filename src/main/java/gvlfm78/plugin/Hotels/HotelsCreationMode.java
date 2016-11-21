@@ -47,8 +47,6 @@ public class HotelsCreationMode {
 
 		if(hotelName.contains("-")){ p.sendMessage(Mes.mes("chat.creationMode.invalidChar")); return; }
 
-		if(Mes.hasPerm(p, "hotels.create")){ p.sendMessage(Mes.mes("chat.noPermission")); return; }
-
 		Selection sel = getWorldEdit().getSelection(p);
 		Hotel hotel = new Hotel(p.getWorld(), hotelName);
 

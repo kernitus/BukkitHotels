@@ -146,10 +146,12 @@ public class Room {
 		return isBlockAtSignLocationSign() ? ((Sign) getBlockAtSignLocation().getState()) : null;
 	}
 	public Location getDefaultHome(){
-		return new Location(getWorldFromConfig(),sconfig.getDouble("Sign.defaultHome.x"),sconfig.getDouble("Sign.defaultHome.y"),sconfig.getDouble("Sign.defaultHome.z"),(float) sconfig.getDouble("Sign.defaultHome.pitch"),(float) sconfig.getDouble("Sign.defaultHome.yaw"));
+		World world = getWorldFromConfig();
+		return world == null ? null : new Location(world,sconfig.getDouble("Sign.defaultHome.x"),sconfig.getDouble("Sign.defaultHome.y"),sconfig.getDouble("Sign.defaultHome.z"),(float) sconfig.getDouble("Sign.defaultHome.pitch"),(float) sconfig.getDouble("Sign.defaultHome.yaw"));
 	}
 	public Location getUserHome(){
-		return new Location(getWorldFromConfig(),sconfig.getDouble("Sign.userHome.x"),sconfig.getDouble("Sign.userHome.y"),sconfig.getDouble("Sign.userHome.z"),(float) sconfig.getDouble("Sign.userHome.pitch"),(float) sconfig.getDouble("Sign.userHome.yaw"));
+		World world = getWorldFromConfig();
+		return world==null ? null : new Location(world,sconfig.getDouble("Sign.userHome.x"),sconfig.getDouble("Sign.userHome.y"),sconfig.getDouble("Sign.userHome.z"),(float) sconfig.getDouble("Sign.userHome.pitch"),(float) sconfig.getDouble("Sign.userHome.yaw"));
 	}
 	public int getTimesExtended(){
 		return sconfig.getInt("Sign.extended");
@@ -171,6 +173,9 @@ public class Room {
 	}
 	public boolean isFreeOrNotSetup(){
 		return !getSignFile().exists() ? true : isFree();
+	}
+	public boolean isNotSetup(){
+		return !getSignFile().exists();
 	}
 	public List<String> getFriendsList(){
 		return sconfig.getStringList("Sign.friends");
@@ -491,7 +496,7 @@ public class Room {
 	}
 
 	public void renameRoom(String newHotelName){
-		WGM.renameRegion(getRegion().getId(), "Hotel-"+newHotelName+String.valueOf(num), world);
+		WGM.renameRegion(getRegion().getId(), "Hotel-" + newHotelName + "-" + String.valueOf(num), world);
 		WGM.saveRegions(world);
 		hotel = new Hotel(world, newHotelName);
 	}

@@ -29,16 +29,27 @@ public class RoomTask extends BukkitRunnable {
 
 		for(String fileName : fileslist){ //Looping through all the files
 			File file = HotelsConfigHandler.getFile("Signs" + File.separator + fileName);
-			if(!fileName.matches("\\w+-\\d+.yml")){ file.delete(); }//Delete all non-room signs in folder
+			if(!fileName.matches("\\w+-\\d+.yml")){ file.delete(); continue; }//Delete all non-room signs in folder
 
 			Mes.debugConsole("Checking room sign: " + file.getAbsolutePath());
 
 			//Getting information directly out of the file
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 			String hotelName = config.getString("Sign.hotel");
-			int roomNum = config.getInt("Sign.room");
+			String roomNumString = config.getString("Sign.room");
 			World world = getWorldFromRoomSign(config);
-
+			
+			if(world==null || hotelName == null){ file.delete(); continue; }
+			
+			int roomNum;
+			
+			try{
+				roomNum = Integer.parseInt(roomNumString);
+			}
+			catch(Exception e){
+				file.delete(); continue; //TODO add debug messages so we know why it was deleted
+			}
+			
 			Room room = new Room(world, hotelName, roomNum); //Creating room object with info from file
 
 			if(room.checkRent())

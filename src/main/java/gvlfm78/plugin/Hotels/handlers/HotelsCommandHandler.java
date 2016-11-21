@@ -295,7 +295,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					world = Bukkit.getWorld(args[3]);
 				else{ sender.sendMessage(Mes.mes("chat.commands.noWorld")); return false;}
 
-				if(world!=null){ sender.sendMessage(Mes.mes("chat.commands.worldNonExistant")); return false; }
+				if(world==null){ sender.sendMessage(Mes.mes("chat.commands.worldNonExistant")); return false; }
 
 				if(Mes.hasPerm(sender, "hotels.rename.admin") || (isPlayer && WGM.isOwner((Player) sender, WGM.getHotelRegion(world, args[1]))))
 					HCE.renameHotel(args[1], args[2], world, sender);
@@ -369,7 +369,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(!Mes.hasPerm(sender, "hotels.sign.create")){	sender.sendMessage(Mes.mes("chat.noPermission")); return false; }
 
 				Player p = (Player) sender;
-				if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){ sender.sendMessage(Mes.mes("chat.commands.creationMode.notAlreadyIn"));  return false; }
+				if(!HotelsCreationMode.isInCreationMode(p.getUniqueId())){ sender.sendMessage(Mes.mes("chat.commands.creationMode.notAlreadyIn"));  return false; }
 
 				Hotel hotel = new Hotel(p.getWorld(), args[1]);
 				String hotelName = hotel.getName();
@@ -410,21 +410,34 @@ public class HotelsCommandHandler implements CommandExecutor {
 				Room room = null;
 
 				for(ProtectedRegion r : regions){
-					String hotelName = r.getId().replaceFirst("hotel-", "");
+					String ID = r.getId();
+					String hotelName = ID.replaceFirst("hotel-", "").replaceAll("-\\d+", "");
 					Hotel hotelFound = new Hotel(p.getWorld(), hotelName);
 
 					if(!hotelFound.exists())
 						continue;
 
 					hotel = hotelFound;
-					String roomNum = hotelName.replaceFirst("\\w+-", "");
+
+					String roomNum = ID.replaceFirst("\\w+-\\w*-", "");
+					System.out.println("Input string: "+hotelName+" room num: "+roomNum);
+					
+					try{
+						Integer.parseInt(roomNum);
+					}
+					catch(NumberFormatException e){
+						continue;
+					}
 					Room roomFound = new Room(p.getWorld(), hotelName, roomNum);
 
-					if(roomFound.exists())//Player in room region
+					if(roomFound.exists()){//Player in room region
 						room = roomFound;
+						System.out.println("fbw erfwgefweyj");
+					}
 				}
 
 				if(room!=null){//They're in a room region
+					if(room.isNotSetup()){ sender.sendMessage(Mes.mes("chat.sign.use.nonExistantRoom")); return false;}
 					if(Mes.hasPerm(p, "hotels.sethome.admin") || WGM.isOwner(p, hotel.getRegion().getId(), w)){
 						room.setDefaultHome(p.getLocation());
 						if(room.saveSignConfig())
@@ -460,15 +473,22 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 
 			else if(args[0].equalsIgnoreCase("home") || args[0].equalsIgnoreCase("hm")){
-				if(isPlayer){ sender.sendMessage(Mes.mes("chat.commands.home.consoleRejected")); return false; }
+				if(!isPlayer){ sender.sendMessage(Mes.mes("chat.commands.home.consoleRejected")); return false; }
 
 				Player p = (Player) sender;
 				World w = p.getWorld();
 
-				if(Mes.hasPerm(p, "hotels.home")){ sender.sendMessage(Mes.mes("chat.noPermission")); return false; }
+				if(!Mes.hasPerm(p, "hotels.home")){ sender.sendMessage(Mes.mes("chat.noPermission")); return false; }
 				if(length<2){ sender.sendMessage(Mes.mes("chat.commands.home.usage")); return false; }
 
 				if(length>2){
+					try {
+						Integer.parseInt(args[2]);
+					} catch (NumberFormatException e) {
+						sender.sendMessage(Mes.mes("chat.commands.room.roomNumInvalid"));
+						return false;
+					}
+
 					Room room = new Room(w, args[1], args[2]);
 					if(!room.exists()){	sender.sendMessage(Mes.mes("chat.commands.home.regionNotFound")); return false; }
 
