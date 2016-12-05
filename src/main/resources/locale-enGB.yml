@@ -136,7 +136,7 @@ chat:
       home: '&6/ht home [hotelName] <roomNum> - &aTeleports you to a hotel/room home'
       check: '&6/ht check <playerName> - &aLists all rooms rented by you/specified player'
       list: '&6/ht list <worldName> - &aLists all hotels in current/specified world'
-      rlist: '&6/ht rlist [hotelName] <worldName> - &aLists all rooms in specified hotel in current/specified world'
+      rlist: '&6/ht rlist [hotelName] - &aLists all rooms in specified hotel'
       friend: '&6/ht friend|f [add|remove] [hotelName] [roomNum] [playerName] - &aAdds/removes a player from the list of friends that can access the specified room'
       friendList: '&6/ht friend|f list [hotelName] [roomNum] - &aLists players in friend list of specified hotel room'
       sellh: '&6/ht sellh [hotelName] [playerName] [price] - &aOffers to sell your hotel to specified user for specified price'
@@ -271,7 +271,7 @@ chat:
       footer: '&c==End of room list for %hotel% hotel=='
       line: '&6Room n: &c%room%%space%%state%'
       noRooms: '&cThere are no rooms in that hotel'
-      usage: '&4Correct usage: /ht rlist [hotelname] <worldName>'
+      usage: '&4Correct usage: /ht rlist [hotelname]'
       
     removeSigns:
       success: '&aSuccessfully removed all signs'

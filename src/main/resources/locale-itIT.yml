@@ -112,7 +112,7 @@ chat:
       home: '&6/ht home [nomehotel] <numstanza> - &aTi teletrasporta ad una home di hotel/stanza'
       check: '&6/ht check <giocatore> - &aLista tutte le stanze affittate da te/giocatore specificato'
       list: '&6/ht list <nomemondo> - &aLista tutti gli hotel nell''attuale/specificato mondo'
-      rlist: '&6/ht rlist [hotel] <nomemondo> - &aLista tutte le stanze nell''albergo specificato nell''attuale/specificato mondo'
+      rlist: '&6/ht rlist [hotel] - &aLista tutte le stanze nell''albergo specificato'
       friend: '&6/ht friend [add|remove] [nomehotel] [numstanza] [giocatore] - &aAggiunge/rimuove un giocatore dalla lista di amici che hanno accesso ad una specificata stanza'
       friendList: '&6/ht friend list [nomehotel] [numstanza] - &aLista i giocatori nella lista di amici nella specificata stanza di albergo'
       reload: '&6/ht reload - &aRicarica tutti i file di configurazione'
@@ -235,7 +235,7 @@ chat:
       footer: '&c==Fine lista stanze per l''hotel %hotel%=='
       line: '&6Stanza n: &c%room%%space%%state%'
       noRooms: '&cNon ci sono stanze in questo hotel'
-      usage: '&4Utilizzo corretto: /ht rlist [nomehotel] <nomemondo>'
+      usage: '&4Utilizzo corretto: /ht rlist [nomehotel]'
     removeSigns:
       success: '&aTutti i cartelli sono stati rimossi'
     friend:

@@ -136,7 +136,7 @@ chat:
       home: '&6/ht home [nomd''hôtel] <numpièce> - &aVous téléport à une home de hôtel/pièce'
       check: '&6/ht check <locataire> - &aLister toutes les pièces loué par vous/joueur spécifié'
       list: '&6/ht list <nomdemonde> - &aLister toutes les hôtel dans le courant/spécifié monde'
-      rlist: '&6/ht rlist [hôtel] <nomdemonde> - &aLister toutes les pièces dans l''hôtel spécifié dans le courant/spécifié monde'
+      rlist: '&6/ht rlist [hôtel] - &aLister toutes les pièces dans l''hôtel spécifié'
       friend: '&6/ht friend [add|remove] [nomd''hôtel] [numpièce] [locataire] - &aAjouter/supprimer un joueur dans la liste d''amis qui ont accès à une pièce spécifié'
       friendList: '&6/ht friend list [nomd''hôtel] [numpièce] - &aLister les joueurs dans la liste d''amis dans la spécifié pièce d''un hôtel'
       sellh: '&6/ht sellh [nomd''hôtel] [nomelocataire] [prix] - &aPropose à la vente votre hôtel à la joueur spécifié pour le prix spécifié'
@@ -276,7 +276,7 @@ chat:
       footer: '&c==Fin liste pièces pour l''hôtel %hôtel%=='
       line: '&6Pièce n: &c%room%%space%%state%'
       noRooms: '&cIl n''y a pas pièces libres dans ce hôtel'
-      usage: '&4Utilisation correct: /ht rlist [nomhôtel] <nommonde>'
+      usage: '&4Utilisation correct: /ht rlist [nomhôtel]'
 
   removeSigns:
       success: '&aToutes les signes sont été enlevés'

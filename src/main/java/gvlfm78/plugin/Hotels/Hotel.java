@@ -53,7 +53,7 @@ public class Hotel {
 	////////Getters////////
 	///////////////////////
 	public boolean exists(){
-		return WGM.hasRegion(world, "hotel-"+name);
+		return (world == null || name == null) ? false : WGM.hasRegion(world, "hotel-"+name);
 	}
 	public World getWorld(){
 		return world;
@@ -121,7 +121,7 @@ public class Hotel {
 		return getRegion().getOwners();
 	}
 	public Location getHome(){
-		return new Location(world, hconfig.getDouble("Hotel.home.x"),hconfig.getDouble("Hotel.home.y"),hconfig.getDouble("Hotel.home.z"),(float) hconfig.getDouble("Hotel.home.pitch"),(float) hconfig.getDouble("Hotel.home.yaw"));
+		return new Location(world, hconfig.getDouble("Hotel.home.x"),hconfig.getDouble("Hotel.home.y"),hconfig.getDouble("Hotel.home.z"),(float) hconfig.getDouble("Hotel.home.yaw"),(float) hconfig.getDouble("Hotel.home.pitch"));
 	}
 	public HotelBuyer getBuyer(){
 		return TradesHolder.getBuyerFromHotel(this);

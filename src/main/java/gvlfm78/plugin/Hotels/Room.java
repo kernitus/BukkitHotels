@@ -147,11 +147,11 @@ public class Room {
 	}
 	public Location getDefaultHome(){
 		World world = getWorldFromConfig();
-		return world == null ? null : new Location(world,sconfig.getDouble("Sign.defaultHome.x"),sconfig.getDouble("Sign.defaultHome.y"),sconfig.getDouble("Sign.defaultHome.z"),(float) sconfig.getDouble("Sign.defaultHome.pitch"),(float) sconfig.getDouble("Sign.defaultHome.yaw"));
+		return (world == null || !sconfig.contains("Sign.defaultHome", true)) ? null : new Location(world,sconfig.getDouble("Sign.defaultHome.x"),sconfig.getDouble("Sign.defaultHome.y"),sconfig.getDouble("Sign.defaultHome.z"),(float) sconfig.getDouble("Sign.defaultHome.yaw"),(float) sconfig.getDouble("Sign.defaultHome.pitch"));
 	}
 	public Location getUserHome(){
 		World world = getWorldFromConfig();
-		return world==null ? null : new Location(world,sconfig.getDouble("Sign.userHome.x"),sconfig.getDouble("Sign.userHome.y"),sconfig.getDouble("Sign.userHome.z"),(float) sconfig.getDouble("Sign.userHome.pitch"),(float) sconfig.getDouble("Sign.userHome.yaw"));
+		return (world == null || !sconfig.contains("Sign.userHome", true)) ? null : new Location(world,sconfig.getDouble("Sign.userHome.x"),sconfig.getDouble("Sign.userHome.y"),sconfig.getDouble("Sign.userHome.z"),(float) sconfig.getDouble("Sign.userHome.yaw"),(float) sconfig.getDouble("Sign.userHome.pitch"));
 	}
 	public int getTimesExtended(){
 		return sconfig.getInt("Sign.extended");

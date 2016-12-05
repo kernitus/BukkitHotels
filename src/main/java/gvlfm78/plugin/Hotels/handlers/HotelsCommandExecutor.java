@@ -342,7 +342,7 @@ public class HotelsCommandExecutor {
 
 		@SuppressWarnings("deprecation")
 		OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
-		if(p!=null && p.hasPlayedBefore()){ sender.sendMessage(Mes.mes("chat.commands.userNonExistant")); return; }
+		if(p==null || !p.hasPlayedBefore()){ sender.sendMessage(Mes.mes("chat.commands.userNonExistant")); return; }
 
 		//Printing out owned hotels first
 		ArrayList<Hotel> hotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId());
