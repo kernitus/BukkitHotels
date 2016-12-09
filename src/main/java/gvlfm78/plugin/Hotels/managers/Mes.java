@@ -27,7 +27,7 @@ public class Mes {
 		if(mes!=null)
 			mes = ChatColor.translateAlternateColorCodes('&', mes);
 		else
-			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
+			mes = "Message " + path + " is null!";
 		return mes;
 	}
 	public static boolean hasPerm(CommandSender sender, String perm){

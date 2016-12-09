@@ -127,24 +127,24 @@ chat:
       subheader: '&5--Hotels plugin command help page--'
       footer: '&4================================'
       help: '&6/ht help - &aDisplays help page'
-      creationMode: '&6/ht [creationmode|cm] [enter|exit] - &aEnter/exit creation mode'
-      create: '&6/ht create|c [hotelName] - &aCreate a hotel with current selection'
-      room: '&6/ht room [hotelName] <roomNum> - &aCreate room with current selection within specified hotel'
-      renum: '&6/ht renum [hotelName] [oldNum] [newNum] - &aRenumbers specified room'
-      rename: '&6/ht rename [oldName] [newName] - &aRenames specified hotel'
+      creationMode: '&6/ht <creationmode/cm> <enter/exit> - &aEnter/exit creation mode'
+      create: '&6/ht <create/c> <hotelName> - &aCreate a hotel with current selection'
+      room: '&6/ht room <hotelName> <roomNum> - &aCreate room with current selection within specified hotel'
+      renum: '&6/ht renum <hotelName> <oldNum> <newNum> - &aRenumbers specified room'
+      rename: '&6/ht rename <oldName> <newName> - &aRenames specified hotel'
       sethome: '&6/ht sethome - &aSets a hotel/room home'
-      home: '&6/ht home [hotelName] <roomNum> - &aTeleports you to a hotel/room home'
-      check: '&6/ht check <playerName> - &aLists all rooms rented by you/specified player'
-      list: '&6/ht list <worldName> - &aLists all hotels in current/specified world'
-      rlist: '&6/ht rlist [hotelName] - &aLists all rooms in specified hotel'
-      friend: '&6/ht friend|f [add|remove] [hotelName] [roomNum] [playerName] - &aAdds/removes a player from the list of friends that can access the specified room'
-      friendList: '&6/ht friend|f list [hotelName] [roomNum] - &aLists players in friend list of specified hotel room'
-      sellh: '&6/ht sellh [hotelName] [playerName] [price] - &aOffers to sell your hotel to specified user for specified price'
-      buyh: '&6/ht buyh [hotelName] - &aBuys specified hotel from owner if it is on sale'
+      home: '&6/ht home <hotelName> [roomNum] - &aTeleports you to a hotel/room home'
+      check: '&6/ht check [playerName] - &aLists all rooms rented by you/specified player'
+      list: '&6/ht list [worldName] - &aLists all hotels in current/specified world'
+      rlist: '&6/ht rlist <hotelName> - &aLists all rooms in specified hotel'
+      friend: '&6/ht <friend/f> <add/remove> <hotelName> <roomNum> <playerName> - &aAdds/removes a player from the list of friends that can access the specified room'
+      friendList: '&6/ht <friend/f> list <hotelName> <roomNum> - &aLists players in friend list of specified hotel room'
+      sellh: '&6/ht sellh <hotelName> <playerName> <price> - &aOffers to sell your hotel to specified user for specified price'
+      buyh: '&6/ht buyh <hotelName> - &aBuys specified hotel from owner if it is on sale'
       reload: '&6/ht reload - &aReloads all configuration files'
-      remove: '&6/ht remove [playerName] [hotelName] [roomNum] - &aRemoves player from his rented room'
-      delr: '&6/ht delr [hotelName] [roomNum] - &aDeletes specified room'
-      delete: '&6/ht delete [hotelName] - &aDelete specified hotel'
+      remove: '&6/ht remove <playerName> <hotelName> <roomNum> - &aRemoves player from his rented room'
+      delr: '&6/ht delr <hotelName> <roomNum> - &aDeletes specified room'
+      delete: '&6/ht delete <hotelName> - &aDelete specified hotel'
       
     help:
       header: '&4================================'
@@ -194,7 +194,7 @@ chat:
     
     rent:
       consoleRejected: The console can't rent rooms!
-      usage: '&4Correct usage: &6&o/ht rent hotelName roomNum'
+      usage: '&4Correct usage: &6&o/ht rent <hotelName> <roomNum>'
       invalidLocation: '&4Sign location in sign file does not resolve to a sign!'
       invalidData: '&4Hotel name or room number entered are not valid'
     
@@ -219,23 +219,23 @@ chat:
       success: '&aYou have created room %room% of the %hotel% hotel'
       roomNumInvalid: '&4The room number is not a valid integer!'
       nextNewRoomFail: '&4Could not find next available room! Try specifying the room number manually'
-      usage: '&4Correct Usage: &6&o/hotels room hotelName roomNum'
+      usage: '&4Correct Usage: &6&o/ht room <hotelName> <roomNum>'
       alreadyPresent: '&4There is already a room present here'
     deleteHotel:
       hasRentedRooms: '&4You cannot delete this hotel as some rooms in it have been rented!'
     
     deleteRoom:
-      usage: '&4Correct usage: /hotels delr [hotelName] [roomNum] <worldName>'
+      usage: '&4Correct usage: &6&o/ht delr <hotelName> <roomNum> [worldName]'
       roomRented: '&4You cannot delete this room as it has been rented!'
     
     renumber:
-      usage: '&4Correct usage: /hotels renum [hotelName] [oldNum] [newNum] <worldName>'
+      usage: '&4Correct usage: &6&o/ht renum <hotelName> <oldNum> <newNum> [worldName]'
       success: '&2You have successfully changed room %oldnum% to room %newnum% of the %hotel% hotel'
       fail: '&4Could not renumber room %oldnum%'
       newNumTooBig: '&4New number is too big!'
     
     rename:
-      usage: '&4Correct usage: /hotels ren [oldName] [newName] <worldName>'
+      usage: '&4Correct usage: &6&o/ht ren <oldName> <newName> [worldName]'
       success: '&2You have successfully renamed the %hotel% hotel'
       failRooms: '&4Could not rename rooms'
     
@@ -251,7 +251,7 @@ chat:
       playerNotRenter: '&4Specified player did not rent specified room!'
       noRenter: '&4The specified room has not been rented!'
       success: '&aSuccessfully removed %player% from room %room% of the %hotel% hotel'
-      usage: '&4Correct usage: /hotels remove [playerName] [hotelname] [roomNum] <worldname>'
+      usage: '&4Correct usage: &6&o/ht remove <playerName> <hotelname> <roomNum> [worldname]'
     
     check:
       headerHotels: '&a==Owned hotels list for %player%=='
@@ -271,13 +271,13 @@ chat:
       footer: '&c==End of room list for %hotel% hotel=='
       line: '&6Room n: &c%room%%space%%state%'
       noRooms: '&cThere are no rooms in that hotel'
-      usage: '&4Correct usage: /ht rlist [hotelname]'
+      usage: '&4Correct usage: &6&o/ht rlist <hotelname>'
       
     removeSigns:
       success: '&aSuccessfully removed all signs'
       
     friend:
-      usage: '&4Correct usage: /hotels friend [add|remove|list] [hotelName] [roomname] <friendName>'
+      usage: '&4Correct usage: &6&o/ht friend <add/remove/list> <hotelName> <roomName> [friendName]'
       wrongData: '&4The hotel or room number entered do not match any existing location'
       noRenter: '&4The room you specified has no renter!'
       notRenter: '&4You are not the renter of the specified room!'
@@ -306,7 +306,7 @@ chat:
       consoleRejected: The console can't teleport home!
       noHomeSet: '&4No home is set!'
       regionNotFound: '&4Specified hotel or room not found!'
-      usage: '&4Correct usage: /ht home [hotelName] <roomNum>'
+      usage: '&4Correct usage: &6&o/ht home <hotelName> [roomNum]'
       notRenterNoPermission: '&4You are not the renter or have the permission to do this!'
     
     reload:
@@ -314,7 +314,7 @@ chat:
       
     sellhotel:
       consoleRejected: The console can't sell a hotel!
-      usage: '&4Correct usage: &6&o/ht sellh [hotelName] [buyerName] [price]'
+      usage: '&4Correct usage: &6&o/ht sellh <hotelName> <buyerName> <price>'
       buyerNotOnline: '&4The buyer is not online!'
       selling: '&aPlayer %seller% is selling their hotel %hotel% to you for $%price%. Type &6&o/ht buyh %hotel% &r&ato buy it'
       sellingAsked: '&aThe player %buyer% has been asked if they wish to buy your hotel'
@@ -325,7 +325,7 @@ chat:
     
     buyhotel:
       consoleRejected: The console can't buy a hotel!
-      usage: '&4Correct usage: &6&o/ht buyh [hotelName]'
+      usage: '&4Correct usage: &6&o/ht buyh <hotelName>'
       success: '&aYou have just bought the %hotel% hotel from %seller% for $%price%'
       notOnSale: '&4That hotel is not on sale!'
       notEnoughMoney: '&4You do not have enough money!'

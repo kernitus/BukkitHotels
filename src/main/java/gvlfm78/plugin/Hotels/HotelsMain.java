@@ -20,10 +20,10 @@ import net.milkbowl.vault.economy.Economy;
 public class HotelsMain extends JavaPlugin{
 
 	public static Economy economy = null; //Creating economy variable
-	
+
 	//Task loops
 	RoomTask roomTask;
-	
+
 	HotelsConfigHandler HCH = new HotelsConfigHandler(this);
 	Logger log = getServer().getLogger();
 
@@ -41,12 +41,9 @@ public class HotelsMain extends JavaPlugin{
 			//If economy is turned on
 			//but no vault is found it will warn the user
 			String message = Mes.mesnopre("main.enable.noVault");
-			if(message != null)
-				getLogger().severe(message);
-			else
-				getLogger().severe("No Vault dependency found!");
+			getLogger().severe(message);
 		}
-		
+
 		//Room sign checker and updater
 		roomTask = new RoomTask();
 		int roomMins = getConfig().getInt("settings.roomTaskTimerMinutes");
@@ -65,11 +62,7 @@ public class HotelsMain extends JavaPlugin{
 		}
 
 		//Logging to console the correct enabling of Hotels
-		String message = Mes.mesnopre("main.enable.success");
-		if(message!=null)
-			getLogger().info(Mes.mesnopre("main.enable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
-		else
-			getLogger().info(pdfFile.getName()+" v"+pdfFile.getVersion()+ " has been enabled correctly");
+		getLogger().info(Mes.mesnopre("main.enable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 		//Metrics
 		try {
 			Metrics metrics = new Metrics(this);
@@ -193,7 +186,7 @@ public class HotelsMain extends JavaPlugin{
 			getServer().getPluginManager().registerEvents((new HotelsUpdateListener(this)), this);
 
 			final HotelsMain plugin = this;
-			
+
 			Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable (){
 				public void run(){
 					HotelsUpdateChecker HUC = new HotelsUpdateChecker(plugin);
@@ -208,11 +201,7 @@ public class HotelsMain extends JavaPlugin{
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Logging to console the disabling of Hotels
-		String message = Mes.mesnopre("main.disable.success");
-		if(message!=null)
-			getLogger().info(Mes.mesnopre("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
-		else
-			getLogger().info(pdfFile.getName() + " v" + pdfFile.getVersion() + " has been disabled");
+		getLogger().info(Mes.mesnopre("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 	}
 
 	@Override
