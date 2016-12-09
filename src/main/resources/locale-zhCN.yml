@@ -117,7 +117,7 @@ chat:
       home: '&6/ht home <旅馆名> [房间号] - &a将你传送至 旅馆|房间 的传送点'
       check: '&6/ht check [玩家名] - &a列出由 你|指定玩家 租借的所有房间'
       list: '&6/ht list  [世界名] - &a列出所有目前在你 所在|指定 世界中的旅馆'
-      rlist: '&6/ht rlist <旅馆名> - &a列出所有目前在你 所在|指定 世界中旅馆的所有房间'
+      rlist: '&6/ht rlist <旅馆名> - &a列出目前在你 所在 世界中旅馆的所有房间'
       friend: '&6/ht friend <add/remove> <旅馆名> <房间名> <玩家名> - &a添加/移除 一名可以在你指定旅馆的指定房间中打开、使用物品的玩家'
       friendList: '&6/ht friend list <旅馆名> <房间名> - &a列出所有在指定旅馆的指定房间中有权限的好友列表'
       reload: '&6/ht reload - &a重载配置文件'
