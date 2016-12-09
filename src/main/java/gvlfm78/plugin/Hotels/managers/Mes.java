@@ -31,9 +31,7 @@ public class Mes {
 		return mes;
 	}
 	public static boolean hasPerm(CommandSender sender, String perm){
-		if(sender instanceof Player)
-			return hasPerm( ( (Player) sender), perm);
-		return true;
+		return sender instanceof Player ? hasPerm( ( (Player) sender), perm) : true;
 	}
 	public static boolean hasPerm(Player player, String perm){
 		return player.hasPermission("hotels.*") || player.hasPermission(perm) || player.hasPermission(perm+".user") || player.hasPermission(perm+".admin");
