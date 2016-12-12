@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.managers.Mes;
 import net.gravitydevelopment.updater.Updater;
+import net.gravitydevelopment.updater.Updater.UpdateResult;
 
 public class HotelsUpdateChecker {
 
@@ -36,8 +37,10 @@ public class HotelsUpdateChecker {
 		}
 		else{//Get messages from bukkit update checker
 			Updater updater = new Updater(plugin, 70177, pluginFile, Updater.UpdateType.NO_DOWNLOAD, false);
-			updateMessages[0] = Mes.mesnopre("main.updateAvailable").replaceAll("%version%", updater.getLatestName().replaceAll("[A-Za-z\\s]", ""));
-			updateMessages[1] = Mes.mesnopre("main.updateAvailableLink").replaceAll("%link%", updater.getLatestFileLink());
+			if(updater.getResult().equals(UpdateResult.UPDATE_AVAILABLE)){
+				updateMessages[0] = Mes.mesnopre("main.updateAvailable").replaceAll("%version%", updater.getLatestName().replaceAll("[A-Za-z\\s]", ""));
+				updateMessages[1] = Mes.mesnopre("main.updateAvailableLink").replaceAll("%link%", updater.getLatestFileLink());
+			}
 		}
 		return updateMessages;
 	}
