@@ -1,5 +1,6 @@
 package kernitus.plugin.Hotels.updateChecker;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -9,16 +10,17 @@ import org.bukkit.entity.Player;
 
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.managers.Mes;
+import net.gravitydevelopment.updater.Updater;
 
 public class HotelsUpdateChecker {
 
 	private HotelsMain plugin;
-	private final BukkitUpdateChecker BUC;
+	private final File pluginFile;
 	private final SpigotUpdateChecker SUC;
 
-	public HotelsUpdateChecker(HotelsMain plugin){
+	public HotelsUpdateChecker(HotelsMain plugin, File pluginFile){
 		this.plugin = plugin;
-		BUC = new BukkitUpdateChecker(plugin);
+		this.pluginFile = pluginFile;
 		SUC = new SpigotUpdateChecker(plugin);
 	}
 
@@ -32,8 +34,11 @@ public class HotelsUpdateChecker {
 				updateMessages[1] = Mes.mesnopre("main.updateAvailableLink").replaceAll("%link%","https://www.spigotmc.org/resources/hotels.2047/updates/");
 			}
 		}
-		else//Get messages from bukkit update checker
-			updateMessages = BUC.updateMessages();
+		else{//Get messages from bukkit update checker
+			Updater updater = new Updater(plugin, 70177, pluginFile, Updater.UpdateType.NO_DOWNLOAD, false);
+			updateMessages[0] = Mes.mesnopre("main.updateAvailable").replaceAll("%version%", updater.getLatestName().replaceAll("[A-Za-z\\s]", ""));
+			updateMessages[1] = Mes.mesnopre("main.updateAvailableLink").replaceAll("%link%", updater.getLatestFileLink());
+		}
 		return updateMessages;
 	}
 

@@ -183,13 +183,13 @@ public class HotelsMain extends JavaPlugin{
 
 		//Checking for updates
 		if(getConfig().getBoolean("checkForUpdates")){
-			getServer().getPluginManager().registerEvents((new HotelsUpdateListener(this)), this);
+			getServer().getPluginManager().registerEvents((new HotelsUpdateListener(this, this.getFile())), this);
 
 			final HotelsMain plugin = this;
 
 			Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable (){
 				public void run(){
-					HotelsUpdateChecker HUC = new HotelsUpdateChecker(plugin);
+					HotelsUpdateChecker HUC = new HotelsUpdateChecker(plugin, plugin.getFile());
 					HUC.sendUpdateMessages(getLogger());
 				}
 			},20L);

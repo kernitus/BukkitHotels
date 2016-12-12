@@ -1,6 +1,5 @@
 package kernitus.plugin.Hotels;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,15 +20,12 @@ import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.trade.TradesHolder;
-import kernitus.plugin.Hotels.updateChecker.HotelsUpdateChecker;
 
 public class HotelsListener implements Listener {
 
-	private HotelsMain plugin;
 	private SignManager SM;
 
 	public HotelsListener(HotelsMain plugin){
-		this.plugin = plugin;
 		SM = new SignManager(plugin);
 	}
 
@@ -85,22 +81,7 @@ public class HotelsListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
-		//Player joined the server, send update notification to OPs
 		final Player p = e.getPlayer();
-
-		//Sending update messages
-		if(p.hasPermission("hotel.*")){
-			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable () {
-				public void run() {
-
-					HotelsUpdateChecker updateChecker = new HotelsUpdateChecker(plugin);
-
-					// Checking for updates
-					updateChecker.sendUpdateMessages(p);
-				}
-			},20L);
-		}
-
 		//Send player all queued up messages for them
 		HotelsMessageQueue.sendPlayerAllMessages(p);
 	}

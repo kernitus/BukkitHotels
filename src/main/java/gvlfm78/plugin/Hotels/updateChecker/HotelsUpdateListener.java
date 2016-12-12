@@ -1,5 +1,7 @@
 package kernitus.plugin.Hotels.updateChecker;
 
+import java.io.File;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,12 +13,14 @@ import kernitus.plugin.Hotels.HotelsMain;
 public class HotelsUpdateListener implements Listener{
 
 	private HotelsMain plugin;
-	
-	public HotelsUpdateListener(HotelsMain plugin){
+	private final File pluginFile;
+
+	public HotelsUpdateListener(HotelsMain plugin, File pluginFile){
 		this.plugin = plugin;
+		this.pluginFile = pluginFile;
 	}
-	
-	
+
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
 		final Player p = e.getPlayer();
@@ -24,7 +28,7 @@ public class HotelsUpdateListener implements Listener{
 			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable () {
 				public void run() {
 
-					HotelsUpdateChecker updateChecker = new HotelsUpdateChecker(plugin);
+					HotelsUpdateChecker updateChecker = new HotelsUpdateChecker(plugin, pluginFile);
 
 					// Checking for updates
 					updateChecker.sendUpdateMessages(p);
@@ -32,5 +36,4 @@ public class HotelsUpdateListener implements Listener{
 			},20L);
 		}
 	}
-	
 }
