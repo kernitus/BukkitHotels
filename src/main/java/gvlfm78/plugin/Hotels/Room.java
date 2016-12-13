@@ -33,6 +33,8 @@ import kernitus.plugin.Hotels.handlers.MessageType;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.trade.RoomBuyer;
+import kernitus.plugin.Hotels.trade.TradesHolder;
 
 public class Room {
 
@@ -179,6 +181,9 @@ public class Room {
 	}
 	public List<String> getFriendsList(){
 		return sconfig.getStringList("Sign.friends");
+	}
+	public RoomBuyer getBuyer(){
+		return TradesHolder.getBuyerFromRoom(this);
 	}
 	//////////////////////
 	///////Setters////////
@@ -694,5 +699,11 @@ public class Room {
 		sign.update();
 
 		return wasRented;
+	}
+	public void setBuyer(UUID uuid, double price){
+		TradesHolder.addRoomBuyer(Bukkit.getPlayer(uuid), this, price);
+	}
+	public void removeBuyer(){
+		TradesHolder.removeHotelBuyer(TradesHolder.getBuyerFromRoom(this).getPlayer());
 	}
 }

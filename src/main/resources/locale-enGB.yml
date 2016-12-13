@@ -329,3 +329,17 @@ chat:
       success: '&aYou have just bought the %hotel% hotel from %seller% for $%price%'
       notOnSale: '&4That hotel is not on sale!'
       notEnoughMoney: '&4You do not have enough money!'
+      
+    sellroom:
+      consoleRejected: The console can't sell a room!
+      usage: '&4Correct usage: &6&o/ht sellr <hotelName> <roomNum> <buyerName> <price>'
+      sellingAlreadyAsked: '&4You have already asked the player %buyer% if they wish to buy your room!'
+      sellingAsked: '&aThe player %buyer% has been asked if they wish to buy your room'
+      selling: '&aPlayer %seller% is selling their room %room% of the %hotel% hotel to you for $%price%. Type &6&o/ht buyr %hotel% %room% &r&ato buy it'
+      success: '&aYou have just sold your room %room% of the %hotel% hotel to player %buyer% for $%price%'
+      
+    buyroom:
+      consoleRejected: The console can't buy a room!
+      usage: '&4Correct usage: &6&o/ht buyr <hotelName> <roomNum>'
+      notOnSale: '&4That room is not on sale!'
+      success: '&aYou have just bought room %room% of the %hotel% hotel from %seller% for $%price%'

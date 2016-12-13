@@ -22,6 +22,7 @@ import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 import kernitus.plugin.Hotels.trade.HotelBuyer;
+import kernitus.plugin.Hotels.trade.RoomBuyer;
 
 public class HotelsCommandHandler implements CommandExecutor {
 
@@ -202,16 +203,16 @@ public class HotelsCommandHandler implements CommandExecutor {
 					if(length>1){
 						if(isPlayer){//Is player
 							Player p = (Player) sender;
-								World w = p.getWorld();
-								HCE.cmdRoomListPlayer(p, args[1], w);
+							World w = p.getWorld();
+							HCE.cmdRoomListPlayer(p, args[1], w);
 						}
 						else{//Not a player issuing the command
 							Hotel hotel = new Hotel(args[1]);
 
 							if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
-							
+
 							World w = hotel.getWorld();
-							
+
 							HCE.cmdRoomListPlayer(sender, args[1], w);
 						}
 					}
@@ -478,7 +479,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					//Check if there is a user home
 					Location userLoc = room.getUserHome();
 					Location defLoc = room.getDefaultHome();
-					
+
 					if(userLoc!=null)
 						p.teleport(userLoc);
 					else if(defLoc!=null){
@@ -625,6 +626,137 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				hotel.removeBuyer();
 				hotel.saveHotelConfig();
+
+			}
+			else if(args[0].equalsIgnoreCase("sellroom") || args[0].equalsIgnoreCase("sellr")){
+				if(!isPlayer){ sender.sendMessage(Mes.mesnopre("chat.commands.sellroom.consoleRejected")); return false;}
+
+				Player player = (Player) sender;
+
+				if(!Mes.hasPerm(player, "hotels.sell.room")){ sender.sendMessage(Mes.mes("chat.noPermission")); return false; }
+
+				if(length<4){ sender.sendMessage(Mes.mes("chat.commands.sellroom.usage")); return false; }
+
+				World world = player.getWorld();
+				Hotel hotel = new Hotel(world, args[1]);
+
+				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+
+				Room room = new Room(hotel, args[2]);
+
+				if(!room.isRenter(player.getUniqueId())){ sender.sendMessage(Mes.mes("chat.commands.friend.notRenter")); return false; }
+
+				@SuppressWarnings("deprecation")
+				Player buyer = Bukkit.getPlayerExact(args[3]);
+				if(buyer == null || !buyer.isOnline()){	sender.sendMessage(Mes.mes("chat.commands.sellhotel.buyerNotOnline")); return false; }
+
+				int price;
+
+				try{
+					price = Integer.parseInt(args[4]);
+				}
+				catch(NumberFormatException e){
+					sender.sendMessage(Mes.mes("chat.commands.sellhotel.invalidPrice"));
+					return false;
+				}
+
+				if(room.getBuyer()!=null || buyer.getUniqueId().equals(room.getBuyer().getPlayer().getUniqueId())){
+					sender.sendMessage(Mes.mes("chat.commands.sellroom.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName())); return false; }
+
+				room.setBuyer(buyer.getUniqueId(), price);
+
+				sender.sendMessage(Mes.mes("chat.commands.sellroom.sellingAsked").replaceAll("%buyer%", buyer.getName()));
+
+				buyer.sendMessage(Mes.mes("chat.commands.sellroom.selling")
+						.replaceAll("%seller%", player.getName())
+						.replaceAll("%hotel%", args[1])
+						.replaceAll("%price%", String.valueOf(price))
+						.replaceAll("%room%", String.valueOf(room.getNum()))
+						);
+			}
+
+			else if(args[0].equalsIgnoreCase("buyroom") || args[0].equalsIgnoreCase("buyr")){
+				if(!isPlayer){ sender.sendMessage(Mes.mesnopre("chat.commands.buyroom.consoleRejected")); return false; }
+
+				Player player = (Player) sender;
+				if(length<3){ sender.sendMessage(Mes.mesnopre("chat.commands.buyroom.usage")); return false; }
+
+				World world = player.getWorld();
+				Hotel hotel = new Hotel(world, args[1]);
+
+				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+
+				Room room = new Room(hotel, args[2]);
+
+				if(!room.exists()){ sender.sendMessage(Mes.mes("chat.commands.roomNonExistant")); return false; }
+
+				RoomBuyer rb = room.getBuyer();
+				Player buyer = rb.getPlayer();
+
+				if(!buyer.hasPlayedBefore() || !buyer.equals(player) || buyer == null){ sender.sendMessage(Mes.mes("chat.commands.buyroom.notOnSale")); return false; }
+
+				//They are the buyer the room owner has specified
+				double balance = HotelsMain.economy.getBalance(player);
+				double price = rb.getPrice();
+
+				if((balance-price)<0){ sender.sendMessage(Mes.mes("chat.commands.buyhotel.notEnoughMoney")); return false; }
+
+				//Player has enough money
+				HotelsMain.economy.withdrawPlayer(player, price);
+				String onlineOwner = "";
+
+				String taxString = plugin.getConfig().getString("tax");
+				double revenue = price;
+				boolean isPercentage = taxString.matches("\\d+%");
+				double tax;
+
+				if(isPercentage)
+					taxString = taxString.replaceAll("%", "");
+				try{
+					tax = Double.parseDouble(taxString);
+				}
+				catch(Exception e){
+					player.sendMessage(Mes.mes("chat.commands.sellHotel.invalidPrice"));
+					return false;
+				}
+
+				if(isPercentage)
+					revenue *= 1 - tax/100;
+				else
+					revenue -= tax;
+
+				if(revenue<0) revenue = 0;
+
+				OfflinePlayer op = room.getRenter();
+
+				String message = Mes.mes("chat.commands.sellroom.success")
+						.replaceAll("%room%", String.valueOf(room.getNum()))
+						.replaceAll("%buyer%", player.getName())
+						.replaceAll("%price%", String.valueOf(price))
+						.replaceAll("%hotel%", hotel.getName());
+
+				if(op.isOnline()){
+					Player p = (Player) op;
+
+					onlineOwner = p.getName();
+
+					p.sendMessage(message);
+				}
+				else
+					HotelsMessageQueue.addMessage(MessageType.revenue, op.getUniqueId(),message);
+
+				room.setRenter(player.getUniqueId()); //Removing old owner
+
+				HotelsMain.economy.depositPlayer(op, revenue); //Paying old owner
+
+				player.sendMessage(Mes.mes("chat.commands.buyroom.success")
+						.replaceAll("%room%", String.valueOf(room.getNum()))
+						.replaceAll("%seller%", onlineOwner)
+						.replaceAll("%price%", String.valueOf(price))
+						.replaceAll("%hotel%", hotel.getName()) );
+
+				room.removeBuyer();
+				room.saveSignConfig();
 
 			}
 			//Other argument
