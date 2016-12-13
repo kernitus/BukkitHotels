@@ -734,7 +734,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						.replaceAll("%buyer%", player.getName())
 						.replaceAll("%price%", String.valueOf(price))
 						.replaceAll("%hotel%", hotel.getName());
-
+				
 				if(op.isOnline()){
 					Player p = (Player) op;
 

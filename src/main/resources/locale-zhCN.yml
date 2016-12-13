@@ -289,3 +289,15 @@ chat:
       notOnSale: '&4那间旅馆不在出售中!'
       notEnoughMoney: '&4你没有足够的钱!'
       expired: '&4%hotel% 旅馆的出售交易已过期'
+    sellroom:
+      consoleRejected: '控制台不能出售一个房间!'
+      usage: '&4正确用法: &6&o/ht sellr <旅馆名> <房间号码> <购买者名称> <价格>'
+      sellingAlreadyAsked: '&4你已经询问过 %buyer% 是否愿意购买你的房间了!'
+      sellingAsked: '&a玩家 %buyer% 已经被询问是否愿意购买你的房间了'
+      selling: '&a玩家 %seller% 正在以 $%price% 出售他位于 %hotel% 旅馆的房间 %room%. 输入 &6&o/ht buyr %hotel% %room% &r&a买下它'
+      success: '&a你以 $%price% 卖出了位于 %hotel% 的房间 %room%, 购买者： %buyer%'
+    buyroom:
+      consoleRejected: '控制台不能购买一个房间!'
+      usage: '&4正确用法: &6&o/ht buyr <旅馆名> <房间号>'
+      notOnSale: '&4那个房间并未在出售中!'
+      success: '&a你刚刚从 %seller% 手中以 $%price% 的价格买下了位于 %hotel% 旅馆的 %room% 房间'

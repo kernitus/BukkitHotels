@@ -284,3 +284,16 @@ chat:
       notOnSale: '&4Quell''hotel non è in vendita!'
       notEnoughMoney: '&4Non hai abbastanza soldi!'
       expired: '&4L''offerta di vendita dell''hotel %hotel% è scaduta'
+    sellroom:
+      consoleRejected: La console non può vendere una stanza!
+      usage: '&4Utilizzo corretto: &6&o/ht sellr <nomeHotel> <numStanza> <nomeCompratore> <prezzo>'
+      sellingAlreadyAsked: '&4Hai già chiesto al giocatore %buyer% se vogliono comprare la tua stanza!'
+      sellingAsked: '&aHai chiesto al giocatore %buyer% se voglion comprare la tua stanza'
+      selling: '&aIl giocatore %seller% sta vendendo la propria stanza %room% dell'' %hotel% per $%price%. Scrivi &6&o/ht buyr %hotel% %room% &r&per comprarla'
+      success: '&aHai appena venduto la tua stanza %room% dell''hotel %hotel% a %buyer% per $%price%'
+      
+    buyroom:
+      consoleRejected: La console non può comprare una stanza!
+      usage: '&4Utilizzo corretto: &6&o/ht buyr <nomeHotel> <numStanza>'
+      notOnSale: '&4Quella stanza non è in vendita!'
+      success: '&aHai appena comprato la stanza %room% dell''hotel %hotel% da %seller% per $%price%'
