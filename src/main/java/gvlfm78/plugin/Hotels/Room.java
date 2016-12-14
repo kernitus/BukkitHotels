@@ -323,27 +323,27 @@ public class Room {
 		}
 	}
 
-	public int renumber(String newNum){
+	public HotelsResult renumber(String newNum){
 		return renumber(Integer.parseInt(newNum));
 	}
 
-	public int renumber(int newNum){
+	public HotelsResult renumber(int newNum){
 		int oldNum = num;
 		Hotel hotel = getHotel();
 		String hotelName = hotel.getName();
 
 		if(newNum>100000)
-			return 1;
+			return HotelsResult.NEW_NUM_TOO_BIG;
 
 		if(!hotel.exists())
-			return 2;
+			return HotelsResult.HOTEL_NON_EXISTENT;
 
 
 		if(!exists())
-			return 3;
+			return HotelsResult.ROOM_NON_EXISTENT;
 
 		if(!doesSignFileExist()){
-			return 4;
+			return HotelsResult.SIGN_FILE_NON_EXISTENT;
 		}
 
 		Block sign = getBlockAtSignLocation();
@@ -353,7 +353,7 @@ public class Room {
 		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){
 			sign.setType(Material.AIR);
 			deleteSignFile();
-			return 5;
+			return HotelsResult.BLOCK_NOT_SIGN;
 		}
 
 		Sign s = (Sign) sign.getState();
@@ -365,10 +365,10 @@ public class Room {
 		if(!hotel.getRegion().contains(signLocation.getBlockX(),signLocation.getBlockY(),signLocation.getBlockZ())){
 			sign.setType(Material.AIR);
 			deleteSignFile();
-			return 6;
+			return HotelsResult.OUT_OF_REGION;
 		}
 
-		s.setLine(1, Mes.mesnopre("sign.room.name")+" "+newNum+" - "+Line2.split(" ")[3]);
+		s.setLine(1, Mes.mesnopre("sign.room.name") + " " + newNum + " - " + Line2.split(" ")[3]);
 		s.update();
 
 		sconfig.set("Sign.room", Integer.valueOf(newNum));
@@ -393,7 +393,7 @@ public class Room {
 
 		Bukkit.getPluginManager().callEvent(new RoomRenumberEvent(this, oldNum));
 
-		return 0;
+		return HotelsResult.SUCCESS;
 	}
 
 	public boolean createSignConfig(Player p, long timeInMins, double cost, Location signLocation){
