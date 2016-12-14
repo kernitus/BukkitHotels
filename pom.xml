@@ -53,6 +53,10 @@
 			<url>http://repo.gravitydevelopment.net</url>
 		</repository>
 	</repositories>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.bukkit</groupId>
@@ -79,9 +83,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-            <groupId>net.gravitydevelopment.updater</groupId>
-            <artifactId>updater</artifactId>
-            <version>2.4</version>
-        </dependency>
+			<groupId>net.gravitydevelopment.updater</groupId>
+			<artifactId>updater</artifactId>
+			<version>2.4</version>
+		</dependency>
 	</dependencies>
 </project>
