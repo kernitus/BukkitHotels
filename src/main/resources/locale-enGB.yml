@@ -61,10 +61,10 @@ chat:
       notEnoughMoney: '&4You do not have enough money! You need another %missingmoney%'
       noAccount: '&4You do not have an economy account!'
       taken: '&4This room has already been rented'
-      nonExistantRoom: '&4This room does not exist!'
+      nonExistentRoom: '&4This room does not exist!'
       differentRoomNums: '&4Room numbers don''t match!'
       differentHotelNames: '&4Hotel names don''t match!'
-      fileNonExistant: '&4Sign file does not exist!'
+      fileNonExistent: '&4Sign file does not exist!'
       signOutOfRegion: '&4Sign is not inside specified hotel region'
       maxEntendReached: '&4You have reached the limit of rent extention of %max% times!'
       maxRoomsReached: '&4You have reached the limit of %max% rooms you can own'
@@ -187,10 +187,10 @@ chat:
     noWorld: '&cPlease specify world'
     noHotel: '&cPlease specify hotel'
     noPlayer: '&cPlease specify player'
-    userNonExistant: '&4Specified user does not exist'
-    roomNonExistant: '&4Specified room does not exist'
-    hotelNonExistant: '&4Specified hotel does not exist'
-    worldNonExistant: '&4Specified world does not exist'
+    userNonExistent: '&4Specified user does not exist'
+    roomNonExistent: '&4Specified room does not exist'
+    hotelNonExistent: '&4Specified hotel does not exist'
+    worldNonExistent: '&4Specified world does not exist'
     
     rent:
       consoleRejected: The console can't rent rooms!
@@ -283,7 +283,7 @@ chat:
       notRenter: '&4You are not the renter of the specified room!'
       consoleRejected: The console can't add/remove friends from a room!
       addYourself: '&4You can''t add yourself to the friend list!'
-      nonExistant: '&4You can''t add imaginary friends to the friend list!'
+      nonExistent: '&4You can''t add imaginary friends to the friend list!'
       friendNotInList: '&4The user you specified is not in the friend list!'
       addSuccess: '&aSuccessfully added %friend% to the friend list'
       removeSuccess: '&aSuccessfully removed %friend% from the friend list'

@@ -17,7 +17,6 @@ import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.HotelsResult;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
@@ -221,9 +220,9 @@ public class HotelsCommandExecutor {
 			player.sendMessage(Mes.mes("chat.commands.friend.addYourself")); return; }
 
 		switch(room.addFriend(friend)){
-		case 1: player.sendMessage(Mes.mes("chat.commands.friend.wrongData")); break;
-		case 2: player.sendMessage(Mes.mes("chat.commands.friend.noRenter")); break;
-		case 3: player.sendMessage(Mes.mes("chat.commands.friend.nonExistant")); break;
+		case FILE_NON_EXISTENT: player.sendMessage(Mes.mes("chat.commands.friend.wrongData")); break;
+		case IS_NOT_RENTED: player.sendMessage(Mes.mes("chat.commands.friend.noRenter")); break;
+		case USER_NON_EXISTENT: player.sendMessage(Mes.mes("chat.commands.friend.nonExistent")); break;
 		default: player.sendMessage(Mes.mes("chat.commands.friend.addSuccess").replaceAll("%friend%", friend.getName()));
 		}
 
@@ -238,9 +237,9 @@ public class HotelsCommandExecutor {
 		OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(friendName);
 
 		switch(room.removeFriend(friend)){
-		case 1: player.sendMessage(Mes.mes("chat.commands.friend.wrongData")); break;
-		case 2: player.sendMessage(Mes.mes("chat.commands.friend.noRenter")); break;
-		case 3: player.sendMessage(Mes.mes("chat.commands.friend.friendNotInList")); break;
+		case FILE_NON_EXISTENT: player.sendMessage(Mes.mes("chat.commands.friend.wrongData")); break;
+		case IS_NOT_RENTED: player.sendMessage(Mes.mes("chat.commands.friend.noRenter")); break;
+		case FRIEND_NOT_IN_LIST: player.sendMessage(Mes.mes("chat.commands.friend.friendNotInList")); break;
 		default: player.sendMessage(Mes.mes("chat.commands.friend.removeSuccess").replaceAll("%friend%", friend.getName())); break;
 		}
 	}
@@ -277,7 +276,7 @@ public class HotelsCommandExecutor {
 		if(hotel.exists())
 			listRooms(hotel,s);
 		else
-			s.sendMessage(Mes.mes("chat.commands.hotelNonExistant").replaceAll("(?i)&([a-fk-r0-9])", ""));
+			s.sendMessage(Mes.mes("chat.commands.hotelNonExistent").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
 	public void renumber(Room room, String newNum, CommandSender sender){
 		int oldNum = room.getNum();
@@ -296,21 +295,20 @@ public class HotelsCommandExecutor {
 			return;
 		}
 
-		HotelsResult result = room.renumber(newNum);
-		switch(result){
-		case 1: player.sendMessage(Mes.mes("chat.commands.renumber.newNumTooBig")); break;
-		case 2: player.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); break;
-		case 3: player.sendMessage(Mes.mes("chat.commands.roomNonExistant")); break;
-		case 4: player.sendMessage(Mes.mes("chat.use.fileNonExistant")); break;
-		case 5: player.sendMessage(Mes.mes("chat.commands.rent.invalidLocation")); break;//Not a sign
-		case 6: player.sendMessage(Mes.mes("chat.sign.place.outOfRegion")); break;
+		switch(room.renumber(newNum)){
+		case NEW_NUM_TOO_BIG: player.sendMessage(Mes.mes("chat.commands.renumber.newNumTooBig")); break;
+		case HOTEL_NON_EXISTENT: player.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); break;
+		case ROOM_NON_EXISTENT: player.sendMessage(Mes.mes("chat.commands.roomNonExistent")); break;
+		case FILE_NON_EXISTENT: player.sendMessage(Mes.mes("chat.use.fileNonExistent")); break;
+		case BLOCK_NOT_SIGN: player.sendMessage(Mes.mes("chat.commands.rent.invalidLocation")); break;//Not a sign
+		case OUT_OF_REGION: player.sendMessage(Mes.mes("chat.sign.place.outOfRegion")); break;
 		default: player.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", String.valueOf(oldNum)).replaceAll("%newnum%", String.valueOf(newNum)).replaceAll("%hotel%", hotel.getName()));
 		}
 	}
 
 	public void renameHotel(String oldName, String newName, World world, CommandSender sender){
 		Hotel hotel = new Hotel(world, oldName);
-		if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return; }
+		if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return; }
 		sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , newName));
 	}
 	public void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
@@ -331,11 +329,11 @@ public class HotelsCommandExecutor {
 			sender.sendMessage(Mes.mes("chat.commands.remove.playerNotRenter")); return; }
 
 		switch(room.removePlayer(player)){
-		case 1: sender.sendMessage(Mes.mes("chat.commands.worldNonExistant")); break;
-		case 2: sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); break;
-		case 3: sender.sendMessage(Mes.mes("chat.commands.roomNonExistant")); break;
-		case 4: sender.sendMessage(Mes.mes("chat.commands.userNonExistant")); break;
-		case 5: sender.sendMessage(Mes.mes("chat.commands.remove.noRenter")); break;
+		case WORLD_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.worldNonExistent")); break;
+		case HOTEL_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); break;
+		case ROOM_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.roomNonExistent")); break;
+		case USER_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.userNonExistent")); break;
+		case IS_NOT_RENTED: sender.sendMessage(Mes.mes("chat.commands.remove.noRenter")); break;
 		default: sender.sendMessage(Mes.mes("chat.commands.remove.success").replaceAll("%player%", toRemovePlayer).replaceAll("%room%", roomNum).replaceAll("%hotel%", hotelName)); break;
 		}
 	}
@@ -343,7 +341,7 @@ public class HotelsCommandExecutor {
 
 		@SuppressWarnings("deprecation")
 		OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
-		if(p==null || !p.hasPlayedBefore()){ sender.sendMessage(Mes.mes("chat.commands.userNonExistant")); return; }
+		if(p==null || !p.hasPlayedBefore()){ sender.sendMessage(Mes.mes("chat.commands.userNonExistent")); return; }
 
 		//Printing out owned hotels first
 		ArrayList<Hotel> hotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId());

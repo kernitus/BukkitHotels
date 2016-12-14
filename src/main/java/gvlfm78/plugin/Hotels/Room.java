@@ -343,7 +343,7 @@ public class Room {
 			return HotelsResult.ROOM_NON_EXISTENT;
 
 		if(!doesSignFileExist()){
-			return HotelsResult.SIGN_FILE_NON_EXISTENT;
+			return HotelsResult.FILE_NON_EXISTENT;
 		}
 
 		Block sign = getBlockAtSignLocation();
@@ -456,21 +456,21 @@ public class Room {
 		return true;
 	}
 
-	public int removePlayer(OfflinePlayer playerToRemove){
+	public HotelsResult removePlayer(OfflinePlayer playerToRemove){
 		if(world==null)
-			return 1;
+			return HotelsResult.WORLD_NON_EXISTENT;
 
 		if(!hotel.exists())
-			return 2;
+			return HotelsResult.HOTEL_NON_EXISTENT;
 
 		if(!exists())
-			return 3;
+			return HotelsResult.ROOM_NON_EXISTENT;
 
 		if(!playerToRemove.hasPlayedBefore())
-			return 4;
+			return HotelsResult.USER_NON_EXISTENT;
 
 		if(isFree())
-			return 5;
+			return HotelsResult.IS_NOT_RENTED;
 
 		ProtectedRegion r = getRegion();
 		WGM.removeMember(playerToRemove, r);
@@ -497,7 +497,7 @@ public class Room {
 		//Make free room accessible to all players if set in config
 		WorldGuardManager.makeRoomAccessible(r);
 
-		return 0;
+		return HotelsResult.SUCCESS;
 	}
 
 	public void renameRoom(String newHotelName){
@@ -506,16 +506,16 @@ public class Room {
 		hotel = new Hotel(world, newHotelName);
 	}
 
-	public int addFriend(OfflinePlayer friend){
+	public HotelsResult addFriend(OfflinePlayer friend){
 
 		if(!doesSignFileExist())
-			return 1;
+			return HotelsResult.FILE_NON_EXISTENT;
 
 		if(!isRented())
-			return 2;	
+			return HotelsResult.IS_NOT_RENTED;	
 
 		if(!friend.hasPlayedBefore())
-			return 3;
+			return HotelsResult.USER_NON_EXISTENT;
 
 		//Adding player as region member
 
@@ -527,18 +527,18 @@ public class Room {
 
 		saveSignConfig();
 
-		return 0;
+		return HotelsResult.SUCCESS;
 	}
 
-	public int removeFriend(OfflinePlayer friend){
+	public HotelsResult removeFriend(OfflinePlayer friend){
 		if(!doesSignFileExist())
-			return 1;
+			return HotelsResult.FILE_NON_EXISTENT;
 
 		if(!isRented())
-			return 2;
+			return HotelsResult.IS_NOT_RENTED;
 
 		if(!getFriendsList().contains(friend.getUniqueId().toString()))
-			return 3;
+			return HotelsResult.FRIEND_NOT_IN_LIST;
 
 		//Removing player as region member
 		WGM.removeMember(friend, getRegion());
@@ -550,7 +550,7 @@ public class Room {
 
 		saveSignConfig();
 
-		return 0;
+		return HotelsResult.SUCCESS;
 	}
 
 	public void delete(){

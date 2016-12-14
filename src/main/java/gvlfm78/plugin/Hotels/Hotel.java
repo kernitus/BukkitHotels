@@ -197,7 +197,7 @@ public class Hotel {
 		for(Room room : getRooms()){
 			room.delete();
 		}
-		//Remove Hotel file if existant
+		//Remove Hotel file if existent
 		deleteHotelFile();
 		Bukkit.getPluginManager().callEvent(new HotelDeleteEvent(this));
 	}

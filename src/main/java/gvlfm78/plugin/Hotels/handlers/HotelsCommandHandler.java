@@ -209,7 +209,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						else{//Not a player issuing the command
 							Hotel hotel = new Hotel(args[1]);
 
-							if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+							if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return false; }
 
 							World w = hotel.getWorld();
 
@@ -233,7 +233,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						if(w!=null)
 							HCE.listHotels(w,sender);
 						else
-							sender.sendMessage(Mes.mes("chat.commands.worldNonExistant"));
+							sender.sendMessage(Mes.mes("chat.commands.worldNonExistent"));
 					}
 					else
 						sender.sendMessage(Mes.mes("chat.commands.noWorld"));
@@ -256,13 +256,13 @@ public class HotelsCommandHandler implements CommandExecutor {
 					String roomNum = args[2];
 					Hotel hotel = new Hotel(world, hotelName);
 
-					if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+					if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return false; }
 
 					if(!Mes.hasPerm(sender, "hotels.delete.room.admin") && isPlayer && !hotel.isOwner(((Player) sender).getUniqueId())){ sender.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return false; }
 
 					Room room = new Room(hotel, roomNum);
 
-					if(!room.exists()){ sender.sendMessage(Mes.mes("chat.commands.roomNonExistant")); return false; }
+					if(!room.exists()){ sender.sendMessage(Mes.mes("chat.commands.roomNonExistent")); return false; }
 
 					if(Mes.hasPerm(sender, "hotels.delete.rooms.admin") || room.isFree())
 						HCE.removeRoom(args[1], roomNum, world, sender);
@@ -285,7 +285,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					world = Bukkit.getWorld(args[3]);
 				else{ sender.sendMessage(Mes.mes("chat.commands.noWorld")); return false;}
 
-				if(world==null){ sender.sendMessage(Mes.mes("chat.commands.worldNonExistant")); return false; }
+				if(world==null){ sender.sendMessage(Mes.mes("chat.commands.worldNonExistent")); return false; }
 
 				if(Mes.hasPerm(sender, "hotels.rename.admin") || (isPlayer && WGM.isOwner((Player) sender, WGM.getHotelRegion(world, args[1]))))
 					HCE.renameHotel(args[1], args[2], world, sender);
@@ -307,7 +307,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(Mes.mes("chat.commands.renumber.usage")); return false; }
 
 
-				if(world==null){ sender.sendMessage(Mes.mes("chat.commands.worldNonExistant")); return false; }
+				if(world==null){ sender.sendMessage(Mes.mes("chat.commands.worldNonExistent")); return false; }
 
 				Room room = new Room(world, args[1], args[2]);
 				HCE.renumber(room,args[3],sender);
@@ -323,7 +323,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					World world = p.getWorld();
 					Hotel hotel = new Hotel(world, args[1]);
 
-					if(!hotel.exists()){ p.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+					if(!hotel.exists()){ p.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return false; }
 
 					if(hotel.isOwner(p.getUniqueId()) || Mes.hasPerm(p, "hotels.delete.admin")){
 						if(Mes.hasPerm(p, "hotels.delete.admin") || !hotel.hasRentedRooms()){
@@ -364,7 +364,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				Hotel hotel = new Hotel(p.getWorld(), args[1]);
 				String hotelName = hotel.getName();
 
-				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return false; }
 
 				//Hotel exists, therefore proceed
 				if(length>2){
@@ -424,7 +424,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 
 				if(room!=null){//They're in a room region
-					if(room.isNotSetup()){ sender.sendMessage(Mes.mes("chat.sign.use.nonExistantRoom")); return false;}
+					if(room.isNotSetup()){ sender.sendMessage(Mes.mes("chat.sign.use.nonExistentRoom")); return false;}
 					if(Mes.hasPerm(p, "hotels.sethome.admin") || WGM.isOwner(p, hotel.getRegion().getId(), w)){
 						room.setDefaultHome(p.getLocation());
 						if(room.saveSignConfig())
@@ -513,7 +513,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				World world = player.getWorld();
 				Hotel hotel = new Hotel(world,args[1]);
 
-				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return false; }
 
 				if(!hotel.isOwner(player.getUniqueId())){ sender.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return false; }
 
@@ -553,7 +553,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				World world = player.getWorld();
 				Hotel hotel = new Hotel(world, args[1]);
 
-				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return false; }
 
 
 				HotelBuyer hb = hotel.getBuyer();
@@ -640,7 +640,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				World world = player.getWorld();
 				Hotel hotel = new Hotel(world, args[1]);
 
-				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return false; }
 
 				Room room = new Room(hotel, args[2]);
 
@@ -684,11 +684,11 @@ public class HotelsCommandHandler implements CommandExecutor {
 				World world = player.getWorld();
 				Hotel hotel = new Hotel(world, args[1]);
 
-				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistant")); return false; }
+				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return false; }
 
 				Room room = new Room(hotel, args[2]);
 
-				if(!room.exists()){ sender.sendMessage(Mes.mes("chat.commands.roomNonExistant")); return false; }
+				if(!room.exists()){ sender.sendMessage(Mes.mes("chat.commands.roomNonExistent")); return false; }
 
 				RoomBuyer rb = room.getBuyer();
 				Player buyer = rb.getPlayer();

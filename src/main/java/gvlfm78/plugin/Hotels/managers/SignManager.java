@@ -225,7 +225,7 @@ public class SignManager {
 						p.sendMessage(Mes.mes("chat.sign.use.differentHotelNames")); 
 				}
 				else
-					p.sendMessage(Mes.mes("chat.sign.use.fileNonExistant")); 
+					p.sendMessage(Mes.mes("chat.sign.use.fileNonExistent")); 
 			}
 			else
 				p.sendMessage(Mes.mes("chat.sign.use.signOutOfRegion")); 
@@ -235,7 +235,7 @@ public class SignManager {
 
 		String hotelName = room.getHotel().getName();
 
-		if(!room.exists()){ p.sendMessage(Mes.mes("chat.sign.use.nonExistantRoom")); return; }
+		if(!room.exists()){ p.sendMessage(Mes.mes("chat.sign.use.nonExistentRoom")); return; }
 
 		OfflinePlayer renter = room.getRenter();
 
