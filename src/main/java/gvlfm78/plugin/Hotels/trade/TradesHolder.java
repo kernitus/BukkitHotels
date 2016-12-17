@@ -62,9 +62,11 @@ public class TradesHolder {
 		return null;
 	}
 	public static void addHotelBuyer(Player p, Hotel hotel, double price){
-		hbuyers.putIfAbsent(p, new HotelBuyer(hotel, p, price));
+		if(!hbuyers.containsKey(p))
+			hbuyers.put(p, new HotelBuyer(hotel, p, price));
 	}
 	public static void addRoomBuyer(Player p, Room room, double price){
-		rbuyers.putIfAbsent(p, new RoomBuyer(room, p, price));
+		if(!rbuyers.containsKey(p))
+			rbuyers.put(p, new RoomBuyer(room, p, price));
 	}
 }
