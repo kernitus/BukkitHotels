@@ -7,14 +7,14 @@ import org.bukkit.event.HandlerList;
 
 import kernitus.plugin.Hotels.Room;
 
-public class RoomSignUpdateEvent extends Event implements Cancellable{
+public class RoomSignUpdateEvent extends Event implements Cancellable {
 
 	private static final HandlerList handlers = new HandlerList();
 	private final Room room;
 	private final Sign sign;
 	private final long remainingTime;
 	
-	private boolean isCancelled = false;
+	private boolean cancel = false;
 	private String formattedRemainingTime;
 
 	public RoomSignUpdateEvent(Room room, Sign sign, long remainingTime, String formattedRemainingTime){
@@ -42,12 +42,12 @@ public class RoomSignUpdateEvent extends Event implements Cancellable{
 
 	@Override
 	public boolean isCancelled() {
-		return isCancelled;
+		return cancel;
 	}
 
 	@Override
-	public void setCancelled(boolean isCancelled) {
-		this.isCancelled = isCancelled;
+	public void setCancelled(boolean cancel) {
+		this.cancel = cancel;
 	}
 	public long getRemainingTime(){
 		return remainingTime;

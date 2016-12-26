@@ -16,19 +16,12 @@ import org.bukkit.entity.Player;
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsCreationMode;
-import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 
 public class HotelsCommandExecutor {
-
-	private WorldGuardManager WGM;
-
-	public HotelsCommandExecutor(HotelsMain plugin){
-		WGM = new WorldGuardManager();
-	}
 
 	public void cmdCreate(Player p,String hotelName){//Hotel creation command
 		UUID playerUUID = p.getUniqueId();
@@ -290,7 +283,7 @@ public class HotelsCommandExecutor {
 
 		Player player = (Player) sender;
 
-		if(!WGM.isOwner(player, "hotel-"+hotelName, player.getWorld()) || Mes.hasPerm(player, "hotels.renumber.admin")){
+		if(!WorldGuardManager.isOwner(player, "hotel-"+hotelName, player.getWorld()) || Mes.hasPerm(player, "hotels.renumber.admin")){
 			player.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
 			return;
 		}
@@ -304,12 +297,6 @@ public class HotelsCommandExecutor {
 		case OUT_OF_REGION: player.sendMessage(Mes.mes("chat.sign.place.outOfRegion")); break;
 		default: player.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", String.valueOf(oldNum)).replaceAll("%newnum%", String.valueOf(newNum)).replaceAll("%hotel%", hotel.getName()));
 		}
-	}
-
-	public void renameHotel(String oldName, String newName, World world, CommandSender sender){
-		Hotel hotel = new Hotel(world, oldName);
-		if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return; }
-		sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , newName));
 	}
 	public void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
 		Room room = new Room(world, hotelName, roomNum);

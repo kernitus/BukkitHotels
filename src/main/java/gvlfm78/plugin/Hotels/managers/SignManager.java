@@ -38,11 +38,9 @@ import kernitus.plugin.Hotels.handlers.MessageType;
 public class SignManager {
 
 	private HotelsMain plugin;
-	private WorldGuardManager WGM;
 
 	public SignManager(HotelsMain plugin){
 		this.plugin = plugin;
-		WGM = new WorldGuardManager();
 	}
 
 	public void placeReceptionSign(SignChangeEvent e){
@@ -357,7 +355,7 @@ public class SignManager {
 								if(cWorld!=null && cWorld==w){//If sign and config worlds match
 									if(room.getSignLocation().equals(b.getLocation())){//If sign and config location match
 										if(room.isFree() || Mes.hasPerm(p, "hotels.delete.rooms.admin")){
-											WGM.removeRegion(w,roomRegion.getId());
+											WorldGuardManager.removeRegion(w,roomRegion.getId());
 											room.deleteSignFile();
 										}
 										else{

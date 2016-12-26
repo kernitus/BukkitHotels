@@ -7,14 +7,14 @@ import kernitus.plugin.Hotels.Room;
 public class RoomBuyer extends Room implements Buyer {
 
 	private final Player p;
-	private final double price;
+	private double price;
 
 	public RoomBuyer(Room room, Player p, double price) {
 		super(room.getHotel(), room.getNum());
 		this.p = p;
 		this.price = price;
 	}
-	
+
 	@Override
 	public Player getPlayer() {
 		return p;
@@ -22,5 +22,10 @@ public class RoomBuyer extends Room implements Buyer {
 	@Override
 	public double getPrice() {
 		return price;
+	}
+
+	@Override
+	public void setPrice(double price) {
+		this.price = price;	
 	}
 }

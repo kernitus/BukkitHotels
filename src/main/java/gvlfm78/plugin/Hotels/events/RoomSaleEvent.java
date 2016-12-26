@@ -4,17 +4,17 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import kernitus.plugin.Hotels.trade.HotelBuyer;
+import kernitus.plugin.Hotels.trade.RoomBuyer;
 
-public class HotelSaleEvent extends Event implements Cancellable {
-	
-	private HotelBuyer hb;
+public class RoomSaleEvent extends Event implements Cancellable {
+
+	private RoomBuyer rb;
 	private static final HandlerList handlers = new HandlerList();
 	private boolean cancel;
 	double revenue;
 
-	public HotelSaleEvent(HotelBuyer hb, double revenue){
-		this.hb = hb;
+	public RoomSaleEvent(RoomBuyer rb, double revenue){
+		this.rb = rb;
 		this.revenue = revenue;
 	}
 
@@ -27,8 +27,8 @@ public class HotelSaleEvent extends Event implements Cancellable {
 		return handlers;
 	}
 
-	public HotelBuyer getHotelBuyer(){
-		return hb;
+	public RoomBuyer getRoomBuyer(){
+		return rb;
 	}
 	public double getRevenue(){
 		return revenue;
@@ -44,7 +44,7 @@ public class HotelSaleEvent extends Event implements Cancellable {
 		this.cancel = cancel;
 	}
 	public void setPrice(double price){
-		hb.setPrice(price);
+		rb.setPrice(price);
 	}
 	public void setRevenue(double revenue){
 		this.revenue = revenue;

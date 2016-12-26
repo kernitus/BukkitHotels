@@ -38,8 +38,6 @@ import kernitus.plugin.Hotels.trade.TradesHolder;
 
 public class Room {
 
-	private WorldGuardManager WGM = new WorldGuardManager();
-
 	private Hotel hotel;
 	private int num;
 	public YamlConfiguration sconfig;
@@ -88,7 +86,7 @@ public class Room {
 	///////Getters////////
 	//////////////////////
 	public boolean exists(){
-		return world==null ? false : WGM.hasRegion(world, "hotel-" + hotel.getName() + "-" + num);
+		return world==null ? false : WorldGuardManager.hasRegion(world, "hotel-" + hotel.getName() + "-" + num);
 	}
 	public int getNum(){
 		return num;
@@ -97,7 +95,7 @@ public class Room {
 		return hotel;
 	}
 	public ProtectedRegion getRegion(){
-		return WGM.getRoomRegion(world, hotel.getName(), num);
+		return WorldGuardManager.getRoomRegion(world, hotel.getName(), num);
 	}
 	public OfflinePlayer getRenter(){
 		String renter = sconfig.getString("Sign.renter");
@@ -189,8 +187,8 @@ public class Room {
 	///////Setters////////
 	//////////////////////
 	public void createRegion(ProtectedRegion r){
-		WGM.addRegion(world, r);
-		WGM.saveRegions(world);
+		WorldGuardManager.addRegion(world, r);
+		WorldGuardManager.saveRegions(world);
 	}
 	public void setRentTime(long timeInMins){
 		sconfig.set("Sign.time", timeInMins);
@@ -250,18 +248,23 @@ public class Room {
 		DefaultDomain dd = new DefaultDomain();
 		dd.addPlayer(uuid);
 		getRegion().setMembers(dd);
-		WGM.setMember(uuid, getRegion());
+		WorldGuardManager.setMember(uuid, getRegion());
 		//Placing their UUID in the sign config
 		sconfig.set("Sign.renter", uuid.toString());
 	}
 	public void rent(Player p){
-		UUID uuid = p.getUniqueId();
 		if(!exists() || !doesSignFileExist()){
 			p.sendMessage(Mes.mes("chat.commands.rent.invalidData"));
 			return;
 		}
 
-		setRenter(uuid);
+		RoomRentEvent rre = new RoomRentEvent(this, p);
+		Bukkit.getPluginManager().callEvent(rre);
+		if(rre.isCancelled()) return;
+		p = rre.getRenter();
+
+
+		setRenter(p.getUniqueId());
 		//Set in config time rented at and expiry time
 		long currentMin = System.currentTimeMillis()/1000/60;
 		setTimeRentedAt(currentMin);
@@ -270,21 +273,19 @@ public class Room {
 
 		//Setting room flags back in case they were changed to allow players in
 		ProtectedRegion region = getRegion();
-		WGM.roomFlags(region, num, world);
+		WorldGuardManager.roomFlags(region, num, world);
 		if(HotelsConfigHandler.getconfigyml().getBoolean("stopOwnersEditingRentedRooms")){
 			region.setPriority(10);
 			region.setFlag(DefaultFlag.BLOCK_BREAK, State.DENY);
 			region.setFlag(DefaultFlag.BLOCK_PLACE, State.DENY);
 		}
 
-		WGM.saveRegions(world);//Saving WG regions
+		WorldGuardManager.saveRegions(world);//Saving WG regions
 
 		updateSign(); //Update this room sign with new info
 
 		//Update this hotel's reception signs
 		hotel.updateReceptionSigns();
-
-		Bukkit.getPluginManager().callEvent(new RoomRentEvent(this));
 	}
 	///Config stuff
 	private File getSignFile(){
@@ -316,7 +317,7 @@ public class Room {
 			Sign s = (Sign) b.getState();
 			String Line1 = ChatColor.stripColor(s.getLine(0));
 			if(Line1.matches("Reception") || Line1.matches(Mes.mesnopre("Sign.reception"))){
-				if(WGM.getRegion(world,"Hotel-"+hotel.getName()).contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())){
+				if(WorldGuardManager.getRegion(world,"Hotel-"+hotel.getName()).contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())){
 					deleteSignFile();
 				}
 			}
@@ -368,6 +369,10 @@ public class Room {
 			return HotelsResult.OUT_OF_REGION;
 		}
 
+		RoomRenumberEvent rre = new RoomRenumberEvent(this, oldNum);
+		Bukkit.getPluginManager().callEvent(rre);
+		if(rre.isCancelled()) return HotelsResult.CANCELLED;
+
 		s.setLine(1, Mes.mesnopre("sign.room.name") + " " + newNum + " - " + Line2.split(" ")[3]);
 		s.update();
 
@@ -379,19 +384,17 @@ public class Room {
 		getSignFile().renameTo(newFile);
 
 		//Renaming region and changing number in greet/farewell messages
-		ProtectedRegion oldRegion = WGM.getRegion(world, "hotel-"+hotel+"-"+num);
+		ProtectedRegion oldRegion = WorldGuardManager.getRegion(world, "hotel-"+hotel+"-"+num);
 
 		if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
 			oldRegion.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.room.enter").replaceAll("%room%", String.valueOf(newNum))));
 		if(Mes.flagValue("room.map-making.FAREWELL").equalsIgnoreCase("true"))
 			oldRegion.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.room.exit").replaceAll("%room%", String.valueOf(newNum))));
-		WGM.renameRegion("Hotel-"+hotelName+"-"+num, "Hotel-"+hotelName+"-"+newNum, world);
-		WGM.saveRegions(world);
+		WorldGuardManager.renameRegion("Hotel-"+hotelName+"-"+num, "Hotel-"+hotelName+"-"+newNum, world);
+		WorldGuardManager.saveRegions(world);
 
 		num = newNum;
 		sconfig = getSignConfig();
-
-		Bukkit.getPluginManager().callEvent(new RoomRenumberEvent(this, oldNum));
 
 		return HotelsResult.SUCCESS;
 	}
@@ -444,9 +447,9 @@ public class Room {
 		if(!exists())
 			return false;
 
-		WGM.removeRegion(world, getRegion());
+		WorldGuardManager.removeRegion(world, getRegion());
 
-		WGM.saveRegions(world);
+		WorldGuardManager.saveRegions(world);
 
 		if(!doesSignFileExist())
 			return false;
@@ -473,7 +476,7 @@ public class Room {
 			return HotelsResult.IS_NOT_RENTED;
 
 		ProtectedRegion r = getRegion();
-		WGM.removeMember(playerToRemove, r);
+		WorldGuardManager.removeMember(playerToRemove, r);
 
 		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
 			r.setFlag(DefaultFlag.BLOCK_BREAK, null);
@@ -501,8 +504,8 @@ public class Room {
 	}
 
 	public void renameRoom(String newHotelName){
-		WGM.renameRegion(getRegion().getId(), "Hotel-" + newHotelName + "-" + String.valueOf(num), world);
-		WGM.saveRegions(world);
+		WorldGuardManager.renameRegion(getRegion().getId(), "Hotel-" + newHotelName + "-" + String.valueOf(num), world);
+		WorldGuardManager.saveRegions(world);
 		hotel = new Hotel(world, newHotelName);
 	}
 
@@ -519,7 +522,7 @@ public class Room {
 
 		//Adding player as region member
 
-		WGM.addMember(friend, getRegion());
+		WorldGuardManager.addMember(friend, getRegion());
 		//Adding player to config under friends list
 		List<String> stringList = getFriendsList();
 		stringList.add(friend.getUniqueId().toString());
@@ -541,7 +544,7 @@ public class Room {
 			return HotelsResult.FRIEND_NOT_IN_LIST;
 
 		//Removing player as region member
-		WGM.removeMember(friend, getRegion());
+		WorldGuardManager.removeMember(friend, getRegion());
 
 		//Removing player from config under friends list
 		List<String> stringList = sconfig.getStringList("Sign.friends");
@@ -554,26 +557,28 @@ public class Room {
 	}
 
 	public void delete(){
-		WGM.removeRegion(world, getRegion());
-		WGM.saveRegions(world);
+		RoomDeleteEvent rde = new RoomDeleteEvent(this);
+		Bukkit.getPluginManager().callEvent(rde);
+		if(rde.isCancelled()) return;
+		WorldGuardManager.removeRegion(world, getRegion());
+		WorldGuardManager.saveRegions(world);
 		deleteSignAndFile();
-		Bukkit.getPluginManager().callEvent(new RoomDeleteEvent(this));
 	}
 
 	public void createRegion(ProtectedRegion region, Player p){
 		World world = p.getWorld();
-		ProtectedRegion hotelRegion = WGM.getRegion(world, "hotel-"+hotel.getName());
+		ProtectedRegion hotelRegion = WorldGuardManager.getRegion(world, "hotel-"+hotel.getName());
 		if(!Mes.hasPerm(p, "hotels.create")){ p.sendMessage(Mes.mes("chat.noPermission")); return; }
-		if(WGM.doesRoomRegionOverlap(region, world)){ p.sendMessage(Mes.mes("chat.commands.room.alreadyPresent")); return; }
-		if(!WGM.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){ p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return; }
-		WGM.addRegion(world, region);
-		WGM.roomFlags(region, num, world);
+		if(WorldGuardManager.doesRoomRegionOverlap(region, world)){ p.sendMessage(Mes.mes("chat.commands.room.alreadyPresent")); return; }
+		if(!WorldGuardManager.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){ p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return; }
+		WorldGuardManager.addRegion(world, region);
+		WorldGuardManager.roomFlags(region, num, world);
 		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
 			region.setPriority(1);
 		else
 			region.setPriority(10);
 		WorldGuardManager.makeRoomAccessible(region);
-		WGM.saveRegions(p.getWorld());
+		WorldGuardManager.saveRegions(p.getWorld());
 		p.sendMessage(Mes.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
 	}
 
@@ -594,11 +599,11 @@ public class Room {
 		if(ree.isCancelled()) return;
 
 		//Removing renter
-		WGM.removeMember(p, region); //Removing renter as member of room region
+		WorldGuardManager.removeMember(p, region); //Removing renter as member of room region
 		//Removing friends
 		for(String currentFriend : friendList){
 			OfflinePlayer cf = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
-			WGM.removeMember(cf, region);
+			WorldGuardManager.removeMember(cf, region);
 		}
 
 		//If set in config, make room accessible to all players now that it is not rented
@@ -682,9 +687,9 @@ public class Room {
 			}
 			return false;
 		}
-		
+
 		boolean wasRented = isRented();
-		
+
 		//The expiry date is null
 		sconfig.set("Sign.renter", null);
 		sconfig.set("Sign.timeRentedAt", null);

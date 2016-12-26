@@ -1,20 +1,22 @@
 package kernitus.plugin.Hotels.events;
 
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import kernitus.plugin.Hotels.Hotel;
 
-public class HotelRenameEvent extends Event{
+public class HotelRenameEvent extends Event implements Cancellable {
 
 	private static final HandlerList handlers = new HandlerList();
 	private Hotel hotel;
-	private String oldName;
+	private String newName;
+	private boolean cancel;
 	
 
-	public HotelRenameEvent(Hotel hotel, String oldName){
+	public HotelRenameEvent(Hotel hotel, String newName){
 		this.hotel = hotel;
-		this.oldName = oldName;
+		this.newName = newName;
 	}
 
 	@Override
@@ -30,7 +32,21 @@ public class HotelRenameEvent extends Event{
 		return hotel;
 	}
 	
-	public String getOldName(){
-		return oldName;
+	public String getNewName(){
+		return newName;
+	}
+	
+	public void setNewName(String name){
+		newName = name;
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return cancel;
+	}
+
+	@Override
+	public void setCancelled(boolean cancel) {
+		this.cancel = cancel;
 	}
 }

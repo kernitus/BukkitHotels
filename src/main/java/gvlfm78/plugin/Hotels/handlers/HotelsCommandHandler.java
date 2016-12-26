@@ -18,7 +18,10 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.HotelsResult;
 import kernitus.plugin.Hotels.Room;
+import kernitus.plugin.Hotels.events.HotelSaleEvent;
+import kernitus.plugin.Hotels.events.RoomSaleEvent;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 import kernitus.plugin.Hotels.trade.HotelBuyer;
@@ -31,14 +34,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 	private HotelsMain plugin;
 	private HotelsConfigHandler HCH;
 	private HotelsCommandExecutor HCE;
-	private WorldGuardManager WGM;
 
 	public HotelsCommandHandler(HotelsMain plugin){
 		this.plugin = plugin;
 
 		HCH = new HotelsConfigHandler(plugin);
-		HCE = new HotelsCommandExecutor(plugin);
-		WGM = new WorldGuardManager();
+		HCE = new HotelsCommandExecutor();
 	}
 
 	@Override
@@ -287,8 +288,15 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(world==null){ sender.sendMessage(Mes.mes("chat.commands.worldNonExistent")); return false; }
 
-				if(Mes.hasPerm(sender, "hotels.rename.admin") || (isPlayer && WGM.isOwner((Player) sender, WGM.getHotelRegion(world, args[1]))))
-					HCE.renameHotel(args[1], args[2], world, sender);
+				if(Mes.hasPerm(sender, "hotels.rename.admin") || (isPlayer && WorldGuardManager.isOwner((Player) sender, WorldGuardManager.getHotelRegion(world, args[1])))){
+					Hotel hotel = new Hotel(world, args[1]);
+					
+					switch(hotel.rename(args[2])){
+					case HOTEL_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); break;
+					case SUCCESS: sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , args[2]));
+					default:
+					}
+				}
 				else
 					sender.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
 
@@ -327,8 +335,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 					if(hotel.isOwner(p.getUniqueId()) || Mes.hasPerm(p, "hotels.delete.admin")){
 						if(Mes.hasPerm(p, "hotels.delete.admin") || !hotel.hasRentedRooms()){
-							hotel.delete();
-							p.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
+
+							if(hotel.delete().equals(HotelsResult.SUCCESS))
+								p.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
 						}
 						else
 							p.sendMessage(Mes.mes("chat.commands.deleteHotel.hasRentedRooms"));
@@ -425,7 +434,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(room!=null){//They're in a room region
 					if(room.isNotSetup()){ sender.sendMessage(Mes.mes("chat.sign.use.nonExistentRoom")); return false;}
-					if(Mes.hasPerm(p, "hotels.sethome.admin") || WGM.isOwner(p, hotel.getRegion().getId(), w)){
+					if(Mes.hasPerm(p, "hotels.sethome.admin") || WorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
 						room.setDefaultHome(p.getLocation());
 						if(room.saveSignConfig())
 							sender.sendMessage(Mes.mes("chat.commands.sethome.defaultHomeSet"));
@@ -441,7 +450,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					}
 				}
 				else if(hotel!=null){//They're just in a hotel region
-					if(Mes.hasPerm(p, "hotels.sethome.admin") || WGM.isOwner(p, hotel.getRegion().getId(), w)){
+					if(Mes.hasPerm(p, "hotels.sethome.admin") || WorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
 
 						hotel.setHome(p.getLocation());
 
@@ -532,7 +541,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(hotel.getBuyer()!=null || buyer.getUniqueId().equals(hotel.getBuyer().getPlayer().getUniqueId())){
 					sender.sendMessage(Mes.mes("chat.commands.sellhotel.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName())); return false; }
-
+				
 				hotel.setBuyer(buyer.getUniqueId(), price);
 
 				sender.sendMessage(Mes.mes("chat.commands.sellhotel.sellingAsked").replaceAll("%buyer%", buyer.getName()));
@@ -593,6 +602,13 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(revenue<0)
 					revenue = 0;
+				
+				HotelSaleEvent hse = new HotelSaleEvent(hb, revenue);
+				Bukkit.getPluginManager().callEvent(hse);
+				if(hse.isCancelled()) return false;
+				//In case they were modified by an event listener
+				hb = hse.getHotelBuyer();
+				revenue = hse.getRevenue();
 
 				for(UUID uuid : hotel.getOwners().getUniqueIds()){//Paying all owners
 
@@ -728,13 +744,20 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(revenue<0) revenue = 0;
 
 				OfflinePlayer op = room.getRenter();
+				
+				RoomSaleEvent rse = new RoomSaleEvent(rb, revenue);
+				Bukkit.getPluginManager().callEvent(rse);
+				if(rse.isCancelled()) return false;
+				//In case they were modified by an event listener
+				rb = rse.getRoomBuyer();
+				revenue = rse.getRevenue();
 
 				String message = Mes.mes("chat.commands.sellroom.success")
 						.replaceAll("%room%", String.valueOf(room.getNum()))
 						.replaceAll("%buyer%", player.getName())
 						.replaceAll("%price%", String.valueOf(price))
 						.replaceAll("%hotel%", hotel.getName());
-				
+
 				if(op.isOnline()){
 					Player p = (Player) op;
 

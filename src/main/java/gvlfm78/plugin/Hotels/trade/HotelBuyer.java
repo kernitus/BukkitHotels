@@ -11,7 +11,7 @@ import kernitus.plugin.Hotels.Hotel;
 public class HotelBuyer extends Hotel implements Buyer {
 	
 	private final Player p;
-	private final double price;
+	private double price;
 
 	public HotelBuyer(World world, String hotelName, Player p, double price){
 		super(world, hotelName);
@@ -52,4 +52,8 @@ public class HotelBuyer extends Hotel implements Buyer {
 	public Player getPlayer() {
 		return p;
 	}	
+	@Override
+	public void setPrice(double price){
+		this.price = price;
+	}
 }

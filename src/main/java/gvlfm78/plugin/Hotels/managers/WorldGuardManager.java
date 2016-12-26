@@ -48,62 +48,62 @@ public class WorldGuardManager {
 		else return null;
 	}
 
-	public ProtectedRegion getRegion(World world, String string) {
+	public static ProtectedRegion getRegion(World world, String string) {
 		return getRM(world).getRegion(string);
 	}
 
-	public void addOwner(OfflinePlayer p, ProtectedRegion r){
+	public static void addOwner(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain owners = r.getOwners();
 		owners.addPlayer(p.getUniqueId());
 		r.setOwners(owners);
 	}
 
-	public void addMember(OfflinePlayer p, ProtectedRegion r){
+	public static void addMember(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain members = r.getMembers();
 		members.addPlayer(p.getUniqueId());
 		r.setMembers(members);
 	}
-	public void setMember(UUID uuid, ProtectedRegion r){
+	public static void setMember(UUID uuid, ProtectedRegion r){
 		DefaultDomain member = new DefaultDomain();
 		member.addPlayer(uuid);
 		r.setMembers(member);
 	}
-	public void setMembers(ArrayList<UUID> uuids, ProtectedRegion r){
+	public static void setMembers(ArrayList<UUID> uuids, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
 		for(UUID uuid : uuids)
 			members.addPlayer(uuid);
 		r.setMembers(members);
 	}
-	public void setOwners(ArrayList<UUID> uuids, ProtectedRegion r){
+	public static void setOwners(ArrayList<UUID> uuids, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
 		for(UUID uuid : uuids)
 			owners.addPlayer(uuid);
 		r.setOwners(owners);
 	}
 
-	public void removeOwner(OfflinePlayer p, ProtectedRegion r){
+	public static void removeOwner(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain owners = r.getOwners();
 		owners.removePlayer(p.getUniqueId());
 		r.setOwners(owners);
 	}
 
-	public void removeMember(OfflinePlayer p, ProtectedRegion r){
+	public static void removeMember(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain members = r.getMembers();
 		members.removePlayer(p.getUniqueId());
 		r.setMembers(members);
 	}
 
-	public void addRegion(World w, ProtectedRegion r){
+	public static void addRegion(World w, ProtectedRegion r){
 		getRM(w).addRegion(r);
 	}
-	public void removeRegion(World w, String r){
+	public static void removeRegion(World w, String r){
 		getRM(w).removeRegion(r);
 	}
-	public void removeRegion(World w, ProtectedRegion r){
+	public static void removeRegion(World w, ProtectedRegion r){
 		getRM(w).removeRegion(r.getId());
 	}
 
-	public void saveRegions(World world){
+	public static void saveRegions(World world){
 		try {
 			getRM(world).save();
 		} catch (StorageException e) {
@@ -113,19 +113,19 @@ public class WorldGuardManager {
 	public static RegionManager getRM(World world){
 		return getWorldGuard().getRegionManager(world);
 	}
-	public boolean hasRegion(World world, String regionName){
+	public static boolean hasRegion(World world, String regionName){
 		return getRM(world).hasRegion(regionName);
 	}
-	public ProtectedRegion getHotelRegion(World world, String name){
+	public static ProtectedRegion getHotelRegion(World world, String name){
 		return getRegion(world, "hotel-"+name);
 	}
-	public ProtectedRegion getRoomRegion(World world, String hotelName, String num){
+	public static ProtectedRegion getRoomRegion(World world, String hotelName, String num){
 		return getRegion(world, "hotel-"+hotelName+"-"+num);
 	}
-	public ProtectedRegion getRoomRegion(World world, String hotelName, int num){
+	public static ProtectedRegion getRoomRegion(World world, String hotelName, int num){
 		return getRegion(world, "hotel-"+hotelName+"-"+num);
 	}
-	public void renameRegion(String oldname, String newname,World world){
+	public static void renameRegion(String oldname, String newname,World world){
 		if(hasRegion(world, oldname)){//If old region exists
 			ProtectedRegion oldr = getRegion(world, oldname);//Get old region
 			ProtectedRegion newr2;
@@ -151,16 +151,16 @@ public class WorldGuardManager {
 	public static Collection<ProtectedRegion> getRegions(World world){
 		return getRM(world).getRegions().values();
 	}
-	public boolean isOwner(Player p,ProtectedRegion r){
+	public static boolean isOwner(Player p,ProtectedRegion r){
 		return r.getOwners().contains(p.getName())||r.getOwners().contains(p.getUniqueId());
 	}
-	public boolean isOwner(Player p, String id,World w){
+	public static boolean isOwner(Player p, String id,World w){
 		return hasRegion(w,id) && isOwner(p, getRegion(w, id));
 	}
-	public boolean doTwoRegionsOverlap(ProtectedRegion r1, ProtectedRegion r2){
+	public static boolean doTwoRegionsOverlap(ProtectedRegion r1, ProtectedRegion r2){
 		return r2.containsAny(r1.getPoints());
 	}
-	public boolean doHotelRegionsOverlap(ProtectedRegion region, World world){
+	public static boolean doHotelRegionsOverlap(ProtectedRegion region, World world){
 		Collection<ProtectedRegion> regions = getRegions(world);
 		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
 		for(ProtectedRegion reg : inter){
@@ -169,7 +169,7 @@ public class WorldGuardManager {
 		}
 		return false;
 	}
-	public boolean doesRoomRegionOverlap(ProtectedRegion region, World world){
+	public static boolean doesRoomRegionOverlap(ProtectedRegion region, World world){
 		Collection<ProtectedRegion> regions = getRegions(world);
 		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
 		for(ProtectedRegion reg : inter){
@@ -178,7 +178,7 @@ public class WorldGuardManager {
 		}
 		return false;
 	}
-	public void setFlags(ConfigurationSection section, ProtectedRegion r, String name, World world){
+	public static void setFlags(ConfigurationSection section, ProtectedRegion r, String name, World world){
 
 		boolean isHotel = !r.getId().matches("hotel-.+-\\d+");
 
@@ -298,17 +298,17 @@ public class WorldGuardManager {
 			groupFlags(r, flag, groupFlagValue);
 		}
 	}
-	public void groupFlags(ProtectedRegion region,Flag<?> flag, String group){
+	public static void groupFlags(ProtectedRegion region,Flag<?> flag, String group){
 		RegionGroupFlag regionGroupFlag = flag.getRegionGroupFlag();
 		RegionGroup regionGroup = RegionGroup.valueOf(group.toUpperCase());
 		region.setFlag(regionGroupFlag, regionGroup);
 	}
-	public void hotelFlags(ProtectedRegion region, String hotelName, World world){
+	public static void hotelFlags(ProtectedRegion region, String hotelName, World world){
 		YamlConfiguration flagsConfig = HotelsConfigHandler.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
 		setFlags(section, region, hotelName, world);
 	}
-	public void roomFlags(ProtectedRegion region, int roomNum, World world){
+	public static void roomFlags(ProtectedRegion region, int roomNum, World world){
 		YamlConfiguration flagsConfig = HotelsConfigHandler.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
 		setFlags(section, region, String.valueOf(roomNum), world);

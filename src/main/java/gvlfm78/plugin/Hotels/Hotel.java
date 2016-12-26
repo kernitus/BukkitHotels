@@ -11,13 +11,13 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.Signs.ReceptionSign;
+import kernitus.plugin.Hotels.events.HotelCreateEvent;
 import kernitus.plugin.Hotels.events.HotelDeleteEvent;
 import kernitus.plugin.Hotels.events.HotelRenameEvent;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
@@ -28,8 +28,6 @@ import kernitus.plugin.Hotels.trade.HotelBuyer;
 import kernitus.plugin.Hotels.trade.TradesHolder;
 
 public class Hotel {
-
-	private WorldGuardManager WGM = new WorldGuardManager();
 
 	private World world;
 	private String name;
@@ -53,7 +51,7 @@ public class Hotel {
 	////////Getters////////
 	///////////////////////
 	public boolean exists(){
-		return (world == null || name == null) ? false : WGM.hasRegion(world, "hotel-"+name);
+		return (world == null || name == null) ? false : WorldGuardManager.hasRegion(world, "hotel-"+name);
 	}
 	public World getWorld(){
 		return world;
@@ -62,7 +60,7 @@ public class Hotel {
 		return name;
 	}
 	public ProtectedRegion getRegion(){
-		return WGM.getHotelRegion(world, name);
+		return WorldGuardManager.getHotelRegion(world, name);
 	}
 	public ArrayList<Room> getRooms(){
 		ArrayList<Room> rooms = new ArrayList<Room>();
@@ -136,8 +134,17 @@ public class Hotel {
 	public boolean isBlockWithinHotelRegion(Block b){
 		return getRegion().contains(b.getX(),b.getY(),b.getZ());
 	}
-	public void rename(String newName){
-		String oldName = name;
+	public void setName(String name){
+		this.name = name;
+	}
+	public HotelsResult rename(String newName){
+		HotelRenameEvent hre = new HotelRenameEvent(this, newName);
+		Bukkit.getPluginManager().callEvent(hre);
+		newName = hre.getNewName(); //In case it was modified by the event
+		
+		if(hre.isCancelled()) return HotelsResult.CANCELLED;
+		if(!exists()) return HotelsResult.HOTEL_NON_EXISTENT;
+		
 		//Rename rooms
 		ArrayList<Room> rooms = getRooms();
 
@@ -147,7 +154,7 @@ public class Hotel {
 			File newHotelsfile = HotelsConfigHandler.getHotelFile(newName.toLowerCase()+".yml");
 			hotelsFile.renameTo(newHotelsfile);
 		}
-		WGM.renameRegion("hotel-" + name, "hotel-" + newName, world);
+		WorldGuardManager.renameRegion("hotel-" + name, "hotel-" + newName, world);
 		name = newName;
 		ProtectedRegion r = getRegion();
 
@@ -158,7 +165,7 @@ public class Hotel {
 		
 		updateReceptionSigns();
 		
-		Bukkit.getPluginManager().callEvent(new HotelRenameEvent(this, oldName));
+		return HotelsResult.SUCCESS;
 	}
 	public void removeAllSigns(){
 		deleteAllReceptionSigns();
@@ -190,16 +197,20 @@ public class Hotel {
 			return false;
 		}
 	}
-	public void delete(){
+	public HotelsResult delete(){
+		HotelDeleteEvent hde = new HotelDeleteEvent(this);
+		Bukkit.getPluginManager().callEvent(hde);
+		if(hde.isCancelled()) return HotelsResult.CANCELLED;
+		if(!exists()) return HotelsResult.HOTEL_NON_EXISTENT;
+		
 		//Remove all reception signs and files
 		deleteAllReceptionSigns();
 		//Remove all rooms including regions, signs and files
-		for(Room room : getRooms()){
+		for(Room room : getRooms())
 			room.delete();
-		}
 		//Remove Hotel file if existent
 		deleteHotelFile();
-		Bukkit.getPluginManager().callEvent(new HotelDeleteEvent(this));
+		return HotelsResult.SUCCESS;
 	}
 	public boolean isOwner(UUID uuid){
 		return getOwners().contains(uuid);
@@ -207,25 +218,24 @@ public class Hotel {
 	public boolean isOwner(String name){
 		return getOwners().contains(name);
 	}
-	public void create(ProtectedRegion region, Player p){
-		World world = p.getWorld();
-		if(WGM.doHotelRegionsOverlap(region, world)){ p.sendMessage(Mes.mes("chat.commands.create.hotelAlreadyPresent")); return; }
-
-		WGM.addRegion(world, region);
-		WGM.hotelFlags(region, name, world);
-		WGM.addOwner(p, region);
+	public HotelsResult create(ProtectedRegion region){
+		HotelCreateEvent hce = new HotelCreateEvent(this);
+		Bukkit.getPluginManager().callEvent(hce); //Call HotelCreateEvent
+		if(hce.isCancelled()) return HotelsResult.CANCELLED;
+		
+		//In case a listener modified this stuff
+		world = hce.getWorld();
+		name = hce.getName();
+		region = hce.getRegion();
+		
+		if(WorldGuardManager.doHotelRegionsOverlap(region, world)) return HotelsResult.HOTEL_ALREADY_PRESENT; 
+		
+		WorldGuardManager.addRegion(world, region);
+		WorldGuardManager.hotelFlags(region, name, world);
 		region.setPriority(5);
-		WGM.saveRegions(world);
-		String idHotelName = region.getId();
-		String[] partsofhotelName = idHotelName.split("-");
-		p.sendMessage(Mes.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", partsofhotelName[1]));
-		int ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
-		int maxHotels = HotelsConfigHandler.getconfigyml().getInt("settings.max_hotels_owned");
+		WorldGuardManager.saveRegions(world);
 
-		String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
-
-		if(!Mes.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
-			p.sendMessage(Mes.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
+		return HotelsResult.SUCCESS;
 	}
 	public void updateReceptionSigns(){
 		ArrayList<ReceptionSign> rss = getAllReceptionSigns();
@@ -238,8 +248,8 @@ public class Hotel {
 	public void setNewOwner(UUID uuid){
 		ArrayList<UUID> uuids = new ArrayList<UUID>();
 		uuids.add(uuid);
-		WGM.setOwners(uuids, getRegion());
-		WGM.saveRegions(world);
+		WorldGuardManager.setOwners(uuids, getRegion());
+		WorldGuardManager.saveRegions(world);
 	}
 	public void setBuyer(UUID uuid, double price){
 		TradesHolder.addHotelBuyer(Bukkit.getPlayer(uuid), this, price);
@@ -255,13 +265,13 @@ public class Hotel {
 		hconfig.set("Hotel.home.yaw", loc.getYaw());
 	}
 	public void addOwner(OfflinePlayer p){
-		WGM.addOwner(p, getRegion());
+		WorldGuardManager.addOwner(p, getRegion());
 	}
 	public void addOwner(UUID uuid){
 		addOwner(Bukkit.getOfflinePlayer(uuid));
 	}
 	public void removeOwner(OfflinePlayer p){
-		WGM.removeOwner(p, getRegion());
+		WorldGuardManager.removeOwner(p, getRegion());
 	}
 	public void removeOwner(UUID uuid){
 		removeOwner(Bukkit.getOfflinePlayer(uuid));
