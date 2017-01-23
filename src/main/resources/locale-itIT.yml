@@ -227,12 +227,12 @@ chat:
       noRooms: '&cNon hai affittato alcuna stanza!'
       lineRooms: '&6Hotel: &c%hotel%    &6Stanza: &c%room%    &6Scade tra: &c%timeleft%'
     listHotels:
-      heading: '&a==Lista hotel=='
-      footer: '&c==Fine lista hotel=='
+      heading: '&a==  Lista hotel  =='
+      footer: '&c==  Fine lista hotel  =='
       line: '&6Hotel: &c%hotel%%space%&9Totale: &r%total%   &aLibere: &r%free%'
     listRooms:
-      heading: '&a==Lista stanze per l''hotel %hotel%=='
-      footer: '&c==Fine lista stanze per l''hotel %hotel%=='
+      heading: '&a==  Lista stanze per l''hotel %hotel%  =='
+      footer: '&c==  Fine lista stanze per l''hotel %hotel%  =='
       line: '&6Stanza n: &c%room%%space%%state%'
       noRooms: '&cNon ci sono stanze in questo hotel'
       usage: '&4Utilizzo corretto: &6&o/ht rlist <nomeHotel>'

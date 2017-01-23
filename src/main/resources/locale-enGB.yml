@@ -262,13 +262,13 @@ chat:
       lineRooms: '&6Hotel: &c%hotel%    &6Room: &c%room%    &6Expires in: &c%timeleft%'
     
     listHotels:
-      heading: '&a==Hotel list=='
-      footer: '&c==End of hotel list=='
+      heading: '&a==  Hotel list  =='
+      footer: '&c==  End of hotel list  =='
       line: '&6Hotel: &c%hotel%%space%&9Total: &r%total%   &aFree: &r%free%'
       
     listRooms:
-      heading: '&a==Room list for %hotel% hotel=='
-      footer: '&c==End of room list for %hotel% hotel=='
+      heading: '&a==  Room list for %hotel% hotel  =='
+      footer: '&c==  End of room list for %hotel% hotel  =='
       line: '&6Room n: &c%room%%space%%state%'
       noRooms: '&cThere are no rooms in that hotel'
       usage: '&4Correct usage: &6&o/ht rlist <hotelname>'
@@ -343,3 +343,8 @@ chat:
       usage: '&4Correct usage: &6&o/ht buyr <hotelName> <roomNum>'
       notOnSale: '&4That room is not on sale!'
       success: '&aYou have just bought room %room% of the %hotel% hotel from %seller% for $%price%'
+      
+    roomreset:
+      on: '&aThe room %room% of the %hotel% hotel will now reset on rent expiry'
+      off: '&cThe room %room% of the %hotel% hotel will no longer reset on rent expiry'
+      usage: '&4Correct usage: &6&o/ht roomreset <hotelName> <roomNum>'

@@ -290,7 +290,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(Mes.hasPerm(sender, "hotels.rename.admin") || (isPlayer && WorldGuardManager.isOwner((Player) sender, WorldGuardManager.getHotelRegion(world, args[1])))){
 					Hotel hotel = new Hotel(world, args[1]);
-					
+
 					switch(hotel.rename(args[2])){
 					case HOTEL_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); break;
 					case SUCCESS: sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , args[2]));
@@ -541,7 +541,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(hotel.getBuyer()!=null || buyer.getUniqueId().equals(hotel.getBuyer().getPlayer().getUniqueId())){
 					sender.sendMessage(Mes.mes("chat.commands.sellhotel.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName())); return false; }
-				
+
 				hotel.setBuyer(buyer.getUniqueId(), price);
 
 				sender.sendMessage(Mes.mes("chat.commands.sellhotel.sellingAsked").replaceAll("%buyer%", buyer.getName()));
@@ -602,7 +602,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(revenue<0)
 					revenue = 0;
-				
+
 				HotelSaleEvent hse = new HotelSaleEvent(hb, revenue);
 				Bukkit.getPluginManager().callEvent(hse);
 				if(hse.isCancelled()) return false;
@@ -744,7 +744,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(revenue<0) revenue = 0;
 
 				OfflinePlayer op = room.getRenter();
-				
+
 				RoomSaleEvent rse = new RoomSaleEvent(rb, revenue);
 				Bukkit.getPluginManager().callEvent(rse);
 				if(rse.isCancelled()) return false;
@@ -781,6 +781,16 @@ public class HotelsCommandHandler implements CommandExecutor {
 				room.removeBuyer();
 				room.saveSignConfig();
 
+			}
+			else if(args[0].equalsIgnoreCase("roomreset")){
+				if(args.length<3){ sender.sendMessage(Mes.mes("chat.commands.roomreset.usage")); return false; }
+				//Command to toggle resetting of rooms upon rent expiry
+				Room room = new Room(args[1], args[2]);
+				if(!room.exists()){ sender.sendMessage(Mes.mes("chat.commands.roomNonExistent")); return false; }
+				if(room.toggleShouldReset())
+					sender.sendMessage(Mes.mes("chat.commands.roomreset.on").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
+				else
+					sender.sendMessage(Mes.mes("chat.commands.roomreset.off").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
 			}
 			//Other argument
 			else

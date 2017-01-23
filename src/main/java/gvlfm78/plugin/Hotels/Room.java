@@ -183,6 +183,9 @@ public class Room {
 	public RoomBuyer getBuyer(){
 		return TradesHolder.getBuyerFromRoom(this);
 	}
+	public boolean getShouldReset(){
+		return sconfig.getBoolean("Sign.reset");
+	}
 	//////////////////////
 	///////Setters////////
 	//////////////////////
@@ -286,6 +289,15 @@ public class Room {
 
 		//Update this hotel's reception signs
 		hotel.updateReceptionSigns();
+	}
+	public void setShouldReset(boolean value){
+		sconfig.set("Sign.reset", value);
+	}
+	public boolean toggleShouldReset(){
+		boolean value = !getShouldReset();
+		sconfig.set("Sign.reset", value);
+		saveSignConfig();
+		return value;
 	}
 	///Config stuff
 	private File getSignFile(){

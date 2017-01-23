@@ -228,12 +228,12 @@ chat:
       noRooms: '&cВы арендованы ни одного номера!'
       lineRooms: '&6Отель: &c%hotel%    &6комната: &c%room%    &6Истекает через: &c%timeleft%'
     listHotels:
-      heading: '&a==Каталог гостиниц=='
-      footer: '&c==Конец списка гостиниц=='
+      heading: '&a==  Каталог гостиниц  =='
+      footer: '&c==  Конец списка гостиниц  =='
       line: '&6Отель: &c%hotel%%space%&9Всего: &r%total%   &aСвободных: &r%free%'
     listRooms:
-      heading: '&a==список номеров в %hotel% отеле=='
-      footer: '&c==Конец списка номеров в %hotel% отеле=='
+      heading: '&a==  список номеров в %hotel% отеле  =='
+      footer: '&c==  Конец списка номеров в %hotel% отеле  =='
       line: '&6Комната n: &c%room%%space%%state%'
       noRooms: '&c В этом гостинице нет номеров '
       usage: '&4Правильное использование: &6&o/ht rlist <название отеля>'

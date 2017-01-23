@@ -232,8 +232,8 @@ chat:
       noRooms: '&c你沒有租用任何壹間房間!'
       lineRooms: '&6旅館: &c%hotel% &6房間: &c%room% &6租期剩余: &c%timeleft%'
     listHotels:
-      heading: '&a==旅館列表=='
-      footer: '&c==旅館列表最末=='
+      heading: '&a==  旅館列表  =='
+      footer: '&c==  旅館列表最末  =='
       line: '&6旅館: &c%hotel%%space%&9總數: &r%total%   &a空閑: &r%free%'
     listRooms:
       heading: '&a==%hotel% 旅館的房間列表=='

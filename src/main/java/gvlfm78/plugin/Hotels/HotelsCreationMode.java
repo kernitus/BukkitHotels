@@ -78,7 +78,7 @@ public class HotelsCreationMode {
 		}
 		else{
 			p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid")); return; }
-		
+
 		switch(hotel.create(r)){
 		case HOTEL_ALREADY_PRESENT:
 			p.sendMessage(Mes.mes("chat.commands.create.hotelAlreadyPresent")); break;
@@ -156,6 +156,7 @@ public class HotelsCreationMode {
 				file.createNewFile();
 			} catch (IOException e){
 				p.sendMessage(Mes.mes("chat.creationMode.inventory.storeFail"));
+				e.printStackTrace();
 			}
 
 			YamlConfiguration inv = HotelsConfigHandler.getInventoryConfig(playerUUID);
@@ -174,13 +175,14 @@ public class HotelsCreationMode {
 				inv.save(file);
 			} catch (IOException e) {
 				p.sendMessage(Mes.mes("chat.creationMode.inventory.storeFail"));
+				e.printStackTrace();
 			}
 
 			pinv.clear();
 			pinv.setArmorContents(new ItemStack[4]);
 			p.sendMessage(Mes.mes("chat.creationMode.inventory.storeSuccess"));
 		}else{
-			p.sendMessage(Mes.mes("chat.creationMode.inventory.storeFail"));
+			p.sendMessage(Mes.mes("chat.commands.creationMode.alreadyIn"));
 		}
 	}
 

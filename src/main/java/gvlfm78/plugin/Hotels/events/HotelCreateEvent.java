@@ -19,9 +19,9 @@ public class HotelCreateEvent extends Event implements Cancellable {
 	private String name;
 	private World world;
 	
-	public HotelCreateEvent(Hotel hotel){
+	public HotelCreateEvent(Hotel hotel, ProtectedRegion region){
 		this.hotel = hotel;
-		this.region = hotel.getRegion();
+		this.region = region;
 		this.name = hotel.getName();
 		this.world = hotel.getWorld();
 	}

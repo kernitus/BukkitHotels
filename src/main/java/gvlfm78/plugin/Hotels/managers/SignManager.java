@@ -50,12 +50,14 @@ public class SignManager {
 		if(hotelName.isEmpty()){
 			e.setLine(0, (ChatColor.DARK_RED+"[Hotels]"));
 			p.sendMessage(Mes.mes("chat.sign.place.emptySign"));
+			return;
 		}
 		World world = p.getWorld();
 		Hotel hotel = new Hotel(world,hotelName);
 		if (!hotel.exists()){ //Hotel exists
 			e.setLine(0, (ChatColor.DARK_RED+"[Hotels]"));
 			p.sendMessage(Mes.mes("chat.sign.place.noHotel"));
+			return;
 		}
 
 		String tot = String.valueOf(hotel.getTotalRoomCount()); //Getting total amount of rooms in hotel
@@ -79,6 +81,7 @@ public class SignManager {
 		} catch (IOException e1){
 			p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
 			e1.printStackTrace();
+			return;
 		}
 
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(receptionFile);
@@ -93,6 +96,7 @@ public class SignManager {
 		} catch (IOException e1) {
 			p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
 			e1.printStackTrace();
+			return;
 		}
 	}
 

@@ -219,7 +219,7 @@ public class Hotel {
 		return getOwners().contains(name);
 	}
 	public HotelsResult create(ProtectedRegion region){
-		HotelCreateEvent hce = new HotelCreateEvent(this);
+		HotelCreateEvent hce = new HotelCreateEvent(this, region);
 		Bukkit.getPluginManager().callEvent(hce); //Call HotelCreateEvent
 		if(hce.isCancelled()) return HotelsResult.CANCELLED;
 		
@@ -227,7 +227,6 @@ public class Hotel {
 		world = hce.getWorld();
 		name = hce.getName();
 		region = hce.getRegion();
-		
 		if(WorldGuardManager.doHotelRegionsOverlap(region, world)) return HotelsResult.HOTEL_ALREADY_PRESENT; 
 		
 		WorldGuardManager.addRegion(world, region);

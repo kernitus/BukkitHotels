@@ -232,12 +232,12 @@ chat:
       noRooms: '&c你没有租用任何一间房间!'
       lineRooms: '&6旅馆: &c%hotel% &6房间: &c%room% &6租期剩余: &c%timeleft%'
     listHotels:
-      heading: '&a==旅馆列表=='
-      footer: '&c==旅馆列表最末=='
+      heading: '&a==  旅馆列表  =='
+      footer: '&c==  旅馆列表最末  =='
       line: '&6旅馆: &c%hotel%%space%&9总数: &r%total%   &a空闲: &r%free%'
     listRooms:
-      heading: '&a==%hotel% 旅馆的房间列表=='
-      footer: '&c==%hotel% 旅馆的房间列表最末=='
+      heading: '&a==  %hotel% 旅馆的房间列表  =='
+      footer: '&c==  %hotel% 旅馆的房间列表最末  =='
       line: '&6房间 n: &c%room%%space%%state%'
       noRooms: '&c旅馆里没有房间'
       usage: '&4正确用法: &6&o/ht rlist <旅馆名称>'

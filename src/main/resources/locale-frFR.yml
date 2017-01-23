@@ -267,13 +267,13 @@ chat:
       lineRooms: '&6Hôtel: &c%hotel%    &6Pièce: &c%room%    &6Expire en: &c%timeleft%'
       
   listHotels:
-      heading: '&a==Liste hôtel=='
-      footer: '&c==Fin liste hôtel=='
+      heading: '&a==  Liste hôtel  =='
+      footer: '&c==  Fin liste hôtel  =='
       line: '&6Hôtel: &c%hôtel%%space%&9Totale: &r%total%   &aLibre: &r%free%'
       
   listRooms:
-      heading: '&a==Liste pièces pour l''hôtel %hôtel%=='
-      footer: '&c==Fin liste pièces pour l''hôtel %hôtel%=='
+      heading: '&a==  Liste pièces pour l''hôtel %hôtel%  =='
+      footer: '&c==  Fin liste pièces pour l''hôtel %hôtel%  =='
       line: '&6Pièce n: &c%room%%space%%state%'
       noRooms: '&cIl n''y a pas pièces libres dans ce hôtel'
       usage: '&4Utilisation correct: &6&o/ht rlist <nomHôtel>'

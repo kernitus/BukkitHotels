@@ -162,6 +162,7 @@ public class WorldGuardManager {
 	}
 	public static boolean doHotelRegionsOverlap(ProtectedRegion region, World world){
 		Collection<ProtectedRegion> regions = getRegions(world);
+		System.out.println("World: "+world.getName()+" regions "+regions.size()+" Region: "+region.getId());
 		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
 		for(ProtectedRegion reg : inter){
 			if(reg.getId().startsWith("hotel-"))
