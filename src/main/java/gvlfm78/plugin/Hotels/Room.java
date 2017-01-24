@@ -16,7 +16,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -301,22 +300,20 @@ public class Room {
 			WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 			TerrainManager tm = new TerrainManager(wep, world);
 
-			File saveFile = HotelsConfigHandler.getSchematicFile(this);
-
+			File schematicFile = HotelsConfigHandler.getSchematicFileNoExtension(this);
+			
 			// Save the region to a schematic file
 			try {
-				BlockVector minvec = region.getMinimumPoint();
-				BlockVector maxvec = region.getMaximumPoint();
-				Location min = new Location(world, minvec.getX(), minvec.getX(), minvec.getZ());
-				Location max = new Location(world, maxvec.getX(), maxvec.getY(), maxvec.getZ());
-				tm.saveTerrain(saveFile, min, max);
+				tm.saveTerrain(schematicFile, world, region.getMinimumPoint(), region.getMaximumPoint());
 			} catch (Exception e) {
 				// Print message that something went wrong
 				e.printStackTrace();
 			}
-		} else
+		} else{
 			//Delete schematic file
-			HotelsConfigHandler.getSchematicFile(this).delete();
+			File schematicFile = HotelsConfigHandler.getSchematicFile(this);
+			if(schematicFile.exists()) schematicFile.delete();
+		}
 		saveSignConfig();
 	}
 	public boolean toggleShouldReset(){
@@ -674,15 +671,18 @@ public class Room {
 		sign.setLine(2, SignManager.TimeFormatter(sconfig.getLong("Sign.time")));
 		sign.update();
 
+		System.out.println("SHould we reset?");
 		if(getShouldReset())
 			resetRoom();
 	}
 
 	public void resetRoom(){
+		System.out.println("Well something is happening");
 		WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		TerrainManager tm = new TerrainManager(wep, world);
 		try {
 			tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this));
+			System.out.println("We tried saving the schem");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

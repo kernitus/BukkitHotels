@@ -788,9 +788,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 				Room room = new Room(args[1], args[2]);
 				if(!room.exists()){ sender.sendMessage(Mes.mes("chat.commands.roomNonExistent")); return false; }
 				if(room.toggleShouldReset())
-					sender.sendMessage(Mes.mes("chat.commands.roomreset.on").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
+					sender.sendMessage(Mes.mes("chat.commands.roomreset.enable").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
 				else
-					sender.sendMessage(Mes.mes("chat.commands.roomreset.off").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
+					sender.sendMessage(Mes.mes("chat.commands.roomreset.disable").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
 			}
 			//Other argument
 			else

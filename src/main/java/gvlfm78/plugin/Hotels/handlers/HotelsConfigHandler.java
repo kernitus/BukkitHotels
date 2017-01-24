@@ -152,6 +152,9 @@ public class HotelsConfigHandler {
 		return getFile("Schematics"+File.separator+hotelName+"-"+roomNum+".schematic");
 	}
 	public static File getSchematicFile(Room room){
+		return getFile("Schematics"+File.separator+room.getHotel().getName()+"-"+room.getNum()+".schematic");
+	}
+	public static File getSchematicFileNoExtension(Room room){
 		//Don't add .schematic as TerrainManager does it automatically
 		return getFile("Schematics"+File.separator+room.getHotel().getName()+"-"+room.getNum());
 	}
