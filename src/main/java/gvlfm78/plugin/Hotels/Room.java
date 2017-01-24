@@ -16,6 +16,8 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
@@ -32,6 +34,7 @@ import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
 import kernitus.plugin.Hotels.handlers.MessageType;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
+import kernitus.plugin.Hotels.managers.TerrainManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 import kernitus.plugin.Hotels.trade.RoomBuyer;
 import kernitus.plugin.Hotels.trade.TradesHolder;
@@ -292,11 +295,33 @@ public class Room {
 	}
 	public void setShouldReset(boolean value){
 		sconfig.set("Sign.reset", value);
+		if(value){
+			//Create and save schematic file based on room region
+			ProtectedRegion region = getRegion();
+			WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+			TerrainManager tm = new TerrainManager(wep, world);
+
+			File saveFile = HotelsConfigHandler.getSchematicFile(this);
+
+			// Save the region to a schematic file
+			try {
+				BlockVector minvec = region.getMinimumPoint();
+				BlockVector maxvec = region.getMaximumPoint();
+				Location min = new Location(world, minvec.getX(), minvec.getX(), minvec.getZ());
+				Location max = new Location(world, maxvec.getX(), maxvec.getY(), maxvec.getZ());
+				tm.saveTerrain(saveFile, min, max);
+			} catch (Exception e) {
+				// Print message that something went wrong
+				e.printStackTrace();
+			}
+		} else
+			//Delete schematic file
+			HotelsConfigHandler.getSchematicFile(this).delete();
+		saveSignConfig();
 	}
 	public boolean toggleShouldReset(){
 		boolean value = !getShouldReset();
-		sconfig.set("Sign.reset", value);
-		saveSignConfig();
+		setShouldReset(value);
 		return value;
 	}
 	///Config stuff
@@ -648,6 +673,19 @@ public class Room {
 		//Resetting time on sign to default
 		sign.setLine(2, SignManager.TimeFormatter(sconfig.getLong("Sign.time")));
 		sign.update();
+
+		if(getShouldReset())
+			resetRoom();
+	}
+
+	public void resetRoom(){
+		WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+		TerrainManager tm = new TerrainManager(wep, world);
+		try {
+			tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean checkRent(){ //Checks if rent has expired, if so unrents

@@ -18,6 +18,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.Room;
 
 public class HotelsConfigHandler {
 
@@ -146,6 +147,13 @@ public class HotelsConfigHandler {
 	}
 	public static File getInventoryFile(UUID uuid){
 		return getFile("Inventories"+File.separator+uuid+".yml");
+	}
+	public static File getSchematicFile(String hotelName, String roomNum){
+		return getFile("Schematics"+File.separator+hotelName+"-"+roomNum+".schematic");
+	}
+	public static File getSchematicFile(Room room){
+		//Don't add .schematic as TerrainManager does it automatically
+		return getFile("Schematics"+File.separator+room.getHotel().getName()+"-"+room.getNum());
 	}
 	public YamlConfiguration getconfig(String configName){
 		return getyml(getconfigFile(configName));
