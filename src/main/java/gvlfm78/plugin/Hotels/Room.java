@@ -16,6 +16,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -681,7 +682,9 @@ public class Room {
 		WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		TerrainManager tm = new TerrainManager(wep, world);
 		try {
-			tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this));
+			BlockVector vec = getRegion().getMinimumPoint();
+			Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
+			tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this), loc);
 			System.out.println("We tried saving the schem");
 		} catch (Exception e) {
 			e.printStackTrace();

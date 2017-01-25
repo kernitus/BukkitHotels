@@ -792,6 +792,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 				else
 					sender.sendMessage(Mes.mes("chat.commands.roomreset.disable").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
 			}
+			else if(args[0].equalsIgnoreCase("resetroom")){
+				if(args.length<3){ sender.sendMessage(Mes.mes("chat.commands.resetroom.usage")); return false; }
+				Room room = new Room(args[1], args[2]);
+				room.resetRoom();
+				sender.sendMessage("Room has been reset");
+			}
 			//Other argument
 			else
 				sender.sendMessage(Mes.mes("chat.commands.unknownArg"));
