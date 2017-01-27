@@ -14,6 +14,7 @@ import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -22,13 +23,14 @@ import kernitus.plugin.Hotels.Room;
 
 public class HotelsConfigHandler {
 
-	private HotelsMain plugin;
+	private static HotelsMain PLUGIN;
+	private static YamlConfiguration locale, flags;
 
-	public HotelsConfigHandler(HotelsMain plugin){
-		this.plugin = plugin;
+	public static void initialise(HotelsMain PLUGIN){
+		HotelsConfigHandler.PLUGIN = PLUGIN;
 	}
 
-	public void setupConfigs(){
+	public static void setupConfigs(){
 		//Message Queue
 		if(!getMessageQueueFile().exists())
 			setupMessageQueue();
@@ -44,16 +46,16 @@ public class HotelsConfigHandler {
 		localeLanguageSelector();
 	}
 
-	public void setupConfigyml(){
-		plugin.saveResource("config.yml", false);
-		plugin.getLogger().info("Config file generated");
+	public static void setupConfigyml(){
+		PLUGIN.saveResource("config.yml", false);
+		PLUGIN.getLogger().info("Config file generated");
 	}
 
-	public void setupMessageQueue(){
+	public static void setupMessageQueue(){
 		saveMessageQueue(getMessageQueue());
 	}
 
-	public void localeLanguageSelector(){
+	public static void localeLanguageSelector(){
 		String lang = getLanguage().toLowerCase();
 		YamlConfiguration locale = getLocale();
 		String loclang = locale.getString("language"); //From already-generated locale.yml
@@ -63,26 +65,26 @@ public class HotelsConfigHandler {
 		switch(lang){
 
 		case "en": case "enGB":
-			setupLanguage("enGB", plugin); break;
+			setupLanguage("enGB", PLUGIN); break;
 		case "it": case "itIT":
-			setupLanguage("itIT", plugin); break;
+			setupLanguage("itIT", PLUGIN); break;
 		case "zhCN": case "zh":
-			setupLanguage("zhCN", plugin); break;
+			setupLanguage("zhCN", PLUGIN); break;
 		case "zhTW":
-			setupLanguage("zhTW", plugin); break;
+			setupLanguage("zhTW", PLUGIN); break;
 		case "frFR": case "fr":
-			setupLanguage("frFR", plugin); break;
+			setupLanguage("frFR", PLUGIN); break;
 		case "ruRU": case "ru":
-			setupLanguage("ruRU", plugin); break;
+			setupLanguage("ruRU", PLUGIN); break;
 
 		case "custom": break;
 
-		default: setupLanguage("enGB",plugin);
+		default: setupLanguage("enGB",PLUGIN);
 
 		}
 	}
-	public String getLanguage(){
-		return plugin.getConfig().getString("language");
+	public static String getLanguage(){
+		return PLUGIN.getConfig().getString("language");
 	}
 
 	public static File getFile(String filepath){
@@ -110,7 +112,7 @@ public class HotelsConfigHandler {
 		return getyml(getFile(filepath));
 	}
 
-	public File getconfigFile(String configName){
+	public static File getconfigFile(String configName){
 		return getFile(configName+".yml");
 	}
 
@@ -158,16 +160,16 @@ public class HotelsConfigHandler {
 		//Don't add .schematic as TerrainManager does it automatically
 		return getFile("Schematics"+File.separator+room.getHotel().getName()+"-"+room.getNum());
 	}
-	public YamlConfiguration getconfig(String configName){
+	public static YamlConfiguration getconfig(String configName){
 		return getyml(getconfigFile(configName));
 	}
 
-	public static YamlConfiguration getconfigyml(){
-		return getyml(getconfigymlFile());
+	public static FileConfiguration getconfigyml(){
+		return PLUGIN.getConfig();
 	}
 
 	public static YamlConfiguration getLocale(){
-		return getyml(getLocaleFile());
+		return locale;
 	}
 
 	public static YamlConfiguration getMessageQueue(){
@@ -175,7 +177,7 @@ public class HotelsConfigHandler {
 	}
 
 	public static YamlConfiguration getFlags(){
-		return getyml(getFlagsFile());
+		return flags;
 	}
 	public YamlConfiguration getSignConfig(String hotelName, String roomNum){
 		return getyml(getSignFile(hotelName, roomNum));
@@ -203,7 +205,7 @@ public class HotelsConfigHandler {
 
 	}
 
-	public void saveLocale(YamlConfiguration config){
+	public static void saveLocale(YamlConfiguration config){
 		File file = getLocaleFile();
 		saveConfiguration(file,config);
 	}
@@ -213,20 +215,20 @@ public class HotelsConfigHandler {
 		saveConfiguration(file,config);
 	}
 
-	public void saveFlags(YamlConfiguration config){
+	public static void saveFlags(YamlConfiguration config){
 		File file = getFlagsFile();
 		saveConfiguration(file,config);
 	}
 
-	public void saveconfigyml(YamlConfiguration config){
+	public static void saveconfigyml(YamlConfiguration config){
 		File file = getconfigymlFile();
 		saveConfiguration(file,config);
 	}
 
-	public void reloadConfigs(){
+	public static void reloadConfigs(){
 		//Reload config.yml
 		if(getconfigymlFile().exists())
-			plugin.reloadConfig();
+			PLUGIN.reloadConfig();
 		else
 			setupConfigyml();
 
@@ -239,25 +241,29 @@ public class HotelsConfigHandler {
 
 		//Locale
 		localeLanguageSelector();
+		
+		//Now that we're sure they exist we load up new instances of them
+		locale = getyml(getLocaleFile());
+		flags = getyml(getFlagsFile());
 	}
 
-	public void setupLanguage(String langCode, Plugin plugin){
-		plugin.saveResource("locale-" + langCode + ".yml", false);
+	public static void setupLanguage(String langCode, Plugin PLUGIN){
+		PLUGIN.saveResource("locale-" + langCode + ".yml", false);
 		File loc = getLocaleFile();
 		File itLoc = getFile("locale-" + langCode + ".yml");
 		loc.delete();
 		itLoc.renameTo(loc);
-		plugin.getLogger().info(langCode + " Language strings generated");
+		PLUGIN.getLogger().info(langCode + " Language strings generated");
 	}
 
-	public void setupFlags(){
+	public static void setupFlags(){
 
 		File flagsFile = getFlagsFile();
 		if(!flagsFile.exists())
 			try {
 				flagsFile.createNewFile();
 			} catch (IOException e) {
-				plugin.getLogger().severe("Could not create new flags.yml file");
+				PLUGIN.getLogger().severe("Could not create new flags.yml file");
 				e.printStackTrace();
 			}
 
@@ -442,9 +448,9 @@ public class HotelsConfigHandler {
 
 		try {
 			flagsConfig.save(flagsFile);
-			plugin.getLogger().info(ChatColor.GREEN+"Flags file has been created");
+			PLUGIN.getLogger().info(ChatColor.GREEN+"Flags file has been created");
 		} catch (IOException e) {
-			plugin.getLogger().severe(ChatColor.DARK_RED+"Could not save flags file");
+			PLUGIN.getLogger().severe(ChatColor.DARK_RED+"Could not save flags file");
 			e.printStackTrace();
 		}
 	}

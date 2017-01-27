@@ -32,13 +32,11 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 
 	private HotelsMain plugin;
-	private HotelsConfigHandler HCH;
 	private HotelsCommandExecutor HCE;
 
 	public HotelsCommandHandler(HotelsMain plugin){
 		this.plugin = plugin;
 
-		HCH = new HotelsConfigHandler(plugin);
 		HCE = new HotelsCommandExecutor();
 	}
 
@@ -138,7 +136,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 			else if(args[0].equalsIgnoreCase("reload")){
 				if(Mes.hasPerm(sender, "hotels.reload")){
-					HCH.reloadConfigs();
+					HotelsConfigHandler.reloadConfigs();
 					sender.sendMessage(Mes.mes("chat.commands.reload.success"));
 				}
 				else

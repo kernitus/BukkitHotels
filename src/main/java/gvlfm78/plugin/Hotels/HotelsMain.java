@@ -24,12 +24,12 @@ public class HotelsMain extends JavaPlugin{
 	//Task loops
 	RoomTask roomTask;
 
-	HotelsConfigHandler HCH = new HotelsConfigHandler(this);
 	Logger log = getServer().getLogger();
 
 	@Override
 	public void onEnable(){
-		HCH.setupConfigs();
+		HotelsConfigHandler.initialise(this);
+		HotelsConfigHandler.setupConfigs();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Listeners and stuff
@@ -125,7 +125,7 @@ public class HotelsMain extends JavaPlugin{
 			}
 
 			//Languages
-			switch(HCH.getLanguage()){
+			switch(HotelsConfigHandler.getLanguage()){
 			case "en": case "enGB":
 				language.addPlotter(new Metrics.Plotter("English") {
 					@Override
@@ -206,7 +206,7 @@ public class HotelsMain extends JavaPlugin{
 
 	@Override
 	public void onLoad(){
-		HCH.setupConfigs();
+		HotelsConfigHandler.setupConfigs();
 		setupEconomy();
 	}
 
