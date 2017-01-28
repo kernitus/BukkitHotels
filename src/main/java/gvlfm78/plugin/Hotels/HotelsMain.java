@@ -29,7 +29,6 @@ public class HotelsMain extends JavaPlugin{
 	@Override
 	public void onEnable(){
 		HotelsConfigHandler.initialise(this);
-		HotelsConfigHandler.setupConfigs();
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Listeners and stuff
@@ -206,7 +205,7 @@ public class HotelsMain extends JavaPlugin{
 
 	@Override
 	public void onLoad(){
-		HotelsConfigHandler.setupConfigs();
+		HotelsConfigHandler.initialise(this);
 		setupEconomy();
 	}
 

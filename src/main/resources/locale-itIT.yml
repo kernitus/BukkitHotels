@@ -173,7 +173,7 @@ chat:
       invalidData: '&4Il nome dell''hotel o stanza immessi non sono validi!'
     creationMode:
       enter: '&aSei entrato in modalità di creazione hotel.'
-      exit: '&aSei uscito dalla modalità di creazione hotel.'
+      exit: '&cSei uscito dalla modalità di creazione hotel.'
       alreadyIn: '&4Sei già in modalità di creazione!'
       notAlreadyIn: '&4Non sei in modalità di creazione!'
       reset: '&2I file di inventario sono stati reimpostati.'

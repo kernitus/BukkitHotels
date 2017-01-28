@@ -204,7 +204,7 @@ chat:
 
   creationMode:
       enter: '&aVous êtes en mode de création d''hôtel.'
-      exit: '&aVous n''est plus en mode de création d''hôtel.'
+      exit: '&cVous n''est plus en mode de création d''hôtel.'
       alreadyIn: '&4Vous êtes déjà en mode de création!'
       notAlreadyIn: '&4Vous n''est pas en mode de création!'
       reset: '&2Les fichiers d''inventaires ont été reset.'

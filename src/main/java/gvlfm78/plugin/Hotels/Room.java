@@ -302,7 +302,7 @@ public class Room {
 			TerrainManager tm = new TerrainManager(wep, world);
 
 			File schematicFile = HotelsConfigHandler.getSchematicFileNoExtension(this);
-			
+
 			// Save the region to a schematic file
 			try {
 				tm.saveTerrain(schematicFile, world, region.getMinimumPoint(), region.getMaximumPoint());
@@ -310,11 +310,9 @@ public class Room {
 				// Print message that something went wrong
 				e.printStackTrace();
 			}
-		} else{
-			//Delete schematic file
-			File schematicFile = HotelsConfigHandler.getSchematicFile(this);
-			if(schematicFile.exists()) schematicFile.delete();
-		}
+		} else
+			deleteSchematic();
+
 		saveSignConfig();
 	}
 	public boolean toggleShouldReset(){
@@ -357,6 +355,10 @@ public class Room {
 				}
 			}
 		}
+	}
+	public void deleteSchematic(){
+		File file = HotelsConfigHandler.getSchematicFile(this);
+		if(file.exists()) file.delete();
 	}
 
 	public HotelsResult renumber(String newNum){
@@ -598,6 +600,7 @@ public class Room {
 		WorldGuardManager.removeRegion(world, getRegion());
 		WorldGuardManager.saveRegions(world);
 		deleteSignAndFile();
+		deleteSchematic();
 	}
 
 	public void createRegion(ProtectedRegion region, Player p){
@@ -672,20 +675,17 @@ public class Room {
 		sign.setLine(2, SignManager.TimeFormatter(sconfig.getLong("Sign.time")));
 		sign.update();
 
-		System.out.println("SHould we reset?");
 		if(getShouldReset())
 			resetRoom();
 	}
 
 	public void resetRoom(){
-		System.out.println("Well something is happening");
 		WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		TerrainManager tm = new TerrainManager(wep, world);
 		try {
 			BlockVector vec = getRegion().getMinimumPoint();
 			Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
 			tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this), loc);
-			System.out.println("We tried saving the schem");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

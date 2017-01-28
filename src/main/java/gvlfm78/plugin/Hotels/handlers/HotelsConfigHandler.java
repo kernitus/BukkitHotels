@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -26,24 +27,9 @@ public class HotelsConfigHandler {
 	private static HotelsMain PLUGIN;
 	private static YamlConfiguration locale, flags;
 
-	public static void initialise(HotelsMain PLUGIN){
-		HotelsConfigHandler.PLUGIN = PLUGIN;
-	}
-
-	public static void setupConfigs(){
-		//Message Queue
-		if(!getMessageQueueFile().exists())
-			setupMessageQueue();
-		//Config.yml
-		if (!getconfigymlFile().exists())
-			setupConfigyml();
-
-		//Flags.yml
-		if(!getFlagsFile().exists())
-			setupFlags();
-
-		//Locale
-		localeLanguageSelector();
+	public static void initialise(HotelsMain plugin){
+		PLUGIN = plugin;
+		reloadConfigs();
 	}
 
 	public static void setupConfigyml(){
@@ -57,9 +43,8 @@ public class HotelsConfigHandler {
 
 	public static void localeLanguageSelector(){
 		String lang = getLanguage().toLowerCase();
-		YamlConfiguration locale = getLocale();
 		String loclang = locale.getString("language"); //From already-generated locale.yml
-		
+
 		if(loclang!=null) return;
 
 		switch(lang){
@@ -79,7 +64,7 @@ public class HotelsConfigHandler {
 
 		case "custom": break;
 
-		default: setupLanguage("enGB",PLUGIN);
+		default: setupLanguage("enGB", PLUGIN);
 
 		}
 	}
@@ -88,7 +73,7 @@ public class HotelsConfigHandler {
 	}
 
 	public static File getFile(String filepath){
-		return new File("plugins"+File.separator+"Hotels"+File.separator+filepath);
+		return new File(PLUGIN.getDataFolder() + File.separator + filepath);
 	}
 
 	public static YamlConfiguration getyml(File file){
@@ -99,10 +84,11 @@ public class HotelsConfigHandler {
 			fileinputstream = new FileInputStream(file);
 			config.load(new InputStreamReader(fileinputstream, Charset.forName("UTF-8")));
 		} catch (FileNotFoundException e){
-			System.out.print("");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InvalidConfigurationException e) {
+
+		}
+		catch (IOException | InvalidConfigurationException e){
+			PLUGIN.getLogger().log(Level.SEVERE, "Hotels failed to load file " 
+					+ file.getName() + " problem was: " + e.getMessage() + " Error log:");
 			e.printStackTrace();
 		}
 		return config;
@@ -206,23 +192,19 @@ public class HotelsConfigHandler {
 	}
 
 	public static void saveLocale(YamlConfiguration config){
-		File file = getLocaleFile();
-		saveConfiguration(file,config);
+		saveConfiguration(getLocaleFile(), config);
 	}
 
 	public static void saveMessageQueue(YamlConfiguration config){
-		File file = getMessageQueueFile();
-		saveConfiguration(file,config);
+		saveConfiguration(getMessageQueueFile(), config);
 	}
 
 	public static void saveFlags(YamlConfiguration config){
-		File file = getFlagsFile();
-		saveConfiguration(file,config);
+		saveConfiguration(getFlagsFile(), config);
 	}
 
 	public static void saveconfigyml(YamlConfiguration config){
-		File file = getconfigymlFile();
-		saveConfiguration(file,config);
+		saveConfiguration(getconfigymlFile(), config);
 	}
 
 	public static void reloadConfigs(){
@@ -239,9 +221,11 @@ public class HotelsConfigHandler {
 		if(!getFlagsFile().exists())
 			setupFlags();
 
+		//Locale language selector needs it
+		locale = getyml(getLocaleFile());
 		//Locale
 		localeLanguageSelector();
-		
+
 		//Now that we're sure they exist we load up new instances of them
 		locale = getyml(getLocaleFile());
 		flags = getyml(getFlagsFile());
@@ -448,9 +432,9 @@ public class HotelsConfigHandler {
 
 		try {
 			flagsConfig.save(flagsFile);
-			PLUGIN.getLogger().info(ChatColor.GREEN+"Flags file has been created");
+			PLUGIN.getLogger().info(ChatColor.GREEN + "Flags file has been created");
 		} catch (IOException e) {
-			PLUGIN.getLogger().severe(ChatColor.DARK_RED+"Could not save flags file");
+			PLUGIN.getLogger().severe(ChatColor.DARK_RED + "Could not save flags file");
 			e.printStackTrace();
 		}
 	}

@@ -200,7 +200,7 @@ chat:
     
     creationMode:
       enter: '&aYou have entered hotel creation mode.'
-      exit: '&aYou have exited hotel creation mode.'
+      exit: '&cYou have exited hotel creation mode.'
       alreadyIn: '&4You are already in creation mode!'
       notAlreadyIn: '&4You are not in creation mode!'
       reset: '&2The inventory files have been reset.'

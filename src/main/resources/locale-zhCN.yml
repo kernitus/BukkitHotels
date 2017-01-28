@@ -178,7 +178,7 @@ chat:
       invalidData: '&4输入的旅馆名称或房间号无效'
     creationMode:
       enter: '&a你已经进入旅馆的创建模式.'
-      exit: '&a你已经退出旅馆的创建模式.'
+      exit: '&c你已经退出旅馆的创建模式.'
       reset: '&2该背包文件已被重置'
       noarg: '&4请指定 &6&oenter(进入) &4或者 &6&oexit(离开) &4模式'
       consoleRejected: 控制台不能使用旅馆的创建模式!
