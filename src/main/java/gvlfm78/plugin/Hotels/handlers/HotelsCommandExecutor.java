@@ -1,5 +1,6 @@
 package kernitus.plugin.Hotels.handlers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,16 @@ import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.Room;
+import kernitus.plugin.Hotels.exceptions.BlockNotSignException;
+import kernitus.plugin.Hotels.exceptions.EventCancelledException;
+import kernitus.plugin.Hotels.exceptions.FriendNotFoundException;
+import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
+import kernitus.plugin.Hotels.exceptions.NotRentedException;
+import kernitus.plugin.Hotels.exceptions.NumberTooLargeException;
+import kernitus.plugin.Hotels.exceptions.OutOfRegionException;
+import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
+import kernitus.plugin.Hotels.exceptions.UserNonExistentException;
+import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
@@ -196,7 +207,12 @@ public class HotelsCommandExecutor {
 			Player p = (Player) sender;
 			World world = p.getWorld();
 			Room room = new Room(world, hotelName, roomNum);
-			room.rent(p);
+			try{ room.rent(p); }
+			catch(IOException e){
+				sender.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+				e.printStackTrace();
+			} catch (EventCancelledException e) {
+			}
 		}	
 	}
 	public void cmdFriendAdd(Player player, String hotelName, String roomNum, String friendName){
@@ -212,13 +228,16 @@ public class HotelsCommandExecutor {
 		if(player.getUniqueId().equals(friend.getUniqueId())){
 			player.sendMessage(Mes.mes("chat.commands.friend.addYourself")); return; }
 
-		switch(room.addFriend(friend)){
-		case FILE_NON_EXISTENT: player.sendMessage(Mes.mes("chat.commands.friend.wrongData")); break;
-		case IS_NOT_RENTED: player.sendMessage(Mes.mes("chat.commands.friend.noRenter")); break;
-		case USER_NON_EXISTENT: player.sendMessage(Mes.mes("chat.commands.friend.nonExistent")); break;
-		default: player.sendMessage(Mes.mes("chat.commands.friend.addSuccess").replaceAll("%friend%", friend.getName()));
+		try {
+			room.addFriend(friend);
+			player.sendMessage(Mes.mes("chat.commands.friend.addSuccess").replaceAll("%friend%", friend.getName()));
+		} catch (UserNonExistentException e) {
+			player.sendMessage(Mes.mes("chat.commands.friend.nonExistent"));
+		} catch (NotRentedException e) {
+			player.sendMessage(Mes.mes("chat.commands.friend.noRenter"));
+		} catch (IOException e) {
+			player.sendMessage(Mes.mes("chat.commands.friend.wrongData"));
 		}
-
 	}
 	public void cmdFriendRemove(Player player, String hotelName, String roomNum, String friendName){
 		Room room = new Room(player.getWorld(), hotelName, roomNum);
@@ -229,11 +248,14 @@ public class HotelsCommandExecutor {
 		@SuppressWarnings("deprecation")
 		OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(friendName);
 
-		switch(room.removeFriend(friend)){
-		case FILE_NON_EXISTENT: player.sendMessage(Mes.mes("chat.commands.friend.wrongData")); break;
-		case IS_NOT_RENTED: player.sendMessage(Mes.mes("chat.commands.friend.noRenter")); break;
-		case FRIEND_NOT_IN_LIST: player.sendMessage(Mes.mes("chat.commands.friend.friendNotInList")); break;
-		default: player.sendMessage(Mes.mes("chat.commands.friend.removeSuccess").replaceAll("%friend%", friend.getName())); break;
+		try {
+			room.removeFriend(friend);
+		} catch (NotRentedException e) {
+			player.sendMessage(Mes.mes("chat.commands.friend.noRenter"));
+		} catch (FriendNotFoundException e) {
+			player.sendMessage(Mes.mes("chat.commands.friend.friendNotInList"));
+		} catch (IOException e) {
+			player.sendMessage(Mes.mes("chat.commands.friend.wrongData"));
 		}
 	}
 	public void cmdFriendList(CommandSender s, String hotelName, String roomNum){
@@ -258,7 +280,7 @@ public class HotelsCommandExecutor {
 			String friendName = friend.getName();
 			s.sendMessage(Mes.mes("chat.commands.friend.list.line").replaceAll("%name%", friendName));
 		}
-		
+
 		s.sendMessage(Mes.mes("chat.commands.friend.list.footer"));
 	}
 	public void cmdRoomListPlayer(Player p, String hotelName, World w){
@@ -288,22 +310,34 @@ public class HotelsCommandExecutor {
 			return;
 		}
 
-		switch(room.renumber(newNum)){
-		case NEW_NUM_TOO_BIG: player.sendMessage(Mes.mes("chat.commands.renumber.newNumTooBig")); break;
-		case HOTEL_NON_EXISTENT: player.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); break;
-		case ROOM_NON_EXISTENT: player.sendMessage(Mes.mes("chat.commands.roomNonExistent")); break;
-		case FILE_NON_EXISTENT: player.sendMessage(Mes.mes("chat.use.fileNonExistent")); break;
-		case BLOCK_NOT_SIGN: player.sendMessage(Mes.mes("chat.commands.rent.invalidLocation")); break;//Not a sign
-		case OUT_OF_REGION: player.sendMessage(Mes.mes("chat.sign.place.outOfRegion")); break;
-		default: player.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", String.valueOf(oldNum)).replaceAll("%newnum%", String.valueOf(newNum)).replaceAll("%hotel%", hotel.getName()));
+		try {
+			room.renumber(newNum);
+			player.sendMessage(Mes.mes("chat.commands.renumber.success").replaceAll("%oldnum%", String.valueOf(oldNum)).replaceAll("%newnum%", String.valueOf(newNum)).replaceAll("%hotel%", hotel.getName()));
+		} catch (NumberFormatException e) {
+			player.sendMessage("chat.commands.somethingWentWrong");
+			e.printStackTrace();
+		} catch (NumberTooLargeException e) {
+			player.sendMessage(Mes.mes("chat.commands.renumber.newNumTooBig"));
+		} catch (HotelNonExistentException e) {
+			player.sendMessage(Mes.mes("chat.commands.hotelNonExistent"));
+		} catch (RoomNonExistentException e) {
+			player.sendMessage(Mes.mes("chat.commands.roomNonExistent"));
+		} catch (BlockNotSignException e) {
+			player.sendMessage(Mes.mes("chat.commands.rent.invalidLocation"));
+		} catch (OutOfRegionException e) {
+			player.sendMessage(Mes.mes("chat.sign.place.outOfRegion"));
+		} catch (EventCancelledException e) {
+		} catch (IOException e) {
+			player.sendMessage(Mes.mes("chat.use.fileNonExistent"));
 		}
 	}
 	public void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
 		Room room = new Room(world, hotelName, roomNum);
-		if(room.remove())
+
+		try {
+			room.delete();
 			sender.sendMessage(Mes.mes("chat.commands.removeRoom.success"));
-		else
-			sender.sendMessage(Mes.mes("chat.commands.removeRoom.fail"));
+		} catch (EventCancelledException e) {}
 	}
 	public void removePlayer(World world, String hotelName, String roomNum, String toRemovePlayer, CommandSender sender){
 
@@ -315,13 +349,23 @@ public class HotelsCommandExecutor {
 		if(!room.isRenter(player.getUniqueId())){
 			sender.sendMessage(Mes.mes("chat.commands.remove.playerNotRenter")); return; }
 
-		switch(room.removePlayer(player)){
-		case WORLD_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.worldNonExistent")); break;
-		case HOTEL_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); break;
-		case ROOM_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.roomNonExistent")); break;
-		case USER_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.userNonExistent")); break;
-		case IS_NOT_RENTED: sender.sendMessage(Mes.mes("chat.commands.remove.noRenter")); break;
-		default: sender.sendMessage(Mes.mes("chat.commands.remove.success").replaceAll("%player%", toRemovePlayer).replaceAll("%room%", roomNum).replaceAll("%hotel%", hotelName)); break;
+		try {
+			room.removePlayer(player);
+			sender.sendMessage(Mes.mes("chat.commands.remove.success").replaceAll("%player%", toRemovePlayer).replaceAll("%room%", roomNum).replaceAll("%hotel%", hotelName));
+		} catch (HotelNonExistentException e) {
+			sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent"));
+		} catch (WorldNonExistentException e) {
+			sender.sendMessage(Mes.mes("chat.commands.worldNonExistent"));
+		} catch (UserNonExistentException e) {
+			sender.sendMessage(Mes.mes("chat.commands.userNonExistent"));
+		} catch (RoomNonExistentException e) {
+			sender.sendMessage(Mes.mes("chat.commands.roomNonExistent"));
+		} catch (NotRentedException e) {
+			sender.sendMessage(Mes.mes("chat.commands.remove.noRenter"));
+		} catch (EventCancelledException e) {
+		} catch (IOException e) {
+			sender.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+			e.printStackTrace();
 		}
 	}
 	public void check(String playername, CommandSender sender){

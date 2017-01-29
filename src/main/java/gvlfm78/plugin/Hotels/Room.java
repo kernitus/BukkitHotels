@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +18,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
@@ -29,6 +32,18 @@ import kernitus.plugin.Hotels.events.RoomDeleteEvent;
 import kernitus.plugin.Hotels.events.RoomRentEvent;
 import kernitus.plugin.Hotels.events.RoomRenumberEvent;
 import kernitus.plugin.Hotels.events.RoomSignUpdateEvent;
+import kernitus.plugin.Hotels.exceptions.BlockNotSignException;
+import kernitus.plugin.Hotels.exceptions.EventCancelledException;
+import kernitus.plugin.Hotels.exceptions.FriendNotFoundException;
+import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
+import kernitus.plugin.Hotels.exceptions.NotRentedException;
+import kernitus.plugin.Hotels.exceptions.NumberTooLargeException;
+import kernitus.plugin.Hotels.exceptions.OutOfRegionException;
+import kernitus.plugin.Hotels.exceptions.RenterNonExistentException;
+import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
+import kernitus.plugin.Hotels.exceptions.UserNonExistentException;
+import kernitus.plugin.Hotels.exceptions.ValuesNotMatchingException;
+import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
 import kernitus.plugin.Hotels.handlers.MessageType;
@@ -258,7 +273,7 @@ public class Room {
 		//Placing their UUID in the sign config
 		sconfig.set("Sign.renter", uuid.toString());
 	}
-	public void rent(Player p){
+	public void rent(Player p) throws IOException, EventCancelledException {
 		if(!exists() || !doesSignFileExist()){
 			p.sendMessage(Mes.mes("chat.commands.rent.invalidData"));
 			return;
@@ -266,7 +281,7 @@ public class Room {
 
 		RoomRentEvent rre = new RoomRentEvent(this, p);
 		Bukkit.getPluginManager().callEvent(rre);
-		if(rre.isCancelled()) return;
+		if(rre.isCancelled()) throw new EventCancelledException();
 		p = rre.getRenter();
 
 
@@ -293,7 +308,7 @@ public class Room {
 		//Update this hotel's reception signs
 		hotel.updateReceptionSigns();
 	}
-	public void setShouldReset(boolean value){
+	public void setShouldReset(boolean value) throws DataException, IOException, WorldEditException{
 		sconfig.set("Sign.reset", value);
 		if(value){
 			//Create and save schematic file based on room region
@@ -304,25 +319,20 @@ public class Room {
 			File schematicFile = HotelsConfigHandler.getSchematicFileNoExtension(this);
 
 			// Save the region to a schematic file
-			try {
-				tm.saveTerrain(schematicFile, world, region.getMinimumPoint(), region.getMaximumPoint());
-			} catch (Exception e) {
-				// Print message that something went wrong
-				e.printStackTrace();
-			}
+			tm.saveTerrain(schematicFile, world, region.getMinimumPoint(), region.getMaximumPoint());
 		} else
 			deleteSchematic();
 
 		saveSignConfig();
 	}
-	public boolean toggleShouldReset(){
+	public boolean toggleShouldReset() throws DataException, IOException, WorldEditException{
 		boolean value = !getShouldReset();
 		setShouldReset(value);
 		return value;
 	}
 	///Config stuff
 	private File getSignFile(){
-		return new File("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+hotel.getName().toLowerCase()+"-"+num+".yml");
+		return HotelsConfigHandler.getSignFile(hotel.getName(), num);
 	}
 	private YamlConfiguration getSignConfig(){
 		return YamlConfiguration.loadConfiguration(getSignFile());
@@ -330,17 +340,13 @@ public class Room {
 	public boolean doesSignFileExist(){
 		return getSignFile().exists();
 	}
-	public boolean saveSignConfig(){
-		try {
-			sconfig.save(getSignFile());
-		} catch (IOException e) {
-			return false;
-		}
-		return true;
+	public void saveSignConfig() throws IOException {
+		sconfig.save(getSignFile());
 	}
 
 	public void deleteSignFile(){
-		getSignFile().delete();
+		File file = getSignFile();
+		if(file.exists()) file.delete();
 	}
 	public void deleteSignAndFile(){
 		Location loc = getSignLocation();
@@ -350,9 +356,8 @@ public class Room {
 			Sign s = (Sign) b.getState();
 			String Line1 = ChatColor.stripColor(s.getLine(0));
 			if(Line1.matches("Reception") || Line1.matches(Mes.mesnopre("Sign.reception"))){
-				if(WorldGuardManager.getRegion(world,"Hotel-"+hotel.getName()).contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())){
+				if(WorldGuardManager.getHotelRegion(world, hotel.getName()).contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()))
 					deleteSignFile();
-				}
 			}
 		}
 	}
@@ -361,37 +366,32 @@ public class Room {
 		if(file.exists()) file.delete();
 	}
 
-	public HotelsResult renumber(String newNum){
-		return renumber(Integer.parseInt(newNum));
+	public void renumber(String newNum) throws NumberFormatException, NumberTooLargeException, HotelNonExistentException, RoomNonExistentException, BlockNotSignException, OutOfRegionException, EventCancelledException, IOException {
+		renumber(Integer.parseInt(newNum));
 	}
 
-	public HotelsResult renumber(int newNum){
+	public void renumber(int newNum) throws NumberTooLargeException, HotelNonExistentException, RoomNonExistentException, BlockNotSignException, OutOfRegionException, EventCancelledException, IOException {
 		int oldNum = num;
 		Hotel hotel = getHotel();
 		String hotelName = hotel.getName();
 
-		if(newNum>100000)
-			return HotelsResult.NEW_NUM_TOO_BIG;
+		if(newNum>100000) throw new NumberTooLargeException();
 
 		if(!hotel.exists())
-			return HotelsResult.HOTEL_NON_EXISTENT;
+			throw new HotelNonExistentException();
 
 
-		if(!exists())
-			return HotelsResult.ROOM_NON_EXISTENT;
+		if(!exists()) throw new RoomNonExistentException();
 
-		if(!doesSignFileExist()){
-			return HotelsResult.FILE_NON_EXISTENT;
-		}
+		if(!doesSignFileExist()) throw new FileNotFoundException();
 
 		Block sign = getBlockAtSignLocation();
 		Material mat = sign.getType();
 
-
 		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){
 			sign.setType(Material.AIR);
 			deleteSignFile();
-			return HotelsResult.BLOCK_NOT_SIGN;
+			throw new BlockNotSignException();
 		}
 
 		Sign s = (Sign) sign.getState();
@@ -403,12 +403,12 @@ public class Room {
 		if(!hotel.getRegion().contains(signLocation.getBlockX(),signLocation.getBlockY(),signLocation.getBlockZ())){
 			sign.setType(Material.AIR);
 			deleteSignFile();
-			return HotelsResult.OUT_OF_REGION;
+			throw new OutOfRegionException();
 		}
 
 		RoomRenumberEvent rre = new RoomRenumberEvent(this, oldNum);
 		Bukkit.getPluginManager().callEvent(rre);
-		if(rre.isCancelled()) return HotelsResult.CANCELLED;
+		if(rre.isCancelled()) throw new EventCancelledException();
 
 		s.setLine(1, Mes.mesnopre("sign.room.name") + " " + newNum + " - " + Line2.split(" ")[3]);
 		s.update();
@@ -432,11 +432,9 @@ public class Room {
 
 		num = newNum;
 		sconfig = getSignConfig();
-
-		return HotelsResult.SUCCESS;
 	}
 
-	public boolean createSignConfig(Player p, long timeInMins, double cost, Location signLocation){
+	public void createSignConfig(Player p, long timeInMins, double cost, Location signLocation) throws IOException{
 		if(!doesSignFileExist()){
 			setRentTime(timeInMins);
 			setHotelNameInConfig(hotel.getName());
@@ -444,10 +442,10 @@ public class Room {
 			setCost(cost);
 			setSignLocation(signLocation);
 		}
-		return saveSignConfig();
+		saveSignConfig();
 	}
 
-	public void updateSign(){
+	public void updateSign() throws EventCancelledException {
 		Sign s = getSign();
 
 		if(s==null) return;
@@ -470,7 +468,7 @@ public class Room {
 		RoomSignUpdateEvent rsue = new RoomSignUpdateEvent(this, s, remainingTime, formattedRemainingTime);
 
 		Bukkit.getPluginManager().callEvent(rsue); //Call Room Sign Update event
-		if(rsue.isCancelled()){ return; } //If event has been cancelled return
+		if(rsue.isCancelled()) throw new EventCancelledException();
 
 		formattedRemainingTime = rsue.getFormattedRemainingTime(); //Getting FRT from event in case another plugin modified it
 
@@ -479,38 +477,16 @@ public class Room {
 		s.update();
 	}
 
-	public boolean remove(){
+	public void removePlayer(OfflinePlayer playerToRemove) throws HotelNonExistentException, WorldNonExistentException, UserNonExistentException, RoomNonExistentException, NotRentedException, IOException, EventCancelledException{
+		if(world==null) throw new WorldNonExistentException();
 
-		if(!exists())
-			return false;
+		if(!hotel.exists()) throw new HotelNonExistentException();
 
-		WorldGuardManager.removeRegion(world, getRegion());
+		if(!exists()) throw new RoomNonExistentException();
 
-		WorldGuardManager.saveRegions(world);
+		if(!playerToRemove.hasPlayedBefore()) throw new UserNonExistentException();
 
-		if(!doesSignFileExist())
-			return false;
-
-		deleteSignFile();
-
-		return true;
-	}
-
-	public HotelsResult removePlayer(OfflinePlayer playerToRemove){
-		if(world==null)
-			return HotelsResult.WORLD_NON_EXISTENT;
-
-		if(!hotel.exists())
-			return HotelsResult.HOTEL_NON_EXISTENT;
-
-		if(!exists())
-			return HotelsResult.ROOM_NON_EXISTENT;
-
-		if(!playerToRemove.hasPlayedBefore())
-			return HotelsResult.USER_NON_EXISTENT;
-
-		if(isFree())
-			return HotelsResult.IS_NOT_RENTED;
+		if(isFree()) throw new NotRentedException();
 
 		ProtectedRegion r = getRegion();
 		WorldGuardManager.removeMember(playerToRemove, r);
@@ -536,8 +512,6 @@ public class Room {
 
 		//Make free room accessible to all players if set in config
 		WorldGuardManager.makeRoomAccessible(r);
-
-		return HotelsResult.SUCCESS;
 	}
 
 	public void renameRoom(String newHotelName){
@@ -546,16 +520,13 @@ public class Room {
 		hotel = new Hotel(world, newHotelName);
 	}
 
-	public HotelsResult addFriend(OfflinePlayer friend){
+	public void addFriend(OfflinePlayer friend) throws UserNonExistentException, NotRentedException, IOException {
 
-		if(!doesSignFileExist())
-			return HotelsResult.FILE_NON_EXISTENT;
+		if(!doesSignFileExist()) throw new FileNotFoundException();
 
-		if(!isRented())
-			return HotelsResult.IS_NOT_RENTED;	
+		if(!isRented()) throw new NotRentedException();	
 
-		if(!friend.hasPlayedBefore())
-			return HotelsResult.USER_NON_EXISTENT;
+		if(!friend.hasPlayedBefore()) throw new UserNonExistentException();
 
 		//Adding player as region member
 
@@ -566,19 +537,15 @@ public class Room {
 		sconfig.set("Sign.friends", stringList);
 
 		saveSignConfig();
-
-		return HotelsResult.SUCCESS;
 	}
 
-	public HotelsResult removeFriend(OfflinePlayer friend){
-		if(!doesSignFileExist())
-			return HotelsResult.FILE_NON_EXISTENT;
+	public void removeFriend(OfflinePlayer friend) throws NotRentedException, FriendNotFoundException, IOException {
+		if(!doesSignFileExist()) throw new FileNotFoundException();
 
-		if(!isRented())
-			return HotelsResult.IS_NOT_RENTED;
+		if(!isRented()) throw new NotRentedException();
 
 		if(!getFriendsList().contains(friend.getUniqueId().toString()))
-			return HotelsResult.FRIEND_NOT_IN_LIST;
+			throw new FriendNotFoundException();
 
 		//Removing player as region member
 		WorldGuardManager.removeMember(friend, getRegion());
@@ -589,14 +556,12 @@ public class Room {
 		sconfig.set("Sign.friends", stringList);
 
 		saveSignConfig();
-
-		return HotelsResult.SUCCESS;
 	}
 
-	public void delete(){
+	public void delete() throws EventCancelledException{
 		RoomDeleteEvent rde = new RoomDeleteEvent(this);
 		Bukkit.getPluginManager().callEvent(rde);
-		if(rde.isCancelled()) return;
+		if(rde.isCancelled()) throw new EventCancelledException();
 		WorldGuardManager.removeRegion(world, getRegion());
 		WorldGuardManager.saveRegions(world);
 		deleteSignAndFile();
@@ -620,11 +585,11 @@ public class Room {
 		p.sendMessage(Mes.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
 	}
 
-	public void unrent(){
+	public void unrent() throws IOException, BlockNotSignException, DataException, WorldEditException, EventCancelledException {
 		ProtectedRegion region = getRegion();
 		String hotelName = getHotel().getName();
 
-		if(!isBlockAtSignLocationSign()) return;
+		if(!isBlockAtSignLocationSign()) throw new BlockNotSignException();
 		Sign sign = (Sign) getBlockAtSignLocation().getState();
 
 		OfflinePlayer p = getRenter(); //Getting renter
@@ -634,7 +599,7 @@ public class Room {
 		RentExpiryEvent ree = new RentExpiryEvent(this, p, friendList);
 		Bukkit.getPluginManager().callEvent(ree);
 
-		if(ree.isCancelled()) return;
+		if(ree.isCancelled()) throw new EventCancelledException();
 
 		//Removing renter
 		WorldGuardManager.removeMember(p, region); //Removing renter as member of room region
@@ -679,25 +644,21 @@ public class Room {
 			resetRoom();
 	}
 
-	public void resetRoom(){
+	public void resetRoom() throws DataException, IOException, WorldEditException{
 		WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		TerrainManager tm = new TerrainManager(wep, world);
-		try {
-			BlockVector vec = getRegion().getMinimumPoint();
-			Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
-			tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this), loc);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		BlockVector vec = getRegion().getMinimumPoint();
+		Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
+		tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this), loc);
 	}
 
-	public boolean checkRent(){ //Checks if rent has expired, if so unrents
-		//Returns true if anything changed, so we know if Reception signs for this hotel need to be updated
+	public void checkRent() throws IOException, ValuesNotMatchingException, RoomNonExistentException, BlockNotSignException, RenterNonExistentException, DataException, WorldEditException, EventCancelledException {
+		//Checks if rent has expired, if so unrents
 		File file = getSignFile();
 		if(!exists()){
 			file.delete();
 			Mes.debugConsole("Room sign " + file.getName() + " was deleted as the room doesn't exist");
-			return true;
+			throw new RoomNonExistentException();
 		}
 
 		Block signBlock = getBlockAtSignLocation(); //Getting block at location where sign should be
@@ -705,7 +666,7 @@ public class Room {
 		if(!isBlockAtSignLocationSign()){
 			file.delete();//If block is not a sign, delete it
 			Mes.debugConsole(Mes.mesnopre("sign.delete.location").replaceAll("%filename%", file.getName()));
-			return true;
+			throw new BlockNotSignException();
 		}
 
 		String hotelName = getHotel().getName();
@@ -714,7 +675,7 @@ public class Room {
 		if(!hotelName.equalsIgnoreCase(ChatColor.stripColor(sign.getLine(0)))){//If hotelName on sign doesn't match that in config
 			file.delete();
 			Mes.debugConsole(Mes.mesnopre("sign.delete.hotelName").replaceAll("%filename%", file.getName()));
-			return true;
+			throw new ValuesNotMatchingException();
 		}
 
 		String[] Line2parts = ChatColor.stripColor(sign.getLine(1)).split("\\s");
@@ -722,23 +683,21 @@ public class Room {
 		if(getRoomNumFromConfig()!=roomNumfromSign){ //If roomNum on sign doesn't match that in config
 			file.delete();
 			Mes.debugConsole(Mes.mesnopre("sign.delete.roomNum").replaceAll("%filename%", file.getName()));
-			return true;
+			throw new ValuesNotMatchingException();
 		}
 
 
 		if(sconfig.get("Sign.expiryDate") != null){
 
 			long expiryDate = getExpiryMinute();
-			if(expiryDate==0){ return false; }//Rent is permanent
-			if(expiryDate > (System.currentTimeMillis()/1000/60)){//If rent has not expired, update time remaining on sign
+			if(expiryDate==0) return; //Rent is permanent
+			if(expiryDate > (System.currentTimeMillis()/1000/60))//If rent has not expired, update time remaining on sign
 				updateSign();
-			}
 			else{//Rent has expired
-				if(!isRented()) return true;  //Rent expired but there's no renter, something went wrong, just quit
+				if(!isRented()) throw new RenterNonExistentException();  //Rent expired but there's no renter, something went wrong, just quit
 				unrent();
-				return true;
+				throw new RenterNonExistentException();
 			}
-			return false;
 		}
 
 		boolean wasRented = isRented();
@@ -756,7 +715,8 @@ public class Room {
 		sign.setLine(2, SignManager.TimeFormatter(sconfig.getLong("Sign.time")));
 		sign.update();
 
-		return wasRented;
+		//If room was rented but there was no expiry date somethign went wrong
+		if(wasRented) throw new ValuesNotMatchingException();
 	}
 	public void setBuyer(UUID uuid, double price){
 		TradesHolder.addRoomBuyer(Bukkit.getPlayer(uuid), this, price);

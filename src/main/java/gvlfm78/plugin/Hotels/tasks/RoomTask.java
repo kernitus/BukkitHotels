@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels.tasks;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
@@ -10,8 +11,16 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.world.DataException;
+
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.Room;
+import kernitus.plugin.Hotels.exceptions.BlockNotSignException;
+import kernitus.plugin.Hotels.exceptions.EventCancelledException;
+import kernitus.plugin.Hotels.exceptions.RenterNonExistentException;
+import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
+import kernitus.plugin.Hotels.exceptions.ValuesNotMatchingException;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
@@ -52,8 +61,14 @@ public class RoomTask extends BukkitRunnable {
 			
 			Room room = new Room(world, hotelName, roomNum); //Creating room object with info from file
 
-			if(room.checkRent())
+			try {
+				room.checkRent();
 				hotelsThatHadRoomsUpdate.add(room.getHotel());
+			} catch (ValuesNotMatchingException | RoomNonExistentException | BlockNotSignException
+					| RenterNonExistentException | EventCancelledException | IOException | DataException
+					| WorldEditException e) {
+				Mes.debugConsole(e.getMessage());
+			}
 		}
 
 		//Update the reception signs for hotels that had their rooms changed

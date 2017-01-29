@@ -121,6 +121,7 @@ chat:
         
   commands:
     youDoNotOwnThat: '&4You do not own that!'
+    somethingWentWrong: '&4Whoops! Something went wrong while executing that command'
     
     commands:
       header: '&4================================'

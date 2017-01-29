@@ -20,6 +20,9 @@ import kernitus.plugin.Hotels.Signs.ReceptionSign;
 import kernitus.plugin.Hotels.events.HotelCreateEvent;
 import kernitus.plugin.Hotels.events.HotelDeleteEvent;
 import kernitus.plugin.Hotels.events.HotelRenameEvent;
+import kernitus.plugin.Hotels.exceptions.EventCancelledException;
+import kernitus.plugin.Hotels.exceptions.HotelAlreadyPresentException;
+import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
@@ -137,13 +140,13 @@ public class Hotel {
 	public void setName(String name){
 		this.name = name;
 	}
-	public HotelsResult rename(String newName){
+	public void rename(String newName) throws EventCancelledException, HotelNonExistentException{
 		HotelRenameEvent hre = new HotelRenameEvent(this, newName);
 		Bukkit.getPluginManager().callEvent(hre);
 		newName = hre.getNewName(); //In case it was modified by the event
 		
-		if(hre.isCancelled()) return HotelsResult.CANCELLED;
-		if(!exists()) return HotelsResult.HOTEL_NON_EXISTENT;
+		if(hre.isCancelled()) throw new EventCancelledException();
+		if(!exists()) throw new HotelNonExistentException();
 		
 		//Rename rooms
 		ArrayList<Room> rooms = getRooms();
@@ -164,8 +167,6 @@ public class Hotel {
 			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name)));
 		
 		updateReceptionSigns();
-		
-		return HotelsResult.SUCCESS;
 	}
 	public void removeAllSigns(){
 		deleteAllReceptionSigns();
@@ -197,11 +198,11 @@ public class Hotel {
 			return false;
 		}
 	}
-	public HotelsResult delete(){
+	public void delete() throws EventCancelledException, HotelNonExistentException{
 		HotelDeleteEvent hde = new HotelDeleteEvent(this);
 		Bukkit.getPluginManager().callEvent(hde);
-		if(hde.isCancelled()) return HotelsResult.CANCELLED;
-		if(!exists()) return HotelsResult.HOTEL_NON_EXISTENT;
+		if(hde.isCancelled()) throw new EventCancelledException();
+		if(!exists()) throw new HotelNonExistentException();
 		
 		//Remove all reception signs and files
 		deleteAllReceptionSigns();
@@ -210,7 +211,6 @@ public class Hotel {
 			room.delete();
 		//Remove Hotel file if existent
 		deleteHotelFile();
-		return HotelsResult.SUCCESS;
 	}
 	public boolean isOwner(UUID uuid){
 		return getOwners().contains(uuid);
@@ -218,23 +218,21 @@ public class Hotel {
 	public boolean isOwner(String name){
 		return getOwners().contains(name);
 	}
-	public HotelsResult create(ProtectedRegion region){
+	public void create(ProtectedRegion region) throws EventCancelledException, HotelAlreadyPresentException{
 		HotelCreateEvent hce = new HotelCreateEvent(this, region);
 		Bukkit.getPluginManager().callEvent(hce); //Call HotelCreateEvent
-		if(hce.isCancelled()) return HotelsResult.CANCELLED;
+		if(hce.isCancelled()) throw new EventCancelledException();
 		
 		//In case a listener modified this stuff
 		world = hce.getWorld();
 		name = hce.getName();
 		region = hce.getRegion();
-		if(WorldGuardManager.doHotelRegionsOverlap(region, world)) return HotelsResult.HOTEL_ALREADY_PRESENT; 
+		if(WorldGuardManager.doHotelRegionsOverlap(region, world)) throw new HotelAlreadyPresentException();
 		
 		WorldGuardManager.addRegion(world, region);
 		WorldGuardManager.hotelFlags(region, name, world);
 		region.setPriority(5);
 		WorldGuardManager.saveRegions(world);
-
-		return HotelsResult.SUCCESS;
 	}
 	public void updateReceptionSigns(){
 		ArrayList<ReceptionSign> rss = getAllReceptionSigns();

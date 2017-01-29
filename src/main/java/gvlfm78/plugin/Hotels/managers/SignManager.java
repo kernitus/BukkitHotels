@@ -31,6 +31,7 @@ import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
+import kernitus.plugin.Hotels.exceptions.EventCancelledException;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
 import kernitus.plugin.Hotels.handlers.MessageType;
@@ -136,9 +137,12 @@ public class SignManager {
 									//Calculating accurate cost
 									double accCost = CostConverter(cost);									
 
-									if(!room.createSignConfig(p, timeInMins, accCost, e.getBlock().getLocation())){
+									try {
+										room.createSignConfig(p, timeInMins, accCost, e.getBlock().getLocation());
+									} catch (IOException e1) {
 										p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
 										e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
+										e1.printStackTrace();
 										return;
 									}
 
@@ -252,8 +256,14 @@ public class SignManager {
 						HotelsMain.economy.withdrawPlayer(p, price);//Taking money from renter
 						payOwners(price, room, false); //Pay the hotel owners the net profit
 
-						room.rent(p);
-						
+						try {
+							room.rent(p);
+						} catch (EventCancelledException e) {
+						} catch (IOException e) {
+							p.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+							e.printStackTrace();
+						}
+
 						DecimalFormat df = new DecimalFormat("#.00");
 						p.sendMessage(Mes.mes("chat.sign.use.success").replaceAll("%room%", String.valueOf(room.getNum())).replaceAll("%hotel%", hotelName)
 								.replaceAll("%price%", df.format(price)));
@@ -403,12 +413,15 @@ public class SignManager {
 			}
 
 			room.incrementTimesExtended();
-			room.saveSignConfig();
-
-			room.setNewExpiryDate();
-			room.saveSignConfig();
-
-			room.updateSign();
+			try {
+				room.setNewExpiryDate();
+				room.saveSignConfig();
+				room.updateSign();
+			} catch (IOException e) {
+				p.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+				e.printStackTrace();
+			} catch (EventCancelledException e) {
+			}
 
 			extended++;
 

@@ -1,5 +1,6 @@
 package kernitus.plugin.Hotels.handlers;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -12,16 +13,19 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.HotelsResult;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.events.HotelSaleEvent;
 import kernitus.plugin.Hotels.events.RoomSaleEvent;
+import kernitus.plugin.Hotels.exceptions.EventCancelledException;
+import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 import kernitus.plugin.Hotels.trade.HotelBuyer;
@@ -289,10 +293,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(Mes.hasPerm(sender, "hotels.rename.admin") || (isPlayer && WorldGuardManager.isOwner((Player) sender, WorldGuardManager.getHotelRegion(world, args[1])))){
 					Hotel hotel = new Hotel(world, args[1]);
 
-					switch(hotel.rename(args[2])){
-					case HOTEL_NON_EXISTENT: sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); break;
-					case SUCCESS: sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , args[2]));
-					default:
+					try {
+						hotel.rename(args[2]);
+						sender.sendMessage(Mes.mes("chat.commands.rename.success").replaceAll("%hotel%" , args[2]));
+					} catch (EventCancelledException e) {
+					} catch (HotelNonExistentException e) {
+						sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent"));
 					}
 				}
 				else
@@ -324,27 +330,32 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(length < 2){ sender.sendMessage(Mes.mes("chat.commands.noHotel")); return false; }
 
+				Hotel hotel;
+
 				if(isPlayer){//Get world from player
 					Player p = (Player) sender;
-					World world = p.getWorld();
-					Hotel hotel = new Hotel(world, args[1]);
+					hotel = new Hotel(p.getWorld(), args[1]);
+				} else 
+					hotel = new Hotel(args[1]);
 
-					if(!hotel.exists()){ p.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return false; }
+				if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent")); return false; }
 
-					if(hotel.isOwner(p.getUniqueId()) || Mes.hasPerm(p, "hotels.delete.admin")){
-						if(Mes.hasPerm(p, "hotels.delete.admin") || !hotel.hasRentedRooms()){
+				if(!isPlayer || (hotel.isOwner(((Player) sender).getUniqueId()) || Mes.hasPerm(sender, "hotels.delete.admin") ) ){
+					if(Mes.hasPerm(sender, "hotels.delete.admin") || !hotel.hasRentedRooms()){
 
-							if(hotel.delete().equals(HotelsResult.SUCCESS))
-								p.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
+						try {
+							hotel.delete();
+							sender.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
+						} catch (EventCancelledException e) {
+						} catch (HotelNonExistentException e) {
+							sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent"));
 						}
-						else
-							p.sendMessage(Mes.mes("chat.commands.deleteHotel.hasRentedRooms"));
 					}
 					else
-						p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
+						sender.sendMessage(Mes.mes("chat.commands.deleteHotel.hasRentedRooms"));
 				}
 				else
-					new Hotel(args[1]).delete();
+					sender.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
 			}
 
 			else if(args[0].equalsIgnoreCase("remove")){
@@ -434,14 +445,24 @@ public class HotelsCommandHandler implements CommandExecutor {
 					if(room.isNotSetup()){ sender.sendMessage(Mes.mes("chat.sign.use.nonExistentRoom")); return false;}
 					if(Mes.hasPerm(p, "hotels.sethome.admin") || WorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
 						room.setDefaultHome(p.getLocation());
-						if(room.saveSignConfig())
+						try {
+							room.saveSignConfig();
 							sender.sendMessage(Mes.mes("chat.commands.sethome.defaultHomeSet"));
+						} catch (IOException e) {
+							sender.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+							e.printStackTrace();
+						}
 					}
 					else { //It's a user doing this
 						if(room.isRenter(p.getUniqueId())){//They are the room renter
 							room.setUserHome(p.getLocation());
-							if(room.saveSignConfig())
+							try {
+								room.saveSignConfig();
 								sender.sendMessage(Mes.mes("chat.commands.sethome.userHomeSet"));
+							} catch (IOException e) {
+								sender.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+								e.printStackTrace();
+							}
 						}
 						else
 							sender.sendMessage(Mes.mes("chat.commands.home.notRenterNoPermission"));
@@ -777,7 +798,13 @@ public class HotelsCommandHandler implements CommandExecutor {
 						.replaceAll("%hotel%", hotel.getName()) );
 
 				room.removeBuyer();
-				room.saveSignConfig();
+				
+				try {
+					room.saveSignConfig();
+				} catch (IOException e) {
+					sender.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+					e.printStackTrace();
+				}
 
 			}
 			else if(args[0].equalsIgnoreCase("roomreset")){
@@ -785,16 +812,26 @@ public class HotelsCommandHandler implements CommandExecutor {
 				//Command to toggle resetting of rooms upon rent expiry
 				Room room = new Room(args[1], args[2]);
 				if(!room.exists()){ sender.sendMessage(Mes.mes("chat.commands.roomNonExistent")); return false; }
-				if(room.toggleShouldReset())
-					sender.sendMessage(Mes.mes("chat.commands.roomreset.enable").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
-				else
-					sender.sendMessage(Mes.mes("chat.commands.roomreset.disable").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
+				try {
+					if(room.toggleShouldReset())
+						sender.sendMessage(Mes.mes("chat.commands.roomreset.enable").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
+					else
+						sender.sendMessage(Mes.mes("chat.commands.roomreset.disable").replaceAll("%hotel%", args[1]).replaceAll("%room%", args[2]));
+				} catch (DataException | IOException | WorldEditException e) {
+					sender.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+					e.printStackTrace();
+				}
 			}
 			else if(args[0].equalsIgnoreCase("resetroom")){
 				if(args.length<3){ sender.sendMessage(Mes.mes("chat.commands.resetroom.usage")); return false; }
 				Room room = new Room(args[1], args[2]);
-				room.resetRoom();
-				sender.sendMessage("Room has been reset");
+				try {
+					room.resetRoom();
+					sender.sendMessage("Room has been reset");
+				} catch (DataException | IOException | WorldEditException e) {
+					sender.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+					e.printStackTrace();
+				}	
 			}
 			//Other argument
 			else

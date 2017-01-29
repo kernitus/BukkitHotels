@@ -29,6 +29,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.events.RoomCreateEvent;
+import kernitus.plugin.Hotels.exceptions.EventCancelledException;
+import kernitus.plugin.Hotels.exceptions.HotelAlreadyPresentException;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
@@ -79,23 +81,23 @@ public class HotelsCreationMode {
 		else{
 			p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid")); return; }
 
-		switch(hotel.create(r)){
-		case HOTEL_ALREADY_PRESENT:
-			p.sendMessage(Mes.mes("chat.commands.create.hotelAlreadyPresent")); break;
-		case SUCCESS:
-			r = hotel.getRegion(); //In case it was modified by the event
-			WorldGuardManager.addOwner(p, r);
-			
-			p.sendMessage(Mes.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", hotel.getName()));
-			ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
+		try{ hotel.create(r); // <- Exception could be thrown here
+		
+		r = hotel.getRegion(); //In case it was modified by the event
+		WorldGuardManager.addOwner(p, r);
+		
+		p.sendMessage(Mes.mes("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", hotel.getName()));
+		ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
 
-			String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
+		String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
 
-			if(!Mes.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
-				p.sendMessage(Mes.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
-			break;
-		default:
+		if(!Mes.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
+			p.sendMessage(Mes.mes("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
 		}
+		catch (HotelAlreadyPresentException e){
+			p.sendMessage(Mes.mes("chat.commands.create.hotelAlreadyPresent")); 
+		}
+		catch (EventCancelledException e){}
 	}
 
 	public static void roomSetup(String hotelName, int roomNum, Player p){
