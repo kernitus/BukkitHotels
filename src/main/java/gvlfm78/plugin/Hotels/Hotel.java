@@ -211,6 +211,8 @@ public class Hotel {
 			room.delete();
 		//Remove Hotel file if existent
 		deleteHotelFile();
+		//Delete hotel region
+		WorldGuardManager.removeRegion(world, getRegion());
 	}
 	public boolean isOwner(UUID uuid){
 		return getOwners().contains(uuid);

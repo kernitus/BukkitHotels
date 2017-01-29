@@ -129,7 +129,7 @@ public class HotelsCreationMode {
 				int minY = sel.getMinimumPoint().getBlockY();
 				int maxY = sel.getMaximumPoint().getBlockY();
 				List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
-				r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room, points, minY, maxY);
+				r = new ProtectedPolygonalRegion("Hotel-"+hotelName+"-"+room.getNum(), points, minY, maxY);
 			}
 			else{
 				p.sendMessage(Mes.mes("chat.creationMode.selectionInvalid")); return; }

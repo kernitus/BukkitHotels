@@ -17,7 +17,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.world.DataException;
@@ -319,7 +319,7 @@ public class Room {
 			File schematicFile = HotelsConfigHandler.getSchematicFileNoExtension(this);
 
 			// Save the region to a schematic file
-			tm.saveTerrain(schematicFile, world, region.getMinimumPoint(), region.getMaximumPoint());
+			tm.saveTerrain(schematicFile, world, region);
 		} else
 			deleteSchematic();
 
@@ -647,8 +647,9 @@ public class Room {
 	public void resetRoom() throws DataException, IOException, WorldEditException{
 		WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		TerrainManager tm = new TerrainManager(wep, world);
-		BlockVector vec = getRegion().getMinimumPoint();
-		Location loc = new Location(world, vec.getX(), vec.getY(), vec.getZ());
+		ProtectedRegion region = getRegion();
+		Vector origin = tm.getOriginFromRegion(tm.getRegionFromProtectedRegion(world, region));
+		Location loc = new Location(world, origin.getX(), origin.getY(), origin.getZ());
 		tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this), loc);
 	}
 

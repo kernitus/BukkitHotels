@@ -342,11 +342,12 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(!isPlayer || (hotel.isOwner(((Player) sender).getUniqueId()) || Mes.hasPerm(sender, "hotels.delete.admin") ) ){
 					if(Mes.hasPerm(sender, "hotels.delete.admin") || !hotel.hasRentedRooms()){
-
 						try {
 							hotel.delete();
 							sender.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
+							
 						} catch (EventCancelledException e) {
+							Mes.debugConsole("Something3");
 						} catch (HotelNonExistentException e) {
 							sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent"));
 						}
