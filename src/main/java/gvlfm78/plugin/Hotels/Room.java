@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -313,8 +312,7 @@ public class Room {
 		if(value){
 			//Create and save schematic file based on room region
 			ProtectedRegion region = getRegion();
-			WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-			TerrainManager tm = new TerrainManager(wep, world);
+			TerrainManager tm = new TerrainManager(world);
 
 			File schematicFile = HotelsConfigHandler.getSchematicFileNoExtension(this);
 
@@ -358,6 +356,7 @@ public class Room {
 			if(Line1.matches("Reception") || Line1.matches(Mes.mesnopre("Sign.reception"))){
 				if(WorldGuardManager.getHotelRegion(world, hotel.getName()).contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()))
 					deleteSignFile();
+				b.setType(Material.AIR);
 			}
 		}
 	}
@@ -645,8 +644,7 @@ public class Room {
 	}
 
 	public void resetRoom() throws DataException, IOException, WorldEditException{
-		WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-		TerrainManager tm = new TerrainManager(wep, world);
+		TerrainManager tm = new TerrainManager(world);
 		ProtectedRegion region = getRegion();
 		Vector origin = tm.getOriginFromRegion(tm.getRegionFromProtectedRegion(world, region));
 		Location loc = new Location(world, origin.getX(), origin.getY(), origin.getZ());

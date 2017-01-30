@@ -10,8 +10,10 @@ public class HotelsFileFinder {
 
 		File directory = new File(dir);
 
-		if(!directory.exists() || !directory.isDirectory())
-			directory.mkdir();
+		if(!directory.exists() || !directory.isDirectory()){
+			Mes.debugConsole("DIrectory donn exiss");
+			directory.mkdirs();
+		}
 
 		//create a FilenameFilter and override its accept-method
 		FilenameFilter filefilter = new FilenameFilter() {

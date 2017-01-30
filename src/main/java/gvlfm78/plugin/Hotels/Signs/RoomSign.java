@@ -84,10 +84,7 @@ public class RoomSign extends AbstractSign{
 		if(id!=null)
 			w = Bukkit.getWorld(id);
 
-		if(w!=null) return w; //Successfully got world from UUID
-
-		//Failed, return null
-		return null;
+		return w;
 	}
 	public Location getLocation(){
 		World world = getWorldFromConfig();

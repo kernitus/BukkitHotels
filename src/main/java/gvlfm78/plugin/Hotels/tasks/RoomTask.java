@@ -15,6 +15,7 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.world.DataException;
 
 import kernitus.plugin.Hotels.Hotel;
+import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.exceptions.BlockNotSignException;
 import kernitus.plugin.Hotels.exceptions.EventCancelledException;
@@ -27,6 +28,12 @@ import kernitus.plugin.Hotels.managers.Mes;
 
 public class RoomTask extends BukkitRunnable {
 
+	HotelsMain plugin;
+	
+	public RoomTask(HotelsMain plugin){
+		this.plugin = plugin;
+	}
+	
 	@Override
 	public void run() {
 
@@ -34,7 +41,7 @@ public class RoomTask extends BukkitRunnable {
 		ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins" + File.separator + "Hotels" + File.separator + "Signs");
 
 		//HashSet to store unique Hotel entries that had at least one of their rooms updated/changed
-		HashSet<Hotel> hotelsThatHadRoomsUpdate = new HashSet<Hotel>();
+		final HashSet<Hotel> hotelsThatHadRoomsUpdate = new HashSet<Hotel>();
 
 		for(String fileName : fileslist){ //Looping through all the files
 			File file = HotelsConfigHandler.getFile("Signs" + File.separator + fileName);
@@ -61,19 +68,29 @@ public class RoomTask extends BukkitRunnable {
 			
 			Room room = new Room(world, hotelName, roomNum); //Creating room object with info from file
 
+			boolean changed = true;
+			
 			try {
 				room.checkRent();
-				hotelsThatHadRoomsUpdate.add(room.getHotel());
+				changed = false;
 			} catch (ValuesNotMatchingException | RoomNonExistentException | BlockNotSignException
 					| RenterNonExistentException | EventCancelledException | IOException | DataException
 					| WorldEditException e) {
 				Mes.debugConsole(e.getMessage());
 			}
+			finally{
+				if(changed)
+				hotelsThatHadRoomsUpdate.add(room.getHotel());
+			}
 		}
-
-		//Update the reception signs for hotels that had their rooms changed
-		for(Hotel hotel : hotelsThatHadRoomsUpdate)
-			hotel.updateReceptionSigns();
+		
+		Bukkit.getScheduler().runTaskLater(plugin, new Runnable () {
+			public void run() {
+				//Update the reception signs for hotels that had their rooms changed
+				for(Hotel hotel : hotelsThatHadRoomsUpdate)
+					hotel.updateReceptionSigns();
+			}
+		},20*10L); //10 seconds after updating rooms we update reception signs to redistribute the lag
 	}
 
 	private World getWorldFromRoomSign(YamlConfiguration config){

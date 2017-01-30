@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -53,13 +54,14 @@ public class TerrainManager {
 	private final WorldEdit we;
 	private final com.sk89q.worldedit.entity.Player localPlayer;
 
-	public TerrainManager(WorldEditPlugin wep, Player player) {
+	public TerrainManager(Player player) {
+		WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		we = wep.getWorldEdit();
 		localPlayer = wep.wrapPlayer(player);
 	}
 
-	public TerrainManager(WorldEditPlugin wep, org.bukkit.World world) {
-		we = wep.getWorldEdit();
+	public TerrainManager(org.bukkit.World world) {
+		we = ((WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit")).getWorldEdit();
 		localPlayer = null;
 	}
 	public void saveTerrain(File saveFile, org.bukkit.World world, Location l1, Location l2) throws DataException, IOException, WorldEditException{
@@ -143,6 +145,7 @@ public class TerrainManager {
 
 		default: throw new RegionOperationException("Region is neither Cuboid or Polygonal");
 		}
+		Mes.debugConsole("Region min is: " + region.getMinimumPoint());
 		return region;
 	}
 	public Vector getOriginFromRegion(Region region) throws RegionOperationException{
@@ -152,6 +155,7 @@ public class TerrainManager {
 		else if(region instanceof Polygonal2DRegion)
 			origin = ((Polygonal2DRegion) region).getPoints().get(0).toVector();
 		else throw new RegionOperationException("Region is neither Cuboid or Polygonal");
+		Mes.debugConsole("Origin IS: " + origin.getBlockX() +" " + origin.getBlockY() + " " + origin.getBlockZ());
 		return origin;
 	}
 	private Vector getMin(Location l1, Location l2) {

@@ -44,7 +44,7 @@ public class HotelsMain extends JavaPlugin{
 		}
 
 		//Room sign checker and updater
-		roomTask = new RoomTask();
+		roomTask = new RoomTask(this);
 		int roomMins = getConfig().getInt("settings.roomTaskTimerMinutes");
 
 		boolean isRoomRunning;
