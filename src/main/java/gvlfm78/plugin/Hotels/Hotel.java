@@ -109,7 +109,7 @@ public class Hotel {
 		ArrayList<ReceptionSign> signs = new ArrayList<ReceptionSign>();
 
 		for(String x : fileList)
-				signs.add(new ReceptionSign(this, x.replace(".yml", "")));
+			signs.add(new ReceptionSign(this, x.replace(".yml", "")));
 		return signs;
 	}
 	public File getHotelFile(){
@@ -122,7 +122,18 @@ public class Hotel {
 		return getRegion().getOwners();
 	}
 	public Location getHome(){
-		return new Location(world, hconfig.getDouble("Hotel.home.x"),hconfig.getDouble("Hotel.home.y"),hconfig.getDouble("Hotel.home.z"),(float) hconfig.getDouble("Hotel.home.yaw"),(float) hconfig.getDouble("Hotel.home.pitch"));
+		if(world == null ||
+				!hconfig.contains("Hotel.home.x", true) ||
+				!hconfig.contains("Hotel.home.y", true) ||
+				!hconfig.contains("Hotel.home.z", true)
+				) return null;
+
+		return new Location(world,
+				hconfig.getDouble("Hotel.home.x"),
+				hconfig.getDouble("Hotel.home.y"),
+				hconfig.getDouble("Hotel.home.z"),
+				(float) hconfig.getDouble("Hotel.home.yaw"),
+				(float) hconfig.getDouble("Hotel.home.pitch"));
 	}
 	public HotelBuyer getBuyer(){
 		return TradesHolder.getBuyerFromHotel(this);
@@ -144,10 +155,10 @@ public class Hotel {
 		HotelRenameEvent hre = new HotelRenameEvent(this, newName);
 		Bukkit.getPluginManager().callEvent(hre);
 		newName = hre.getNewName(); //In case it was modified by the event
-		
+
 		if(hre.isCancelled()) throw new EventCancelledException();
 		if(!exists()) throw new HotelNonExistentException();
-		
+
 		//Rename rooms
 		ArrayList<Room> rooms = getRooms();
 
@@ -165,7 +176,7 @@ public class Hotel {
 			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name)));
 		if(Mes.flagValue("hotel.map-making.FAREWELL") != null)
 			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name)));
-		
+
 		updateReceptionSigns();
 	}
 	public void removeAllSigns(){
@@ -203,7 +214,7 @@ public class Hotel {
 		Bukkit.getPluginManager().callEvent(hde);
 		if(hde.isCancelled()) throw new EventCancelledException();
 		if(!exists()) throw new HotelNonExistentException();
-		
+
 		//Remove all reception signs and files
 		deleteAllReceptionSigns();
 		//Remove all rooms including regions, signs and files
@@ -224,13 +235,13 @@ public class Hotel {
 		HotelCreateEvent hce = new HotelCreateEvent(this, region);
 		Bukkit.getPluginManager().callEvent(hce); //Call HotelCreateEvent
 		if(hce.isCancelled()) throw new EventCancelledException();
-		
+
 		//In case a listener modified this stuff
 		world = hce.getWorld();
 		name = hce.getName();
 		region = hce.getRegion();
 		if(WorldGuardManager.doHotelRegionsOverlap(region, world)) throw new HotelAlreadyPresentException();
-		
+
 		WorldGuardManager.addRegion(world, region);
 		WorldGuardManager.hotelFlags(region, name, world);
 		region.setPriority(5);

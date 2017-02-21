@@ -145,7 +145,7 @@ public class TerrainManager {
 
 		default: throw new RegionOperationException("Region is neither Cuboid or Polygonal");
 		}
-		Mes.debugConsole("Region min is: " + region.getMinimumPoint());
+		Mes.debug("Region min is: " + region.getMinimumPoint());
 		return region;
 	}
 	public Vector getOriginFromRegion(Region region) throws RegionOperationException{
@@ -155,7 +155,7 @@ public class TerrainManager {
 		else if(region instanceof Polygonal2DRegion)
 			origin = ((Polygonal2DRegion) region).getPoints().get(0).toVector();
 		else throw new RegionOperationException("Region is neither Cuboid or Polygonal");
-		Mes.debugConsole("Origin IS: " + origin.getBlockX() +" " + origin.getBlockY() + " " + origin.getBlockZ());
+		Mes.debug("Origin IS: " + origin.getBlockX() +" " + origin.getBlockY() + " " + origin.getBlockZ());
 		return origin;
 	}
 	private Vector getMin(Location l1, Location l2) {

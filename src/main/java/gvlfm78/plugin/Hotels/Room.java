@@ -164,11 +164,33 @@ public class Room {
 	}
 	public Location getDefaultHome(){
 		World world = getWorldFromConfig();
-		return (world == null || !sconfig.contains("Sign.defaultHome", true)) ? null : new Location(world,sconfig.getDouble("Sign.defaultHome.x"),sconfig.getDouble("Sign.defaultHome.y"),sconfig.getDouble("Sign.defaultHome.z"),(float) sconfig.getDouble("Sign.defaultHome.yaw"),(float) sconfig.getDouble("Sign.defaultHome.pitch"));
+		if(world == null ||
+			!sconfig.contains("Sign.defaultHome.x") ||
+			!sconfig.contains("Sign.defaultHome.y") ||
+			!sconfig.contains("Sign.defaultHome.z")
+				) return null;
+		
+		return new Location(world,
+				sconfig.getDouble("Sign.defaultHome.x"),
+				sconfig.getDouble("Sign.defaultHome.y"),
+				sconfig.getDouble("Sign.defaultHome.z"),
+				(float) sconfig.getDouble("Sign.defaultHome.yaw"),
+				(float) sconfig.getDouble("Sign.defaultHome.pitch"));
 	}
 	public Location getUserHome(){
 		World world = getWorldFromConfig();
-		return (world == null || !sconfig.contains("Sign.userHome", true)) ? null : new Location(world,sconfig.getDouble("Sign.userHome.x"),sconfig.getDouble("Sign.userHome.y"),sconfig.getDouble("Sign.userHome.z"),(float) sconfig.getDouble("Sign.userHome.yaw"),(float) sconfig.getDouble("Sign.userHome.pitch"));
+		if(world == null ||
+				!sconfig.contains("Sign.userHome.x") ||
+				!sconfig.contains("Sign.userHome.y") ||
+				!sconfig.contains("Sign.userHome.z")
+					) return null;
+		
+		return new Location(world,
+				sconfig.getDouble("Sign.userHome.x"),
+				sconfig.getDouble("Sign.userHome.y"),
+				sconfig.getDouble("Sign.userHome.z"),
+				(float) sconfig.getDouble("Sign.userHome.yaw"),
+				(float) sconfig.getDouble("Sign.userHome.pitch"));
 	}
 	public int getTimesExtended(){
 		return sconfig.getInt("Sign.extended");
@@ -616,7 +638,7 @@ public class Room {
 			region.setPriority(1);
 		}
 
-		Mes.debugConsole(Mes.mesnopre("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
+		Mes.debug(Mes.mesnopre("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
 
 		if(p.isOnline())
 			( (Player) p).sendMessage(Mes.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
@@ -656,7 +678,7 @@ public class Room {
 		File file = getSignFile();
 		if(!exists()){
 			file.delete();
-			Mes.debugConsole("Room sign " + file.getName() + " was deleted as the room doesn't exist");
+			Mes.debug("Room sign " + file.getName() + " was deleted as the room doesn't exist");
 			throw new RoomNonExistentException();
 		}
 
@@ -664,16 +686,16 @@ public class Room {
 
 		if(!isBlockAtSignLocationSign()){
 			file.delete();//If block is not a sign, delete it
-			Mes.debugConsole(Mes.mesnopre("sign.delete.location").replaceAll("%filename%", file.getName()));
+			Mes.debug(Mes.mesnopre("sign.delete.location").replaceAll("%filename%", file.getName()));
 			throw new BlockNotSignException();
 		}
 
 		String hotelName = getHotel().getName();
 
-		Sign sign = (Sign) signBlock.getState(); //Getting sign object
+		Sign sign = (Sign) signBlock.getState();
 		if(!hotelName.equalsIgnoreCase(ChatColor.stripColor(sign.getLine(0)))){//If hotelName on sign doesn't match that in config
 			file.delete();
-			Mes.debugConsole(Mes.mesnopre("sign.delete.hotelName").replaceAll("%filename%", file.getName()));
+			Mes.debug(Mes.mesnopre("sign.delete.hotelName").replaceAll("%filename%", file.getName()));
 			throw new ValuesNotMatchingException();
 		}
 
@@ -681,7 +703,7 @@ public class Room {
 		int roomNumfromSign = Integer.valueOf(Line2parts[1].trim()); //Room Number 
 		if(getRoomNumFromConfig()!=roomNumfromSign){ //If roomNum on sign doesn't match that in config
 			file.delete();
-			Mes.debugConsole(Mes.mesnopre("sign.delete.roomNum").replaceAll("%filename%", file.getName()));
+			Mes.debug(Mes.mesnopre("sign.delete.roomNum").replaceAll("%filename%", file.getName()));
 			throw new ValuesNotMatchingException();
 		}
 
@@ -690,8 +712,8 @@ public class Room {
 
 			long expiryDate = getExpiryMinute();
 			if(expiryDate==0) return; //Rent is permanent
-			if(expiryDate > (System.currentTimeMillis()/1000/60))//If rent has not expired, update time remaining on sign
-				updateSign();
+			if(expiryDate > (System.currentTimeMillis()/1000/60)){//If rent has not expired, update time remaining on sign
+				updateSign(); return; }
 			else{//Rent has expired
 				if(!isRented()) throw new RenterNonExistentException();  //Rent expired but there's no renter, something went wrong, just quit
 				unrent();

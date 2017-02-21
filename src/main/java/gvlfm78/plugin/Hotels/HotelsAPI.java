@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
@@ -43,7 +45,7 @@ public class HotelsAPI {
 			if(hotel.isOwner(uuid))
 				owned.add(hotel);
 		}
-		
+
 		return owned;
 	}
 	public static ArrayList<Room> getRoomsRentedBy(UUID uuid){
@@ -68,5 +70,72 @@ public class HotelsAPI {
 	}
 	public static int getHotelCount(){
 		return getAllHotels().size();
+	}
+	public static Hotel getHotelAtLocation(Location loc){
+		World w = loc.getWorld();
+		//Get all regions that contain this location point
+		ApplicableRegionSet regions = WorldGuardManager.getRM(w).getApplicableRegions(loc);
+
+		for(ProtectedRegion r : regions){
+			String ID = r.getId();
+			String hotelName = ID.replaceFirst("hotel-", "").replaceAll("-\\d+", "");
+			Hotel hotel = new Hotel(w, hotelName);
+
+			if(hotel.exists()) return hotel;
+		}
+		return null;
+	}
+	public static Room getRoomAtLocation(Location loc){
+		World w = loc.getWorld();
+		//Get all regions that contain this location point
+		ApplicableRegionSet regions = WorldGuardManager.getRM(w).getApplicableRegions(loc);
+
+		for(ProtectedRegion r : regions){
+			String ID = r.getId();
+			String hotelName = ID.replaceFirst("hotel-", "").replaceAll("-\\d+", "");
+			Hotel hotel = new Hotel(w, hotelName);
+
+			if(!hotel.exists()) continue;
+
+			String roomNum = ID.replaceFirst("\\w+-\\w*-", "");
+
+			try{
+				Integer.parseInt(roomNum);
+			}
+			catch(NumberFormatException e){
+				continue;
+			}
+
+			Room room = new Room(w, hotelName, roomNum);
+
+			if(room.exists())
+				return room;
+		}
+		return null;
+	}
+	public static Room getRoomAtLocation(Location loc, String hotelName){
+		World w = loc.getWorld();
+		//Get all regions that contain this location point
+		ApplicableRegionSet regions = WorldGuardManager.getRM(w).getApplicableRegions(loc);
+
+		for(ProtectedRegion r : regions){
+			String ID = r.getId();
+			if(!ID.startsWith("hotel-" + hotelName)) continue;
+
+			String roomNum = ID.replaceFirst("\\w+-\\w*-", "");
+
+			try{
+				Integer.parseInt(roomNum);
+			}
+			catch(NumberFormatException e){
+				continue;
+			}
+
+			Room room = new Room(w, hotelName, roomNum);
+
+			if(room.exists())
+				return room;
+		}
+		return null;
 	}
 }

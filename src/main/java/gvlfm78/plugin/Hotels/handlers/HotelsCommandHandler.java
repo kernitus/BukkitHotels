@@ -15,10 +15,9 @@ import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.Hotel;
+import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
@@ -345,9 +344,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 						try {
 							hotel.delete();
 							sender.sendMessage(Mes.mes("chat.commands.removeSigns.success"));
-							
+
 						} catch (EventCancelledException e) {
-							Mes.debugConsole("Something3");
+							Mes.debug("Something");
 						} catch (HotelNonExistentException e) {
 							sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent"));
 						}
@@ -411,40 +410,30 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				Location loc = p.getLocation();
 				World w = p.getWorld();
-				ApplicableRegionSet regions = WorldGuardManager.getRM(w).getApplicableRegions(loc);
 
-				if(regions.size()<=0){ sender.sendMessage(Mes.mes("chat.commands.sethome.notInHotelRegion")); return false; }
+				Hotel hotel = HotelsAPI.getHotelAtLocation(loc);
 
-				Hotel hotel = null;
-				Room room = null;
+				if(hotel==null){ sender.sendMessage(Mes.mes("chat.commands.sethome.notInHotelRegion")); return false; }
 
-				for(ProtectedRegion r : regions){
-					String ID = r.getId();
-					String hotelName = ID.replaceFirst("hotel-", "").replaceAll("-\\d+", "");
-					Hotel hotelFound = new Hotel(p.getWorld(), hotelName);
-
-					if(!hotelFound.exists())
-						continue;
-
-					hotel = hotelFound;
-
-					String roomNum = ID.replaceFirst("\\w+-\\w*-", "");
-
-					try{
-						Integer.parseInt(roomNum);
-					}
-					catch(NumberFormatException e){
-						continue;
-					}
-					Room roomFound = new Room(p.getWorld(), hotelName, roomNum);
-
-					if(roomFound.exists())//Player in room region
-						room = roomFound;
-				}
+				Room room = HotelsAPI.getRoomAtLocation(loc, hotel.getName());
 
 				if(room!=null){//They're in a room region
+
 					if(room.isNotSetup()){ sender.sendMessage(Mes.mes("chat.sign.use.nonExistentRoom")); return false;}
-					if(Mes.hasPerm(p, "hotels.sethome.admin") || WorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
+
+					//If they are the renter set user home
+					if(room.isRenter(p.getUniqueId())){
+						room.setUserHome(p.getLocation());
+
+						try {
+							room.saveSignConfig();
+							sender.sendMessage(Mes.mes("chat.commands.sethome.userHomeSet"));
+						} catch (IOException e) {
+							sender.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+							e.printStackTrace();
+						}
+					} //If they aren't renter but are hotel owner set default home
+					else if(Mes.hasPerm(p, "hotels.sethome.admin") || WorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
 						room.setDefaultHome(p.getLocation());
 						try {
 							room.saveSignConfig();
@@ -454,34 +443,18 @@ public class HotelsCommandHandler implements CommandExecutor {
 							e.printStackTrace();
 						}
 					}
-					else { //It's a user doing this
-						if(room.isRenter(p.getUniqueId())){//They are the room renter
-							room.setUserHome(p.getLocation());
-							try {
-								room.saveSignConfig();
-								sender.sendMessage(Mes.mes("chat.commands.sethome.userHomeSet"));
-							} catch (IOException e) {
-								sender.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
-								e.printStackTrace();
-							}
-						}
-						else
-							sender.sendMessage(Mes.mes("chat.commands.home.notRenterNoPermission"));
-					}
+					else sender.sendMessage(Mes.mes("chat.commands.home.notRenterNoPermission"));
 				}
-				else if(hotel!=null){//They're just in a hotel region
-					if(Mes.hasPerm(p, "hotels.sethome.admin") || WorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
 
-						hotel.setHome(p.getLocation());
+				else { //They're just in a hotel region
+					if(!Mes.hasPerm(p, "hotels.sethome.admin") && !WorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
+						sender.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return false; }
 
-						if(hotel.saveHotelConfig())
-							sender.sendMessage(Mes.mes("chat.commands.sethome.hotelHomeSet"));
-					}
-					else
-						sender.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));
+					hotel.setHome(p.getLocation());
+
+					if(hotel.saveHotelConfig())
+						sender.sendMessage(Mes.mes("chat.commands.sethome.hotelHomeSet"));
 				}
-				else
-					sender.sendMessage(Mes.mes("chat.commands.sethome.notInHotelRegion"));
 			}
 
 			else if(args[0].equalsIgnoreCase("home") || args[0].equalsIgnoreCase("hm")){
@@ -521,7 +494,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				else{
 					Hotel hotel = new Hotel(w,args[1]);
 
-					if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.home.regionNotFound")); return false;	}
+					if(!hotel.exists()){ sender.sendMessage(Mes.mes("chat.commands.home.regionNotFound")); return false; }
 					Location loc = hotel.getHome();
 
 					if(loc!=null)
@@ -799,7 +772,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 						.replaceAll("%hotel%", hotel.getName()) );
 
 				room.removeBuyer();
-				
+
 				try {
 					room.saveSignConfig();
 				} catch (IOException e) {

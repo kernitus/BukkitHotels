@@ -47,7 +47,7 @@ public class RoomTask extends BukkitRunnable {
 			File file = HotelsConfigHandler.getFile("Signs" + File.separator + fileName);
 			if(!fileName.matches("\\w+-\\d+.yml")){ file.delete(); continue; }//Delete all non-room signs in folder
 
-			Mes.debugConsole("Checking room sign: " + file.getAbsolutePath());
+			Mes.debug("Checking room sign: " + file.getAbsolutePath());
 
 			//Getting information directly out of the file
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -76,7 +76,7 @@ public class RoomTask extends BukkitRunnable {
 			} catch (ValuesNotMatchingException | RoomNonExistentException | BlockNotSignException
 					| RenterNonExistentException | EventCancelledException | IOException | DataException
 					| WorldEditException e) {
-				Mes.debugConsole(e.getMessage());
+				Mes.debug(e.getMessage());
 			}
 			finally{
 				if(changed)
