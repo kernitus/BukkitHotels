@@ -165,11 +165,11 @@ public class Room {
 	public Location getDefaultHome(){
 		World world = getWorldFromConfig();
 		if(world == null ||
-			!sconfig.contains("Sign.defaultHome.x") ||
-			!sconfig.contains("Sign.defaultHome.y") ||
-			!sconfig.contains("Sign.defaultHome.z")
+				!sconfig.contains("Sign.defaultHome.x") ||
+				!sconfig.contains("Sign.defaultHome.y") ||
+				!sconfig.contains("Sign.defaultHome.z")
 				) return null;
-		
+
 		return new Location(world,
 				sconfig.getDouble("Sign.defaultHome.x"),
 				sconfig.getDouble("Sign.defaultHome.y"),
@@ -183,8 +183,8 @@ public class Room {
 				!sconfig.contains("Sign.userHome.x") ||
 				!sconfig.contains("Sign.userHome.y") ||
 				!sconfig.contains("Sign.userHome.z")
-					) return null;
-		
+				) return null;
+
 		return new Location(world,
 				sconfig.getDouble("Sign.userHome.x"),
 				sconfig.getDouble("Sign.userHome.y"),
@@ -375,7 +375,7 @@ public class Room {
 		if(mat.equals(Material.WALL_SIGN) || mat.equals(Material.SIGN_POST)){
 			Sign s = (Sign) b.getState();
 			String Line1 = ChatColor.stripColor(s.getLine(0));
-			if(Line1.matches("Reception") || Line1.matches(Mes.mesnopre("Sign.reception"))){
+			if(Line1.equalsIgnoreCase(hotel.getName())){
 				if(WorldGuardManager.getHotelRegion(world, hotel.getName()).contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()))
 					deleteSignFile();
 				b.setType(Material.AIR);
@@ -471,8 +471,6 @@ public class Room {
 
 		if(s==null) return;
 
-		long currentMins = System.currentTimeMillis()/1000/60;
-
 		long remainingTime;
 
 		if(isFree()){
@@ -480,7 +478,7 @@ public class Room {
 			s.setLine(3, ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
 		}
 		else{
-			remainingTime = getExpiryMinute() - currentMins;
+			remainingTime = getExpiryMinute() - (System.currentTimeMillis()/1000/60);
 			s.setLine(3, ChatColor.DARK_RED + getRenter().getName());
 		}
 
@@ -496,43 +494,6 @@ public class Room {
 		s.setLine(2, formattedRemainingTime);
 
 		s.update();
-	}
-
-	public void removePlayer(OfflinePlayer playerToRemove) throws HotelNonExistentException, WorldNonExistentException, UserNonExistentException, RoomNonExistentException, NotRentedException, IOException, EventCancelledException{
-		if(world==null) throw new WorldNonExistentException();
-
-		if(!hotel.exists()) throw new HotelNonExistentException();
-
-		if(!exists()) throw new RoomNonExistentException();
-
-		if(!playerToRemove.hasPlayedBefore()) throw new UserNonExistentException();
-
-		if(isFree()) throw new NotRentedException();
-
-		ProtectedRegion r = getRegion();
-		WorldGuardManager.removeMember(playerToRemove, r);
-
-		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
-			r.setFlag(DefaultFlag.BLOCK_BREAK, null);
-			r.setFlag(DefaultFlag.BLOCK_PLACE, null);
-			r.setPriority(1);
-		}
-
-		//Config stuff
-		sconfig.set("Sign.renter", null);
-		sconfig.set("Sign.timeRentedAt", null);
-		sconfig.set("Sign.expiryDate", null);
-		sconfig.set("Sign.friends", null);
-		sconfig.set("Sign.extended", null);
-		sconfig.set("Sign.userHome", null);
-		saveSignConfig();
-
-		updateSign();
-
-		getHotel().updateReceptionSigns();
-
-		//Make free room accessible to all players if set in config
-		WorldGuardManager.makeRoomAccessible(r);
 	}
 
 	public void renameRoom(String newHotelName){
@@ -579,7 +540,7 @@ public class Room {
 		saveSignConfig();
 	}
 
-	public void delete() throws EventCancelledException{
+	public void delete() throws EventCancelledException {
 		RoomDeleteEvent rde = new RoomDeleteEvent(this);
 		Bukkit.getPluginManager().callEvent(rde);
 		if(rde.isCancelled()) throw new EventCancelledException();
@@ -606,12 +567,19 @@ public class Room {
 		p.sendMessage(Mes.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
 	}
 
-	public void unrent() throws IOException, BlockNotSignException, DataException, WorldEditException, EventCancelledException {
+	public void unrent() throws IOException, BlockNotSignException, DataException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, RoomNonExistentException, NotRentedException {
+		if(world==null) throw new WorldNonExistentException();
+
+		if(!hotel.exists()) throw new HotelNonExistentException();
+
+		if(!exists()) throw new RoomNonExistentException();
+
+		if(isFree()) throw new NotRentedException();
+
 		ProtectedRegion region = getRegion();
 		String hotelName = getHotel().getName();
 
 		if(!isBlockAtSignLocationSign()) throw new BlockNotSignException();
-		Sign sign = (Sign) getBlockAtSignLocation().getState();
 
 		OfflinePlayer p = getRenter(); //Getting renter
 		List<String> friendList = getFriendsList(); //Getting friend list
@@ -655,11 +623,7 @@ public class Room {
 
 		saveSignConfig();
 
-		//Setting sign to say "Vacant"
-		sign.setLine(3, ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
-		//Resetting time on sign to default
-		sign.setLine(2, SignManager.TimeFormatter(sconfig.getLong("Sign.time")));
-		sign.update();
+		updateSign();
 
 		if(getShouldReset())
 			resetRoom();
@@ -673,7 +637,7 @@ public class Room {
 		tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this), loc);
 	}
 
-	public void checkRent() throws IOException, ValuesNotMatchingException, RoomNonExistentException, BlockNotSignException, RenterNonExistentException, DataException, WorldEditException, EventCancelledException {
+	public void checkRent() throws IOException, ValuesNotMatchingException, RoomNonExistentException, BlockNotSignException, RenterNonExistentException, DataException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, NotRentedException {
 		//Checks if rent has expired, if so unrents
 		File file = getSignFile();
 		if(!exists()){

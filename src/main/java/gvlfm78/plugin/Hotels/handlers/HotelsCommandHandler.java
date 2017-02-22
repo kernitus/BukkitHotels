@@ -225,34 +225,28 @@ public class HotelsCommandHandler implements CommandExecutor {
 					sender.sendMessage(Mes.mes("chat.noPermission"));
 			}
 			else if(args[0].equalsIgnoreCase("hotelslist") || args[0].equalsIgnoreCase("hlist") || args[0].equalsIgnoreCase("list")){
-				if(Mes.hasPerm(sender, "hotels.list.hotels")){
-					if(length<2 && isPlayer){
-						World w = ((Player) sender).getWorld();
-						HCE.listHotels(w,sender);
-					}
-					else if(length>1){
-						World w = Bukkit.getWorld(args[1]);
-						if(w!=null)
-							HCE.listHotels(w,sender);
-						else
-							sender.sendMessage(Mes.mes("chat.commands.worldNonExistent"));
-					}
-					else
-						sender.sendMessage(Mes.mes("chat.commands.noWorld"));
-				}
+				if(!Mes.hasPerm(sender, "hotels.list.hotels")){ sender.sendMessage(Mes.mes("chat.noPermission")); return false; }
+
+				World w = null;
+
+				if(length<2 && isPlayer)
+					w = ((Player) sender).getWorld();
+				else if(length>1)
+					w = Bukkit.getWorld(args[1]);
 				else
-					sender.sendMessage(Mes.mes("chat.noPermission"));
+					sender.sendMessage(Mes.mes("chat.commands.noWorld"));
+
+				if(w!=null)
+					HCE.listHotels(w,sender);
+				else
+					sender.sendMessage(Mes.mes("chat.commands.worldNonExistent"));				
 			}
 			else if(args[0].equalsIgnoreCase("deleteroom") || args[0].equalsIgnoreCase("delr")){
 				if(Mes.hasPerm(sender, "hotels.delete.rooms")){
 
 					if(length<3){ sender.sendMessage(Mes.mes("chat.commands.deleteRoom.usage")); return false; }
 
-					World world;
-					if(isPlayer && length!=4)
-						world = ((Player) sender).getWorld();
-					else
-						world = Bukkit.getWorld(args[3]);
+					World world = (isPlayer && length!=4) ? ((Player) sender).getWorld() : Bukkit.getWorld(args[3]);
 
 					String hotelName = args[1];
 					String roomNum = args[2];

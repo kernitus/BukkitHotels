@@ -19,9 +19,12 @@ import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.exceptions.BlockNotSignException;
 import kernitus.plugin.Hotels.exceptions.EventCancelledException;
+import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
+import kernitus.plugin.Hotels.exceptions.NotRentedException;
 import kernitus.plugin.Hotels.exceptions.RenterNonExistentException;
 import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
 import kernitus.plugin.Hotels.exceptions.ValuesNotMatchingException;
+import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.managers.HotelsFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
@@ -63,7 +66,9 @@ public class RoomTask extends BukkitRunnable {
 				roomNum = Integer.parseInt(roomNumString);
 			}
 			catch(Exception e){
-				file.delete(); continue; //TODO add debug messages so we know why it was deleted
+				file.delete();
+				Mes.debug(e.getMessage());
+				continue;
 			}
 			
 			Room room = new Room(world, hotelName, roomNum); //Creating room object with info from file
@@ -75,7 +80,7 @@ public class RoomTask extends BukkitRunnable {
 				changed = false;
 			} catch (ValuesNotMatchingException | RoomNonExistentException | BlockNotSignException
 					| RenterNonExistentException | EventCancelledException | IOException | DataException
-					| WorldEditException e) {
+					| WorldEditException | WorldNonExistentException | HotelNonExistentException | NotRentedException e) {
 				Mes.debug(e.getMessage());
 			}
 			finally{

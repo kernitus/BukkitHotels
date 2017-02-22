@@ -24,11 +24,7 @@ public class Mes {
 
 	public static String mesnopre(String path){
 		String mes = HotelsConfigHandler.getLocale().getString(path);
-		if(mes!=null)
-			mes = ChatColor.translateAlternateColorCodes('&', mes);
-		else
-			mes = "Message " + path + " is null!";
-		return mes;
+		return mes!=null ? ChatColor.translateAlternateColorCodes('&', mes) : "Message " + path + " is null!";
 	}
 	public static boolean hasPerm(CommandSender sender, String perm){
 		return sender instanceof Player ? hasPerm( ( (Player) sender), perm) : true;

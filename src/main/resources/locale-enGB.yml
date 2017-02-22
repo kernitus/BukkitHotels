@@ -346,6 +346,6 @@ chat:
       success: '&aYou have just bought room %room% of the %hotel% hotel from %seller% for $%price%'
       
     roomreset:
-      enable: '&aThe room %room% of the %hotel% hotel will now reset on rent expiry'
+      enable: '&9The room %room% of the %hotel% hotel &3will now reset on rent expiry'
       disable: '&cThe room %room% of the %hotel% hotel will no longer reset on rent expiry'
       usage: '&4Correct usage: &6&o/ht roomreset <hotelName> <roomNum>'

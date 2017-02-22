@@ -14,6 +14,9 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.world.DataException;
+
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsCreationMode;
@@ -250,6 +253,7 @@ public class HotelsCommandExecutor {
 
 		try {
 			room.removeFriend(friend);
+			player.sendMessage(Mes.mes("chat.commands.friend.removeSuccess").replaceAll("%friend%", friend.getName()));
 		} catch (NotRentedException e) {
 			player.sendMessage(Mes.mes("chat.commands.friend.noRenter"));
 		} catch (FriendNotFoundException e) {
@@ -350,20 +354,22 @@ public class HotelsCommandExecutor {
 			sender.sendMessage(Mes.mes("chat.commands.remove.playerNotRenter")); return; }
 
 		try {
-			room.removePlayer(player);
+			room.unrent();
 			sender.sendMessage(Mes.mes("chat.commands.remove.success").replaceAll("%player%", toRemovePlayer).replaceAll("%room%", roomNum).replaceAll("%hotel%", hotelName));
 		} catch (HotelNonExistentException e) {
 			sender.sendMessage(Mes.mes("chat.commands.hotelNonExistent"));
 		} catch (WorldNonExistentException e) {
 			sender.sendMessage(Mes.mes("chat.commands.worldNonExistent"));
-		} catch (UserNonExistentException e) {
-			sender.sendMessage(Mes.mes("chat.commands.userNonExistent"));
 		} catch (RoomNonExistentException e) {
 			sender.sendMessage(Mes.mes("chat.commands.roomNonExistent"));
 		} catch (NotRentedException e) {
 			sender.sendMessage(Mes.mes("chat.commands.remove.noRenter"));
 		} catch (EventCancelledException e) {
-		} catch (IOException e) {
+			//Event was cancelled, don't do anything
+		} catch (BlockNotSignException e) {
+			sender.sendMessage(Mes.mes("chat.commands.rent.invalidLocation"));
+			e.printStackTrace();
+		} catch (IOException | DataException | WorldEditException e) {
 			sender.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
 			e.printStackTrace();
 		}
