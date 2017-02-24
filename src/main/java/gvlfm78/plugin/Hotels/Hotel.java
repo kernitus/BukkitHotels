@@ -173,9 +173,9 @@ public class Hotel {
 		ProtectedRegion r = getRegion();
 
 		if(Mes.flagValue("hotel.map-making.GREETING").equalsIgnoreCase("true"))
-			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name)));
+			r.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.getStringNoPrefix("message.hotel.enter").replaceAll("%hotel%", name)));
 		if(Mes.flagValue("hotel.map-making.FAREWELL") != null)
-			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name)));
+			r.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.getStringNoPrefix("message.hotel.exit").replaceAll("%hotel%", name)));
 
 		updateReceptionSigns();
 	}

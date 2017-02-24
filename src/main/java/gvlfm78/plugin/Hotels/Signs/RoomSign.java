@@ -53,7 +53,7 @@ public class RoomSign extends AbstractSign{
 			s.setLine(2, SignManager.TimeFormatter(room.getExpiryMinute()-System.currentTimeMillis()/1000/60));
 		else{
 			s.setLine(2, SignManager.TimeFormatter(room.getTime()));
-			s.setLine(3, ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
+			s.setLine(3, ChatColor.GREEN + Mes.getStringNoPrefix("sign.vacant"));
 		}
 		s.update();
 	}

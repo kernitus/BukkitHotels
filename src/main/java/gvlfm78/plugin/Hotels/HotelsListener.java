@@ -47,7 +47,7 @@ public class HotelsListener implements Listener {
 			}
 			else{
 				//No permission
-				p.sendMessage(Mes.mes("chat.noPermission")); 
+				Mes.mes(p, "chat.noPermission"); 
 				e.setLine(0, ChatColor.DARK_RED + e.getLine(0));
 			}
 		}
@@ -65,7 +65,7 @@ public class HotelsListener implements Listener {
 				if(Mes.hasPerm(p, "hotels.sign.use"))
 					SM.useRoomSign(e);
 				else
-					p.sendMessage(Mes.mes("chat.noPermission")); 
+					Mes.mes(p, "chat.noPermission"); 
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class HotelsListener implements Listener {
 
 		//Exiting them from creation mode
 		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
-			p.sendMessage(Mes.mes("chat.commands.creationMode.exit"));
+			Mes.mes(p, "chat.commands.creationMode.exit");
 			HotelsCreationMode.loadInventory(p);
 		}
 	}
@@ -103,7 +103,7 @@ public class HotelsListener implements Listener {
 		Player p = e.getPlayer();
 		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
 			e.setCancelled(true);
-			p.sendMessage(Mes.mes("chat.creationMode.deniedAction"));
+			Mes.mes(p, "chat.creationMode.deniedAction");
 		}
 	}
 	//When a player tries to pickup an item/block
@@ -112,7 +112,7 @@ public class HotelsListener implements Listener {
 		Player p = e.getPlayer();
 		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
 			e.setCancelled(true);
-			p.sendMessage(Mes.mes("chat.creationMode.deniedAction"));
+			Mes.mes(p, "chat.creationMode.deniedAction");
 		}
 	}
 	@EventHandler
@@ -121,7 +121,7 @@ public class HotelsListener implements Listener {
 		if(Mes.hasPerm(p, "hotels.createmode.admin")){
 			if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
 				e.setCancelled(true);
-				p.sendMessage(Mes.mes("chat.creationMode.deniedAction"));
+				Mes.mes(p, "chat.creationMode.deniedAction");
 			}
 		}
 	}

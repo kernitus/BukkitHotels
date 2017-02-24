@@ -34,10 +34,10 @@ public class ReceptionSign extends AbstractSign {
 
 		if(s==null) return;
 		
-		s.setLine(0, (ChatColor.GREEN + Mes.mesnopre("sign.reception")));
+		s.setLine(0, (ChatColor.GREEN + Mes.getStringNoPrefix("sign.reception")));
 		s.setLine(1, (ChatColor.DARK_BLUE + hotel.getName() + " Hotel"));
-		s.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(hotel.getTotalRoomCount()) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.total")));
-		s.setLine(3, (ChatColor.GREEN + String.valueOf(hotel.getFreeRoomCount()) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.free")));
+		s.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(hotel.getTotalRoomCount()) + ChatColor.BLACK + " " + Mes.getStringNoPrefix("sign.room.total")));
+		s.setLine(3, (ChatColor.GREEN + String.valueOf(hotel.getFreeRoomCount()) + ChatColor.BLACK + " " + Mes.getStringNoPrefix("sign.room.free")));
 
 		s.update();
 	}
@@ -100,7 +100,7 @@ public class ReceptionSign extends AbstractSign {
 
 		if(s!=null){
 			String Line1 = ChatColor.stripColor(s.getLine(0));
-			if(Line1.matches("Reception") || Line1.matches(Mes.mesnopre("Sign.reception"))){
+			if(Line1.matches("Reception") || Line1.matches(Mes.getStringNoPrefix("Sign.reception"))){
 				if(hotel.getRegion().contains(b.getX(), b.getY(), b.getZ()))
 					b.setType(Material.AIR);
 			}

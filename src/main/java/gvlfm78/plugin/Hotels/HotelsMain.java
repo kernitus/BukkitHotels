@@ -36,12 +36,10 @@ public class HotelsMain extends JavaPlugin{
 		getCommand("Hotels").setExecutor(new HotelsCommandHandler(this));//Firing commands listener
 		setupEconomy();
 		//Economy and stuff
-		if (!setupEconomy()){
+		if (!setupEconomy())
 			//If economy is turned on
 			//but no vault is found it will warn the user
-			String message = Mes.mesnopre("main.enable.noVault");
-			getLogger().severe(message);
-		}
+			getLogger().severe(Mes.getStringNoPrefix("main.enable.noVault"));
 
 		//Room sign checker and updater
 		roomTask = new RoomTask(this);
@@ -61,7 +59,7 @@ public class HotelsMain extends JavaPlugin{
 		}
 
 		//Logging to console the correct enabling of Hotels
-		getLogger().info(Mes.mesnopre("main.enable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
+		getLogger().info(Mes.getStringNoPrefix("main.enable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 		//Metrics
 		try {
 			Metrics metrics = new Metrics(this);
@@ -200,7 +198,7 @@ public class HotelsMain extends JavaPlugin{
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Logging to console the disabling of Hotels
-		getLogger().info(Mes.mesnopre("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
+		getLogger().info(Mes.getStringNoPrefix("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 	}
 
 	@Override

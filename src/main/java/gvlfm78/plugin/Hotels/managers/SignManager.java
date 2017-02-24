@@ -50,14 +50,14 @@ public class SignManager {
 		String hotelName = ChatColor.stripColor(e.getLine(1)).trim();
 		if(hotelName.isEmpty()){
 			e.setLine(0, (ChatColor.DARK_RED+"[Hotels]"));
-			p.sendMessage(Mes.mes("chat.sign.place.emptySign"));
+			Mes.mes(p, "chat.sign.place.emptySign");
 			return;
 		}
 		World world = p.getWorld();
 		Hotel hotel = new Hotel(world,hotelName);
 		if (!hotel.exists()){ //Hotel exists
 			e.setLine(0, (ChatColor.DARK_RED+"[Hotels]"));
-			p.sendMessage(Mes.mes("chat.sign.place.noHotel"));
+			Mes.mes(p, "chat.sign.place.noHotel");
 			return;
 		}
 
@@ -65,10 +65,10 @@ public class SignManager {
 		String free = String.valueOf(hotel.getFreeRoomCount()); //Getting amount of free rooms in hotel
 
 		//Setting all sign lines
-		e.setLine(0, (ChatColor.GREEN + Mes.mesnopre("sign.reception")));
+		e.setLine(0, (ChatColor.GREEN + Mes.getStringNoPrefix("sign.reception")));
 		e.setLine(1, (ChatColor.DARK_BLUE + hotelName + " Hotel"));
-		e.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(tot) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.total")));
-		e.setLine(3, (ChatColor.GREEN + String.valueOf(free) + ChatColor.BLACK + " " + Mes.mesnopre("sign.room.free")));
+		e.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(tot) + ChatColor.BLACK + " " + Mes.getStringNoPrefix("sign.room.total")));
+		e.setLine(3, (ChatColor.GREEN + String.valueOf(free) + ChatColor.BLACK + " " + Mes.getStringNoPrefix("sign.room.free")));
 
 		int i = 1;
 		File receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, i);
@@ -80,7 +80,7 @@ public class SignManager {
 		try {
 			receptionFile.createNewFile();
 		} catch (IOException e1){
-			p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
+			Mes.mes(p, "chat.sign.place.fileFail");
 			e1.printStackTrace();
 			return;
 		}
@@ -95,7 +95,7 @@ public class SignManager {
 		try {
 			config.save(receptionFile);
 		} catch (IOException e1) {
-			p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
+			Mes.mes(p, "chat.sign.place.fileFail");
 			e1.printStackTrace();
 			return;
 		}
@@ -140,61 +140,61 @@ public class SignManager {
 									try {
 										room.createSignConfig(p, timeInMins, accCost, e.getBlock().getLocation());
 									} catch (IOException e1) {
-										p.sendMessage(Mes.mes("chat.sign.place.fileFail"));
+										Mes.mes(p, "chat.sign.place.fileFail");
 										e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 										e1.printStackTrace();
 										return;
 									}
 
 									e.setLine(0, ChatColor.DARK_BLUE + Line2); //Hotel Name
-									e.setLine(1, ChatColor.DARK_GREEN + Mes.mesnopre("sign.room.name") + " " + roomNum + " - " + cost.toUpperCase() + "$"); //Room Number + Cost
+									e.setLine(1, ChatColor.DARK_GREEN + Mes.getStringNoPrefix("sign.room.name") + " " + roomNum + " - " + cost.toUpperCase() + "$"); //Room Number + Cost
 
 									if(immutedTime.matches("0"))
-										e.setLine(2,Mes.mesnopre("sign.permanent"));
+										e.setLine(2,Mes.getStringNoPrefix("sign.permanent"));
 									else
 										e.setLine(2, TimeFormatter(timeInMins));
 
-									e.setLine(3,ChatColor.GREEN+Mes.mesnopre("sign.vacant"));
-									p.sendMessage(Mes.mes("chat.sign.place.success"));
+									e.setLine(3,ChatColor.GREEN+Mes.getStringNoPrefix("sign.vacant"));
+									Mes.mes(p, "chat.sign.place.success");
 
 								} else{
-									p.sendMessage(Mes.mes("chat.sign.place.noRegion")); 
+									Mes.mes(p, "chat.sign.place.noRegion"); 
 									//Specified hotel does not exist
 								}
 							} else{
-								p.sendMessage(Mes.mes("chat.sign.place.outOfRegion"));       		
+								Mes.mes(p, "chat.sign.place.outOfRegion");       		
 								e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 								//Sign not in hotel borders
 							}
 						}else{
-							p.sendMessage(Mes.mes("chat.sign.place.alreadyExists"));
+							Mes.mes(p, "chat.sign.place.alreadyExists");
 							e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 							//Sign for specified room already exists
 						}
 					}
 					else{
-						p.sendMessage(Mes.mes("chat.sign.place.tooLong"));				
+						Mes.mes(p, "chat.sign.place.tooLong");				
 						e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 						//Room num of price too big
 					}
 				}else{
-					p.sendMessage(Mes.mes("chat.sign.place.noSeparator"));  				
+					Mes.mes(p, "chat.sign.place.noSeparator");  				
 					e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
 					//Line 3 does not contain separator
 				}
 			}
 			else{
-				p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat"));  
+				Mes.mes(p, "chat.commands.youDoNotOwnThat");  
 				e.setCancelled(true);
 			}
 		}
 		else{
-			p.sendMessage(Mes.mes("chat.sign.place.noRegion"));  
+			Mes.mes(p, "chat.sign.place.noRegion");  
 			e.setCancelled(true);
 		}
 	}
 	public boolean isReceptionSign(Sign s){
-		return ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase(Mes.mesnopre("sign.reception"));
+		return ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase(Mes.getStringNoPrefix("sign.reception"));
 	}
 	public void useRoomSign(PlayerInteractEvent e){
 		Player p = e.getPlayer();
@@ -225,23 +225,23 @@ public class SignManager {
 						if(roomNum==room.getRoomNumFromConfig())//If room nums match
 							rentRoom(p, room); //This will also check if rent should be extended and not new
 						else
-							p.sendMessage(Mes.mes("chat.sign.use.differentRoomNums"));
+							Mes.mes(p, "chat.sign.use.differentRoomNums");
 					}
 					else
-						p.sendMessage(Mes.mes("chat.sign.use.differentHotelNames")); 
+						Mes.mes(p, "chat.sign.use.differentHotelNames"); 
 				}
 				else
-					p.sendMessage(Mes.mes("chat.sign.use.fileNonExistent")); 
+					Mes.mes(p, "chat.sign.use.fileNonExistent"); 
 			}
 			else
-				p.sendMessage(Mes.mes("chat.sign.use.signOutOfRegion")); 
+				Mes.mes(p, "chat.sign.use.signOutOfRegion"); 
 		}
 	}
 	public void rentRoom(Player p, Room room){
 
 		String hotelName = room.getHotel().getName();
 
-		if(!room.exists()){ p.sendMessage(Mes.mes("chat.sign.use.nonExistentRoom")); return; }
+		if(!room.exists()){ Mes.mes(p, "chat.sign.use.nonExistentRoom"); return; }
 
 		OfflinePlayer renter = room.getRenter();
 
@@ -260,31 +260,31 @@ public class SignManager {
 							room.rent(p);
 						} catch (EventCancelledException e) {
 						} catch (IOException e) {
-							p.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+							Mes.mes(p, "chat.commands.somethingWentWrong");
 							e.printStackTrace();
 						}
 
 						DecimalFormat df = new DecimalFormat("#.00");
-						p.sendMessage(Mes.mes("chat.sign.use.success").replaceAll("%room%", String.valueOf(room.getNum())).replaceAll("%hotel%", hotelName)
+						p.sendMessage(Mes.getString("chat.sign.use.success").replaceAll("%room%", String.valueOf(room.getNum())).replaceAll("%hotel%", hotelName)
 								.replaceAll("%price%", df.format(price)));
 						//Successfully rented room
 					}
 					else
-						p.sendMessage(Mes.mes("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(plugin.getConfig().getInt("max_rooms_owned"))));
+						p.sendMessage(Mes.getString("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(plugin.getConfig().getInt("max_rooms_owned"))));
 				}
 				else{
 					double topay = price-account;
-					p.sendMessage(Mes.mes("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay))); 
+					p.sendMessage(Mes.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay))); 
 				}
 			}
 			else
-				p.sendMessage(Mes.mes("chat.sign.use.overRoomsPerHotelLimit").replaceAll("%limit%", plugin.getConfig().getString("max_rooms_owned_per_hotel")));
+				p.sendMessage(Mes.getString("chat.sign.use.overRoomsPerHotelLimit").replaceAll("%limit%", plugin.getConfig().getString("max_rooms_owned_per_hotel")));
 		}
 		else if(renter.getUniqueId().equals(p.getUniqueId()))
 			//Renter is same player that right clicked
 			rentExtend(p, room);
 		else
-			p.sendMessage(Mes.mes("chat.sign.use.taken")); 
+			Mes.mes(p, "chat.sign.use.taken"); 
 	}
 	public void payOwners(double price, Room room, boolean isRentExtend){
 		Hotel hotel = room.getHotel();
@@ -330,14 +330,14 @@ public class SignManager {
 
 			if(owner.isOnline()){//Telling player they earned some munniez
 				Player player = (Player) owner;
-				player.sendMessage(Mes.mes(chatMessage)
+				player.sendMessage(Mes.getString(chatMessage)
 						.replaceAll("%revenue%",  new DecimalFormat("#.00").format(revenue))
 						.replaceAll("%hotel%", hotel.getName())
 						.replaceAll("%room%", String.valueOf(room.getNum()))
 						);
 			}
 			else//Placing message in message queue
-				HotelsMessageQueue.addMessage(MessageType.revenue, owner.getUniqueId(), Mes.mes(chatMessage).replaceAll("%revenue%", new DecimalFormat("#.00").format(revenue)).replaceAll("%room%", String.valueOf(room.getNum())).replaceAll("%hotel%", hotel.getName()));
+				HotelsMessageQueue.addMessage(MessageType.revenue, owner.getUniqueId(), Mes.getString(chatMessage).replaceAll("%revenue%", new DecimalFormat("#.00").format(revenue)).replaceAll("%room%", String.valueOf(room.getNum())).replaceAll("%hotel%", hotel.getName()));
 		}
 	}
 	public void breakRoomSign(BlockBreakEvent e){
@@ -373,7 +373,7 @@ public class SignManager {
 											room.deleteSignFile();
 										}
 										else{
-											p.sendMessage(Mes.mes("sign.room.breakDenied"));
+											Mes.mes(p, "sign.room.breakDenied");
 											e.setCancelled(true);
 										}
 									}
@@ -388,14 +388,14 @@ public class SignManager {
 
 	public void rentExtend(Player p, Room room){
 
-		if(!room.isBlockAtSignLocationSign()){ p.sendMessage(Mes.mes("chat.commands.rent.invalidLocation")); return; }
+		if(!room.isBlockAtSignLocationSign()){ Mes.mes(p, "chat.commands.rent.invalidLocation"); return; }
 
 		if(room.getTime()<=0) return;
 
 		int extended = room.getTimesExtended();
 		int max = plugin.getConfig().getInt("max_rent_extend");
 
-		if(extended >= max){ p.sendMessage(Mes.mes("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max))); }
+		if(extended >= max){ Mes.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max)); }
 
 		double account = HotelsMain.economy.getBalance(p);
 		double price = room.getCost();
@@ -418,7 +418,7 @@ public class SignManager {
 				room.saveSignConfig();
 				room.updateSign();
 			} catch (IOException e) {
-				p.sendMessage(Mes.mes("chat.commands.somethingWentWrong"));
+				Mes.mes(p, "chat.commands.somethingWentWrong");
 				e.printStackTrace();
 			} catch (EventCancelledException e) {
 			}
@@ -426,13 +426,13 @@ public class SignManager {
 			extended++;
 
 			if(max-extended>0)
-				p.sendMessage(Mes.mes("chat.sign.use.extensionSuccess").replaceAll("%tot%", String.valueOf(extended)).replaceAll("%left%", String.valueOf(max-extended)));
+				p.sendMessage(Mes.getString("chat.sign.use.extensionSuccess").replaceAll("%tot%", String.valueOf(extended)).replaceAll("%left%", String.valueOf(max-extended)));
 			else
-				p.sendMessage(Mes.mes("chat.sign.use.extensionSuccessNoMore").replaceAll("%tot%", String.valueOf(extended)));
+				p.sendMessage(Mes.getString("chat.sign.use.extensionSuccessNoMore").replaceAll("%tot%", String.valueOf(extended)));
 		}
 		else{
 			double topay = price-account;
-			p.sendMessage(Mes.mes("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)));
+			p.sendMessage(Mes.getString("chat.sign.use.notEnoughMoney").replaceAll("%missingmoney%", String.valueOf(topay)));
 		}
 	}
 
@@ -528,6 +528,6 @@ public class SignManager {
 			return line2;
 		}
 		else
-			return Mes.mesnopre("sign.permanent");
+			return Mes.getStringNoPrefix("sign.permanent");
 	}
 }

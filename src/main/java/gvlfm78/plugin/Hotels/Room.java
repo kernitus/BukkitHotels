@@ -296,7 +296,7 @@ public class Room {
 	}
 	public void rent(Player p) throws IOException, EventCancelledException {
 		if(!exists() || !doesSignFileExist()){
-			p.sendMessage(Mes.mes("chat.commands.rent.invalidData"));
+			Mes.mes(p, "chat.commands.rent.invalidData");
 			return;
 		}
 
@@ -431,7 +431,7 @@ public class Room {
 		Bukkit.getPluginManager().callEvent(rre);
 		if(rre.isCancelled()) throw new EventCancelledException();
 
-		s.setLine(1, Mes.mesnopre("sign.room.name") + " " + newNum + " - " + Line2.split(" ")[3]);
+		s.setLine(1, Mes.getStringNoPrefix("sign.room.name") + " " + newNum + " - " + Line2.split(" ")[3]);
 		s.update();
 
 		sconfig.set("Sign.room", Integer.valueOf(newNum));
@@ -445,9 +445,9 @@ public class Room {
 		ProtectedRegion oldRegion = WorldGuardManager.getRegion(world, "hotel-"+hotel+"-"+num);
 
 		if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
-			oldRegion.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.mesnopre("message.room.enter").replaceAll("%room%", String.valueOf(newNum))));
+			oldRegion.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.getStringNoPrefix("message.room.enter").replaceAll("%room%", String.valueOf(newNum))));
 		if(Mes.flagValue("room.map-making.FAREWELL").equalsIgnoreCase("true"))
-			oldRegion.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.mesnopre("message.room.exit").replaceAll("%room%", String.valueOf(newNum))));
+			oldRegion.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.getStringNoPrefix("message.room.exit").replaceAll("%room%", String.valueOf(newNum))));
 		WorldGuardManager.renameRegion("Hotel-"+hotelName+"-"+num, "Hotel-"+hotelName+"-"+newNum, world);
 		WorldGuardManager.saveRegions(world);
 
@@ -475,7 +475,7 @@ public class Room {
 
 		if(isFree()){
 			remainingTime = getTime();
-			s.setLine(3, ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
+			s.setLine(3, ChatColor.GREEN + Mes.getStringNoPrefix("sign.vacant"));
 		}
 		else{
 			remainingTime = getExpiryMinute() - (System.currentTimeMillis()/1000/60);
@@ -553,9 +553,9 @@ public class Room {
 	public void createRegion(ProtectedRegion region, Player p){
 		World world = p.getWorld();
 		ProtectedRegion hotelRegion = WorldGuardManager.getRegion(world, "hotel-"+hotel.getName());
-		if(!Mes.hasPerm(p, "hotels.create")){ p.sendMessage(Mes.mes("chat.noPermission")); return; }
-		if(WorldGuardManager.doesRoomRegionOverlap(region, world)){ p.sendMessage(Mes.mes("chat.commands.room.alreadyPresent")); return; }
-		if(!WorldGuardManager.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){ p.sendMessage(Mes.mes("chat.commands.youDoNotOwnThat")); return; }
+		if(!Mes.hasPerm(p, "hotels.create")){ Mes.mes(p, "chat.noPermission"); return; }
+		if(WorldGuardManager.doesRoomRegionOverlap(region, world)){ Mes.mes(p, "chat.commands.room.alreadyPresent"); return; }
+		if(!WorldGuardManager.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){ Mes.mes(p, "chat.commands.youDoNotOwnThat"); return; }
 		WorldGuardManager.addRegion(world, region);
 		WorldGuardManager.roomFlags(region, num, world);
 		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
@@ -564,7 +564,7 @@ public class Room {
 			region.setPriority(10);
 		WorldGuardManager.makeRoomAccessible(region);
 		WorldGuardManager.saveRegions(p.getWorld());
-		p.sendMessage(Mes.mes("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
+		p.sendMessage(Mes.getString("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
 	}
 
 	public void unrent() throws IOException, BlockNotSignException, DataException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, RoomNonExistentException, NotRentedException {
@@ -606,13 +606,13 @@ public class Room {
 			region.setPriority(1);
 		}
 
-		Mes.debug(Mes.mesnopre("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
+		Mes.debug(Mes.getStringNoPrefix("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
 
 		if(p.isOnline())
-			( (Player) p).sendMessage(Mes.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
+			p.getPlayer().sendMessage(Mes.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
 
 		else //Player is offline, place their expiry message in the message queue
-			HotelsMessageQueue.addMessage(MessageType.expiry, p.getUniqueId(), Mes.mes("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
+			HotelsMessageQueue.addMessage(MessageType.expiry, p.getUniqueId(), Mes.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
 
 		sconfig.set("Sign.renter", null);
 		sconfig.set("Sign.timeRentedAt", null);
@@ -650,7 +650,7 @@ public class Room {
 
 		if(!isBlockAtSignLocationSign()){
 			file.delete();//If block is not a sign, delete it
-			Mes.debug(Mes.mesnopre("sign.delete.location").replaceAll("%filename%", file.getName()));
+			Mes.debug(Mes.getStringNoPrefix("sign.delete.location").replaceAll("%filename%", file.getName()));
 			throw new BlockNotSignException();
 		}
 
@@ -659,7 +659,7 @@ public class Room {
 		Sign sign = (Sign) signBlock.getState();
 		if(!hotelName.equalsIgnoreCase(ChatColor.stripColor(sign.getLine(0)))){//If hotelName on sign doesn't match that in config
 			file.delete();
-			Mes.debug(Mes.mesnopre("sign.delete.hotelName").replaceAll("%filename%", file.getName()));
+			Mes.debug(Mes.getStringNoPrefix("sign.delete.hotelName").replaceAll("%filename%", file.getName()));
 			throw new ValuesNotMatchingException();
 		}
 
@@ -667,7 +667,7 @@ public class Room {
 		int roomNumfromSign = Integer.valueOf(Line2parts[1].trim()); //Room Number 
 		if(getRoomNumFromConfig()!=roomNumfromSign){ //If roomNum on sign doesn't match that in config
 			file.delete();
-			Mes.debug(Mes.mesnopre("sign.delete.roomNum").replaceAll("%filename%", file.getName()));
+			Mes.debug(Mes.getStringNoPrefix("sign.delete.roomNum").replaceAll("%filename%", file.getName()));
 			throw new ValuesNotMatchingException();
 		}
 
@@ -696,7 +696,7 @@ public class Room {
 
 		saveSignConfig();
 
-		sign.setLine(3, ChatColor.GREEN + Mes.mesnopre("sign.vacant"));
+		sign.setLine(3, ChatColor.GREEN + Mes.getStringNoPrefix("sign.vacant"));
 		sign.setLine(2, SignManager.TimeFormatter(sconfig.getLong("Sign.time")));
 		sign.update();
 

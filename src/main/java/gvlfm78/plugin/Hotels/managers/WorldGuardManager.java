@@ -209,18 +209,18 @@ public class WorldGuardManager {
 				if(Boolean.valueOf(keyValue)){
 					String message;
 					if(isHotel)
-						message = Mes.mesnopre("message.hotel.enter").replaceAll("%hotel%", name);
+						message = Mes.getStringNoPrefix("message.hotel.enter").replaceAll("%hotel%", name);
 					else
-						message = Mes.mesnopre("message.room.enter").replaceAll("%room%", name);
+						message = Mes.getStringNoPrefix("message.room.enter").replaceAll("%room%", name);
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				}
 				break;
 			case "FAREWELL":
 				String message;
 				if(isHotel)
-					message = Mes.mesnopre("message.hotel.exit").replaceAll("%hotel%", name);
+					message = Mes.getStringNoPrefix("message.hotel.exit").replaceAll("%hotel%", name);
 				else
-					message = Mes.mesnopre("message.room.exit").replaceAll("%room%", name);
+					message = Mes.getStringNoPrefix("message.room.exit").replaceAll("%room%", name);
 				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				break;
 				//String

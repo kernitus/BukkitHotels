@@ -10,7 +10,7 @@ import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 public class Mes {
 
-	public static String mes(String path){
+	public static String getString(String path){
 		String mes = HotelsConfigHandler.getLocale().getString(path);
 		if(mes!=null){
 			//Prefix
@@ -22,9 +22,16 @@ public class Mes {
 		return mes;
 	}
 
-	public static String mesnopre(String path){
+	public static String getStringNoPrefix(String path){
 		String mes = HotelsConfigHandler.getLocale().getString(path);
 		return mes!=null ? ChatColor.translateAlternateColorCodes('&', mes) : "Message " + path + " is null!";
+	}
+	public static void mes(Player p, String path){
+		p.sendMessage(getString(path));
+	}
+	public static void mes(CommandSender s, String path){
+		if(s instanceof Player) mes( (Player) s, path);
+		else s.sendMessage(getStringNoPrefix(path));
 	}
 	public static boolean hasPerm(CommandSender sender, String perm){
 		return sender instanceof Player ? hasPerm( ( (Player) sender), perm) : true;

@@ -31,8 +31,8 @@ public class HotelsUpdateChecker {
 			//Get messages from Spigot update checker
 			if(SUC.getResult().name().equalsIgnoreCase("UPDATE_AVAILABLE")){
 				//An update is available
-				updateMessages[0] = Mes.mesnopre("main.updateAvailable").replaceAll("%version%", SUC.getVersion());
-				updateMessages[1] = Mes.mesnopre("main.updateAvailableLink").replaceAll("%link%", "https://www.spigotmc.org/resources/hotels.2047/updates/");
+				updateMessages[0] = Mes.getStringNoPrefix("main.updateAvailable").replaceAll("%version%", SUC.getVersion());
+				updateMessages[1] = Mes.getStringNoPrefix("main.updateAvailableLink").replaceAll("%link%", "https://www.spigotmc.org/resources/hotels.2047/updates/");
 			}
 		}
 		else{//Get messages from bukkit update checker
@@ -41,8 +41,8 @@ public class HotelsUpdateChecker {
 				//Updater knows local and remote versions are different, but not if it's an update
 				String remoteVersion = updater.getLatestName().replaceAll("[A-Za-z\\s]", "");
 				if(shouldUpdate(plugin.getDescription().getVersion(), remoteVersion)){
-					updateMessages[0] = Mes.mesnopre("main.updateAvailable").replaceAll("%version%", remoteVersion);
-					updateMessages[1] = Mes.mesnopre("main.updateAvailableLink").replaceAll("%link%", updater.getLatestFileLink());
+					updateMessages[0] = Mes.getStringNoPrefix("main.updateAvailable").replaceAll("%version%", remoteVersion);
+					updateMessages[1] = Mes.getStringNoPrefix("main.updateAvailableLink").replaceAll("%link%", updater.getLatestFileLink());
 				}
 			}
 		}
