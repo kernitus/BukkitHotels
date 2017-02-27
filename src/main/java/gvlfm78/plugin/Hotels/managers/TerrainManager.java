@@ -48,6 +48,7 @@ import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
  * A wrapper class for the WorldEdit terrain loading & saving API to make things a little
  * simple for other plugins to use.
  */
+
 public class TerrainManager {
 	private static final String EXTENSION = "schematic";
 
@@ -64,7 +65,7 @@ public class TerrainManager {
 		we = ((WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit")).getWorldEdit();
 		localPlayer = null;
 	}
-	public void saveTerrain(File saveFile, org.bukkit.World world, Location l1, Location l2) throws DataException, IOException, WorldEditException{
+	public void saveTerrain(File saveFile, org.bukkit.World world, Location l1, Location l2) throws DataException, IOException, WorldEditException {
 		World bworld = new BukkitWorld(world);
 		Vector origin = getMin(l1, l2);
 		CuboidRegion selection = new CuboidRegion(bworld, origin, getMax(l1, l2));
@@ -73,14 +74,20 @@ public class TerrainManager {
 	public void saveTerrain(File saveFile, org.bukkit.World world, List<BlockVector2D> points, int minY, int maxY) throws DataException, IOException, WorldEditException {
 		World bworld = new BukkitWorld(world);
 		Polygonal2DRegion selection = new Polygonal2DRegion(bworld, points, minY, maxY);
+		
+		Mes.debug("Printing out points:");
+		for(BlockVector2D point : points){
+			System.out.println(point);
+		}
+		
 		Vector origin = points.get(0).toVector();
 		saveTerrain(saveFile, bworld, selection, origin);
 	}
-	public void saveTerrain(File saveFile, org.bukkit.World world, Region selection) throws DataException, IOException, WorldEditException{
+	public void saveTerrain(File saveFile, org.bukkit.World world, Region selection) throws DataException, IOException, WorldEditException {
 		World bworld = new BukkitWorld(world);
 		saveTerrain(saveFile, bworld, selection, getOriginFromRegion(selection));
 	}
-	public void saveTerrain(File saveFile, org.bukkit.World world, ProtectedRegion selection) throws DataException, IOException, WorldEditException{
+	public void saveTerrain(File saveFile, org.bukkit.World world, ProtectedRegion selection) throws DataException, IOException, WorldEditException {
 		World bworld = new BukkitWorld(world);
 		Region region = getRegionFromProtectedRegion(world, selection);
 		Vector origin = getOriginFromRegion(region);
@@ -88,17 +95,18 @@ public class TerrainManager {
 	}
 	public void saveTerrain(File saveFile, World world, Region selection, Vector origin) throws DataException, IOException, WorldEditException {
 		File schemDir = HotelsConfigHandler.getFile("Schematics");
-		if(!schemDir.exists()) schemDir.mkdir();
+		if(!schemDir.exists()) schemDir.mkdirs();
 
-		saveFile = we.getSafeSaveFile(localPlayer,
-				saveFile.getParentFile(), saveFile.getName(),
-				EXTENSION, new String[] { EXTENSION });
+		saveFile = we.getSafeSaveFile(localPlayer, saveFile.getParentFile(), saveFile.getName(), EXTENSION, new String[] { EXTENSION });
 
 		WorldData worldData = world.getWorldData();
 
 		EditSession editSession = we.getEditSessionFactory().getEditSession(world, 999999999);
 		BlockArrayClipboard clipboard = new BlockArrayClipboard(selection);
 		clipboard.setOrigin(origin);
+		Mes.debug("Clipboard DIMENSIONS: " + clipboard.getDimensions());
+		Mes.debug("Region area: " + clipboard.getRegion().getArea());
+		
 		ForwardExtentCopy copy = new ForwardExtentCopy(editSession, selection, clipboard, origin);
 		Operations.complete(copy);
 		Closer closer = Closer.create();
@@ -112,9 +120,7 @@ public class TerrainManager {
 	public void loadSchematic(File saveFile, Location loc) throws DataException, IOException, WorldEditException {
 		World world = new BukkitWorld(loc.getWorld());
 
-		saveFile = we.getSafeSaveFile(localPlayer,
-				saveFile.getParentFile(), saveFile.getName(),
-				EXTENSION, new String[] { EXTENSION });
+		saveFile = we.getSafeSaveFile(localPlayer, saveFile.getParentFile(), saveFile.getName(), EXTENSION, new String[] { EXTENSION });
 
 		InputStream in = new FileInputStream(saveFile);
 		ClipboardReader reader = ClipboardFormat.SCHEMATIC.getReader(in);
@@ -130,7 +136,7 @@ public class TerrainManager {
 		editSession.flushQueue();
 		editSession.commit();
 	}
-	public Region getRegionFromProtectedRegion(org.bukkit.World world, ProtectedRegion pregion) throws RegionOperationException{
+	public Region getRegionFromProtectedRegion(org.bukkit.World world, ProtectedRegion pregion) throws RegionOperationException {
 		World bworld = new BukkitWorld(world);
 		Region region = null;
 		switch(pregion.getType()){
@@ -145,7 +151,7 @@ public class TerrainManager {
 
 		default: throw new RegionOperationException("Region is neither Cuboid or Polygonal");
 		}
-		Mes.debug("Region min is: " + region.getMinimumPoint());
+		Mes.debug("Region min is: " + region.getMinimumPoint() + " max is: " + pregion.getMaximumPoint());
 		return region;
 	}
 	public Vector getOriginFromRegion(Region region) throws RegionOperationException{

@@ -329,23 +329,21 @@ public class Room {
 		//Update this hotel's reception signs
 		hotel.updateReceptionSigns();
 	}
-	public void setShouldReset(boolean value) throws DataException, IOException, WorldEditException{
+	public void setShouldReset(boolean value) throws DataException, IOException, WorldEditException {
 		sconfig.set("Sign.reset", value);
 		if(value){
 			//Create and save schematic file based on room region
-			ProtectedRegion region = getRegion();
 			TerrainManager tm = new TerrainManager(world);
 
 			File schematicFile = HotelsConfigHandler.getSchematicFileNoExtension(this);
 
 			// Save the region to a schematic file
-			tm.saveTerrain(schematicFile, world, region);
-		} else
-			deleteSchematic();
+			tm.saveTerrain(schematicFile, world, getRegion());
+		} else deleteSchematic();
 
 		saveSignConfig();
 	}
-	public boolean toggleShouldReset() throws DataException, IOException, WorldEditException{
+	public boolean toggleShouldReset() throws DataException, IOException, WorldEditException {
 		boolean value = !getShouldReset();
 		setShouldReset(value);
 		return value;
@@ -629,7 +627,7 @@ public class Room {
 			resetRoom();
 	}
 
-	public void resetRoom() throws DataException, IOException, WorldEditException{
+	public void resetRoom() throws DataException, IOException, WorldEditException {
 		TerrainManager tm = new TerrainManager(world);
 		ProtectedRegion region = getRegion();
 		Vector origin = tm.getOriginFromRegion(tm.getRegionFromProtectedRegion(world, region));

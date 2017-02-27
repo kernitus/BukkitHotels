@@ -45,7 +45,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-		if(label.equalsIgnoreCase("Hotels")){
+		if(cmd.getLabel().equalsIgnoreCase("Hotels")){
 			boolean isPlayer = sender instanceof Player;
 			int length = args.length;
 			if(length<1){//Fallback screen
