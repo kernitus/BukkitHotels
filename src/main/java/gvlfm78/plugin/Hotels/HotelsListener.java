@@ -56,18 +56,16 @@ public class HotelsListener implements Listener {
 	@EventHandler
 	public void onSignUse(PlayerInteractEvent e){
 		//Player right clicks sign, checking if it's a hotel sign
-		if(e.getAction() == Action.RIGHT_CLICK_BLOCK) { //They Right clicked
-			Block b = e.getClickedBlock();
-			Material mat = b.getType();
-			if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){//If block is sign
-				Player p = e.getPlayer();
-				//Permission check
-				if(Mes.hasPerm(p, "hotels.sign.use"))
-					SM.useRoomSign(e);
-				else
-					Mes.mes(p, "chat.noPermission"); 
-			}
-		}
+		if(e.getAction() != Action.RIGHT_CLICK_BLOCK) return; //They Right clicked
+		Block b = e.getClickedBlock();
+		Material mat = b.getType();
+		if(!mat.equals(Material.SIGN_POST) && !mat.equals(Material.WALL_SIGN)) return; //If block is sign
+		Player p = e.getPlayer();
+		//Permission check
+		if(Mes.hasPerm(p, "hotels.sign.use"))
+			SM.useRoomSign(e);
+		else
+			Mes.mes(p, "chat.noPermission"); 
 	}
 
 	@EventHandler
@@ -118,11 +116,10 @@ public class HotelsListener implements Listener {
 	@EventHandler
 	public void avoidChestInteraction(InventoryClickEvent e){
 		Player p = (Player) e.getWhoClicked();
-		if(Mes.hasPerm(p, "hotels.createmode.admin")){
-			if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
-				e.setCancelled(true);
-				Mes.mes(p, "chat.creationMode.deniedAction");
-			}
+		if(!Mes.hasPerm(p, "hotels.createmode.admin")) return;
+		if(!HotelsCreationMode.isInCreationMode(p.getUniqueId())){
+			e.setCancelled(true);
+			Mes.mes(p, "chat.creationMode.deniedAction");
 		}
 	}
 }

@@ -114,29 +114,26 @@ public class HotelsCreationMode {
 
 		ProtectedRegion pr = hotel.getRegion();
 		if(sel==null){ Mes.mes(p, "chat.creationMode.noSelection"); return; }
-		if((sel instanceof Polygonal2DSelection) && (pr.containsAny(((Polygonal2DSelection) sel).getNativePoints()))||
-				((sel instanceof CuboidSelection) && (pr.contains(sel.getNativeMinimumPoint()) && pr.contains(sel.getNativeMaximumPoint())))){
-			//Creating room region
-			ProtectedRegion r;
-			if(sel instanceof CuboidSelection){
-				r = new ProtectedCuboidRegion(
-						"Hotel-" + hotelName + "-" + room.getNum(), 
-						new BlockVector(sel.getNativeMinimumPoint()), 
-						new BlockVector(sel.getNativeMaximumPoint())
-						);				
-			}
-			else if(sel instanceof Polygonal2DSelection){
-				int minY = sel.getMinimumPoint().getBlockY();
-				int maxY = sel.getMaximumPoint().getBlockY();
-				List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
-				r = new ProtectedPolygonalRegion("Hotel-" + hotelName + "-" + room.getNum(), points, minY, maxY);
-			}
-			else{
-				Mes.mes(p, "chat.creationMode.selectionInvalid"); return; }
-			room.createRegion(r, p);
+		if( !( (sel instanceof Polygonal2DSelection) && (pr.containsAny(((Polygonal2DSelection) sel).getNativePoints())) ) &&
+				!((sel instanceof CuboidSelection) && (pr.contains(sel.getNativeMinimumPoint()) && pr.contains(sel.getNativeMaximumPoint()))) ){
+			Mes.mes(p, "chat.creationMode.rooms.notInHotel"); return; }
+		//Creating room region
+		ProtectedRegion r;
+		if(sel instanceof CuboidSelection){
+			r = new ProtectedCuboidRegion(
+					"Hotel-" + hotelName + "-" + room.getNum(), 
+					new BlockVector(sel.getNativeMinimumPoint()), 
+					new BlockVector(sel.getNativeMaximumPoint())
+					);				
 		}
-		else
-			Mes.mes(p, "chat.creationMode.rooms.notInHotel");
+		else if(sel instanceof Polygonal2DSelection){
+			int minY = sel.getMinimumPoint().getBlockY();
+			int maxY = sel.getMaximumPoint().getBlockY();
+			List<BlockVector2D> points = ((Polygonal2DSelection) sel).getNativePoints();
+			r = new ProtectedPolygonalRegion("Hotel-" + hotelName + "-" + room.getNum(), points, minY, maxY);
+		}
+		else{ Mes.mes(p, "chat.creationMode.selectionInvalid"); return; }
+		room.createRegion(r, p);
 	}
 
 	public static void resetInventoryFiles(CommandSender s){
@@ -153,38 +150,36 @@ public class HotelsCreationMode {
 		PlayerInventory pinv = p.getInventory();
 		File file = HotelsConfigHandler.getInventoryFile(playerUUID);
 
-		if(!file.exists()){
-			try {
-				file.createNewFile();
-			} catch (IOException e){
-				Mes.mes(p, "chat.creationMode.inventory.storeFail");
-				e.printStackTrace();
-			}
+		if(file.exists()){ Mes.mes(p, "chat.commands.creationMode.alreadyIn"); return; }
+		try {
+			file.createNewFile();
+		} catch (IOException e){
+			Mes.mes(p, "chat.creationMode.inventory.storeFail");
+			e.printStackTrace();
+		}
 
-			YamlConfiguration inv = HotelsConfigHandler.getInventoryConfig(playerUUID);
+		YamlConfiguration inv = HotelsConfigHandler.getInventoryConfig(playerUUID);
 
-			inv.set("inventory", pinv.getContents());
-			inv.set("armour", pinv.getArmorContents());
+		inv.set("inventory", pinv.getContents());
+		inv.set("armour", pinv.getArmorContents());
 
-			try{//Only if in 1.9 try getting this
-				inv.set("extra", pinv.getExtraContents());
-			}
-			catch(NoSuchMethodError er){
-				//We must be in a pre-1.9 version
-			}
+		try{//Only if in 1.9 try getting this
+			inv.set("extra", pinv.getExtraContents());
+		}
+		catch(NoSuchMethodError er){
+			//We must be in a pre-1.9 version
+		}
 
-			try {
-				inv.save(file);
-			} catch (IOException e) {
-				Mes.mes(p, "chat.creationMode.inventory.storeFail");
-				e.printStackTrace();
-			}
+		try {
+			inv.save(file);
+		} catch (IOException e) {
+			Mes.mes(p, "chat.creationMode.inventory.storeFail");
+			e.printStackTrace();
+		}
 
-			pinv.clear();
-			pinv.setArmorContents(new ItemStack[4]);
-			Mes.mes(p, "chat.creationMode.inventory.storeSuccess");
-		} else
-			Mes.mes(p, "chat.commands.creationMode.alreadyIn");
+		pinv.clear();
+		pinv.setArmorContents(new ItemStack[4]);
+		Mes.mes(p, "chat.creationMode.inventory.storeSuccess");	
 	}
 
 	@SuppressWarnings("unchecked")
@@ -234,20 +229,19 @@ public class HotelsCreationMode {
 		//Wand
 		if(file.exists()){
 			YamlConfiguration weconfig = YamlConfiguration.loadConfiguration(file);
-			if( weconfig!=null && weconfig.contains("wand-item") && weconfig.get("wand-item") != null){
-				int wanditem = weconfig.getInt("wand-item");
-				@SuppressWarnings("deprecation")
-				ItemStack wand = new ItemStack(wanditem, 1);
-				ItemMeta im = wand.getItemMeta();
-				im.setDisplayName(Mes.getStringNoPrefix("chat.creationMode.items.wand.name"));
+			if( weconfig==null || !weconfig.contains("wand-item") || weconfig.get("wand-item")==null) return;
+			int wanditem = weconfig.getInt("wand-item");
+			@SuppressWarnings("deprecation")
+			ItemStack wand = new ItemStack(wanditem, 1);
+			ItemMeta im = wand.getItemMeta();
+			im.setDisplayName(Mes.getStringNoPrefix("chat.creationMode.items.wand.name"));
 
-				List<String> loreList = new ArrayList<String>();
-				loreList.add(Mes.getStringNoPrefix("chat.creationMode.items.wand.lore1"));
-				loreList.add(Mes.getStringNoPrefix("chat.creationMode.items.wand.lore2"));
-				im.setLore(loreList);
-				wand.setItemMeta(im);
-				pi.setItem(0, wand);
-			}
+			List<String> loreList = new ArrayList<String>();
+			loreList.add(Mes.getStringNoPrefix("chat.creationMode.items.wand.lore1"));
+			loreList.add(Mes.getStringNoPrefix("chat.creationMode.items.wand.lore2"));
+			im.setLore(loreList);
+			wand.setItemMeta(im);
+			pi.setItem(0, wand);
 		}
 		//Sign
 		if(p.getGameMode().equals(GameMode.CREATIVE)){

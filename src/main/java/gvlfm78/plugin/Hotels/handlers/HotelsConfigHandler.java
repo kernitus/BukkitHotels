@@ -179,7 +179,6 @@ public class HotelsConfigHandler {
 	}
 
 	public static void saveConfiguration(File file, YamlConfiguration config){
-
 		try{
 			Writer fileWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8")));
 			fileWriter.write(config.saveToString());
@@ -188,7 +187,6 @@ public class HotelsConfigHandler {
 		catch(IOException e){
 			e.printStackTrace();
 		}
-
 	}
 
 	public static void saveLocale(YamlConfiguration config){
