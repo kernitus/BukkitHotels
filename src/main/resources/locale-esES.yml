@@ -1,0 +1,351 @@
+# Hotels plugin by kernitus
+language: esES
+main:
+  enable:
+    success: '%pluginname% v%version% ha sido habilitado correctamente'
+  disable:
+    success: '%pluginname% v%version% ha sido deshabilitado'
+  updateAvailable: Hotels v%version% está disponible para descargar!
+  updateAvailableLink: Para descargarla, ir a %link%
+  noConnection: No pudo conectarse a la página de actualización!
+  
+message:
+  hotel:
+    enter: '&bBienvenido al hotel %hotel%'
+    exit: '&aVuelve pronto al hotel %hotel%'
+  room:
+    enter: '&bBienvenido a la habitación %room%'
+    exit: '&aVuelve pronto a la habitación %room%'
+    
+sign:
+  permanent: Permanente
+  room:
+    name: '&2Habitación'
+    free: Habitaciones gratis
+    total: Habitaciones totales
+    breakDenied: '&4No puedes romper el cartel de esta habitación ya que ha sido alquilada!'
+    
+  reception: Recepción
+  vacant: Vacante
+  occupied: Ocupada
+  rentExpiredConsole: 'El alquiler de la habitación %room% del hotel %hotel% ha caducado para %player%''
+  rentExpiredPlayer: '&9tu alquiler de la habitación %room% del hotel %hotel% ha caducado'
+  
+  delete:
+    reception: El archivo de recepción %filename% no coincidia con la características en el juego y ha sido borrado
+    Numhabitación: El archivo del cartel %filename% no coincidia con el número de habitación en el juego y ha sido borrado
+    Nombrehotel: El archivo del cartel %filename% no coincidia con el nombre de hotel en el juego y ha sido borrado
+    location: El archivo del cartel %filename% no coincidia con la locaclización en el juego y ha sido borrado
+    
+    
+chat:
+  prefix: '&9[Hoteles]&r'
+  noPermission: '&4No tienes permisos!'
+  moneyEarned: '&aHas ganado %revenue%$ por la habitación %room% alquilada en tu hotel %hotel%'
+  moneyEarnedExtend: '&aHas ganado $%revenue% por la extensión de alquiler de la habitación %room% en tu hotel %hotel%'
+  
+  sign:
+    place:
+      fileFail: '&4No pudo guardarse el archivo del cartel'
+      outOfRegion: '&4El cartel no está dentro de la región del hotel!'
+      noHotel: '&4El hotel no existe'
+      emptySign: '&4Cartel vacio'
+      success: '&2El cartel del hotel ha sido correctamente creado!'
+      noRegion: '&4El hotel o la habitación especificada no existe!'
+      alreadyExists: '&4El cartel para está habitación ya existe!'
+      tooLong: '&4El número o el precio de la habitación es demasiado grande!'
+      noSeparator: '&4Linea 3 debe contener el separador &3:'
+      
+    use:
+      success: '&aHas alquilado la habitación %room% del hotel %hotel% por %price%$'
+      notEnoughMoney: '&4No tienes suficiente dinero! Necesitas otros %missingmoney%$'
+      noAccount: '&4No tienes una cuenta bancaria!'
+      taken: '&4Esta habitación ya ha sido alquilada'
+      nonExistentRoom: '&4Esta habitación no existe!'
+      differentNumhabitacións: '&4Los números de habitación no coinciden!'
+      differentNombrehotels: '&4Los nombres del hotel no coinciden!'
+      fileNonExistent: '&4Archivo de cartel no existe!'
+      signOutOfRegion: '&4El cartel no está dentro de la región de hotel especificada'
+      maxEntendReached: '&4Has alcanzado el límite de alquileres por %max% veces!'
+      maxRoomsReached: '&4Has alcanzado el límite de número de habitaciones que puedes tener %max%'
+      extensionSuccess: '&aEl tiempo de alquiler ha sido extendido %tot% veces. Puedes extenderlo otras %left% veces.'
+      extensionSuccessNoMore: '&aEl tiempo de alquiler ha sido extendido %tot% veces. No puedes extenderlo más.'
+      overRoomsPerHotelLimit: '&4Has alcanzado el límite de habitaciones que puedes alquilar en este hotel %limit% habitaciones'
+  
+  creationMode:
+    hotelCreationFailed: '&4No se pudo crear el hotel, ese hotel ya existe'
+    hotelCreationSuccessful: '&2Has creado exitosamente el hotel %hotel%'
+    noSelection: '&4Porfavor selecciona un área usando la varita del WE'
+    selectionInvalid: '&4Selección inválida. Porfavor selecciona el área otra vez'
+    invalidChar: '&4El nombre no puede contener el caracter &6&l-'
+    deniedAction: '&4No puedes hacer eso mientras estes en modo creación!'
+    
+    rooms:
+      alreadyExists: '&4Esta habitación ya existe!'
+      notInHotel: '&4La habitación no está en el hotel especificado!'
+      fail: '&4No se pudo crear la habitación!'
+      
+    inventory:
+      storeFail: '&4No se pudo guardar tu inventario'
+      storeSuccess: '&aSe ha guardado con exito tu inventario'
+      restoreFail: '&4Fallo al intentar buscar tu inventario guardado'
+      restoreSuccess: '&aSe ha reestablecido tu inventario'
+      
+    armour:
+      storeFail: '&4No se pudo guardar tu armadura'
+      storeSuccess: '&aSe ha guardado con exito tu armadura'
+      restoreFail: '&4Fallo al intentar buscar tu armadura guardada'
+      restoreSuccess: '&aSe ha reestablecido tu armadura'
+      
+    items:
+    
+      wand:
+        name: '&bVarita del WorldEdit'
+        lore1: Click izquierdo un bloque
+        lore2: Click derecho la esquina contraria
+        
+      compass:
+        name: '&bBrújula del WorldEdit'
+        lore1: Click izquierdo para hacerte tp
+        lore2: Click derecho para atravesar
+        
+      sign:
+        name: '&bCartel épico'
+        lore1: Click derecho para colocar
+        lore2: 'Primera línea: &9[Hotels]'
+        
+      leather:
+        name: '&bPieza de cuero'
+        lore1: Click derecho para buscar
+        lore2: conflictos entre regiones
+        
+  commands:
+    youDoNotOwnThat: '&4No te pertenece eso!'
+    somethingWentWrong: '&4Whoops! algo ha fallado mientras ejecutabas el comando'
+    
+    commands:
+      header: '&4================================'
+      subheader: '&5--Página de comandos de Hotels plugin--'
+      footer: '&4================================'
+      help: '&6/ht help - &aMuestra la página de ayuda'
+      creationMode: '&6/ht <creationmode/cm> <enter/exit> - &aEntrar/salir del modo creación'
+      create: '&6/ht <create/c> <Nombrehotel> - &aCrea un hotel con la región señalada'
+      room: '&6/ht room <Nombrehotel> <Numhabitación> - &aCrea una habitación dentro de la región señalada contenida en el hotel deseado'
+      renum: '&6/ht renum <Nombrehotel> <antiguoNúmero> <nuevoNúmero> - &aRenumera la habitación especificada'
+      rename: '&6/ht rename <antiguoNombre> <nuevoNombre> - &aRenombra el hotel especificado'
+      sethome: '&6/ht sethome - &aEstablece el punto de aparición del hotel/habitación'
+      home: '&6/ht home <Nombrehotel> [Numhabitación] - &aTe teletransporta al punto de aparición del hotel/habitación'
+      check: '&6/ht check [nombreUsuario] - &aLista de todas tus habitaciones alquiladas a otros jugadores'
+      list: '&6/ht list [nombreMundo] - &aLista de todos los hoteles en el mundo especificado'
+      rlist: '&6/ht rlist <Nombrehotel> - &aLista de todas las habitaciones en el hotel especificado'
+      friend: '&6/ht <friend/f> <add/remove> <Nombrehotel> <Numhabitación> <nombreJugador> - &aAñadir/quitar a jugadores amigos que pueden entrar en la habitación especificada'
+      friendList: '&6/ht <friend/f> list <Nombrehotel> <Numhabitación> - &aLista de jugadores amigos dentro de una habitación del hotel'
+      sellh: '&6/ht sellh <Nombrehotel> <nombreUsuario> <precio> - &aOfrece vender tu hotel a un jugador por cierta cantidad de dinero'
+      buyh: '&6/ht buyh <Nombrehotel> - &aCompra el hotel especificado si el hotel está en venta'
+      reload: '&6/ht reload - &aRecarga todos los archivos de la configuración'
+      remove: '&6/ht remove <nombreUsuario> <Nombrehotel> <Numhabitación> - &aQuita al jugador de la habitación alquilada'
+      delr: '&6/ht delr <Nombrehotel> <Numhabitación> - &aElimina la habitación especificada'
+      delete: '&6/ht delete <Nombrehotel> - &aElimina el hotel especificado'
+      
+    help:
+      header: '&4================================'
+      subheader: '&5--Página de ayuda de Hotels plugin--'
+      prefooter: '&4Escribe &3&o/ht help %num%&r&4 para ir a la página número %num%'
+      footer: '&4================================'
+      
+      page1:
+        '1': '&4-Página 1- &9Selección del cubiode del hotel'
+        '2': '&e1. Escribe &3&o/ht [creationmode&r&3|&3&ocm] enter'
+        '3': '&e2. Coge la varita del World Edit'
+        '4': '&e3. Da click izquiero en un bloque y click derecho en la esquina opuesta'
+      page2:
+        '1': '&4-Página 2- &9Creación del hotel'
+        '2': '&e1. Escribe &3&o/ht [create&r&3|&oc] [nombredehotel]'
+      page3:
+        '1': '&4-Página 3- &9Creación de una habitación'
+        '2': '&e1. Coge la varita del World Edit otra vez'
+        '3': '&e2. Da click izquiero en un bloque y click derecho en la esquina opuesta de la habitación'
+        '4': '&e3. Escribe &3&o/ht room [Nombrehotel] [Numhabitación]'
+      page4:
+        '1': '&4-Página 4- &9Añadir un cartel'
+        '2': '&e1. Coge un cartel y ponlo en la parte exterior de la habitación'
+        '3': '&e2. Escribe en el cartel:'
+        '4': '&e    [Hotels]'
+        '5': '&e    Nombrehotel'
+        '6': '&e    Numhabitación:coste'
+        '7': '&e    tiempo'
+      page5:
+        '1': '&4-Página 5- &9Ejemplo de un cartel'
+        '2': '&e1. Ejemplo de un cartel:'
+        '3': '&e    [Hotels]'
+        '4': '&e    ElMejorHotel'
+        '5': '&e    15:1m3k'
+        '6': '&e    3d 6m 2s'
+        '7': '&9&oPuedes usar &20 &9&ocomo tiempo para que el tiempo de alquiler sea infinito'
+        '8': '&9&oEn el coste, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2millones&9 &5b&9 = &2billones (1000 millones)'
+    
+    unknownArg: '&4Argumento desconocido. Prueba &3&o/hotels'
+    noWorld: '&cPorfavor especifica un mundo'
+    noHotel: '&cPorfavor especifica un hotel'
+    noPlayer: '&cPorfavor especifica un jugador'
+    userNonExistent: '&4El jugador especificado no existe'
+    roomNonExistent: '&4La habitación especificada no existe'
+    hotelNonExistent: '&4El hotel especificado no existe'
+    worldNonExistent: '&4El mundo especificado no existe'
+    
+    rent:
+      consoleRejected: La consola no puede alquilar habitaciones!
+      usage: '&4Uso correcto: &6&o/ht rent <Nombrehotel> <Numhabitación>'
+      invalidLocation: '&4La ubicación del cartel en el archivo de carteles no se resuelve en un cartel!'
+      invalidData: '&4El nombre del hotel o el número de la habitación no es válido'
+    
+    creationMode:
+      enter: '&aHas entrado en el modo creación de hoteles.'
+      exit: '&cHas salido del modo creación de hoteles.'
+      alreadyIn: '&4Ya estás en el modo creación!'
+      notAlreadyIn: '&4No estas en modo creación!'
+      reset: '&2Los archivos del inventario se han reestablecido.'
+      noarg: '&4Porfavor especifica &4el modo &6&oentrar &4o &6&osalir'
+      consoleRejected: La consola no puede usar el modo creación de hoteles!
+      
+    create:
+      maxHotelsReached: '&4Has alcanzado el número máximo de hoteles que puedes tener %max%'
+      creationSuccess: '&aActualmente tienes %tot% hoteles. Puedes tener otros %left%.'
+      hotelAlreadyPresent: '&4Ya hay un hotel presente aquí'
+      fail: '&4No se pudo crear el hotel. Has entrado en el modo creación de hoteles? (&3&o/hotels cm enter&r&4)'
+      consoleRejected: La consola no puede crear un hotel!
+      noName: '&4Dale un nombre a tu hotel!'
+   
+    room:
+      success: '&aHas creado la habitación %room% del hotel %hotel%'
+      NumhabitaciónInvalid: '&4El número de habitación no es un número entero válido!'
+      nextNewRoomFail: '&4No se pudo encontrar la siguiente habitación disponible! Prueba a especificar un número de habitación manualmente'
+      usage: '&4Uso correcto: &6&o/ht room <Nombrehotel> <Numhabitación>'
+      alreadyPresent: '&4Ya ahi una habitación presente aquí'
+    deleteHotel:
+      hasRentedRooms: '&4No puedes borrar este hotel debido a que algunas habitaciones están alquiladas!'
+    
+    deleteRoom:
+      usage: '&4Uso correcto: &6&o/ht delr <Nombrehotel> <Numhabitación> [nombreMundo]'
+      roomRented: '&4No puedes borrar esta habitación, ya que está alquilada!'
+    
+    renumber:
+      usage: '&4Uso correcto: &6&o/ht renum <Nombrehotel> <antiguoNúmero> <nuevoNúmero> [nombreMundo]'
+      success: '&2Has cambiado exitosamente la habitación %oldnum% por la habitación %newnum% del hotel %hotel%'
+      fail: '&4No se pudo reenumerar la habitación %oldnum%'
+      newNumTooBig: '&4El nuevo número es demasiado grande!'
+    
+    rename:
+      usage: '&4Uso correcto: &6&o/ht ren <antiguoNombre> <nuevoNombre> [nombreMundo]'
+      success: '&2Has renombreado exitosamente el hotel %hotel%'
+      failRooms: '&4No se pudo renombrar las habitaciones'
+    
+    removeRoom:
+      success: '&aSe ha eliminado la habitación exitosamente'
+      fail: '&4No se pudo eliminar la habitación'
+    
+    removeRegions:
+      success: '&aSe han eliminado las regiones del hotel exitosamente'
+      fail: '&4No se pudo eliminar las regiones del hotel'
+    
+    remove:
+      playerNotRenter: '&4El jugador especificado no alquiló la habitación especificada!'
+      noRenter: '&4La habitación especificada no ha sido alquilada!'
+      success: '&aSe ha eliminado exitosamente al jugador %player% de la habitación %room% del hotel %hotel%'
+      usage: '&4Uso correcto: &6&o/ht remove <nombreUsuario> <nombreHotel> <Numhabitación> [nombre del mundo]'
+    
+    check:
+      headerHotels: '&a==Lista de hoteles pertenecientes a %player%=='
+      noHotels: '&cNo tienes ningún hotel!'
+      lineHotels: '&6Hotel: &c%hotel%    &9Total: &r%total%   &aGratis: &r%free%'
+      headerRooms: '&a==Lista de habitaciones alquiladas por %player%=='
+      noRooms: '&cNo tienes ninguna habitación alquilada!'
+      lineRooms: '&6Hotel: &c%hotel%    &6RHabitación: &c%room%    &6Caduca en: &c%timeleft%'
+    
+    listHotels:
+      heading: '&a==  Lista de hoteles  =='
+      footer: '&c==  Final de lista de hoteles  =='
+      line: '&6Hotel: &c%hotel%%space%&9Total: &r%total%   &agratis: &r%free%'
+      
+    listRooms:
+      heading: '&a==  Lista de habitaciones del hotel %hotel%  =='
+      footer: '&c==  Final de lista de habitaciones del hotel %hotel%  =='
+      line: '&6Habitación n: &c%room%%space%%state%'
+      noRooms: '&cNo hay habitaciones en ese hotel'
+      usage: '&4Uso correcto: &6&o/ht rlist <Nombrehotel>'
+      
+    removeSigns:
+      success: '&aSe han quitado todos los carteles'
+      
+    friend:
+      usage: '&4Uso correcto: &6&o/ht friend <add/remove/list> <Nombrehotel> <Nombrehabitación> [Nombreamigo]'
+      wrongData: '&4El hotel o el número de habitación no cuadra con ninguna localización existente'
+      noRenter: '&4La habitación especificada no tiene inquilino!'
+      notRenter: '&4No eres en inquilino de la habitación especificada!'
+      consoleRejected: La consola no puede ni agregar/quitar a usuarios de tu lista de amigos!
+      addYourself: '&4No te puedes agregar a ti mismo a tu lista de amigos!'
+      nonExistent: '&4No puedes agregar a amigos imaginarios en tu lista de amigos!'
+      friendNotInList: '&4El usuario especificado no está en tu lista de amigos!'
+      addSuccess: '&aSe ha añadido a %friend% a tu lista de amigos'
+      removeSuccess: '&aSe ha quitado a %friend% de tu lista de amigos'
+      noFriends: '&2No has añadido a ningún amigo a la habitación especificada'
+      
+      list:
+        heading: '&a==Lista de amigos para la habitación n. %room% del hotel %hotel%=='
+        footer: '&c==Final de la lista de amigos=='
+        line: '&6Amigo: &c%name%'
+        
+    sethome:
+      consoleRejected: La consola no puede establecer ningún punto de aparición!
+      notInHotelRegion: '&4No estás en ninguna región del hotel!'
+      notInCreationMode: '&4No estas en modo creación!'
+      defaultHomeSet: '&aPunto de aparición establecido'
+      userHomeSet: '&aPunto de aparición de usuario establecido'
+      hotelHomeSet: '&aPunto de aparición de hotel establecio'
+      
+    home:
+      consoleRejected: La consola no te puede llevar al punto de aparición!
+      noHomeSet: '&4Ningún punto de aparición establecido!'
+      regionNotFound: '&4No se ha encontrado el hotel o la habitación solicitada!'
+      usage: '&4Uso correcto: &6&o/ht home <Nombrehotel> [Numhabitación]'
+      notRenterNoPermission: '&4No eres el inquilino o no tienes permisos para hacer eso!'
+    
+    reload:
+      success: '&aLa configuración de los archivos a sido recargada'
+      
+    sellhotel:
+      consoleRejected: La consola no puede comprar un hotel!
+      usage: '&4Uso correcto: &6&o/ht sellh <Nombrehotel> <buyerName> <precio>'
+      buyerNotOnline: '&4El comprador no está online!'
+      selling: '&aEl jugador %seller% está vendiendo su hotel %hotel% a ti por %price%$. Escribe &6&o/ht buyh %hotel% &r&apara comprarlo'
+      sellingAsked: '&aEl jugador %buyer% ha sido preguntado si quiere comprar tu hotel'
+      sellingAlreadyAsked: '&4Ya has preguntado al jugador %buyer% si desea comprar tu hotel!'
+      invalidPrice: '&4El precio introducido no es válido!'
+      success: '&aAcabas de vender el hotel %hotel% al jugador %buyer% por %price%$'
+      expired: '&4La venta de tu hotel %hotel% ha caducado'
+    
+    buyhotel:
+      consoleRejected: La consola no puede comprar un hotel!
+      usage: '&4Uso correcto: &6&o/ht buyh <Nombrehotel>'
+      success: '&aAcabas de comprar el hotel %hotel% de %seller% por %price%$'
+      notOnSale: '&4Se hotel no está a la venta!'
+      notEnoughMoney: '&4No tienes suficiente dinero!'
+      
+    sellroom:
+      consoleRejected: La consola no puede vender una habitación!
+      usage: '&4Uso correcto: &6&o/ht sellr <Nombrehotel> <Numhabitación> <buyerName> <price>'
+      sellingAlreadyAsked: '&4Ya le has preguntado al jugador %buyer% si desea comprar tu habitación!'
+      sellingAsked: '&aEl jugador %buyer% ha preguntado si desea comprar tu habitación'
+      selling: '&aEl jugador %seller% está vendiendo su habitación %room% del hotel %hotel% a ti por %price%$. Escribe &6&o/ht buyr %hotel% %room% &r&apara comprarla'
+      success: '&Acabas de vender la habitación %room% del hotel %hotel% al jugador %buyer% por %price%$'
+      
+    buyroom:
+      consoleRejected: La consola no puede comprar una habitación!
+      usage: '&4Uso correcto: &6&o/ht buyr <Nombrehotel> <Numhabitación>'
+      notOnSale: '&4Esa habitación no está en venta!'
+      success: '&aAcabas de comprar la habitación %room% del hotel %hotel% de %seller% por %price%$'
+      
+    roomreset:
+      enable: '&aLa habitación %room% del hotel %hotel% se reestablecerá cuando se agote el tiempo'
+      disable: '&cLa habitación %room% del hotel %hotel% no se reestablecerá cuando se agote el tiempo'
+      usage: '&4Uso correcto: &6&o/ht roomreset <Nombrehotel> <Numhabitación>'

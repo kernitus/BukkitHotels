@@ -61,6 +61,8 @@ public class HotelsConfigHandler {
 			setupLanguage("frFR", PLUGIN); break;
 		case "ruRU": case "ru":
 			setupLanguage("ruRU", PLUGIN); break;
+		case "esES": case "es":
+			setupLanguage("esES", PLUGIN); break;
 
 		case "custom": break;
 

@@ -3,8 +3,8 @@
 # Spigot Page: https://www.spigotmc.org/resources/hotels.2047/
 # GitHub Page: https://github.com/kernitus/BukkitHotels
 
-# Available languages: enGB, itIT, zhCN, znTW, frFR, ruRU
-# Looking for translator for German and Spanish
+# Available languages: enGB, itIT, zhCN, znTW, frFR, ruRU, esES
+# Looking for translator for German or any other language
 # You must delete the current locale.yml and do /ht reload for the locale to update
 language: enGB
 

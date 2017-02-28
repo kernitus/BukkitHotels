@@ -269,8 +269,8 @@ chat:
       notRenterNoPermission: '&4Non sei l''affituario o non hai il permesso per fare ciò'
     sellhotel:
       consoleRejected: La console non può vendere un hotel!
-      usage: '&4Utilizzo corretto: &6&o/ht sellh <nomeHotel> <nomeCompratore> <prezzo>'
-      buyerNotOnline: '&4Il compratore non è online!'
+      usage: '&4Utilizzo corretto: &6&o/ht sellh <nomeHotel> <nomeAcquirente> <prezzo>'
+      buyerNotOnline: '&4L''acquirente non è online!'
       selling: '&aIl giocatore %seller% sta vendendo il suo hotel %hotel% a te per $%price%. Scrivi &6&o/ht buyh %hotel% &r&aper comprarlo'
       sellingAsked: '&aRichiesta di acquisto inviata al giocatore %buyer%'
       sellingAlreadyAsked: '&4Hai già chiesto al giocatore %buyer% se vuole comprare il tuo hotel!'
@@ -286,7 +286,7 @@ chat:
       expired: '&4L''offerta di vendita dell''hotel %hotel% è scaduta'
     sellroom:
       consoleRejected: La console non può vendere una stanza!
-      usage: '&4Utilizzo corretto: &6&o/ht sellr <nomeHotel> <numStanza> <nomeCompratore> <prezzo>'
+      usage: '&4Utilizzo corretto: &6&o/ht sellr <nomeHotel> <numStanza> <nomeAcquirente> <prezzo>'
       sellingAlreadyAsked: '&4Hai già chiesto al giocatore %buyer% se vogliono comprare la tua stanza!'
       sellingAsked: '&aHai chiesto al giocatore %buyer% se voglion comprare la tua stanza'
       selling: '&aIl giocatore %seller% sta vendendo la propria stanza %room% dell'' %hotel% per $%price%. Scrivi &6&o/ht buyr %hotel% %room% &r&per comprarla'
@@ -297,3 +297,13 @@ chat:
       usage: '&4Utilizzo corretto: &6&o/ht buyr <nomeHotel> <numStanza>'
       notOnSale: '&4Quella stanza non è in vendita!'
       success: '&aHai appena comprato la stanza %room% dell''hotel %hotel% da %seller% per $%price%'
+      
+    roomreset:
+      enable: '&3La stanza %room% dell''hotel %hotel% d''ora in poi si resetterà allo scadere dell''affitto'
+      disable: '&cLa stanza %room% dell''hotel %hotel% non si resetterà più allo scadere dell''affitto'
+      usage: '&4Utilizzo corretto: &6&o/ht roomreset <nomeHotel> <numStanza>'
+      
+    resetroom:
+      usage: '&4Utilizzo corretto: &6&o/ht resetroom <nomeHotel> <numStanza>'
+      notSetup: '&4Questa stanza non è stata preparata per il reset!'
+      success: '&aLa stanza %room% dell''hotel %hotel% è stata resettata'

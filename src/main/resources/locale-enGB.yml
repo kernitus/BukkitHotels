@@ -122,6 +122,7 @@ chat:
   commands:
     youDoNotOwnThat: '&4You do not own that!'
     somethingWentWrong: '&4Whoops! Something went wrong while executing that command'
+    fileSaveFail: '&4Something went wrong while saving a file'
     
     commands:
       header: '&4================================'
@@ -140,12 +141,16 @@ chat:
       rlist: '&6/ht rlist <hotelName> - &aLists all rooms in specified hotel'
       friend: '&6/ht <friend/f> <add/remove> <hotelName> <roomNum> <playerName> - &aAdds/removes a player from the list of friends that can access the specified room'
       friendList: '&6/ht <friend/f> list <hotelName> <roomNum> - &aLists players in friend list of specified hotel room'
-      sellh: '&6/ht sellh <hotelName> <playerName> <price> - &aOffers to sell your hotel to specified user for specified price'
+      sellh: '&6/ht sellh <hotelName> <playerName> <price> - &aOffers for sale your hotel to specified player'
       buyh: '&6/ht buyh <hotelName> - &aBuys specified hotel from owner if it is on sale'
+      sellr: '&6/ht sellr <hotelName> <roomNum> <playerName> <price> - &aOffers for sale your room to specified player'
+      buyr: '&6/ht buyr <hotelName> <roomNum> - &aBuys room off of room owner if they offered it for sale to you'
       reload: '&6/ht reload - &aReloads all configuration files'
       remove: '&6/ht remove <playerName> <hotelName> <roomNum> - &aRemoves player from his rented room'
       delr: '&6/ht delr <hotelName> <roomNum> - &aDeletes specified room'
       delete: '&6/ht delete <hotelName> - &aDelete specified hotel'
+      roomreset: '&6/ht roomreset <hotelName> <roomNum> - &aToggles resetting un unrent for specified room'
+      resetroom: '&6/ht resetroom <hotelName> <roomNum> - &aResets specified room'
       
     help:
       header: '&4================================'
@@ -346,6 +351,11 @@ chat:
       success: '&aYou have just bought room %room% of the %hotel% hotel from %seller% for $%price%'
       
     roomreset:
-      enable: '&9The room %room% of the %hotel% hotel &3will now reset on rent expiry'
+      enable: '&3The room %room% of the %hotel% hotel will now reset on rent expiry'
       disable: '&cThe room %room% of the %hotel% hotel will no longer reset on rent expiry'
       usage: '&4Correct usage: &6&o/ht roomreset <hotelName> <roomNum>'
+      
+    resetroom:
+      usage: '&4Correct usage: &6&o/ht resetroom <hotelName> <roomNum>'
+      notSetup: '&4This room is not setup to reset!'
+      success: '&aRoom %room% of the %hotel% hotel has just been reset'
