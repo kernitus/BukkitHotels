@@ -126,27 +126,25 @@ public class WorldGuardManager {
 		return getRegion(world, "hotel-"+hotelName+"-"+num);
 	}
 	public static void renameRegion(String oldname, String newname,World world){
-		if(hasRegion(world, oldname)){//If old region exists
-			ProtectedRegion oldr = getRegion(world, oldname);//Get old region
-			ProtectedRegion newr2;
-			if(oldr instanceof ProtectedCuboidRegion)
-				newr2 = new ProtectedCuboidRegion(newname, oldr.getMinimumPoint(), oldr.getMaximumPoint());
-			else if(oldr instanceof ProtectedPolygonalRegion)
-				newr2 = new ProtectedPolygonalRegion(newname, oldr.getPoints(), oldr.getMinimumPoint().getBlockY(), oldr.getMaximumPoint().getBlockY());
-			else{
-				System.out.println("There was a problem renaming the region "+oldname); return; }
+		if(!hasRegion(world, oldname)) return; //If old region exists
+		ProtectedRegion oldr = getRegion(world, oldname);//Get old region
+		ProtectedRegion newr2;
+		if(oldr instanceof ProtectedCuboidRegion)
+			newr2 = new ProtectedCuboidRegion(newname, oldr.getMinimumPoint(), oldr.getMaximumPoint());
+		else if(oldr instanceof ProtectedPolygonalRegion)
+			newr2 = new ProtectedPolygonalRegion(newname, oldr.getPoints(), oldr.getMinimumPoint().getBlockY(), oldr.getMaximumPoint().getBlockY());
+		else{ System.out.println("There was a problem renaming the region "+oldname); return; }
 
-			addRegion(world, newr2);
-			ProtectedRegion newr = getRegion(world, newname);
-			Map<Flag<?>, Object> flags = oldr.getFlags();
-			newr.setFlags(flags);
-			DefaultDomain owners = oldr.getOwners();
-			DefaultDomain members = oldr.getMembers();
-			newr.setOwners(owners);
-			newr.setMembers(members);
-			removeRegion(world, oldr.getId());
-			saveRegions(world);
-		}
+		addRegion(world, newr2);
+		ProtectedRegion newr = getRegion(world, newname);
+		Map<Flag<?>, Object> flags = oldr.getFlags();
+		newr.setFlags(flags);
+		DefaultDomain owners = oldr.getOwners();
+		DefaultDomain members = oldr.getMembers();
+		newr.setOwners(owners);
+		newr.setMembers(members);
+		removeRegion(world, oldr.getId());
+		saveRegions(world);
 	}
 	public static Collection<ProtectedRegion> getRegions(World world){
 		return getRM(world).getRegions().values();
@@ -164,19 +162,15 @@ public class WorldGuardManager {
 		Collection<ProtectedRegion> regions = getRegions(world);
 		System.out.println("World: "+world.getName()+" regions "+regions.size()+" Region: "+region.getId());
 		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
-		for(ProtectedRegion reg : inter){
-			if(reg.getId().startsWith("hotel-"))
-				return true;
-		}
+		for(ProtectedRegion reg : inter)
+			if(reg.getId().startsWith("hotel-")) return true;
 		return false;
 	}
 	public static boolean doesRoomRegionOverlap(ProtectedRegion region, World world){
 		Collection<ProtectedRegion> regions = getRegions(world);
 		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
-		for(ProtectedRegion reg : inter){
-			if(reg.getId().matches("hotel-\\w+-\\d+"))//It's a room region
-				return true;
-		}
+		for(ProtectedRegion reg : inter)
+			if(reg.getId().matches("hotel-\\w+-\\d+")) return true; //It's a room region
 		return false;
 	}
 	public static void setFlags(ConfigurationSection section, ProtectedRegion r, String name, World world){
@@ -190,10 +184,9 @@ public class WorldGuardManager {
 		for(String key : section.getKeys(true)){
 			String pureKey = key.replaceAll(".+\\.", "");
 			String keyValue = section.getString(key);
-			if(keyValue==null || keyValue.equalsIgnoreCase("none") || keyValue.startsWith("MemorySection"))
-				continue;
+			if(keyValue==null || keyValue.equalsIgnoreCase("none") || keyValue.startsWith("MemorySection")) continue;
 
-			if(keyValue.contains("-g ")){		
+			if(keyValue.contains("-g ")){	
 				final Pattern pattern = Pattern.compile("(\\s?)(-g\\s)(\\w+)(\\s?)");
 				final Matcher matcher = pattern.matcher(keyValue);
 

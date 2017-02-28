@@ -95,7 +95,7 @@ public class RoomTask extends BukkitRunnable {
 				for(Hotel hotel : hotelsThatHadRoomsUpdate)
 					hotel.updateReceptionSigns();
 			}
-		},20*10L); //10 seconds after updating rooms we update reception signs to redistribute the lag
+		}, 20 * 10L); //10 seconds after updating rooms we update reception signs to redistribute the lag
 	}
 
 	private World getWorldFromRoomSign(YamlConfiguration config){

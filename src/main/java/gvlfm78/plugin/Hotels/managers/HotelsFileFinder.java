@@ -27,9 +27,9 @@ public class HotelsFileFinder {
 
 		ArrayList<String> nameslist = new ArrayList<>();
 
-		for (String name : filenames) {
+		for (String name : filenames)
 			nameslist.add(name);
-		}
+
 		return nameslist;
 	}
 }
