@@ -590,6 +590,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(!isPlayer){ Mes.mes(sender, ("chat.commands.buyroom.consoleRejected")); return false; }
 
 				Player p = (Player) sender;
+				if(!Mes.hasPerm(p, "hotels.buy.room")){ Mes.mes(p, "chat.noPermission"); return false; }
 				if(length<3){ Mes.mes(p, "chat.commands.buyroom.usage"); return false; }
 
 				World world = p.getWorld();
@@ -678,6 +679,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 			}
 			else if(args[0].equalsIgnoreCase("roomreset")){
+				if(!Mes.hasPerm(sender, "hotels.reset.toggle")){ Mes.mes(sender, "chat.noPermission"); return false; }
 				if(args.length<3){ Mes.mes(sender, "chat.commands.roomreset.usage"); return false; }
 				//Command to toggle resetting of rooms upon rent expiry
 				Room room = new Room(args[1], args[2], sender);
@@ -694,6 +696,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 			}
 			else if(args[0].equalsIgnoreCase("resetroom")){
+				if(!Mes.hasPerm(sender, "hotels.reset.reset")){ Mes.mes(sender, "chat.noPermission"); return false; }
 				if(args.length<3){ Mes.mes(sender, "chat.commands.resetroom.usage"); return false; }
 				Room room = new Room(args[1], args[2], sender);
 

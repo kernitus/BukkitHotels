@@ -98,6 +98,18 @@ chat:
         lore1: Tasto-D per controllare
         lore2: conflitto fra regioni
   commands:
+    unknownArg: '&4Argomento sconosciuto. Prova &3&o/hotels'
+    noWorld: '&cDevi specificare un mondo'
+    noHotel: '&cDevi specificare un hotel'
+    noPlayer: '&cDevi specificare un giocatore'
+    userNonExistent: '&4L''utente specificato non esiste'
+    roomNonExistent: '&4La stanza specificata non esiste'
+    hotelNonExistent: '&4L''hotel specificato non esiste'
+    worldNonExistent: '&4Il mondo specificato non esiste'
+    somethingWentWrong: '&4Oops! Qualcosa è andato storto con quel comando'
+    fileSaveFail: '&4Qualcosa è andato storto nel salvataggio di un file'
+    consoleRejected: 'The console can''t run this command!'
+    
     commands:
       header: '&4================================'
       subheader: '&5--Plugin Hotels pagina aiuto comandi--'
@@ -119,8 +131,12 @@ chat:
       remove: '&6/ht remove <nomeGiocatore> <nomeHotel> <numStanza> - &aRimuove il giocatore dalla sua stanza affitata'
       delr: '&6/ht delr <nomeHotel> <numStanza> - &aRimuove stanza specificata'
       delete: '&6/ht delete <nomeHotel> - &aRimuove hotel specificato'
-      sellh: '&6/ht sellh <nomeHotel> <nomegiocatore> <prezzo> - &aOffre in vendita il tuo hotel al giocatore specificato per il prezzo specificato'
+      sellh: '&6/ht sellh <nomeHotel> <nomeGiocatore> <prezzo> - &aOffre in vendita il tuo hotel al giocatore specificato per il prezzo specificato'
       buyh:  '&6/ht buyh <nomeHotel> - &aCompra l''hotel specificato se è in vendita'
+      sellr:  '&6/ht sellr <nomeHotel> <numStanza> <nomeGiocatore> <prezzo> - &aOffre in vendita la tua stanza al giocatore specificato'
+      buyr: '&6/ht buyr <nomeHotel> <numStanza> - &aAcquista la stanza dal padrone se te l''ha offerta in vendita'
+      roomreset: '&6/ht roomreset <nomeHotel> <numStanza> - &aSpegne/accende il reset della stanza allo scadere dell''affitto'
+      resetroom: '&6/ht resetroom <nomeHotel> <numStanza> - &aResetta la stanza specificata'
     help:
       header: '&4================================'
       subheader: '&5--Plugin Hotels pagina di aiuto--'
@@ -156,14 +172,6 @@ chat:
         '6': '&e    3d 6m 2s'
         '7': '&9&oPuoi usare &20 &9&ocome tempo per rendere l''affitto infinito'
         '8': '&9&oNel costo, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2milione&9 &5b&9 = &2miliardo'
-    unknownArg: '&4Argomento sconosciuto. Prova &3&o/hotels'
-    noWorld: '&cDevi specificare un mondo'
-    noHotel: '&cDevi specificare un hotel'
-    noPlayer: '&cDevi specificare un giocatore'
-    userNonExistent: '&4L''utente specificato non esiste'
-    roomNonExistent: '&4La stanza specificata non esiste'
-    hotelNonExistent: '&4L''hotel specificato non esiste'
-    worldNonExistent: '&4Il mondo specificato non esiste'
     reload:
       success: '&aFile di configurazione ricaricati correttamente'
     rent:

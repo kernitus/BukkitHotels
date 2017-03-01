@@ -120,6 +120,14 @@ chat:
         lore2: conflictos entre regiones
         
   commands:
+    unknownArg: '&4Argumento desconocido. Prueba &3&o/hotels'
+    noWorld: '&cPorfavor especifica un mundo'
+    noHotel: '&cPorfavor especifica un hotel'
+    noPlayer: '&cPorfavor especifica un jugador'
+    userNonExistent: '&4El jugador especificado no existe'
+    roomNonExistent: '&4La habitación especificada no existe'
+    hotelNonExistent: '&4El hotel especificado no existe'
+    worldNonExistent: '&4El mundo especificado no existe'
     youDoNotOwnThat: '&4No te pertenece eso!'
     somethingWentWrong: '&4Whoops! algo ha fallado mientras ejecutabas el comando'
     
@@ -183,15 +191,6 @@ chat:
         '6': '&e    3d 6m 2s'
         '7': '&9&oPuedes usar &20 &9&ocomo tiempo para que el tiempo de alquiler sea infinito'
         '8': '&9&oEn el coste, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2millones&9 &5b&9 = &2billones (1000 millones)'
-    
-    unknownArg: '&4Argumento desconocido. Prueba &3&o/hotels'
-    noWorld: '&cPorfavor especifica un mundo'
-    noHotel: '&cPorfavor especifica un hotel'
-    noPlayer: '&cPorfavor especifica un jugador'
-    userNonExistent: '&4El jugador especificado no existe'
-    roomNonExistent: '&4La habitación especificada no existe'
-    hotelNonExistent: '&4El hotel especificado no existe'
-    worldNonExistent: '&4El mundo especificado no existe'
     
     rent:
       consoleRejected: La consola no puede alquilar habitaciones!

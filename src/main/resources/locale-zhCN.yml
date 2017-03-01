@@ -103,6 +103,16 @@ chat:
         lore1: '右键点击检查'
         lore2: '区域之间是否有冲突'
   commands:
+    unknownArg: '&4未知参数. 使用 &3&o/hotels 寻找解决方案'
+    noWorld: '&c请指定世界名'
+    noHotel: '&c请指定旅馆名称'
+    noPlayer: '&c请指定玩家名'
+    userNonExistent: '&4指定用户不存在'
+    roomNonExistent: '&4指定房间不存在'
+    hotelNonExistent: '&4指定旅馆不存在'
+    worldNonExistent: '&4指定世界不存在'
+    somethingWentWrong: '&4哎哟喂! 执行那个命令的时候发生了一些错误'
+    fileSaveFail: '&4在保存文件时发生了一些错误'
     commands:
       header: '&4================================'
       subheader: '&5--Hotels 插件指令帮助页面--'
@@ -126,6 +136,10 @@ chat:
       delete: '&6/ht delete <旅馆名> - &a删除指定名称的旅馆'
       sellh: '&6/ht sellh <旅馆名称> <玩家名> <价格> - &a以指定价格将一间指定的旅馆出售给一名指定名称的用户'
       buyh: '&6/ht buyh <旅馆名称> - &a购买一间指定的旅馆(如果可用)'
+      roomreset: '&6/ht roomreset <旅馆名> <房间号> - &a切换指定房间的重设开启或关闭'
+      resetroom: '&6/ht resetroom <旅馆名> <房间号> - &a重置指定房间'
+      sellr: '&6/ht sellr <旅馆名> <房间号> <playerName> <价格> - &a向指定玩家出售你的房间'
+      buyr: '&6/ht buyr <旅馆名> <房间号> - &a买下你获得购买邀请的指定的房间'
     help:
       header: '&4================================'
       subheader: '&5--Hotels 插件帮助界面--'
@@ -161,14 +175,6 @@ chat:
         '6': '&e    3d 6m 2s     &7(3天零6分2秒)'
         '7': '&9&o你可以设置 &20 &9&o这等效于无限时间'
         '8': '&9&o关于价格设置: &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2百万&9 &5b&9 = &2十亿'
-    unknownArg: '&4未知参数. 使用 &3&o/hotels 寻找解决方案'
-    noWorld: '&c请指定世界名'
-    noHotel: '&c请指定旅馆名称'
-    noPlayer: '&c请指定玩家名'
-    userNonExistent: '&4指定用户不存在'
-    roomNonExistent: '&4指定房间不存在'
-    hotelNonExistent: '&4指定旅馆不存在'
-    worldNonExistent: '&4指定世界不存在'
     reload:
       success: '&a配置文件成功重载'
     rent:
@@ -301,3 +307,23 @@ chat:
       usage: '&4正确用法: &6&o/ht buyr <旅馆名> <房间号>'
       notOnSale: '&4那个房间并未在出售中!'
       success: '&a你刚刚从 %seller% 手中以 $%price% 的价格买下了位于 %hotel% 旅馆的 %room% 房间'
+    chat.commands.sellroom.consoleRejected: 控制台不能购买房间!
+    sellroom:
+      usage: '&4正确用法: &6&o/ht sellr <旅馆名> <房间号> <购买者> <价格>'
+      sellingAlreadyAsked: '&4你已经向 %buyer% 询问过他们是否愿意购买你的房间了!'
+      sellingAsked: '&a玩家 %buyer% 已经被询问过是否愿意购买你的房间了'
+      selling: '&a玩家 %seller% 正在以 $%price% 的价格出售他位于 %hotel% 旅馆的 %room% 房间. 输入 &6&o/ht buyr %hotel% %room% &r&a买下它'
+      success: '&a你刚刚以 $%price% 的价格出售给 %buyer% 位于 %hotel% 旅馆的 %room% 房间'
+    buyroom:
+      consoleRejected: 控制台不能购买房间!
+      usage: '&4正确用法: &6&o/ht buyr <旅馆名> <房间号>'
+      notOnSale: '&4那个房间没有出售中!'
+      success: '&a你刚刚从%seller%以 $%price% 的价格买下了他位于 %hotel% 旅馆的 %room% 房间'
+    roomreset:
+      enable: '&3从现在开始，位于 %hotel% 旅馆的 %room% 房间将在租期结束后重置房间内部'
+      disable: '&c从现在开始，位于 %hotel% 旅馆的 %room% 房间将不会在租期结束后重置房间内部'
+      usage: '&4正确用法: &6&o/ht roomreset <旅馆名> <房间号>'
+    resetroom:
+      usage: '&4正确用法: &6&o/ht resetroom <旅馆名> <房间号>'
+      notSetup: '&4此房间还未设置重置!'
+      success: '&a位于 %hotel% 旅馆的 %room% 房间刚刚被重置了'

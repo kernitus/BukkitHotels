@@ -120,10 +120,18 @@ chat:
         lore2: conflict between regions
         
   commands:
+    unknownArg: '&4Unknown argument. Try &3&o/hotels'
+    noWorld: '&cPlease specify world'
+    noHotel: '&cPlease specify hotel'
+    noPlayer: '&cPlease specify player'
+    userNonExistent: '&4Specified user does not exist'
+    roomNonExistent: '&4Specified room does not exist'
+    hotelNonExistent: '&4Specified hotel does not exist'
+    worldNonExistent: '&4Specified world does not exist'
     youDoNotOwnThat: '&4You do not own that!'
     somethingWentWrong: '&4Whoops! Something went wrong while executing that command'
     fileSaveFail: '&4Something went wrong while saving a file'
-    consoleRejected: '&4The console can''t run this command!'
+    consoleRejected: 'The console can''t run this command!'
     
     commands:
       header: '&4================================'
@@ -150,7 +158,7 @@ chat:
       remove: '&6/ht remove <playerName> <hotelName> <roomNum> - &aRemoves player from his rented room'
       delr: '&6/ht delr <hotelName> <roomNum> - &aDeletes specified room'
       delete: '&6/ht delete <hotelName> - &aDelete specified hotel'
-      roomreset: '&6/ht roomreset <hotelName> <roomNum> - &aToggles resetting un unrent for specified room'
+      roomreset: '&6/ht roomreset <hotelName> <roomNum> - &aToggles resetting on unrent for specified room'
       resetroom: '&6/ht resetroom <hotelName> <roomNum> - &aResets specified room'
       
     help:
@@ -189,15 +197,6 @@ chat:
         '6': '&e    3d 6m 2s'
         '7': '&9&oYou can use &20 &9&oas a time to make the rent infinite'
         '8': '&9&oIn cost, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2billion (1000 million)'
-    
-    unknownArg: '&4Unknown argument. Try &3&o/hotels'
-    noWorld: '&cPlease specify world'
-    noHotel: '&cPlease specify hotel'
-    noPlayer: '&cPlease specify player'
-    userNonExistent: '&4Specified user does not exist'
-    roomNonExistent: '&4Specified room does not exist'
-    hotelNonExistent: '&4Specified hotel does not exist'
-    worldNonExistent: '&4Specified world does not exist'
     
     rent:
       consoleRejected: The console can't rent rooms!

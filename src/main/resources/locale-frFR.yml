@@ -120,7 +120,15 @@ chat:
         lore2: 'Conflit entre les régions'
 
   commands:
-  youDoNotOwnThat: '&4Tu ne possédes pas ça'
+    unknownArg: '&4Sujet inconnu. Essai &3&o/hotels'
+    noWorld: '&cVous devez spécifier un monde'
+    noHotel: '&cVous devez spécifier un hôtel'
+    noPlayer: '&cVous devez spécifier un joueur'
+    userNonExistent: '&4Le joueur spécifié n''existe pas'
+    roomNonExistent: '&4La pièce spécifié n''existe pas'
+    hotelNonExistent: '&4L''hôtel spécifié n''existe pas'
+    worldNonExistent: '&4Le monde spécifié n''existe pas'
+    youDoNotOwnThat: '&4Tu ne possédes pas ça'
   
   commands:
       header: '&4================================'
@@ -183,15 +191,6 @@ chat:
         '6': '&e    3d 6m 2s'
         '7': '&9&oVous pouvez utiliser &20 &9&ocomme temps pour rendre le loyer infini'
         '8': '&9&oDans le prix, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2milliard'
-    
-  unknownArg: '&4Sujet inconnu. Essai &3&o/hotels'
-  noWorld: '&cVous devez spécifier un monde'
-  noHotel: '&cVous devez spécifier un hôtel'
-  noPlayer: '&cVous devez spécifier un joueur'
-  userNonExistent: '&4Le joueur spécifié n''existe pas'
-  roomNonExistent: '&4La pièce spécifié n''existe pas'
-  hotelNonExistent: '&4L''hôtel spécifié n''existe pas'
-  worldNonExistent: '&4Le monde spécifié n''existe pas'
     
   reload:
       success: '&aFichier de configuration chargé correctement'
