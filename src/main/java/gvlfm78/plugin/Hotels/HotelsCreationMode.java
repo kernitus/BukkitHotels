@@ -20,10 +20,12 @@ import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Polygonal2DSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -134,6 +136,12 @@ public class HotelsCreationMode {
 		}
 		else{ Mes.mes(p, "chat.creationMode.selectionInvalid"); return; }
 		room.createRegion(r, p);
+		try {
+			room.setShouldReset(HotelsConfigHandler.getconfigyml().getBoolean("defaultReset"));
+		} catch (DataException | IOException | WorldEditException e) {
+			Mes.mes(p, "chat.commands.somethingWentWrong");
+			e.printStackTrace();
+		}
 	}
 
 	public static void resetInventoryFiles(CommandSender s){

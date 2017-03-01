@@ -1,4 +1,4 @@
-package kernitus.plugin.Hotels.Signs;
+package kernitus.plugin.Hotels.signs;
 
 import java.io.File;
 import java.util.UUID;

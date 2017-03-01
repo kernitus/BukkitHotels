@@ -32,9 +32,6 @@ hotelTaskTimerMinutes: 3
 # If the money spent is less than the set amount the owner will not receive any money.
 tax: 20%
 
-# If hotels should check for updates
-checkForUpdates: true
-
 # If players should be allowed to enter free rooms
 allowPlayersIntoFreeRooms: true
 
@@ -47,9 +44,17 @@ stopOwnersEditingRentedRooms: true
 # If doing /ht commands should only display the commands a player has permission for
 onlyDisplayAllowedCommands: true
 
+# If rooms upon creation should be resettable
+# You can override this in-game per-room with the roomreset commands
+defaultReset: false
+
 ####################
 #### EXTRA BITS ####
 ####################
+
+# If hotels should check for updates
+# This doesn't download the update, it just tells you it's available
+checkForUpdates: true
 
 # Enabled this option for troubleshooting purposes only.
 # This will make debug messages appear

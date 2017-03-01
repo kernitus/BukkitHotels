@@ -14,6 +14,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
@@ -25,7 +26,6 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import kernitus.plugin.Hotels.Signs.RoomSign;
 import kernitus.plugin.Hotels.events.RentExpiryEvent;
 import kernitus.plugin.Hotels.events.RoomDeleteEvent;
 import kernitus.plugin.Hotels.events.RoomRentEvent;
@@ -50,6 +50,7 @@ import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.TerrainManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.signs.RoomSign;
 import kernitus.plugin.Hotels.trade.RoomBuyer;
 import kernitus.plugin.Hotels.trade.TradesHolder;
 
@@ -67,10 +68,7 @@ public class Room {
 		this.world = hotel.getWorld();
 	}
 	public Room(Hotel hotel, String num){
-		this.hotel = hotel;
-		this.num = Integer.parseInt(num);
-		this.sconfig = getSignConfig();
-		this.world = hotel.getWorld();
+		this(hotel, Integer.parseInt(num));
 	}
 	public Room(World world, String hotelName, int num){
 		this.hotel = new Hotel(world, hotelName);
@@ -79,24 +77,32 @@ public class Room {
 		this.world = world;
 	}
 	public Room(World world, String hotelName, String num){
-		this.hotel = new Hotel(world, hotelName);
-		this.num = Integer.parseInt(num);
-		this.sconfig = getSignConfig();
-		this.world = world;
+		this(world, hotelName, Integer.parseInt(num));
 	}
 	public Room(String hotelName, int num){
 		//Use only when world is unknown, due to extra calculations involved to find it
-		this.hotel = new Hotel(hotelName);
+		hotel = new Hotel(hotelName);
 		this.num = num;
-		this.sconfig = getSignConfig();
-		this.world = hotel.getWorld();
+		sconfig = getSignConfig();
+		world = hotel.getWorld();
 	}
 	public Room(String hotelName, String num){
-		//Use only when world is unknown, due to extra calculations involved to find it
-		this.hotel = new Hotel(hotelName);
-		this.num = Integer.parseInt(num);
-		this.sconfig = getSignConfig();
-		this.world = hotel.getWorld();
+		this(hotelName, Integer.parseInt(num));
+	}
+	public Room(String hotelName, int num, CommandSender sender){
+		this.num = num;
+		if(sender instanceof Player){
+			world = ((Player) sender).getWorld();
+			hotel = new Hotel(world, hotelName);
+		}
+		else{
+			hotel = new Hotel(hotelName);
+			world = hotel.getWorld();
+		}
+		sconfig = getSignConfig();
+	}
+	public Room(String hotelName, String num, CommandSender sender){
+		this(hotelName, Integer.parseInt(num), sender);
 	}
 
 	//////////////////////

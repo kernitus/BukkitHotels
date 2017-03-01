@@ -70,8 +70,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(length<2){ Mes.mes(p ,"chat.commands.create.noName"); return false; }
 				if(Mes.hasPerm(sender, "hotels.create"))
 					HCE.cmdCreate(p, args[1]);
-				else
-					Mes.mes(p ,"chat.noPermission");		
+				else Mes.mes(p ,"chat.noPermission");		
 			}
 			else if(args[0].equalsIgnoreCase("help")){//Help pages
 				if(!Mes.hasPerm(sender, "hotels.create")){ Mes.mes(sender, "chat.noPermission"); return false; }
@@ -108,13 +107,11 @@ public class HotelsCommandHandler implements CommandExecutor {
 							HCE.check(args[1], sender);
 						else if(sender.hasPermission("hotels.check.others"))					
 							HCE.check(args[1], sender);
-						else
-							Mes.mes((Player) sender ,"chat.noPermission");
+						else Mes.mes((Player) sender ,"chat.noPermission");
 					}
 				} else if(length>=2)					
 					HCE.check(args[1], sender);
-				else
-					Mes.mes(sender ,"chat.commands.noPlayer");
+				else Mes.mes(sender ,"chat.commands.noPlayer");
 			}
 
 			else if(args[0].equalsIgnoreCase("reload")){
@@ -126,10 +123,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(!isPlayer){ Mes.mes(sender ,"chat.commands.rent.consoleRejected"); return false; }
 				Player p = (Player) sender;
 				if(!Mes.hasPerm(p, "hotels.rent")){ Mes.mes(p ,"chat.noPermission"); return false; }
-				if(length<3)
-					Mes.mes(p ,"chat.commands.rent.usage");
-				else
-					HCE.cmdRent(sender, args[1], args[2]);
+				if(length<3) Mes.mes(p ,"chat.commands.rent.usage");
+				else HCE.cmdRent(sender, args[1], args[2]);
 			}
 			else if(args[0].equalsIgnoreCase("friend") || args[0].equalsIgnoreCase("f")){
 				if(!isPlayer){ Mes.mes(sender ,"chat.commands.friend.consoleRejected"); return false; }
@@ -139,32 +134,28 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				switch(args[1].toLowerCase()){
 
-
 				case "add":
 					if(length>4)
-						HCE.cmdFriendAdd(p,args[2],args[3],args[4]);
+						HCE.cmdFriendAdd(p, args[2], args[3], args[4]);
 					else
 						Mes.mes(p ,"chat.commands.friend.usage");
 					break;
 
 				case "remove":
 					if(length>4)
-						HCE.cmdFriendRemove(p, args[2],args[3],args[4]);
+						HCE.cmdFriendRemove(p, args[2], args[3], args[4]);
 					else
 						Mes.mes(p ,"chat.commands.friend.usage");
 					break;
 
 				case "list":
 					if(length<4){ Mes.mes(p ,"chat.commands.friend.usage");  return false; }
-					Room room = new Room(args[2],args[3]);
+					Room room = new Room(args[2], args[3]);
 					if(!(isPlayer) || (isPlayer && room.isRenter(((Player) sender).getUniqueId())))
-						HCE.cmdFriendList(sender,args[2],args[3]);
-					else
-						Mes.mes(p ,"chat.commands.friend.notRenter");			
-					break;
+						HCE.cmdFriendList(sender, args[2], args[3]);
+					else Mes.mes(p ,"chat.commands.friend.notRenter"); break;
 
-				default:
-					Mes.mes(p ,"chat.commands.friend.usage");	
+				default: Mes.mes(p ,"chat.commands.friend.usage");	
 				}
 
 			}
@@ -191,28 +182,21 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				World w = null;
 
-				if(length<2 && isPlayer)
-					w = ((Player) sender).getWorld();
-				else if(length>1)
-					w = Bukkit.getWorld(args[1]);
-				else
-					Mes.mes(sender ,"chat.commands.noWorld");
+				if(length<2 && isPlayer) w = ((Player) sender).getWorld();
+				else if(length>1) w = Bukkit.getWorld(args[1]);
+				else Mes.mes(sender ,"chat.commands.noWorld");
 
-				if(w!=null)
-					HCE.listHotels(w,sender);
-				else
-					Mes.mes(sender ,"chat.commands.worldNonExistent");				
+				if(w!=null)	HCE.listHotels(w, sender);
+				else Mes.mes(sender ,"chat.commands.worldNonExistent");				
 			}
 			else if(args[0].equalsIgnoreCase("deleteroom") || args[0].equalsIgnoreCase("delr")){
 				if(!Mes.hasPerm(sender, "hotels.delete.rooms")){ Mes.mes(sender ,"chat.noPermission"); return false; }
 
 				if(length<3){ Mes.mes(sender ,"chat.commands.deleteRoom.usage"); return false; }
 
-				World world = (isPlayer && length!=4) ? ((Player) sender).getWorld() : Bukkit.getWorld(args[3]);
-
 				String hotelName = args[1];
 				String roomNum = args[2];
-				Hotel hotel = new Hotel(world, hotelName);
+				Hotel hotel = new Hotel(hotelName, sender);
 
 				if(!hotel.exists()){ Mes.mes(sender ,"chat.commands.hotelNonExistent"); return false; }
 
@@ -226,30 +210,26 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(!room.exists()){ Mes.mes(sender,"chat.commands.roomNonExistent"); return false; }
 
 				if(Mes.hasPerm(sender, "hotels.delete.rooms.admin") || room.isFree())
-					HCE.removeRoom(args[1], roomNum, world, sender);
-				else
-					Mes.mes(sender, "chat.commands.deleteRoom.roomRented");	
+					HCE.removeRoom(args[1], roomNum, room.getWorld(), sender);
+				else Mes.mes(sender, "chat.commands.deleteRoom.roomRented");	
 			}
 			else if(args[0].equalsIgnoreCase("rename") || args[0].equalsIgnoreCase("ren")){
 				if(!Mes.hasPerm(sender, "hotels.rename")){ Mes.mes(sender ,"chat.noPermission"); return false; }
 
 				if(length<3){ Mes.mes(sender, "chat.commands.rename.usage"); return false; }
 
-				World world;
+				World world = null;
 
-				if(isPlayer && length==3)
-					world = ((Player) sender).getWorld();
-				else if(length > 3)
-					world = Bukkit.getWorld(args[3]);
-				else{ Mes.mes(sender, "chat.commands.noWorld"); return false; }
+				if(isPlayer && length==3) world = ((Player) sender).getWorld();
+				else if(isPlayer && length > 3) world = Bukkit.getWorld(args[3]);
 
-				if(world==null){ Mes.mes(sender, "chat.commands.worldNonExistent"); return false; }
+				Hotel hotel = world==null ? new Hotel(args[1]) : new Hotel(world, args[1]);
+
+				if(!hotel.exists()){ Mes.mes(sender, "chat.commands.hotelNonExistent"); return false; }
 
 				if(!Mes.hasPerm(sender, "hotels.rename.admin") && 
-						!(isPlayer && WorldGuardManager.isOwner((Player) sender, WorldGuardManager.getHotelRegion(world, args[1])))){
+						!(isPlayer && WorldGuardManager.isOwner((Player) sender, WorldGuardManager.getHotelRegion(hotel.getWorld(), args[1])))){
 					Mes.mes(sender, "chat.commands.youDoNotOwnThat"); return false; }
-
-				Hotel hotel = new Hotel(world, args[1]);
 
 				try {
 					hotel.rename(args[2]);
@@ -264,17 +244,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(length<4){ Mes.mes(sender, "chat.commands.renumber.usage"); return false; }
 
-				World world;
-				if(length>4)
-					world = Bukkit.getWorld(args[4]);
-				else if(isPlayer)
-					world = ((Player) sender).getWorld();
-				else{ Mes.mes(sender, "chat.commands.renumber.usage"); return false; }
+				World world = null;
+				if(isPlayer && length > 4) world = Bukkit.getWorld(args[4]);
+				else if(isPlayer) world = ((Player) sender).getWorld();
 
-				if(world==null){ Mes.mes(sender, "chat.commands.worldNonExistent"); return false; }
+				Room room = null;
 
-				Room room = new Room(world, args[1], args[2]);
-				HCE.renumber(room,args[3],sender);
+				room = world==null ? new Room(args[1], args[2]) : new Room(world, args[1], args[2]); 
+				HCE.renumber(room, args[3], sender);
 			}
 
 			else if(args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("del")){
@@ -282,13 +259,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(length < 2){ Mes.mes(sender, "chat.commands.noHotel"); return false; }
 
-				Hotel hotel;
-
-				if(isPlayer){//Get world from player
-					Player p = (Player) sender;
-					hotel = new Hotel(p.getWorld(), args[1]);
-				} else 
-					hotel = new Hotel(args[1]);
+				Hotel hotel = new Hotel(args[1], sender);
 
 				if(!hotel.exists()){ Mes.mes(sender, "chat.commands.hotelNonExistent"); return false; }
 
@@ -313,15 +284,11 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(length<4){ Mes.mes(sender, "chat.commands.remove.usage"); return false; }
 
-				if(length>4)
-					HCE.removePlayer(Bukkit.getWorld(args[4]), args[2], args[3], args[1], sender);
-				else if(isPlayer)
-					HCE.removePlayer(((Player) sender).getWorld(), args[2], args[3], args[1], sender);
-				else
-					Mes.mes(sender, "chat.commands.noWorld");	
+				HCE.removePlayer(new Room(args[2], args[3], sender), args[1], sender);
 			}
 
-			else if(args[0].equalsIgnoreCase("room") && isPlayer){
+			else if(args[0].equalsIgnoreCase("room")){
+				if(!isPlayer){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
 				Player p = (Player) sender;
 				if(length<2){ Mes.mes(p, "chat.commands.room.usage"); return false; }
 
@@ -344,14 +311,13 @@ public class HotelsCommandHandler implements CommandExecutor {
 					}
 				} else { //Player did not specify room number
 					int roomNum = hotel.getNextNewRoom();
-					if(roomNum!=0)
-						HotelsCreationMode.roomSetup(hotelName, roomNum, p);
+					if(roomNum!=0) HotelsCreationMode.roomSetup(hotelName, roomNum, p);
 					else Mes.mes(p, "chat.commands.room.nextNewRoomFail");
 				}
 			}
 
 			else if(args[0].equalsIgnoreCase("sethome")){
-				if(!isPlayer){ Mes.mes(sender, "chat.commands.sethome.consoleRejected"); return false;	}
+				if(!isPlayer){ Mes.mes(sender, "chat.commands.sethome.consoleRejected"); return false; }
 
 				Player p = (Player) sender;
 
@@ -714,7 +680,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 			else if(args[0].equalsIgnoreCase("roomreset")){
 				if(args.length<3){ Mes.mes(sender, "chat.commands.roomreset.usage"); return false; }
 				//Command to toggle resetting of rooms upon rent expiry
-				Room room = new Room(args[1], args[2]);
+				Room room = new Room(args[1], args[2], sender);
 				if(!room.exists()){ Mes.mes(sender, "chat.commands.roomNonExistent"); return false; }
 
 				try {
@@ -729,10 +695,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 			else if(args[0].equalsIgnoreCase("resetroom")){
 				if(args.length<3){ Mes.mes(sender, "chat.commands.resetroom.usage"); return false; }
-				Room room = new Room(args[1], args[2]);
+				Room room = new Room(args[1], args[2], sender);
 
 				if(!room.getShouldReset()) { Mes.mes(sender, "chat.commands.resetroom.notSetup"); return false; }
-				
+
 				try {
 					room.resetRoom();
 					sender.sendMessage(Mes.getString("chat.commands.resetroom.success").replaceAll("%room%", String.valueOf(room.getNum())).replaceAll("%hotel%", room.getHotel().getName()) );
@@ -742,8 +708,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}	
 			}
 			//Other argument
-			else
-				Mes.mes(sender, "chat.commands.unknownArg");
+			else Mes.mes(sender, "chat.commands.unknownArg");
 		}
 		//Command is not /hotels
 		return false;

@@ -123,6 +123,7 @@ chat:
     youDoNotOwnThat: '&4You do not own that!'
     somethingWentWrong: '&4Whoops! Something went wrong while executing that command'
     fileSaveFail: '&4Something went wrong while saving a file'
+    consoleRejected: '&4The console can''t run this command!'
     
     commands:
       header: '&4================================'

@@ -333,9 +333,7 @@ public class HotelsCommandExecutor {
 			Mes.mes(sender, "chat.commands.removeRoom.success");
 		} catch (EventCancelledException e) {}
 	}
-	public void removePlayer(World world, String hotelName, String roomNum, String toRemovePlayer, CommandSender sender){
-
-		Room room = new Room(world, hotelName, roomNum);
+	public void removePlayer(Room room, String toRemovePlayer, CommandSender sender){
 
 		@SuppressWarnings("deprecation")
 		OfflinePlayer player = Bukkit.getOfflinePlayer(toRemovePlayer);
@@ -344,7 +342,10 @@ public class HotelsCommandExecutor {
 
 		try {
 			room.unrent();
-			sender.sendMessage(Mes.getString("chat.commands.remove.success").replaceAll("%player%", toRemovePlayer).replaceAll("%room%", roomNum).replaceAll("%hotel%", hotelName));
+			sender.sendMessage(Mes.getString("chat.commands.remove.success")
+					.replaceAll("%player%", toRemovePlayer)
+					.replaceAll("%room%", String.valueOf(room.getNum()))
+					.replaceAll("%hotel%", room.getHotel().getName()));
 		} catch (HotelNonExistentException e) {
 			Mes.mes(sender, "chat.commands.hotelNonExistent");
 		} catch (WorldNonExistentException e) {
