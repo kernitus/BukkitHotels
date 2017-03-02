@@ -65,7 +65,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					HCE.cmdCommandsAll(sender);
 			}
 			else if(args[0].equalsIgnoreCase("create") || args[0].equalsIgnoreCase("c")){//Create command
-				if(!isPlayer){ Mes.mes(sender, "chat.commands.create.consoleRejected"); return false; }
+				if(!isPlayer){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
 				Player p = (Player) sender;
 				if(length<2){ Mes.mes(p ,"chat.commands.create.noName"); return false; }
 				if(Mes.hasPerm(sender, "hotels.create"))
@@ -85,7 +85,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 			}
 			else if(args[0].equalsIgnoreCase("createmode") || args[0].equalsIgnoreCase("cm")){
-				if(!isPlayer){ Mes.mes(sender, "chat.commands.creationMode.consoleRejected"); return false; }
+				if(!isPlayer){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
 				Player p = (Player) sender;
 				if(length<2){ Mes.mes(p ,"chat.commands.creationMode.noarg"); return false; }
 				if(!Mes.hasPerm(p, "hotels.createmode")){ Mes.mes(p ,"chat.noPermission"); return false; }
@@ -120,14 +120,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 				Mes.mes(sender ,"chat.commands.reload.success");	
 			}
 			else if(args[0].equalsIgnoreCase("rent")){
-				if(!isPlayer){ Mes.mes(sender ,"chat.commands.rent.consoleRejected"); return false; }
+				if(!isPlayer){ Mes.mes(sender ,"chat.commands.consoleRejected"); return false; }
 				Player p = (Player) sender;
 				if(!Mes.hasPerm(p, "hotels.rent")){ Mes.mes(p ,"chat.noPermission"); return false; }
 				if(length<3) Mes.mes(p ,"chat.commands.rent.usage");
 				else HCE.cmdRent(sender, args[1], args[2]);
 			}
 			else if(args[0].equalsIgnoreCase("friend") || args[0].equalsIgnoreCase("f")){
-				if(!isPlayer){ Mes.mes(sender ,"chat.commands.friend.consoleRejected"); return false; }
+				if(!isPlayer){ Mes.mes(sender ,"chat.commands.consoleRejected"); return false; }
 				Player p = (Player) sender;
 				if(!Mes.hasPerm(p, "hotels.friend")){ Mes.mes(p ,"chat.noPermission"); return false; }
 				if(length<2){ Mes.mes(p ,"chat.commands.friend.usage"); return false; }
@@ -317,7 +317,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 
 			else if(args[0].equalsIgnoreCase("sethome")){
-				if(!isPlayer){ Mes.mes(sender, "chat.commands.sethome.consoleRejected"); return false; }
+				if(!isPlayer){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
 
 				Player p = (Player) sender;
 
@@ -372,7 +372,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 
 			else if(args[0].equalsIgnoreCase("home") || args[0].equalsIgnoreCase("hm")){
-				if(!isPlayer){ Mes.mes(sender, "chat.commands.home.consoleRejected"); return false; }
+				if(!isPlayer){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
 
 				Player p = (Player) sender;
 				World w = p.getWorld();
@@ -412,7 +412,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 			}
 			else if(args[0].equalsIgnoreCase("sellhotel") || args[0].equalsIgnoreCase("sellh")){
-				if(!isPlayer){ Mes.mes(sender, "chat.commands.sellhotel.consoleRejected"); return false;}
+				if(!isPlayer){ Mes.mes(sender, "chat.commands.consoleRejected"); return false;}
 
 				Player p = (Player) sender;
 
@@ -455,7 +455,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 
 			else if(args[0].equalsIgnoreCase("buyhotel") || args[0].equalsIgnoreCase("buyh")){
-				if(!isPlayer){ Mes.mes(sender, "chat.commands.buyhotel.consoleRejected"); return false; }
+				if(!isPlayer){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
 
 				Player p = (Player) sender;
 				if(length<2){ Mes.mes(p, "chat.commands.buyhotel.usage"); return false; }
@@ -540,7 +540,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 			}
 			else if(args[0].equalsIgnoreCase("sellroom") || args[0].equalsIgnoreCase("sellr")){
-				if(!isPlayer){ Mes.mes(sender, ("chat.commands.sellroom.consoleRejected")); return false;}
+				if(!isPlayer){ Mes.mes(sender, ("chat.commands.consoleRejected")); return false;}
 
 				Player p = (Player) sender;
 
@@ -587,7 +587,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 
 			else if(args[0].equalsIgnoreCase("buyroom") || args[0].equalsIgnoreCase("buyr")){
-				if(!isPlayer){ Mes.mes(sender, ("chat.commands.buyroom.consoleRejected")); return false; }
+				if(!isPlayer){ Mes.mes(sender, ("chat.commands.consoleRejected")); return false; }
 
 				Player p = (Player) sender;
 				if(!Mes.hasPerm(p, "hotels.buy.room")){ Mes.mes(p, "chat.noPermission"); return false; }

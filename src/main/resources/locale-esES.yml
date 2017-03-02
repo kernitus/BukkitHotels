@@ -193,7 +193,6 @@ chat:
         '8': '&9&oEn el coste, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2millones&9 &5b&9 = &2billones (1000 millones)'
     
     rent:
-      consoleRejected: La consola no puede alquilar habitaciones!
       usage: '&4Uso correcto: &6&o/ht rent <Nombrehotel> <Numhabitación>'
       invalidLocation: '&4La ubicación del cartel en el archivo de carteles no se resuelve en un cartel!'
       invalidData: '&4El nombre del hotel o el número de la habitación no es válido'
@@ -205,14 +204,12 @@ chat:
       notAlreadyIn: '&4No estas en modo creación!'
       reset: '&2Los archivos del inventario se han reestablecido.'
       noarg: '&4Porfavor especifica &4el modo &6&oentrar &4o &6&osalir'
-      consoleRejected: La consola no puede usar el modo creación de hoteles!
       
     create:
       maxHotelsReached: '&4Has alcanzado el número máximo de hoteles que puedes tener %max%'
       creationSuccess: '&aActualmente tienes %tot% hoteles. Puedes tener otros %left%.'
       hotelAlreadyPresent: '&4Ya hay un hotel presente aquí'
       fail: '&4No se pudo crear el hotel. Has entrado en el modo creación de hoteles? (&3&o/hotels cm enter&r&4)'
-      consoleRejected: La consola no puede crear un hotel!
       noName: '&4Dale un nombre a tu hotel!'
    
     room:
@@ -281,7 +278,6 @@ chat:
       wrongData: '&4El hotel o el número de habitación no cuadra con ninguna localización existente'
       noRenter: '&4La habitación especificada no tiene inquilino!'
       notRenter: '&4No eres en inquilino de la habitación especificada!'
-      consoleRejected: La consola no puede ni agregar/quitar a usuarios de tu lista de amigos!
       addYourself: '&4No te puedes agregar a ti mismo a tu lista de amigos!'
       nonExistent: '&4No puedes agregar a amigos imaginarios en tu lista de amigos!'
       friendNotInList: '&4El usuario especificado no está en tu lista de amigos!'
@@ -295,7 +291,6 @@ chat:
         line: '&6Amigo: &c%name%'
         
     sethome:
-      consoleRejected: La consola no puede establecer ningún punto de aparición!
       notInHotelRegion: '&4No estás en ninguna región del hotel!'
       notInCreationMode: '&4No estas en modo creación!'
       defaultHomeSet: '&aPunto de aparición establecido'
@@ -303,7 +298,6 @@ chat:
       hotelHomeSet: '&aPunto de aparición de hotel establecio'
       
     home:
-      consoleRejected: La consola no te puede llevar al punto de aparición!
       noHomeSet: '&4Ningún punto de aparición establecido!'
       regionNotFound: '&4No se ha encontrado el hotel o la habitación solicitada!'
       usage: '&4Uso correcto: &6&o/ht home <Nombrehotel> [Numhabitación]'
@@ -313,7 +307,6 @@ chat:
       success: '&aLa configuración de los archivos a sido recargada'
       
     sellhotel:
-      consoleRejected: La consola no puede comprar un hotel!
       usage: '&4Uso correcto: &6&o/ht sellh <Nombrehotel> <buyerName> <precio>'
       buyerNotOnline: '&4El comprador no está online!'
       selling: '&aEl jugador %seller% está vendiendo su hotel %hotel% a ti por %price%$. Escribe &6&o/ht buyh %hotel% &r&apara comprarlo'
@@ -324,14 +317,12 @@ chat:
       expired: '&4La venta de tu hotel %hotel% ha caducado'
     
     buyhotel:
-      consoleRejected: La consola no puede comprar un hotel!
       usage: '&4Uso correcto: &6&o/ht buyh <Nombrehotel>'
       success: '&aAcabas de comprar el hotel %hotel% de %seller% por %price%$'
       notOnSale: '&4Se hotel no está a la venta!'
       notEnoughMoney: '&4No tienes suficiente dinero!'
       
     sellroom:
-      consoleRejected: La consola no puede vender una habitación!
       usage: '&4Uso correcto: &6&o/ht sellr <Nombrehotel> <Numhabitación> <buyerName> <price>'
       sellingAlreadyAsked: '&4Ya le has preguntado al jugador %buyer% si desea comprar tu habitación!'
       sellingAsked: '&aEl jugador %buyer% ha preguntado si desea comprar tu habitación'
@@ -339,7 +330,6 @@ chat:
       success: '&Acabas de vender la habitación %room% del hotel %hotel% al jugador %buyer% por %price%$'
       
     buyroom:
-      consoleRejected: La consola no puede comprar una habitación!
       usage: '&4Uso correcto: &6&o/ht buyr <Nombrehotel> <Numhabitación>'
       notOnSale: '&4Esa habitación no está en venta!'
       success: '&aAcabas de comprar la habitación %room% del hotel %hotel% de %seller% por %price%$'

@@ -113,6 +113,7 @@ chat:
     worldNonExistent: '&4指定世界不存在'
     somethingWentWrong: '&4哎喲餵! 執行那個命令的時候發生了壹些錯誤'
     fileSaveFail: '&4在保存文件時發生了壹些錯誤'
+    consoleRejected:  '控制臺不能購買房間!'
     commands:
       header: '&4================================'
       subheader: '&5--Hotels 插件指令幫助頁面--'
@@ -178,7 +179,6 @@ chat:
     reload:
       success: '&a配置文件成功重載'
     rent:
-      consoleRejected: 控制臺無法租借房間!
       usage: '&4正確用法: &6&o/ht rent <旅館名稱> <房間編號>'
       invalidLocation: '&4記錄牌子信息文件中的牌子位置上沒有牌子!'
       invalidData: '&4輸入的旅館名稱或房間號無效'
@@ -187,12 +187,10 @@ chat:
       exit: '&c妳已經退出旅館的創建模式.'
       reset: '&2該背包文件已被重置'
       noarg: '&4請指定 &6&oenter(進入) &4或者 &6&oexit(離開) &4模式'
-      consoleRejected: 控制臺不能使用旅館的創建模式!
       alreadyIn: '&4你已經進入了創建模式了!'
       notAlreadyIn: '&4你現在不在創建模式!'
     create:
       fail: '&4無法創建旅館?請確認是否進入了旅館創建模式? (&3&o輸入指令：/hotels cm enter&r&4)'
-      consoleRejected: '控制臺不能創建壹個旅館!'
       noName: '&4給妳的旅館起個響亮的名字吧!'
       maxHotelsReached: '&4你已經擁有了 %max% 間旅館, 數量已達上限'
       creationSuccess: '&a你現在擁有 %tot% 間旅館. 你還可以創建 %left% 間.'
@@ -254,7 +252,6 @@ chat:
       wrongData: '&4輸入的旅館或者房間數量不匹配現有的位置'
       noRenter: '&4指定的房間沒有租客!'
       notRenter: '&4妳不是指定房間的租客!'
-      consoleRejected: 控制臺不能 添加/移除房間裏的好友!
       addYourself: '&4妳不能把妳自己加入好友列表!'
       nonExistent: '&4不能添加假想的好友到好友列表!'
       friendNotInList: '&4指定的用戶不在好友列表中!'
@@ -266,20 +263,17 @@ chat:
         footer: '&c==好友列表末端=='
         line: '&6好友: &c%name%'
     sethome:
-      consoleRejected: '控制臺不能設置傳送點'
       notInHotelRegion: '&4妳沒有在壹個旅館區域內!'
       notInCreationMode: '&4妳沒有進入創建模式!'
       defaultHomeSet: '&a默認傳送點已被設置'
       userHomeSet: '&a用戶傳送點已被設置'
       hotelHomeSet: '&a旅館傳送點已被設置'
     home:
-      consoleRejected: 控制臺不能傳送!
       noHomeSet: '&4為設置傳送點!'
       regionNotFound: '&4指定旅館或房間未被找到!'
       usage: '&4正確用法: &6&o/ht home <旅館名>  [房間]'
       notRenterNoPermission: '&4妳無法這麽做,因為妳沒有權限或者妳不是租客!'
     sellhotel:
-      consoleRejected: '控制臺不能出售旅館'
       usage: '&4正確用法: &6&o/ht sellh <旅館名稱> <購買者名稱> <價格>'
       buyerNotOnline: '&4購買者不在線!'
       selling: '&a玩家 %seller% 想將旅館以 $%price% 出售給你 %hotel%. 輸入 &6&o/ht buyh %hotel% &r&a來接受交易並購買'
@@ -289,25 +283,21 @@ chat:
       success: '&a你已以 $%price% 售出了旅館 %hotel% 給 %buyer%'
       expired: '&4你的旅館 %hotel% 出售已過期'
     buyhotel:
-      consoleRejected: '控制臺不能買旅館!'
       usage: '&4正確用法: &6&o/ht buyh <旅館名稱>'
       success: '&a你以 $%price% 從 %seller% 處購買了旅館 %hotel%'
       notOnSale: '&4那間旅館不在出售中!'
       notEnoughMoney: '&4你沒有足夠的錢!'
       expired: '&4%hotel% 旅館的出售交易已過期'
     sellroom:
-      consoleRejected: '控制臺不能出售壹個房間!'
       usage: '&4正確用法: &6&o/ht sellr <旅館名> <房間號碼> <購買者名稱> <價格>'
       sellingAlreadyAsked: '&4妳已經詢問過 %buyer% 是否願意購買妳的房間了!'
       sellingAsked: '&a玩家 %buyer% 已經被詢問是否願意購買妳的房間了'
       selling: '&a玩家 %seller% 正在以 $%price% 出售他位於 %hotel% 旅館的房間 %room%. 輸入 &6&o/ht buyr %hotel% %room% &r&a買下它'
       success: '&a妳以 $%price% 賣出了位於 %hotel% 的房間 %room%, 購買者： %buyer%'
     buyroom:
-      consoleRejected: '控制臺不能購買壹個房間!'
       usage: '&4正確用法: &6&o/ht buyr <旅館名> <房間號>'
       notOnSale: '&4那個房間並未在出售中!'
       success: '&a妳剛剛從 %seller% 手中以 $%price% 的價格買下了位於 %hotel% 旅館的 %room% 房間'
-    chat.commands.sellroom.consoleRejected: 控制臺不能購買房間!
     sellroom:
       usage: '&4正確用法: &6&o/ht sellr <旅館名> <房間號> <購買者> <價格>'
       sellingAlreadyAsked: '&4妳已經向 %buyer% 詢問過他們是否願意購買妳的房間了!'
@@ -315,7 +305,6 @@ chat:
       selling: '&a玩家 %seller% 正在以 $%price% 的價格出售他位於 %hotel% 旅館的 %room% 房間. 輸入 &6&o/ht buyr %hotel% %room% &r&a買下它'
       success: '&a妳剛剛以 $%price% 的價格出售給 %buyer% 位於 %hotel% 旅館的 %room% 房間'
     buyroom:
-      consoleRejected: 控制臺不能購買房間!
       usage: '&4正確用法: &6&o/ht buyr <旅館名> <房間號>'
       notOnSale: '&4那個房間沒有出售中!'
       success: '&a妳剛剛從%seller%以 $%price% 的價格買下了他位於 %hotel% 旅館的 %room% 房間'

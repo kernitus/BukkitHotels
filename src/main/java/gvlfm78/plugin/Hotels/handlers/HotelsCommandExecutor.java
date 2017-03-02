@@ -203,7 +203,7 @@ public class HotelsCommandExecutor {
 	public void cmdRent(CommandSender sender ,String hotelName, String roomNum){
 
 		if(!(sender instanceof Player))
-			Mes.mes(sender, "chat.commands.rent.consoleRejected");	
+			Mes.mes(sender, "chat.commands.consoleRejected");	
 		else{
 			Player p = (Player) sender;
 			World world = p.getWorld();
@@ -267,7 +267,7 @@ public class HotelsCommandExecutor {
 
 		if(room.isFree()){ Mes.mes(s, "chat.commands.friend.noRenter"); return; }
 
-		List<String> stringList = room.getFriendsList();
+		List<String> stringList = room.getFriends();
 
 		if(stringList.isEmpty())
 			Mes.mes(s, "chat.commands.friend.noFriends");	

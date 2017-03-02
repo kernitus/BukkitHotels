@@ -196,7 +196,6 @@ chat:
       success: '&aFichier de configuration chargé correctement'
 
   rent:
-      consoleRejected: 'La console ne peut pas louer la pièces!'
       usage: '&4Utilisation correct: &6&o/ht rent <nomHôtel> <numéroPièce>'
       invalidLocation: '&4Les coordonnées dans le fichier de signe ne correspond pas à un signe!'
       invalidData: '&4Le nom de l''hôtel ou pièce mis ne sont pas valides!'
@@ -208,11 +207,9 @@ chat:
       notAlreadyIn: '&4Vous n''est pas en mode de création!'
       reset: '&2Les fichiers d''inventaires ont été reset.'
       noarg: '&4S''il vous plaît spécifier &6&oenter &4o &6&oexit (entrer ou sortir)'
-      consoleRejected: 'La console ne peut pas utiliser la mode de création hôtel!'
       
   create:
       fail: '&4Impossible créer l''hôtel. Vous êtes déjà en mode de création hôtel? (&3&o/hotels cm enter&r&4)'
-      consoleRejected: 'La console ne peut pas créer un hôtel!'
       noName: '&4Nommer votre hôtel!'
       maxHotelsReached: '&Vous avez atteint votre limite de %max% hôtel que vous pouvez possedér'
       creationSuccess: '&aActuellemente vous possédez %tot% hôtel. Vous pouvez posséder d''autre %left%'
@@ -285,7 +282,6 @@ chat:
       wrongData: '&4L''hôtel ou la pièce mis ne correspond pas à aucun place existant'
       noRenter: '&4La pièce spécifié n''a pas un tenant!'
       notRenter: '&4Vous n''est pas le tenant de la pièce spécifié!'
-      consoleRejected: 'La console ne peut pas ajouter/enlever amis d''une pièce!'
       addYourself: '&4Vous ne pouvez pas vous ajouter à la liste d''amis!'
       nonExistent: '&4Vous ne pouvez pas ajouter amis inexistante à votre liste d''amis!'
       friendNotInList: '&4L''utilisateur spécifié n''est pas dans votre liste d''amis!'
@@ -299,7 +295,6 @@ chat:
         line: '&6Ami: &c%name%'
         
   sethome:
-      consoleRejected: 'La console ne peut pas set home!'
       notInHotelRegion: '&4Vous n''êtes pas dans une région d''hôtel!'
       notInCreationMode: '&4Vous n''êtes pas dans mode de création!'
       defaultHomeSet: '&aHome de défaut set'
@@ -307,14 +302,12 @@ chat:
       hotelHomeSet: '&aHome de l''hôtel set'
       
   home:
-      consoleRejected: 'La console ne peut pas se téléporter à la maison!'
       noHomeSet: '&4Pas aucun home set!'
       regionNotFound: '&4L''hôtel ou la pièce spécifié n''ont pas été trouvé!'
       usage: '&4Utilisation correct: &6&o/ht home <nomHôtel> [numéroPièce]'
       notRenterNoPermission: '&4Vous n''êtes pas le propriétaire ou vous n''avez pas me permis de faire ça'
 
   sellhotel:
-      consoleRejected: 'La console ne peut pas vendre un hôtel!'
       usage: '&4Utilisation correct: &6&o/ht sellh <nomhôtel> <nomAcheteur> <prix>'
       buyerNotOnline: '&4L''acheteur n''est pas en ligne!'
       selling: '&aLe joueur %seller% vend son hôtel %hotel% à toi pour $%price%. écrivez &6&o/ht buyh %hotel% &r&apour l''acheter'
@@ -325,7 +318,6 @@ chat:
       expired: '&4Votre offre pour la vente de l''hôtel %hotel% est terminé'
 
   buyhotel:
-      consolRejected: 'La console ne peut pas acheter un hôtel!'
       usage: '&4Utilisation correct: &6&o/ht buyh <nomHôtel>'
       success: '&aVous avez acheté l''hôtel %hotel% de %seller% pour $%price%'
       notOnSale: '&4Ce hôtel n''est pas en vent!'

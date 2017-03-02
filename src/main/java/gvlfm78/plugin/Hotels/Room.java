@@ -222,7 +222,7 @@ public class Room {
 	public boolean isNotSetup(){
 		return !getSignFile().exists();
 	}
-	public List<String> getFriendsList(){
+	public List<String> getFriends(){
 		return sconfig.getStringList("Sign.friends");
 	}
 	public RoomBuyer getBuyer(){
@@ -518,7 +518,7 @@ public class Room {
 
 		WorldGuardManager.addMember(friend, getRegion());
 		//Adding player to config under friends list
-		List<String> stringList = getFriendsList();
+		List<String> stringList = getFriends();
 		stringList.add(friend.getUniqueId().toString());
 		sconfig.set("Sign.friends", stringList);
 
@@ -530,7 +530,7 @@ public class Room {
 
 		if(!isRented()) throw new NotRentedException();
 
-		if(!getFriendsList().contains(friend.getUniqueId().toString()))
+		if(!getFriends().contains(friend.getUniqueId().toString()))
 			throw new FriendNotFoundException();
 
 		//Removing player as region member
@@ -586,7 +586,7 @@ public class Room {
 		if(!isBlockAtSignLocationSign()) throw new BlockNotSignException();
 
 		OfflinePlayer p = getRenter(); //Getting renter
-		List<String> friendList = getFriendsList(); //Getting friend list
+		List<String> friendList = getFriends(); //Getting friend list
 
 		//Calling rent expiry event
 		RentExpiryEvent ree = new RentExpiryEvent(this, p, friendList);

@@ -199,7 +199,6 @@ chat:
         '8': '&9&oIn cost, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2billion (1000 million)'
     
     rent:
-      consoleRejected: The console can't rent rooms!
       usage: '&4Correct usage: &6&o/ht rent <hotelName> <roomNum>'
       invalidLocation: '&4Sign location in sign file does not resolve to a sign!'
       invalidData: '&4Hotel name or room number entered are not valid'
@@ -211,14 +210,12 @@ chat:
       notAlreadyIn: '&4You are not in creation mode!'
       reset: '&2The inventory files have been reset.'
       noarg: '&4Please specify &6&oenter &4or &6&oexit &4mode'
-      consoleRejected: The console can't use hotel creation mode!
       
     create:
       maxHotelsReached: '&4You have reached the limit of %max% hotels you can own'
       creationSuccess: '&aYou currently own %tot% hotels. You can own another %left%.'
       hotelAlreadyPresent: '&4There is already a hotel present here'
       fail: '&4Could not create hotel. Did you enter Hotel Creation Mode? (&3&o/hotels cm enter&r&4)'
-      consoleRejected: The console can't create a hotel!
       noName: '&4Give a name to your hotel!'
    
     room:
@@ -287,7 +284,6 @@ chat:
       wrongData: '&4The hotel or room number entered do not match any existing location'
       noRenter: '&4The room you specified has no renter!'
       notRenter: '&4You are not the renter of the specified room!'
-      consoleRejected: The console can't add/remove friends from a room!
       addYourself: '&4You can''t add yourself to the friend list!'
       nonExistent: '&4You can''t add imaginary friends to the friend list!'
       friendNotInList: '&4The user you specified is not in the friend list!'
@@ -301,7 +297,6 @@ chat:
         line: '&6Friend: &c%name%'
         
     sethome:
-      consoleRejected: The console can't set a home!
       notInHotelRegion: '&4You are not in a hotel region!'
       notInCreationMode: '&4You are not in creation mode!'
       defaultHomeSet: '&aDefault home set'
@@ -309,7 +304,6 @@ chat:
       hotelHomeSet: '&aHotel home set'
       
     home:
-      consoleRejected: The console can't teleport home!
       noHomeSet: '&4No home is set!'
       regionNotFound: '&4Specified hotel or room not found!'
       usage: '&4Correct usage: &6&o/ht home <hotelName> [roomNum]'
@@ -319,7 +313,6 @@ chat:
       success: '&aConfiguration files reloaded'
       
     sellhotel:
-      consoleRejected: The console can't sell a hotel!
       usage: '&4Correct usage: &6&o/ht sellh <hotelName> <buyerName> <price>'
       buyerNotOnline: '&4The buyer is not online!'
       selling: '&aPlayer %seller% is selling their hotel %hotel% to you for $%price%. Type &6&o/ht buyh %hotel% &r&ato buy it'
@@ -330,14 +323,12 @@ chat:
       expired: '&4Your sale of the hotel %hotel% has expired'
     
     buyhotel:
-      consoleRejected: The console can't buy a hotel!
       usage: '&4Correct usage: &6&o/ht buyh <hotelName>'
       success: '&aYou have just bought the %hotel% hotel from %seller% for $%price%'
       notOnSale: '&4That hotel is not on sale!'
       notEnoughMoney: '&4You do not have enough money!'
       
     sellroom:
-      consoleRejected: The console can't sell a room!
       usage: '&4Correct usage: &6&o/ht sellr <hotelName> <roomNum> <buyerName> <price>'
       sellingAlreadyAsked: '&4You have already asked the player %buyer% if they wish to buy your room!'
       sellingAsked: '&aThe player %buyer% has been asked if they wish to buy your room'
@@ -345,7 +336,6 @@ chat:
       success: '&aYou have just sold your room %room% of the %hotel% hotel to player %buyer% for $%price%'
       
     buyroom:
-      consoleRejected: The console can't buy a room!
       usage: '&4Correct usage: &6&o/ht buyr <hotelName> <roomNum>'
       notOnSale: '&4That room is not on sale!'
       success: '&aYou have just bought room %room% of the %hotel% hotel from %seller% for $%price%'
