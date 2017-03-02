@@ -562,7 +562,7 @@ public class Room {
 		if(!WorldGuardManager.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){ Mes.mes(p, "chat.commands.youDoNotOwnThat"); return; }
 		WorldGuardManager.addRegion(world, region);
 		WorldGuardManager.roomFlags(region, num, world);
-		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms"))
+		if(HotelsConfigHandler.getconfigyml().getBoolean("stopOwnersEditingRentedRooms"))
 			region.setPriority(1);
 		else
 			region.setPriority(10);
@@ -604,7 +604,7 @@ public class Room {
 
 		//If set in config, make room accessible to all players now that it is not rented
 		WorldGuardManager.makeRoomAccessible(region);
-		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.stopOwnersEditingRentedRooms")){
+		if(HotelsConfigHandler.getconfigyml().getBoolean("stopOwnersEditingRentedRooms")){
 			region.setFlag(DefaultFlag.BLOCK_BREAK, null);
 			region.setFlag(DefaultFlag.BLOCK_PLACE, null);
 			region.setPriority(1);

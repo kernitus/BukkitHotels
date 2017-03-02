@@ -59,7 +59,7 @@ public class HotelsCreationMode {
 		if(sel==null){ Mes.mes(p, "chat.creationMode.noSelection"); return; }
 
 		int ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
-		int maxHotels = HotelsConfigHandler.getconfigyml().getInt("settings.max_hotels_owned");
+		int maxHotels = HotelsConfigHandler.getconfigyml().getInt("max_hotels_owned");
 		if(ownedHotels>maxHotels && !Mes.hasPerm(p, "hotels.create.admin")){
 			p.sendMessage((Mes.getString("chat.commands.create.maxHotelsReached")).replaceAll("%max%", String.valueOf(maxHotels))); return;
 		}

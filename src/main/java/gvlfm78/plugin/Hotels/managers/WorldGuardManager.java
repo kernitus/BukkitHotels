@@ -308,14 +308,14 @@ public class WorldGuardManager {
 		setFlags(section, region, String.valueOf(roomNum), world);
 	}
 	public static void makeRoomAccessible(ProtectedRegion region){
-		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.allowPlayersIntoFreeRooms")){
+		if(HotelsConfigHandler.getconfigyml().getBoolean(".allowPlayersIntoFreeRooms")){
 			region.setFlag(DefaultFlag.INTERACT, null);
 			region.setFlag(DefaultFlag.USE, null);
 			makeRoomContainersAccessible(region);
 		}
 	}
 	public static void makeRoomContainersAccessible(ProtectedRegion region){
-		if(HotelsConfigHandler.getconfigyml().getBoolean("settings.allowPlayersToOpenContainersInFreeRooms"))
+		if(HotelsConfigHandler.getconfigyml().getBoolean("allowPlayersToOpenContainersInFreeRooms"))
 			region.setFlag(DefaultFlag.CHEST_ACCESS, null);
 	}
 }

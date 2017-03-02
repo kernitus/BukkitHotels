@@ -59,7 +59,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 			//Command checks
 			if(args[0].equalsIgnoreCase("commands")){//Commands list
-				if(plugin.getConfig().getBoolean("settings.commands.onlyDisplayAllowed"))
+				if(plugin.getConfig().getBoolean("onlyDisplayAllowedCommands"))
 					HCE.cmdCommandsOnly(sender);
 				else
 					HCE.cmdCommandsAll(sender);
