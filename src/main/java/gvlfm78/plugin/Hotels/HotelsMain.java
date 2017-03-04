@@ -241,11 +241,12 @@ public class HotelsMain extends JavaPlugin{
 		getLogger().info(Mes.getStringNoPrefix("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 	}
 
-	@Override
+	/*@Override
 	public void onLoad(){
 		HotelsConfigHandler.initialise(this);
 		setupEconomy();
-	}
+		getServer().getPluginManager().registerEvents((new HotelsListener(this)), this);//Firing event listener
+	}*/
 
 	//Setting up the economy
 	private boolean setupEconomy(){

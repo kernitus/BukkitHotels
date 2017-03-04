@@ -64,8 +64,7 @@ public class HotelsListener implements Listener {
 		//Permission check
 		if(Mes.hasPerm(p, "hotels.sign.use"))
 			SM.useRoomSign(e);
-		else
-			Mes.mes(p, "chat.noPermission"); 
+		else Mes.mes(p, "chat.noPermission"); 
 	}
 
 	@EventHandler
@@ -117,7 +116,7 @@ public class HotelsListener implements Listener {
 	public void avoidChestInteraction(InventoryClickEvent e){
 		Player p = (Player) e.getWhoClicked();
 		if(!Mes.hasPerm(p, "hotels.createmode.admin")) return;
-		if(!HotelsCreationMode.isInCreationMode(p.getUniqueId())){
+		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
 			e.setCancelled(true);
 			Mes.mes(p, "chat.creationMode.deniedAction");
 		}

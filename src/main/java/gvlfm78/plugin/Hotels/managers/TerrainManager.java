@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -17,6 +16,8 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.blocks.BaseBlock;
+import com.sk89q.worldedit.blocks.BlockID;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
@@ -32,11 +33,13 @@ import com.sk89q.worldedit.regions.Polygonal2DRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.session.PasteBuilder;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.registry.WorldData;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.sk89q.worldguard.protection.regions.RegionType;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
@@ -115,21 +118,36 @@ public class TerrainManager {
 		closer.close();
 	}
 
-	public void loadSchematic(File saveFile, Location loc) throws DataException, IOException, WorldEditException {
-		World world = new BukkitWorld(loc.getWorld());
+	public void loadSchematic(File saveFile, Location loc, ProtectedRegion pRegion) throws DataException, IOException, WorldEditException {
+		org.bukkit.World locWorld = loc.getWorld();
+		World world = new BukkitWorld(locWorld);
 
 		saveFile = we.getSafeSaveFile(localPlayer, saveFile.getParentFile(), saveFile.getName(), EXTENSION, new String[] { EXTENSION });
-
-		InputStream in = new FileInputStream(saveFile);
+		
+		FileInputStream in = new FileInputStream(saveFile);
 		ClipboardReader reader = ClipboardFormat.SCHEMATIC.getReader(in);
 		WorldData worldData = world.getWorldData();
 		Clipboard clipboard = reader.read(worldData);
+
+		boolean isPolygonal = false;
+		if(pRegion.getType().equals(RegionType.POLYGON)){
+			isPolygonal = true;
+			//First remove all blocks from region, then paste ignoring air blocks
+			//This is because schematics appear to only save as cuboids (or I couldn't get them to save as polys)
+			Polygonal2DRegion polyRegion = new Polygonal2DRegion(world, pRegion.getPoints(), pRegion.getMinimumPoint().getBlockY(), pRegion.getMaximumPoint().getBlockY());
+			//Setting blocks in polygonal region to air
+		    EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1);
+		    editSession.setBlocks(polyRegion, new BaseBlock(BlockID.AIR));
+		}
+		
 		ClipboardHolder holder = new ClipboardHolder(clipboard, worldData);
-		EditSession editSession = we.getEditSessionFactory().getEditSession(world, 999999999);
+		EditSession editSession = we.getEditSessionFactory().getEditSession(world, -1);
 		editSession.enableQueue();
 		editSession.setFastMode(true);
 		Vector vector = new Vector(loc.getX(), loc.getY(), loc.getZ());
-		Operation operation = holder.createPaste(editSession, worldData).to(vector).ignoreAirBlocks(false).build();
+		PasteBuilder pasteBuilder = holder.createPaste(editSession, worldData).to(vector);
+		//If poly, paste ignoring air blocks as it has been done already above
+		Operation operation = isPolygonal ? pasteBuilder.ignoreAirBlocks(true).build() : pasteBuilder.ignoreAirBlocks(false).build();
 		Operations.complete(operation);
 		editSession.flushQueue();
 		editSession.commit();
@@ -145,6 +163,7 @@ public class TerrainManager {
 
 		case POLYGON:
 			region = new Polygonal2DRegion(bworld, pregion.getPoints(), pregion.getMinimumPoint().getBlockY(), pregion.getMaximumPoint().getBlockY());
+			Mes.debug("POLYGONAL REGION DETECTED");
 			break;
 
 		default: throw new RegionOperationException("Region is neither Cuboid or Polygonal");

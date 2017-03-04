@@ -40,6 +40,8 @@ import kernitus.plugin.Hotels.exceptions.NumberTooLargeException;
 import kernitus.plugin.Hotels.exceptions.OutOfRegionException;
 import kernitus.plugin.Hotels.exceptions.RenterNonExistentException;
 import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
+import kernitus.plugin.Hotels.exceptions.RoomNotSetupException;
+import kernitus.plugin.Hotels.exceptions.RoomSignInRoomException;
 import kernitus.plugin.Hotels.exceptions.UserNonExistentException;
 import kernitus.plugin.Hotels.exceptions.ValuesNotMatchingException;
 import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
@@ -335,9 +337,14 @@ public class Room {
 		//Update this hotel's reception signs
 		hotel.updateReceptionSigns();
 	}
-	public void setShouldReset(boolean value) throws DataException, IOException, WorldEditException {
+	public void setShouldReset(boolean value) throws DataException, IOException, WorldEditException, RoomNotSetupException, RoomSignInRoomException {
+		if(isNotSetup()) throw new RoomNotSetupException();
+
+
 		sconfig.set("Sign.reset", value);
 		if(value){
+			Block b = getSign().getBlock();
+			if(getRegion().contains(b.getX(), b.getY(), b.getZ())) throw new RoomSignInRoomException();
 			//Create and save schematic file based on room region
 			TerrainManager tm = new TerrainManager(world);
 
@@ -349,7 +356,7 @@ public class Room {
 
 		saveSignConfig();
 	}
-	public boolean toggleShouldReset() throws DataException, IOException, WorldEditException {
+	public boolean toggleShouldReset() throws DataException, IOException, WorldEditException, RoomNotSetupException, RoomSignInRoomException {
 		boolean value = !getShouldReset();
 		setShouldReset(value);
 		return value;
@@ -402,9 +409,7 @@ public class Room {
 
 		if(newNum>100000) throw new NumberTooLargeException();
 
-		if(!hotel.exists())
-			throw new HotelNonExistentException();
-
+		if(!hotel.exists()) throw new HotelNonExistentException();
 
 		if(!exists()) throw new RoomNonExistentException();
 
@@ -638,7 +643,7 @@ public class Room {
 		ProtectedRegion region = getRegion();
 		Vector origin = tm.getOriginFromRegion(tm.getRegionFromProtectedRegion(world, region));
 		Location loc = new Location(world, origin.getX(), origin.getY(), origin.getZ());
-		tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this), loc);
+		tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this), loc, region);
 	}
 
 	public void checkRent() throws IOException, ValuesNotMatchingException, RoomNonExistentException, BlockNotSignException, RenterNonExistentException, DataException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, NotRentedException {
@@ -654,7 +659,7 @@ public class Room {
 
 		if(!isBlockAtSignLocationSign()){
 			file.delete();//If block is not a sign, delete it
-			Mes.debug(Mes.getStringNoPrefix("sign.delete.location").replaceAll("%filename%", file.getName()));
+			Mes.debug(Mes.getStringNoPrefix("sign.delete.roomNonExistent").replaceAll("%filename%", file.getName()));
 			throw new BlockNotSignException();
 		}
 
@@ -662,6 +667,7 @@ public class Room {
 
 		Sign sign = (Sign) signBlock.getState();
 		if(!hotelName.equalsIgnoreCase(ChatColor.stripColor(sign.getLine(0)))){//If hotelName on sign doesn't match that in config
+			Mes.debug("HotelNAME: " + hotelName + " sign hotel name: " + ChatColor.stripColor(sign.getLine(0)));
 			file.delete();
 			Mes.debug(Mes.getStringNoPrefix("sign.delete.hotelName").replaceAll("%filename%", file.getName()));
 			throw new ValuesNotMatchingException();

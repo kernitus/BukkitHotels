@@ -25,6 +25,8 @@ import kernitus.plugin.Hotels.events.HotelSaleEvent;
 import kernitus.plugin.Hotels.events.RoomSaleEvent;
 import kernitus.plugin.Hotels.exceptions.EventCancelledException;
 import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
+import kernitus.plugin.Hotels.exceptions.RoomNotSetupException;
+import kernitus.plugin.Hotels.exceptions.RoomSignInRoomException;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 import kernitus.plugin.Hotels.trade.HotelBuyer;
@@ -693,6 +695,11 @@ public class HotelsCommandHandler implements CommandExecutor {
 				} catch (DataException | IOException | WorldEditException e) {
 					Mes.mes(sender, "chat.commands.somethingWentWrong");
 					e.printStackTrace();
+				}
+				catch (RoomNotSetupException e) {
+					Mes.mes(sender, "chat.commands.resetroom.notSetup");
+				} catch (RoomSignInRoomException e) {
+					Mes.mes(sender, "chat.sign.place.inRoomRegion");
 				}
 			}
 			else if(args[0].equalsIgnoreCase("resetroom")){

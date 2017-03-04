@@ -29,10 +29,12 @@ sign:
   rentExpiredConsole: 'L''affitto di %player% della stanza %room% dell''hotel %hotel% è scaduto'
   rentExpiredPlayer: '&9Il tuo affitto della stanza %room% dell''hotel %hotel% è scaduto'
   delete:
-    reception: Il file di Reception %filename% non corrispondeva alle caratteristiche nel gioco ed è stato cancellato
-    roomNum: Il file di cartello %filename% non corrispondeva al numero di stanza nel gioco ed è stato cancellato
-    hotelName: Il file di cartello %filename% non corrispondeva al nome di hotel nel gioco ed è stato cancellato
-    location: Il file di cartello %filename% non corrispondeva al luogo nel gioco ed è stato cancellato
+    reception: Il file del cartello di Reception %filename% non corrispondeva alle caratteristiche nel gioco ed è stato cancellato
+    roomNum: Il file del cartello %filename% non corrispondeva al numero di stanza nel gioco ed è stato cancellato
+    hotelName: Il file del cartello %filename% non corrispondeva al nome di hotel nel gioco ed è stato cancellato
+    location: Il file del cartello %filename% non corrispondeva al luogo nel gioco ed è stato cancellato
+    roomNonExistent: 'Il file del cartello %filename% è stato cancellato dato che la stanza non esiste'
+    
 chat:
   prefix: '&9[Hotels]&r'
   noPermission: '&4Non hai il permesso!'
@@ -42,6 +44,7 @@ chat:
     place:
       fileFail: '&4Impossibile salvare il file di cartello'
       outOfRegion: '&4Il cartello non è nella regione dell''hotel!'
+      inRoomRegion: '4Il cartello non può stare nella regione della stanza!'
       noHotel: '&4Hotel inesistente'
       emptySign: '&4Cartello vuoto'
       success: '&2Cartello creato con successo!'

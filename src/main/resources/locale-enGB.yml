@@ -36,6 +36,7 @@ sign:
     roomNum: Sign file %filename% did not match in-game roomNum and has been deleted
     hotelName: Sign file %filename% did not match in-game hotelName and has been deleted
     location: Sign file %filename% did not match in-game location and has been deleted
+    roomNonExistent: 'Sign file %filename% was deleted as the room doesn''t exist'
     
     
 chat:
@@ -48,6 +49,7 @@ chat:
     place:
       fileFail: '&4Could not save sign file'
       outOfRegion: '&4Sign is not within hotel region!'
+      inRoomRegion: '&4Sign can''t be inside room region!'
       noHotel: '&4Hotel does not exist'
       emptySign: '&4Empty sign'
       success: '&2Hotel sign has been successfully created!'

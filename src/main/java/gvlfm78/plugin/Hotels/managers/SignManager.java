@@ -23,6 +23,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -32,6 +34,8 @@ import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.exceptions.EventCancelledException;
+import kernitus.plugin.Hotels.exceptions.RoomNotSetupException;
+import kernitus.plugin.Hotels.exceptions.RoomSignInRoomException;
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
 import kernitus.plugin.Hotels.handlers.MessageType;
@@ -49,14 +53,14 @@ public class SignManager {
 		//Sign Lines
 		String hotelName = ChatColor.stripColor(e.getLine(1)).trim();
 		if(hotelName.isEmpty()){
-			e.setLine(0, (ChatColor.DARK_RED+"[Hotels]"));
+			e.setLine(0, ChatColor.DARK_RED + "]Hotels[");
 			Mes.mes(p, "chat.sign.place.emptySign");
 			return;
 		}
 		World world = p.getWorld();
 		Hotel hotel = new Hotel(world,hotelName);
 		if (!hotel.exists()){ //Hotel exists
-			e.setLine(0, (ChatColor.DARK_RED+"[Hotels]"));
+			e.setLine(0, ChatColor.DARK_RED + "]Hotels[");
 			Mes.mes(p, "chat.sign.place.noHotel");
 			return;
 		}
@@ -113,22 +117,27 @@ public class SignManager {
 		if(!hotel.isOwner(p.getName()) && !hotel.isOwner(p.getUniqueId()) && !Mes.hasPerm(p, "hotels.sign.create.admin")){
 			Mes.mes(p, "chat.commands.youDoNotOwnThat"); e.setCancelled(true); return; }
 
-		if(!Line3.contains(":")){ Mes.mes(p, "chat.sign.place.noSeparator"); e.setLine(0, ChatColor.DARK_RED+"[Hotels]"); return; }
+		if(!Line3.contains(":")){ Mes.mes(p, "chat.sign.place.noSeparator"); e.setLine(0, ChatColor.DARK_RED+"]hotels["); return; }
 
 		String[] Line3parts = Line3.split(":");
 		int roomNum = Integer.parseInt(Line3parts[0]); //Room Number
 		String roomnumb = String.valueOf(roomNum);
 		String cost = Line3parts[1]; //Cost
 		if((roomnumb.length() + cost.length() + 9) > 21){ Mes.mes(p, "chat.sign.place.tooLong");			
-		e.setLine(0, ChatColor.DARK_RED+"[Hotels]"); return; }
+		e.setLine(0, ChatColor.DARK_RED + "]Hotels["); return; }
 
 		Room room = new Room(hotel,roomNum);
 
-		if(room.doesSignFileExist()){ Mes.mes(p, "chat.sign.place.alreadyExists"); e.setLine(0, ChatColor.DARK_RED+"[Hotels]"); return; }
-		if(!hotel.getRegion().contains(e.getBlock().getX(), e.getBlock().getY(), e.getBlock().getZ())){
-			Mes.mes(p, "chat.sign.place.outOfRegion"); e.setLine(0, ChatColor.DARK_RED+"[Hotels]"); return; }
 
-		//Sign is within hotel region
+		if(room.doesSignFileExist()){ Mes.mes(p, "chat.sign.place.alreadyExists"); e.setLine(0, ChatColor.DARK_RED+"]hotels["); return; }
+
+		//If sign is within hotel region
+		Block block = e.getBlock();
+		int x = block.getX();
+		int y = block.getY();
+		int z = block.getZ();
+		if(!hotel.getRegion().contains(x, y, z)){ Mes.mes(p, "chat.sign.place.outOfRegion"); e.setLine(0, ChatColor.DARK_RED+"]hotels["); return; }
+
 		if(!room.exists()){ Mes.mes(p, "chat.sign.place.noRegion"); return; }
 		//Successful Sign
 
@@ -142,20 +151,33 @@ public class SignManager {
 			room.createSignConfig(p, timeInMins, accCost, e.getBlock().getLocation());
 		} catch (IOException e1) {
 			Mes.mes(p, "chat.sign.place.fileFail");
-			e.setLine(0, ChatColor.DARK_RED+"[Hotels]");
+			e.setLine(0, ChatColor.DARK_RED + "]Hotels[");
 			e1.printStackTrace();
 			return;
+		}
+
+		//Room reset setup
+		try {
+			room.setShouldReset(HotelsConfigHandler.getconfigyml().getBoolean("defaultReset"));
+		} catch (DataException | IOException | WorldEditException e1) {
+			Mes.mes(p, "chat.commands.somethingWentWrong");
+			e1.printStackTrace();
+		}
+		catch (RoomNotSetupException e1) {
+			Mes.mes(p, "chat.commands.resetroom.notSetup");
+			e.setLine(0, ChatColor.DARK_RED + "]Hotels["); return;
+		} catch (RoomSignInRoomException e1) {
+			Mes.mes(p, "chat.sign.place.inRoomRegion");
+			e.setLine(0, ChatColor.DARK_RED + "]Hotels["); return;
 		}
 
 		e.setLine(0, ChatColor.DARK_BLUE + Line2); //Hotel Name
 		e.setLine(1, ChatColor.DARK_GREEN + Mes.getStringNoPrefix("sign.room.name") + " " + roomNum + " - " + cost.toUpperCase() + "$"); //Room Number + Cost
 
-		if(immutedTime.matches("0"))
-			e.setLine(2, Mes.getStringNoPrefix("sign.permanent"));
-		else
-			e.setLine(2, TimeFormatter(timeInMins));
+		if(immutedTime.matches("0")) e.setLine(2, Mes.getStringNoPrefix("sign.permanent"));
+		else e.setLine(2, TimeFormatter(timeInMins));
 
-		e.setLine(3,ChatColor.GREEN+Mes.getStringNoPrefix("sign.vacant"));
+		e.setLine(3, ChatColor.GREEN + Mes.getStringNoPrefix("sign.vacant"));
 		Mes.mes(p, "chat.sign.place.success");
 	}
 	public boolean isReceptionSign(Sign s){
@@ -184,13 +206,12 @@ public class SignManager {
 		int roomNum = Integer.valueOf(Line2parts[1]); //Room Number
 		Room room = new Room(hotel, roomNum);
 
-		if(room.doesSignFileExist()){ Mes.mes(p, "chat.sign.use.fileNonExistent"); return; }
+		if(!room.doesSignFileExist()){ Mes.mes(p, "chat.sign.use.fileNonExistent"); return; }
 
-		if(hotelName.equalsIgnoreCase(room.getHotelNameFromConfig())){ Mes.mes(p, "chat.sign.use.differentHotelNames"); return; }
+		if(!hotelName.equalsIgnoreCase(room.getHotelNameFromConfig())){ Mes.mes(p, "chat.sign.use.differentHotelNames"); return; }
 		if(roomNum==room.getRoomNumFromConfig())//If room nums match
 			rentRoom(p, room); //This will also check if rent should be extended and not new
-		else
-			Mes.mes(p, "chat.sign.use.differentRoomNums");	 	
+		else Mes.mes(p, "chat.sign.use.differentRoomNums");	 	
 	}
 	public void rentRoom(Player p, Room room){
 
@@ -291,13 +312,13 @@ public class SignManager {
 	public void breakRoomSign(BlockBreakEvent e){
 		Block b = e.getBlock();
 		Sign s = (Sign) b.getState();
-		String Line1 = (ChatColor.stripColor(s.getLine(0)));
+		String Line1 = ChatColor.stripColor(s.getLine(0));
 		World w = b.getWorld();
 		Player p = e.getPlayer();
 
-		Hotel hotel = new Hotel(w,"hotel-"+Line1);
+		Hotel hotel = new Hotel(w, Line1);
+		if(!hotel.exists()) return;
 
-		if(!hotel.exists()) return ;
 		//Room sign has been broken?
 		if(!hotel.getRegion().contains(b.getX(), b.getY(), b.getZ())) return;
 		String Line2 = ChatColor.stripColor(s.getLine(1));
@@ -307,18 +328,20 @@ public class SignManager {
 		Room room = new Room(hotel, roomNum);
 
 		if(!room.exists()) return;
-		ProtectedRegion roomRegion = room.getRegion();
 
 		if(!room.doesSignFileExist()) return;
 
 		if(!room.getHotelNameFromConfig().equalsIgnoreCase(Line1)) return; //If sign and config hotel names match
 		if(room.getRoomNumFromConfig()!=roomNum) return; //If sign and config room nums match
+
 		World cWorld = room.getWorldFromConfig();
 		if(cWorld==null || cWorld!=w) return; //If sign and config worlds match
+
 		if(!room.getSignLocation().equals(b.getLocation())) return; //If sign and config location match
+
 		if(room.isFree() || Mes.hasPerm(p, "hotels.delete.rooms.admin")){
-			WorldGuardManager.removeRegion(w,roomRegion.getId());
 			room.deleteSignFile();
+			room.deleteSchematic();
 		}
 		else{
 			Mes.mes(p, "sign.room.breakDenied");
@@ -335,7 +358,7 @@ public class SignManager {
 		int extended = room.getTimesExtended();
 		int max = plugin.getConfig().getInt("max_rent_extend");
 
-		if(extended >= max){ Mes.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max)); }
+		if(extended >= max){ p.sendMessage(Mes.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max))); return; }
 
 		double account = HotelsMain.economy.getBalance(p);
 		double price = room.getCost();

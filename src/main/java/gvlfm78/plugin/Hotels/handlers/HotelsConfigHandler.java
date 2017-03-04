@@ -120,7 +120,7 @@ public class HotelsConfigHandler {
 		return getFile("flags.yml");
 	}
 	public static File getSignFile(String hotelName, String roomNum){
-		return getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+		return getFile("Signs" + File.separator + hotelName + "-" + roomNum + ".yml");
 	}
 
 	public static File getSignFile(String hotelName, int roomNum){

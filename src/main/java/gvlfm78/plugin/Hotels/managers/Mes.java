@@ -46,11 +46,11 @@ public class Mes {
 		return mes;
 	}
 	public static void debug(String mes){
-		if(HotelsConfigHandler.getconfigyml().isBoolean("debug"))
+		if(HotelsConfigHandler.getconfigyml().getBoolean("debug"))
 			Logger.getLogger("Minecraft").info("[Hotels][Debug] " + mes );
 	}
 	public static void debug(Player p, String mes){
-		if(HotelsConfigHandler.getconfigyml().isBoolean("debug")){
+		if(HotelsConfigHandler.getconfigyml().getBoolean("debug")){
 			String prefix = (HotelsConfigHandler.getLocale().getString("chat.prefix") + "[Debug] ");
 			p.sendMessage(ChatColor.translateAlternateColorCodes('&', (prefix + mes) ));
 		}
