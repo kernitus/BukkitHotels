@@ -201,54 +201,39 @@ public class WorldGuardManager {
 			case "GREETING":
 				if(Boolean.valueOf(keyValue)){
 					String message;
-					if(isHotel)
-						message = Mes.getStringNoPrefix("message.hotel.enter").replaceAll("%hotel%", name);
-					else
-						message = Mes.getStringNoPrefix("message.room.enter").replaceAll("%room%", name);
+					if(isHotel) message = Mes.getStringNoPrefix("message.hotel.enter").replaceAll("%hotel%", name);
+					else message = Mes.getStringNoPrefix("message.room.enter").replaceAll("%room%", name);
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
 				}
 				break;
 			case "FAREWELL":
 				String message;
-				if(isHotel)
-					message = Mes.getStringNoPrefix("message.hotel.exit").replaceAll("%hotel%", name);
-				else
-					message = Mes.getStringNoPrefix("message.room.exit").replaceAll("%room%", name);
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
-				break;
+				if(isHotel)	message = Mes.getStringNoPrefix("message.hotel.exit").replaceAll("%hotel%", name);
+				else message = Mes.getStringNoPrefix("message.room.exit").replaceAll("%room%", name);
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message); break;
 				//String
 			case "DENY-MESSAGE": case "ENTRY-DENY-MESSAGE": case "EXIT-DENY-MESSAGE": case "TIME-LOCK":
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
-				break;
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue); break;
 				//Integer
 			case "HEAL-DELAY": case "HEAL-AMOUNT": case "FEED-DELAY": case "FEED-AMOUNT": case "FEED-MIN-HUNGER": case "FEED-MAX-HUNGER": 
 				Integer intFlag = Integer.valueOf(keyValue);
-				if(intFlag!=null)
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), intFlag);
-				break;
+				if(intFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), intFlag); break;
 				//Double
 			case "HEAL-MIN-HEALTH": case "HEAL-MAX-HEALTH": case "PRICE":
 				Double doubleFlag = Double.valueOf(keyValue);
-				if(doubleFlag!=null)
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), doubleFlag);
-				break;
+				if(doubleFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), doubleFlag); break;
 				//Boolean
 			case "NOTIFY-ENTER": case "NOTIFY-LEAVE": case "BUYABLE": case "EXIT-OVERRIDE":
 				Boolean booleanFlag = Boolean.valueOf(keyValue);
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), booleanFlag);
-				break;
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), booleanFlag); break;
 				//Weather Type (Clear or downfall)
 			case "WEATHER-LOCK":
 				WeatherType weatherFlag = WeatherType.valueOf(keyValue.toUpperCase());
-				if(weatherFlag!=null)
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), weatherFlag);
-				break;
+				if(weatherFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), weatherFlag); break;
 				//GameMode (Adventure, Creative, Spectator, Survival)
 			case "GAME-MODE":
 				GameMode gamemodeFlag = GameMode.valueOf(keyValue.toUpperCase());
-				if(gamemodeFlag!=null)
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), gamemodeFlag);
-				break;
+				if(gamemodeFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), gamemodeFlag); break;
 				//Set of entities
 			case "DENY-SPAWN":
 				List<String> entityList = section.getStringList(key);
@@ -256,16 +241,14 @@ public class WorldGuardManager {
 				for(String entity : entityList)
 					entitySet.add(EntityType.valueOf(entity));
 
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet);
-				break;
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet); break;
 			case "BLOCKED-CMDS": case "ALLOWED-CMDS":
 				String[] cmdsValues = keyValue.split(",");
 				Set<String> cmdsSet = new HashSet<String>();
 				for(String cmd: cmdsValues)
 					cmdsSet.add("/"+cmd);
 
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), cmdsSet);
-				break;
+				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), cmdsSet); break;
 			case "TELEPORT": case "SPAWN":
 				int x = section.getInt(key + ".x");
 				int y = section.getInt(key + ".y");
@@ -273,17 +256,13 @@ public class WorldGuardManager {
 				int yaw = 0;
 				int pitch = 0;
 				Location locationFlag = new Location(world, x, y, z, yaw, pitch);
-				if(locationFlag!=null)
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), locationFlag);
-				break;
+				if(locationFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), locationFlag); break;
 			default:
 				if(keyValue.equalsIgnoreCase("ALLOW"))
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.ALLOW);
 				else if(keyValue.equalsIgnoreCase("DENY"))
 					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.DENY);
-				else
-					System.out.println("REJECTED: " + pureKey + " veleue: " + keyValue);
-				break;
+				else System.out.println("REJECTED: " + pureKey + " veleue: " + keyValue); break;
 			}
 		}
 		r.setFlags(flags);

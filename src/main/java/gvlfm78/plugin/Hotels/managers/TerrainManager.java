@@ -42,8 +42,7 @@ import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 /**
  * @author desht
- * Heavily modified by kernitus
- * to use only WE 6+ API
+ * Heavily modified by kernitus to use only WE 6+ API
  *
  * A wrapper class for the WorldEdit terrain loading & saving API to make things a little
  * simple for other plugins to use.
@@ -74,14 +73,13 @@ public class TerrainManager {
 	public void saveTerrain(File saveFile, org.bukkit.World world, List<BlockVector2D> points, int minY, int maxY) throws DataException, IOException, WorldEditException {
 		World bworld = new BukkitWorld(world);
 		Polygonal2DRegion selection = new Polygonal2DRegion(bworld, points, minY, maxY);
-		
+
 		Mes.debug("Printing out points:");
 		for(BlockVector2D point : points){
 			System.out.println(point);
 		}
-		
-		Vector origin = points.get(0).toVector();
-		saveTerrain(saveFile, bworld, selection, origin);
+
+		saveTerrain(saveFile, bworld, selection, selection.getMinimumPoint());
 	}
 	public void saveTerrain(File saveFile, org.bukkit.World world, Region selection) throws DataException, IOException, WorldEditException {
 		World bworld = new BukkitWorld(world);
@@ -106,7 +104,7 @@ public class TerrainManager {
 		clipboard.setOrigin(origin);
 		Mes.debug("Clipboard DIMENSIONS: " + clipboard.getDimensions());
 		Mes.debug("Region area: " + clipboard.getRegion().getArea());
-		
+
 		ForwardExtentCopy copy = new ForwardExtentCopy(editSession, selection, clipboard, origin);
 		Operations.complete(copy);
 		Closer closer = Closer.create();
@@ -154,12 +152,12 @@ public class TerrainManager {
 		Mes.debug("Region min is: " + region.getMinimumPoint() + " max is: " + pregion.getMaximumPoint());
 		return region;
 	}
-	public Vector getOriginFromRegion(Region region) throws RegionOperationException{
+	public Vector getOriginFromRegion(Region region) throws RegionOperationException {
 		Vector origin = null;
 		if(region instanceof CuboidRegion)
 			origin = region.getMinimumPoint();
 		else if(region instanceof Polygonal2DRegion)
-			origin = ((Polygonal2DRegion) region).getPoints().get(0).toVector();
+			origin = ((Polygonal2DRegion) region).getMinimumPoint();
 		else throw new RegionOperationException("Region is neither Cuboid or Polygonal");
 		Mes.debug("Origin IS: " + origin.getBlockX() +" " + origin.getBlockY() + " " + origin.getBlockZ());
 		return origin;
