@@ -33,6 +33,7 @@ sign:
     roomNum: 牌子文件 %filename% 不匹配遊戲中的房間號碼，已刪除
     hotelName: 牌子文件 %filename% 不匹配遊戲中的旅館名稱，已刪除
     location: 牌子文件 %filename% 不匹配遊戲中的旅館位置，已刪除
+    roomNonExistent: '牌子文件 %filename% 因為房間不存在而已被刪除!'
 chat:
   prefix: '&9[旅館]&r'
   noPermission: '&4妳沒有權限這樣做!'
@@ -42,6 +43,7 @@ chat:
     place:
       fileFail: '&4無法保存文件'
       outOfRegion: '&4牌子不在旅館區域!'
+      inRoomRegion: '&4牌子不能位於房間區域之中!'
       noHotel: '&4旅館不存在'
       emptySign: '&4牌子未填寫內容'
       success: '&2旅館信息牌已成功創建!'

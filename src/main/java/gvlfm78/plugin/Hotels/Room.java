@@ -634,8 +634,7 @@ public class Room {
 
 		updateSign();
 
-		if(getShouldReset())
-			resetRoom();
+		if(getShouldReset()) resetRoom();
 	}
 
 	public void resetRoom() throws DataException, IOException, WorldEditException {
@@ -651,15 +650,15 @@ public class Room {
 		File file = getSignFile();
 		if(!exists()){
 			file.delete();
-			Mes.debug("Room sign " + file.getName() + " was deleted as the room doesn't exist");
+			Mes.debug(Mes.getStringNoPrefix("sign.delete.roomNonExistent").replaceAll("%filename%", file.getName()));
 			throw new RoomNonExistentException();
 		}
 
 		Block signBlock = getBlockAtSignLocation(); //Getting block at location where sign should be
 
 		if(!isBlockAtSignLocationSign()){
-			file.delete();//If block is not a sign, delete it
-			Mes.debug(Mes.getStringNoPrefix("sign.delete.roomNonExistent").replaceAll("%filename%", file.getName()));
+			file.delete(); deleteSchematic();
+			Mes.debug(Mes.getStringNoPrefix("sign.delete.location").replaceAll("%filename%", file.getName()));
 			throw new BlockNotSignException();
 		}
 
@@ -667,8 +666,7 @@ public class Room {
 
 		Sign sign = (Sign) signBlock.getState();
 		if(!hotelName.equalsIgnoreCase(ChatColor.stripColor(sign.getLine(0)))){//If hotelName on sign doesn't match that in config
-			Mes.debug("HotelNAME: " + hotelName + " sign hotel name: " + ChatColor.stripColor(sign.getLine(0)));
-			file.delete();
+			file.delete(); deleteSchematic();
 			Mes.debug(Mes.getStringNoPrefix("sign.delete.hotelName").replaceAll("%filename%", file.getName()));
 			throw new ValuesNotMatchingException();
 		}
@@ -676,7 +674,7 @@ public class Room {
 		String[] Line2parts = ChatColor.stripColor(sign.getLine(1)).split("\\s");
 		int roomNumfromSign = Integer.valueOf(Line2parts[1].trim()); //Room Number 
 		if(getRoomNumFromConfig()!=roomNumfromSign){ //If roomNum on sign doesn't match that in config
-			file.delete();
+			file.delete(); deleteSchematic();
 			Mes.debug(Mes.getStringNoPrefix("sign.delete.roomNum").replaceAll("%filename%", file.getName()));
 			throw new ValuesNotMatchingException();
 		}
