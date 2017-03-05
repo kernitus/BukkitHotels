@@ -12,8 +12,8 @@ main:
 
 message:
   hotel:
-    enter: '&bBienvenue à l''hôtel %hôtel%'
-    exit: '&aRetourné bientôt à l''hôtel %hôtel%'
+    enter: '&bBienvenue à l''hôtel %hotel%'
+    exit: '&aRetourné bientôt à l''hôtel %hotel%'
   room:
     enter: '&bBienvenue à la pièce %room%'
     exit: '&aRetourné bientôt à la pièce %room%'
@@ -41,8 +41,8 @@ sign:
 chat:
   prefix: '&9[Hotels]&r'
   noPermission: '&4Vous n''avez pas le permis!'
-  moneyEarned: '&aVous avez gagné $%revenue% du ’loyer de la pièce %room% dans ton hôtel %hôtel%'
-  moneyEarnedExtend: '&aVous avez gagné $%revenue% de l''extension de la loyer de la pièce %room% dans ton hôtel %hôtel%'
+  moneyEarned: '&aVous avez gagné $%revenue% du ’loyer de la pièce %room% dans ton hôtel %hotel%'
+  moneyEarnedExtend: '&aVous avez gagné $%revenue% de l''extension de la loyer de la pièce %room% dans ton hôtel %hotel%'
 
   sign:
     place:
@@ -74,7 +74,7 @@ chat:
 
   creationMode:
     hotelCreationFailed: '&4Impossibile créer l''hôtel, l''hôtel existe déjà'
-    hotelCreationSuccessful: '&2Vous avez créé avec succès l''hôtel %hôtel%'
+    hotelCreationSuccessful: '&2Vous avez créé avec succès l''hôtel %hotel%'
     noSelection: '&4Sélectionner une zone avec la baguette magique de WorldEdit'
     selectionInvalid: '&4Sélection n''est pas valide. Sélectionner la zone à nouveau'
     invalidChar: '&4Le nom ne peut pas contenir la lettre &6&l-'
@@ -237,7 +237,7 @@ chat:
 
   rename:
       usage: '&4Utilisation correct: &6&o/ht rent <ancienNom> <nouveauNom> [monde]'
-      success: '&2Vous avez renommé avec succès l''hôtel %hôtel%'
+      success: '&2Vous avez renommé avec succès l''hôtel %hotel%'
       failRooms: '&4Impossible renommer les pièces'
 
   removeRoom:
@@ -265,11 +265,11 @@ chat:
   listHotels:
       heading: '&a==  Liste hôtel  =='
       footer: '&c==  Fin liste hôtel  =='
-      line: '&6Hôtel: &c%hôtel%%space%&9Totale: &r%total%   &aLibre: &r%free%'
+      line: '&6Hôtel: &c%hotel%%space%&9Totale: &r%total%   &aLibre: &r%free%'
       
   listRooms:
-      heading: '&a==  Liste pièces pour l''hôtel %hôtel%  =='
-      footer: '&c==  Fin liste pièces pour l''hôtel %hôtel%  =='
+      heading: '&a==  Liste pièces pour l''hôtel %hotel%  =='
+      footer: '&c==  Fin liste pièces pour l''hôtel %hotel%  =='
       line: '&6Pièce n: &c%room%%space%%state%'
       noRooms: '&cIl n''y a pas pièces libres dans ce hôtel'
       usage: '&4Utilisation correct: &6&o/ht rlist <nomHôtel>'
@@ -290,7 +290,7 @@ chat:
       noFriends: '&2Vous n''avez pas ajouté aucun ami à la pièce spécifié'
 
       list:
-        heading: '&a==Liste d''amis pour la pièce n. %room% de l''hôtel %hôtel%=='
+        heading: '&a==Liste d''amis pour la pièce n. %room% de l''hôtel %hotel%=='
         footer: '&c==Fin liste d''amis=='
         line: '&6Ami: &c%name%'
         
