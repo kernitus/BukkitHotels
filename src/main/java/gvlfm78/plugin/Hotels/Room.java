@@ -230,7 +230,7 @@ public class Room {
 	public RoomBuyer getBuyer(){
 		return TradesHolder.getBuyerFromRoom(this);
 	}
-	public boolean getShouldReset(){
+	public boolean shouldReset(){
 		return sconfig.getBoolean("Sign.reset");
 	}
 	//////////////////////
@@ -337,7 +337,7 @@ public class Room {
 		//Update this hotel's reception signs
 		hotel.updateReceptionSigns();
 	}
-	public void setShouldReset(boolean value) throws DataException, IOException, WorldEditException, RoomNotSetupException, RoomSignInRoomException {
+	public void setShouldReset(boolean value) throws IOException, WorldEditException, RoomNotSetupException, RoomSignInRoomException, DataException {
 		if(isNotSetup()) throw new RoomNotSetupException();
 
 
@@ -348,7 +348,7 @@ public class Room {
 			//Create and save schematic file based on room region
 			TerrainManager tm = new TerrainManager(world);
 
-			File schematicFile = HotelsConfigHandler.getSchematicFileNoExtension(this);
+			File schematicFile = HotelsConfigHandler.getSchematicFile(this);
 
 			// Save the region to a schematic file
 			tm.saveTerrain(schematicFile, world, getRegion());
@@ -356,8 +356,8 @@ public class Room {
 
 		saveSignConfig();
 	}
-	public boolean toggleShouldReset() throws DataException, IOException, WorldEditException, RoomNotSetupException, RoomSignInRoomException {
-		boolean value = !getShouldReset();
+	public boolean toggleShouldReset() throws IOException, WorldEditException, RoomNotSetupException, RoomSignInRoomException, DataException {
+		boolean value = !shouldReset();
 		setShouldReset(value);
 		return value;
 	}
@@ -576,7 +576,7 @@ public class Room {
 		p.sendMessage(Mes.getString("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
 	}
 
-	public void unrent() throws IOException, BlockNotSignException, DataException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, RoomNonExistentException, NotRentedException {
+	public void unrent() throws IOException, BlockNotSignException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, RoomNonExistentException, NotRentedException, DataException {
 		if(world==null) throw new WorldNonExistentException();
 
 		if(!hotel.exists()) throw new HotelNonExistentException();
@@ -634,10 +634,10 @@ public class Room {
 
 		updateSign();
 
-		if(getShouldReset()) resetRoom();
+		if(shouldReset()) reset();
 	}
 
-	public void resetRoom() throws DataException, IOException, WorldEditException {
+	public void reset() throws IOException, WorldEditException, DataException {
 		TerrainManager tm = new TerrainManager(world);
 		ProtectedRegion region = getRegion();
 		Vector origin = tm.getOriginFromRegion(tm.getRegionFromProtectedRegion(world, region));
@@ -645,7 +645,7 @@ public class Room {
 		tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this), loc, region);
 	}
 
-	public void checkRent() throws IOException, ValuesNotMatchingException, RoomNonExistentException, BlockNotSignException, RenterNonExistentException, DataException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, NotRentedException {
+	public void checkRent() throws IOException, ValuesNotMatchingException, RoomNonExistentException, BlockNotSignException, RenterNonExistentException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, NotRentedException, DataException {
 		//Checks if rent has expired, if so unrents
 		File file = getSignFile();
 		if(!exists()){

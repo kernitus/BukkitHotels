@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
@@ -33,34 +34,29 @@ import com.sk89q.worldedit.regions.RegionOperationException;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
-import com.sk89q.worldedit.world.registry.WorldData;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionType;
 
 import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
 
 /**
- * @author desht, heavily modified by kernitus to use only WE 6+ API and support polygonal regions
+ * @author desht, very heavily modified by kernitus to use only WE 6+ API and support polygonal regions
  *
  * A wrapper class for the WorldEdit terrain loading & saving API to make things a little
  * simple for other plugins to use.
  */
 
 public class TerrainManager {
-	private static final String EXTENSION = "schematic";
 
 	private final WorldEdit we;
-	private final com.sk89q.worldedit.entity.Player localPlayer;
 
 	public TerrainManager(Player player) {
 		WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		we = wep.getWorldEdit();
-		localPlayer = wep.wrapPlayer(player);
 	}
 
 	public TerrainManager(org.bukkit.World world) {
 		we = ((WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit")).getWorldEdit();
-		localPlayer = null;
 	}
 	public void saveTerrain(File saveFile, org.bukkit.World world, Location l1, Location l2) throws DataException, IOException, WorldEditException {
 		World bworld = new BukkitWorld(world);
@@ -74,11 +70,11 @@ public class TerrainManager {
 		saveTerrain(saveFile, bworld, selection, selection.getMinimumPoint());
 	}
 	public void saveTerrain(File saveFile, org.bukkit.World world, Region selection) throws DataException, IOException, WorldEditException {
-		World bworld = new BukkitWorld(world);
+		BukkitWorld bworld = new BukkitWorld(world);
 		saveTerrain(saveFile, bworld, selection, getOriginFromRegion(selection));
 	}
 	public void saveTerrain(File saveFile, org.bukkit.World world, ProtectedRegion selection) throws DataException, IOException, WorldEditException {
-		World bworld = new BukkitWorld(world);
+		BukkitWorld bworld = new BukkitWorld(world);
 		Region region = getRegionFromProtectedRegion(world, selection);
 		Vector origin = getOriginFromRegion(region);
 		saveTerrain(saveFile, bworld, region, origin);
@@ -87,33 +83,25 @@ public class TerrainManager {
 		File schemDir = HotelsConfigHandler.getFile("Schematics");
 		if(!schemDir.exists()) schemDir.mkdirs();
 
-		saveFile = we.getSafeSaveFile(localPlayer, saveFile.getParentFile(), saveFile.getName(), EXTENSION, new String[] { EXTENSION });
-
-		WorldData worldData = world.getWorldData();
-
 		EditSession editSession = we.getEditSessionFactory().getEditSession(world, -1);
 		BlockArrayClipboard clipboard = new BlockArrayClipboard(selection);
 		clipboard.setOrigin(origin);
-
+		
 		ForwardExtentCopy copy = new ForwardExtentCopy(editSession, selection, clipboard, origin);
 		Operations.complete(copy);
 		FileOutputStream fos = new FileOutputStream(saveFile);
 		ClipboardWriter writer = ClipboardFormat.SCHEMATIC.getWriter(fos);
-		writer.write(clipboard, worldData);
+		writer.write(clipboard, world.getWorldData());
 		writer.close();
 	}
 
 	public void loadSchematic(File saveFile, Location loc, ProtectedRegion pRegion) throws DataException, IOException, WorldEditException {
-		org.bukkit.World locWorld = loc.getWorld();
-		World world = new BukkitWorld(locWorld);
-
-		saveFile = we.getSafeSaveFile(localPlayer, saveFile.getParentFile(), saveFile.getName(), EXTENSION, new String[] { EXTENSION });
+		World world = new BukkitWorld(loc.getWorld());
 
 		FileInputStream in = new FileInputStream(saveFile);
 
 		ClipboardReader reader = ClipboardFormat.SCHEMATIC.getReader(in);
-		WorldData worldData = world.getWorldData();
-		Clipboard clipboard = reader.read(worldData);
+		Clipboard clipboard = reader.read(world.getWorldData());
 
 		if(pRegion.getType().equals(RegionType.POLYGON)){
 			//Loop through cuboid region, if vector also present in polygonal region then set it
@@ -121,23 +109,22 @@ public class TerrainManager {
 			Polygonal2DRegion poly = new Polygonal2DRegion(world, pRegion.getPoints(), pRegion.getMinimumPoint().getBlockY(), pRegion.getMaximumPoint().getBlockY());
 			EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1);
 
-			Iterator<com.sk89q.worldedit.BlockVector> i = cuboid.iterator();
+			Iterator<BlockVector> i = cuboid.iterator();
 			while(i.hasNext()){
-				com.sk89q.worldedit.BlockVector vec = i.next();
+				BlockVector vec = i.next();
 				if(poly.contains(vec)) //If location in cuboid is also in poly, paste it
 					editSession.rawSetBlock(vec, clipboard.getBlock(vec));
 			}    
 		}
 		else {
-			ClipboardHolder holder = new ClipboardHolder(clipboard, worldData);
+			ClipboardHolder holder = new ClipboardHolder(clipboard, world.getWorldData());
 			EditSession editSession = we.getEditSessionFactory().getEditSession(world, -1);
 			editSession.enableQueue();
 			editSession.setFastMode(true);
 			Vector vector = new Vector(loc.getX(), loc.getY(), loc.getZ());
-			Operation operation = holder.createPaste(editSession, worldData).to(vector).ignoreAirBlocks(false).build();
+			Operation operation = holder.createPaste(editSession, world.getWorldData()).to(vector).ignoreAirBlocks(false).build();
 			Operations.complete(operation);
 			editSession.flushQueue();
-			editSession.commit();
 		}
 	}
 	public Region getRegionFromProtectedRegion(org.bukkit.World world, ProtectedRegion pregion) throws RegionOperationException {
@@ -146,7 +133,7 @@ public class TerrainManager {
 		switch(pregion.getType()){
 
 		case CUBOID:
-			region = new CuboidRegion(bworld, pregion.getMinimumPoint(), pregion.getMaximumPoint());
+			region = new CuboidRegion(pregion.getMinimumPoint(), pregion.getMaximumPoint());
 			break;
 
 		case POLYGON:

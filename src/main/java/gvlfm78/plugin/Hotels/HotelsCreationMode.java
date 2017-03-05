@@ -223,7 +223,7 @@ public class HotelsCreationMode {
 
 	public static void giveItems(CommandSender s){
 		Player p = (Player) s;
-		File file = new File("plugins" + File.separator + "Worldedit" + File.separator + "config.yml");
+		File file = new File("plugins" + File.separator + "WorldEdit" + File.separator + "config.yml");
 		PlayerInventory pi = p.getInventory();
 
 		//Wand

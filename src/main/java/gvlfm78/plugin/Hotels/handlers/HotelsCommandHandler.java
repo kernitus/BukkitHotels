@@ -707,10 +707,10 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(args.length<3){ Mes.mes(sender, "chat.commands.resetroom.usage"); return false; }
 				Room room = new Room(args[1], args[2], sender);
 
-				if(!room.getShouldReset()) { Mes.mes(sender, "chat.commands.resetroom.notSetup"); return false; }
+				if(!room.shouldReset()) { Mes.mes(sender, "chat.commands.resetroom.notSetup"); return false; }
 
 				try {
-					room.resetRoom();
+					room.reset();
 					sender.sendMessage(Mes.getString("chat.commands.resetroom.success").replaceAll("%room%", String.valueOf(room.getNum())).replaceAll("%hotel%", room.getHotel().getName()) );
 				} catch (DataException | IOException | WorldEditException e) {
 					Mes.mes(sender, "chat.commands.somethingWentWrong");

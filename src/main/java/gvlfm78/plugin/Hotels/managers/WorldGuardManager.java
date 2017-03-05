@@ -30,6 +30,8 @@ import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.RegionGroup;
 import com.sk89q.worldguard.protection.flags.RegionGroupFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
+import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import com.sk89q.worldguard.protection.flags.registry.SimpleFlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
@@ -125,7 +127,7 @@ public class WorldGuardManager {
 	public static ProtectedRegion getRoomRegion(World world, String hotelName, int num){
 		return getRegion(world, "hotel-"+hotelName+"-"+num);
 	}
-	public static void renameRegion(String oldname, String newname,World world){
+	public static void renameRegion(String oldname, String newname, World world){
 		if(!hasRegion(world, oldname)) return; //If old region exists
 		ProtectedRegion oldr = getRegion(world, oldname);//Get old region
 		ProtectedRegion newr2;
@@ -174,6 +176,8 @@ public class WorldGuardManager {
 		return false;
 	}
 	public static void setFlags(ConfigurationSection section, ProtectedRegion r, String name, World world){
+		FlagRegistry registry = new SimpleFlagRegistry();
+		registry.registerAll(DefaultFlag.getDefaultFlags());
 
 		boolean isHotel = !r.getId().matches("hotel-.+-\\d+");
 
@@ -192,8 +196,8 @@ public class WorldGuardManager {
 
 				while (matcher.find()){
 					String pureGroupFlag = matcher.group(3);
-					groupFlags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue);
-					groupFlagValues.put(DefaultFlag.fuzzyMatchFlag(pureKey), pureGroupFlag);
+					groupFlags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), keyValue);
+					groupFlagValues.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), pureGroupFlag);
 				}
 				keyValue = keyValue.replaceAll("\\s?-g\\s\\w+\\s?", "");
 			}
@@ -203,37 +207,37 @@ public class WorldGuardManager {
 					String message;
 					if(isHotel) message = Mes.getStringNoPrefix("message.hotel.enter").replaceAll("%hotel%", name);
 					else message = Mes.getStringNoPrefix("message.room.enter").replaceAll("%room%", name);
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message);
+					flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), message);
 				}
 				break;
 			case "FAREWELL":
 				String message;
 				if(isHotel)	message = Mes.getStringNoPrefix("message.hotel.exit").replaceAll("%hotel%", name);
 				else message = Mes.getStringNoPrefix("message.room.exit").replaceAll("%room%", name);
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), message); break;
+				flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), message); break;
 				//String
 			case "DENY-MESSAGE": case "ENTRY-DENY-MESSAGE": case "EXIT-DENY-MESSAGE": case "TIME-LOCK":
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), keyValue); break;
+				flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), keyValue); break;
 				//Integer
 			case "HEAL-DELAY": case "HEAL-AMOUNT": case "FEED-DELAY": case "FEED-AMOUNT": case "FEED-MIN-HUNGER": case "FEED-MAX-HUNGER": 
 				Integer intFlag = Integer.valueOf(keyValue);
-				if(intFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), intFlag); break;
+				if(intFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), intFlag); break;
 				//Double
 			case "HEAL-MIN-HEALTH": case "HEAL-MAX-HEALTH": case "PRICE":
 				Double doubleFlag = Double.valueOf(keyValue);
-				if(doubleFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), doubleFlag); break;
+				if(doubleFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), doubleFlag); break;
 				//Boolean
 			case "NOTIFY-ENTER": case "NOTIFY-LEAVE": case "BUYABLE": case "EXIT-OVERRIDE":
 				Boolean booleanFlag = Boolean.valueOf(keyValue);
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), booleanFlag); break;
+				flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), booleanFlag); break;
 				//Weather Type (Clear or downfall)
 			case "WEATHER-LOCK":
 				WeatherType weatherFlag = WeatherType.valueOf(keyValue.toUpperCase());
-				if(weatherFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), weatherFlag); break;
+				if(weatherFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), weatherFlag); break;
 				//GameMode (Adventure, Creative, Spectator, Survival)
 			case "GAME-MODE":
 				GameMode gamemodeFlag = GameMode.valueOf(keyValue.toUpperCase());
-				if(gamemodeFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), gamemodeFlag); break;
+				if(gamemodeFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), gamemodeFlag); break;
 				//Set of entities
 			case "DENY-SPAWN":
 				List<String> entityList = section.getStringList(key);
@@ -241,14 +245,14 @@ public class WorldGuardManager {
 				for(String entity : entityList)
 					entitySet.add(EntityType.valueOf(entity));
 
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), entitySet); break;
+				flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), entitySet); break;
 			case "BLOCKED-CMDS": case "ALLOWED-CMDS":
 				String[] cmdsValues = keyValue.split(",");
 				Set<String> cmdsSet = new HashSet<String>();
 				for(String cmd: cmdsValues)
 					cmdsSet.add("/"+cmd);
 
-				flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), cmdsSet); break;
+				flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), cmdsSet); break;
 			case "TELEPORT": case "SPAWN":
 				int x = section.getInt(key + ".x");
 				int y = section.getInt(key + ".y");
@@ -256,13 +260,13 @@ public class WorldGuardManager {
 				int yaw = 0;
 				int pitch = 0;
 				Location locationFlag = new Location(world, x, y, z, yaw, pitch);
-				if(locationFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), locationFlag); break;
+				if(locationFlag!=null) flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), locationFlag); break;
 			default:
 				if(keyValue.equalsIgnoreCase("ALLOW"))
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.ALLOW);
+					flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), State.ALLOW);
 				else if(keyValue.equalsIgnoreCase("DENY"))
-					flags.put(DefaultFlag.fuzzyMatchFlag(pureKey), State.DENY);
-				else System.out.println("REJECTED: " + pureKey + " veleue: " + keyValue); break;
+					flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), State.DENY);
+				else Mes.debug("Could not match flag: " + pureKey + " with value: " + keyValue); break;
 			}
 		}
 		r.setFlags(flags);
