@@ -41,7 +41,7 @@ sign:
 chat:
   prefix: '&9[Hotels]&r'
   noPermission: '&4Vous n''avez pas le permis!'
-  moneyEarned: '&aVous avez gagné $%revenue% du ’loyer de la pièce %room% dans ton hôtel %hotel%'
+  moneyEarned: '&aVous avez gagné $%revenue% du''loyer de la pièce %room% dans ton hôtel %hotel%'
   moneyEarnedExtend: '&aVous avez gagné $%revenue% de l''extension de la loyer de la pièce %room% dans ton hôtel %hotel%'
 
   sign:
@@ -71,7 +71,7 @@ chat:
       extensionSuccess: '&aLe loyer a été prolongé %tot% fois. Vous pouvez le prolonger %left% fois.'
       extensionSuccessNoMore: '&aLe loyer a été prolongé %tot% fois. Vous ne pouvez plus le pronlogner.'
       overRoomsPerHotelLimit: '&4Vous avez arrivé à la limite de %limit% pièces que vous pouvez loyer dans ce hôtel'
-
+      
   creationMode:
     hotelCreationFailed: '&4Impossibile créer l''hôtel, l''hôtel existe déjà'
     hotelCreationSuccessful: '&2Vous avez créé avec succès l''hôtel %hotel%'

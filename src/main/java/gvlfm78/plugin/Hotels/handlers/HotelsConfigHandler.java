@@ -49,19 +49,19 @@ public class HotelsConfigHandler {
 
 		switch(lang){
 
-		case "en": case "enGB":
+		case "en": case "engb":
 			setupLanguage("enGB", PLUGIN); break;
-		case "it": case "itIT":
+		case "it": case "itit":
 			setupLanguage("itIT", PLUGIN); break;
-		case "zhCN": case "zh":
+		case "zhcn": case "zh":
 			setupLanguage("zhCN", PLUGIN); break;
-		case "zhTW":
+		case "zhtw":
 			setupLanguage("zhTW", PLUGIN); break;
-		case "frFR": case "fr":
+		case "frfr": case "fr":
 			setupLanguage("frFR", PLUGIN); break;
-		case "ruRU": case "ru":
+		case "ruru": case "ru":
 			setupLanguage("ruRU", PLUGIN); break;
-		case "esES": case "es":
+		case "eses": case "es":
 			setupLanguage("esES", PLUGIN); break;
 
 		case "custom": break;
@@ -211,8 +211,7 @@ public class HotelsConfigHandler {
 		//Reload config.yml
 		if(getconfigymlFile().exists())
 			PLUGIN.reloadConfig();
-		else
-			setupConfigyml();
+		else setupConfigyml();
 
 		//Message Queue
 		if(!getMessageQueueFile().exists())
@@ -234,9 +233,9 @@ public class HotelsConfigHandler {
 	public static void setupLanguage(String langCode, Plugin PLUGIN){
 		PLUGIN.saveResource("locale-" + langCode + ".yml", false);
 		File loc = getLocaleFile();
-		File itLoc = getFile("locale-" + langCode + ".yml");
+		File codeLoc = getFile("locale-" + langCode + ".yml");
 		loc.delete();
-		itLoc.renameTo(loc);
+		codeLoc.renameTo(loc);
 		PLUGIN.getLogger().info(langCode + " Language strings generated");
 	}
 
