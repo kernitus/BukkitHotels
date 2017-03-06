@@ -206,11 +206,24 @@ public class HotelsConfigHandler {
 	public static void saveconfigyml(YamlConfiguration config){
 		saveConfiguration(getconfigymlFile(), config);
 	}
-
+	public static void backupconfigyml(){
+		File backup = getFile("backup-config.yml");
+		getconfigymlFile().renameTo(backup);
+	}
+	@SuppressWarnings("deprecation")
 	public static void reloadConfigs(){
 		//Reload config.yml
-		if(getconfigymlFile().exists())
-			PLUGIN.reloadConfig();
+		if(getconfigymlFile().exists()){
+			PLUGIN.reloadConfig(); //Making sure they haven't pasted a new version manually	
+
+			//If there's a newer version of the config.yml embedded
+			if(PLUGIN.getConfig().getInt("version", 0) <
+					YamlConfiguration.loadConfiguration(
+							PLUGIN.getResource("config.yml")).getInt("version") ){
+				backupconfigyml();
+				setupConfigyml();
+			}
+		}
 		else setupConfigyml();
 
 		//Message Queue
