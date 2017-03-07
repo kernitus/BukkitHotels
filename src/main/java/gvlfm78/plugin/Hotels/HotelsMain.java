@@ -2,7 +2,6 @@ package kernitus.plugin.Hotels;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 import org.bstats.Metrics;
 import org.bukkit.Bukkit;
@@ -24,12 +23,14 @@ public class HotelsMain extends JavaPlugin{
 	public static Economy economy = null; //Creating economy variable
 
 	//Task loops
-	RoomTask roomTask;
-
-	Logger log = getServer().getLogger();
+	private RoomTask roomTask;
+	
+	private static HotelsMain INSTANCE;
 
 	@Override
 	public void onEnable(){
+		INSTANCE = this;
+		
 		HotelsConfigHandler.initialise(this);
 
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -241,17 +242,13 @@ public class HotelsMain extends JavaPlugin{
 		getLogger().info(Mes.getStringNoPrefix("main.disable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
 	}
 
-	/*@Override
-	public void onLoad(){
-		HotelsConfigHandler.initialise(this);
-		setupEconomy();
-		getServer().getPluginManager().registerEvents((new HotelsListener(this)), this);//Firing event listener
-	}*/
-
 	//Setting up the economy
 	private boolean setupEconomy(){
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(Economy.class);
 		if (economyProvider != null) economy = economyProvider.getProvider();
 		return economy != null;
+	}
+	public static HotelsMain getHotels(){
+		return INSTANCE;
 	}
 }

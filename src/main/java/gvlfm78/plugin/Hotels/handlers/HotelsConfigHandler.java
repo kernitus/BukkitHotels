@@ -208,6 +208,7 @@ public class HotelsConfigHandler {
 	}
 	public static void backupconfigyml(){
 		File backup = getFile("backup-config.yml");
+		if(backup.exists()) backup.delete();
 		getconfigymlFile().renameTo(backup);
 	}
 	@SuppressWarnings("deprecation")

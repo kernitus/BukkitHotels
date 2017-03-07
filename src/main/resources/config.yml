@@ -23,8 +23,14 @@ max_rent_extend: 3
 # How often Hotels checks for expired rooms and updates room signs
 roomTaskTimerMinutes: 2
 
-# How often Hotels checks for expired hotel sale offers
-hotelTaskTimerMinutes: 3
+# How long, in seconds Hotels should wait before updating reception
+# signs after rent has expired
+receptionSignUpdateDelay: 10
+
+# How long, in seconds, Hotels should wait in between room resets
+# this reduces lag, but if allowPlayersIntoFreeRooms and allowPlayersToOpenContainersInFreeRooms
+# are enabled people could sneak in in these few seconds and take stuff
+roomResetDelay: 5
 
 # Tax on revenue from hotels. It is applied to the money players spend in a hotel
 # before the money is given to the hotel owner.

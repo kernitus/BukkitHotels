@@ -53,6 +53,7 @@ import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.managers.TerrainManager;
 import kernitus.plugin.Hotels.managers.WorldGuardManager;
 import kernitus.plugin.Hotels.signs.RoomSign;
+import kernitus.plugin.Hotels.tasks.RoomResetQueue;
 import kernitus.plugin.Hotels.trade.RoomBuyer;
 import kernitus.plugin.Hotels.trade.TradesHolder;
 
@@ -634,7 +635,7 @@ public class Room {
 
 		updateSign();
 
-		if(shouldReset()) reset();
+		if(shouldReset()) RoomResetQueue.add(this);
 	}
 
 	public void reset() throws IOException, WorldEditException, DataException {

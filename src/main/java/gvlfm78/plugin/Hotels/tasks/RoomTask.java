@@ -84,18 +84,18 @@ public class RoomTask extends BukkitRunnable {
 				Mes.debug(e.getMessage());
 			}
 			finally{
-				if(changed)
-				hotelsThatHadRoomsUpdate.add(room.getHotel());
+				if(changed) hotelsThatHadRoomsUpdate.add(room.getHotel());
 			}
 		}
 		
 		Bukkit.getScheduler().runTaskLater(plugin, new Runnable () {
 			public void run() {
+				Mes.debug("UPDATING RECEPTION SIGNS");
 				//Update the reception signs for hotels that had their rooms changed
 				for(Hotel hotel : hotelsThatHadRoomsUpdate)
 					hotel.updateReceptionSigns();
 			}
-		}, 20 * 10L); //10 seconds after updating rooms we update reception signs to redistribute the lag
+		}, 20 * plugin.getConfig().getLong("receptionSignUpdateDelay", 10L)); //10 seconds after updating rooms we update reception signs to redistribute the lag
 	}
 
 	private World getWorldFromRoomSign(YamlConfiguration config){
