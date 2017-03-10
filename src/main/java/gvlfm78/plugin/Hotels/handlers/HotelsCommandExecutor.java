@@ -200,22 +200,6 @@ public class HotelsCommandExecutor {
 		HotelsCreationMode.resetInventoryFiles(p);
 		Mes.mes(p, "chat.commands.creationMode.reset");
 	}
-	public void cmdRent(CommandSender sender ,String hotelName, String roomNum){
-
-		if(!(sender instanceof Player))
-			Mes.mes(sender, "chat.commands.consoleRejected");	
-		else{
-			Player p = (Player) sender;
-			World world = p.getWorld();
-			Room room = new Room(world, hotelName, roomNum);
-			try{ room.rent(p); }
-			catch(IOException e){
-				Mes.mes(sender, "chat.commands.somethingWentWrong");
-				e.printStackTrace();
-			} catch (EventCancelledException e) {
-			}
-		}	
-	}
 	public void cmdFriendAdd(Player player, String hotelName, String roomNum, String friendName){
 
 		Room room = new Room(player.getWorld(), hotelName, roomNum);

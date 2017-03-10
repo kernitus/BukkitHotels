@@ -35,7 +35,7 @@ public class HotelsMain extends JavaPlugin{
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Listeners and stuff
-		getServer().getPluginManager().registerEvents((new HotelsListener(this)), this);//Firing event listener
+		getServer().getPluginManager().registerEvents((new HotelsListener()), this);//Firing event listener
 		getCommand("Hotels").setExecutor(new HotelsCommandHandler(this));//Firing commands listener
 		setupEconomy();
 		//Economy and stuff

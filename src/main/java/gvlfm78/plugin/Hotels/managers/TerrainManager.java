@@ -108,13 +108,17 @@ public class TerrainManager {
 			Region cuboid = clipboard.getRegion();
 			Polygonal2DRegion poly = new Polygonal2DRegion(world, pRegion.getPoints(), pRegion.getMinimumPoint().getBlockY(), pRegion.getMaximumPoint().getBlockY());
 			EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1);
+			//Queue up blocks to change
+			editSession.enableQueue();
+			editSession.setFastMode(true);
 
 			Iterator<BlockVector> i = cuboid.iterator();
 			while(i.hasNext()){
 				BlockVector vec = i.next();
 				if(poly.contains(vec)) //If location in cuboid is also in poly, paste it
-					editSession.rawSetBlock(vec, clipboard.getBlock(vec));
-			}    
+					editSession.setBlock(vec, clipboard.getBlock(vec));
+			}
+			editSession.flushQueue(); //Paste all of the blocks once ready
 		}
 		else {
 			ClipboardHolder holder = new ClipboardHolder(clipboard, world.getWorldData());

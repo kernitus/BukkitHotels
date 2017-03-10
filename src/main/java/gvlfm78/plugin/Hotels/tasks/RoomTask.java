@@ -90,7 +90,7 @@ public class RoomTask extends BukkitRunnable {
 		
 		Bukkit.getScheduler().runTaskLater(plugin, new Runnable () {
 			public void run() {
-				Mes.debug("UPDATING RECEPTION SIGNS");
+				Mes.debug("Updating reception signs...");
 				//Update the reception signs for hotels that had their rooms changed
 				for(Hotel hotel : hotelsThatHadRoomsUpdate)
 					hotel.updateReceptionSigns();

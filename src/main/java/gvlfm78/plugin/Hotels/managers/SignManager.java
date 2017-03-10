@@ -42,13 +42,7 @@ import kernitus.plugin.Hotels.handlers.MessageType;
 
 public class SignManager {
 
-	private HotelsMain plugin;
-
-	public SignManager(HotelsMain plugin){
-		this.plugin = plugin;
-	}
-
-	public void placeReceptionSign(SignChangeEvent e){
+	public static void placeReceptionSign(SignChangeEvent e){
 		Player p = e.getPlayer();
 		//Sign Lines
 		String hotelName = ChatColor.stripColor(e.getLine(1)).trim();
@@ -103,7 +97,7 @@ public class SignManager {
 		}
 	}
 
-	public void placeRoomSign(SignChangeEvent e){
+	public static void placeRoomSign(SignChangeEvent e){
 		Player p = e.getPlayer();
 		World world = p.getWorld();
 		//Sign Lines
@@ -180,10 +174,10 @@ public class SignManager {
 		e.setLine(3, ChatColor.GREEN + Mes.getStringNoPrefix("sign.vacant"));
 		Mes.mes(p, "chat.sign.place.success");
 	}
-	public boolean isReceptionSign(Sign s){
+	public static boolean isReceptionSign(Sign s){
 		return ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase(Mes.getStringNoPrefix("sign.reception"));
 	}
-	public void useRoomSign(PlayerInteractEvent e){
+	public static void useRoomSign(PlayerInteractEvent e){
 		Player p = e.getPlayer();
 		World world = p.getWorld();
 		//Sign lines
@@ -196,9 +190,13 @@ public class SignManager {
 
 		//If Hotel exists
 		if(!hotel.exists()) return;
-		int x = e.getClickedBlock().getX();
-		int y = e.getClickedBlock().getY();
-		int z = e.getClickedBlock().getZ();
+		
+		Block block = e.getClickedBlock();
+		
+		int x = block.getX();
+		int y = block.getY();
+		int z = block.getZ();
+		
 		//If sign is within region
 		if(!hotel.getRegion().contains(x, y, z)){ Mes.mes(p, "chat.sign.use.signOutOfRegion"); return; }
 
@@ -213,7 +211,7 @@ public class SignManager {
 			rentRoom(p, room); //This will also check if rent should be extended and not new
 		else Mes.mes(p, "chat.sign.use.differentRoomNums");	 	
 	}
-	public void rentRoom(Player p, Room room){
+	public static void rentRoom(Player p, Room room){
 
 		String hotelName = room.getHotel().getName();
 
@@ -223,13 +221,13 @@ public class SignManager {
 
 		if(room.isFree()){
 			if(isPlayerOverRoomLimitPerHotel(hotelName, p)){//If player is under per-hotel limit
-				p.sendMessage(Mes.getString("chat.sign.use.overRoomsPerHotelLimit").replaceAll("%limit%", plugin.getConfig().getString("max_rooms_owned_per_hotel"))); return; }
+				p.sendMessage(Mes.getString("chat.sign.use.overRoomsPerHotelLimit").replaceAll("%limit%", HotelsConfigHandler.getconfigyml().getString("max_rooms_owned_per_hotel"))); return; }
 			double account = HotelsMain.economy.getBalance(p);
 			double price = room.getCost();
 			if(account>=price){//If player has enough money
 				//If player is under max owned rooms limit
-				if(HotelsAPI.getRoomsRentedBy(p.getUniqueId()).size() >= plugin.getConfig().getInt("max_rooms_owned")){
-					p.sendMessage(Mes.getString("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(plugin.getConfig().getInt("max_rooms_owned")))); return; }
+				if(HotelsAPI.getRoomsRentedBy(p.getUniqueId()).size() >= HotelsConfigHandler.getconfigyml().getInt("max_rooms_owned")){
+					p.sendMessage(Mes.getString("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(HotelsConfigHandler.getconfigyml().getInt("max_rooms_owned")))); return; }
 				//Renter has passed all conditions and is able to rent this room
 				HotelsMain.economy.withdrawPlayer(p, price);//Taking money from renter
 				payOwners(price, room, false); //Pay the hotel owners the net profit
@@ -255,12 +253,11 @@ public class SignManager {
 		else if(renter.getUniqueId().equals(p.getUniqueId()))
 			//Renter is same player that right clicked
 			rentExtend(p, room);
-		else
-			Mes.mes(p, "chat.sign.use.taken"); 
+		else Mes.mes(p, "chat.sign.use.taken"); 
 	}
-	public void payOwners(double price, Room room, boolean isRentExtend){
+	public static void payOwners(double price, Room room, boolean isRentExtend){
 		Hotel hotel = room.getHotel();
-		String tax = plugin.getConfig().getString("tax");
+		String tax = HotelsConfigHandler.getconfigyml().getString("tax");
 		double revenue = price;
 		double taxValue;
 		if(tax.matches("\\d+%")){//If it's a percentage
@@ -309,7 +306,7 @@ public class SignManager {
 					);	
 		}
 	}
-	public void breakRoomSign(BlockBreakEvent e){
+	public static void breakRoomSign(BlockBreakEvent e){
 		Block b = e.getBlock();
 		Sign s = (Sign) b.getState();
 		String Line1 = ChatColor.stripColor(s.getLine(0));
@@ -349,14 +346,14 @@ public class SignManager {
 		}
 	}
 
-	public void rentExtend(Player p, Room room){
+	public static void rentExtend(Player p, Room room){
 
 		if(!room.isBlockAtSignLocationSign()){ Mes.mes(p, "chat.commands.rent.invalidLocation"); return; }
 
 		if(room.getTime()<=0) return;
 
 		int extended = room.getTimesExtended();
-		int max = plugin.getConfig().getInt("max_rent_extend");
+		int max = HotelsConfigHandler.getconfigyml().getInt("max_rent_extend");
 
 		if(extended >= max){ p.sendMessage(Mes.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max))); return; }
 
@@ -369,7 +366,7 @@ public class SignManager {
 
 			ProtectedRegion region = room.getRegion();
 
-			if(plugin.getConfig().getBoolean("stopOwnersEditingRentedRooms")){
+			if(HotelsConfigHandler.getconfigyml().getBoolean("stopOwnersEditingRentedRooms")){
 				region.setFlag(DefaultFlag.BLOCK_BREAK, State.DENY);
 				region.setFlag(DefaultFlag.BLOCK_PLACE, State.DENY);
 			}
@@ -398,7 +395,7 @@ public class SignManager {
 		}
 	}
 
-	public int howManyRoomsPlayerHasRentedInHotel(String hotelName, Player player){
+	public static int howManyRoomsPlayerHasRentedInHotel(String hotelName, Player player){
 		World world = player.getWorld();
 		Hotel hotel = new Hotel(world,hotelName);
 		ArrayList<Room> rooms = hotel.getRooms();
@@ -412,13 +409,13 @@ public class SignManager {
 		return rented;
 	}
 
-	public boolean isPlayerOverRoomLimitPerHotel(String hotelName, Player player){
-		int limit = plugin.getConfig().getInt("max_rooms_owned_per_hotel");
+	public static boolean isPlayerOverRoomLimitPerHotel(String hotelName, Player player){
+		int limit = HotelsConfigHandler.getconfigyml().getInt("max_rooms_owned_per_hotel");
 		int rented = howManyRoomsPlayerHasRentedInHotel(hotelName,player);
 		return rented>=limit;
 	}
 
-	public long getRemainingTime(String hotelName, String roomNum){
+	public static long getRemainingTime(String hotelName, String roomNum){
 		File file = HotelsConfigHandler.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		long expiryDate = config.getLong("Sign.expiryDate");

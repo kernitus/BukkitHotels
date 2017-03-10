@@ -22,12 +22,8 @@ import kernitus.plugin.Hotels.managers.SignManager;
 import kernitus.plugin.Hotels.trade.TradesHolder;
 
 public class HotelsListener implements Listener {
-
-	private SignManager SM;
-
-	public HotelsListener(HotelsMain plugin){
-		SM = new SignManager(plugin);
-	}
+	
+	public HotelsListener(){}
 
 	@EventHandler
 	public void onSignPlace(SignChangeEvent e){
@@ -41,9 +37,9 @@ public class HotelsListener implements Listener {
 				String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
 
 				if(Line3.isEmpty() && Line4.isEmpty()) //Reception sign?
-					SM.placeReceptionSign(e);
+					SignManager.placeReceptionSign(e);
 				else //Room sign?
-					SM.placeRoomSign(e);
+					SignManager.placeRoomSign(e);
 			}
 			else{
 				//No permission
@@ -63,7 +59,7 @@ public class HotelsListener implements Listener {
 		Player p = e.getPlayer();
 		//Permission check
 		if(Mes.hasPerm(p, "hotels.sign.use"))
-			SM.useRoomSign(e);
+			SignManager.useRoomSign(e);
 		else Mes.mes(p, "chat.noPermission"); 
 	}
 
@@ -73,7 +69,7 @@ public class HotelsListener implements Listener {
 		Block b = e.getBlock();
 		Material mat = b.getType();
 		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN))
-			SM.breakRoomSign(e);
+			SignManager.breakRoomSign(e);
 	}
 
 	@EventHandler

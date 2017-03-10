@@ -41,7 +41,7 @@ public class RoomResetQueue {
 					e.printStackTrace();
 				}
 			}
-		}, (20 * delay + secondsUntilLastTaskIsExecuted) );
+		}, (20 * (delay + secondsUntilLastTaskIsExecuted)) );
 		lastAdding = currentTime;
 	}
 }
