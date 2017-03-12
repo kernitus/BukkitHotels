@@ -13,7 +13,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import kernitus.plugin.Hotels.Hotel;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 
 public class ReceptionSign extends AbstractSign {
@@ -86,7 +86,7 @@ public class ReceptionSign extends AbstractSign {
 		return new Location(world, x, y, z);
 	}
 	public File getFile(){
-		return HotelsConfigHandler.getReceptionFile(hotel.getName(), num);
+		return HTConfigHandler.getReceptionFile(hotel.getName(), num);
 	}
 	public String getNumber(){
 		return num;

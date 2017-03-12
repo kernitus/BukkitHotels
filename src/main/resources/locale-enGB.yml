@@ -320,6 +320,7 @@ chat:
       selling: '&aPlayer %seller% is selling their hotel %hotel% to you for $%price%. Type &6&o/ht buyh %hotel% &r&ato buy it'
       sellingAsked: '&aThe player %buyer% has been asked if they wish to buy your hotel'
       sellingAlreadyAsked: '&4You have already asked the player %buyer% if they wish to buy your hotel!'
+      selfSale: '&4You can''t sell this to yourself!'
       invalidPrice: '&4The price you entered is not valid!'
       success: '&aYou have just sold the %hotel% hotel to player %buyer% for $%price%'
       expired: '&4Your sale of the hotel %hotel% has expired'

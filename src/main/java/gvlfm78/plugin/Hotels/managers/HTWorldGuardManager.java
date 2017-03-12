@@ -38,10 +38,10 @@ import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 
 
-public class WorldGuardManager {
+public class HTWorldGuardManager {
 
 	public static WorldGuardPlugin getWorldGuard(){
 		Plugin p = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -59,16 +59,37 @@ public class WorldGuardManager {
 		owners.addPlayer(p.getUniqueId());
 		r.setOwners(owners);
 	}
+	
+	public static void addOwners(DefaultDomain dd, ProtectedRegion r){
+		DefaultDomain owners = r.getOwners();
+		owners.addAll(dd);
+		r.setOwners(owners);
+	}
 
 	public static void addMember(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain members = r.getMembers();
 		members.addPlayer(p.getUniqueId());
 		r.setMembers(members);
 	}
+	public static void addMembers(DefaultDomain dd, ProtectedRegion r){
+		DefaultDomain members = r.getMembers();
+		members.addAll(dd);
+		r.setMembers(members);
+	}
 	public static void setMember(UUID uuid, ProtectedRegion r){
 		DefaultDomain member = new DefaultDomain();
 		member.addPlayer(uuid);
 		r.setMembers(member);
+	}
+	public static void setMember(OfflinePlayer p, ProtectedRegion r){
+		DefaultDomain members = new DefaultDomain();
+			members.addPlayer(p.getUniqueId());
+		r.setMembers(members);
+	}
+	public static void setOwner(OfflinePlayer p, ProtectedRegion r){
+		DefaultDomain owners = new DefaultDomain();
+			owners.addPlayer(p.getUniqueId());
+		r.setOwners(owners);
 	}
 	public static void setMembers(ArrayList<UUID> uuids, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
@@ -88,10 +109,20 @@ public class WorldGuardManager {
 		owners.removePlayer(p.getUniqueId());
 		r.setOwners(owners);
 	}
+	public static void removeOwners(DefaultDomain dd, ProtectedRegion r){
+		DefaultDomain owners = r.getOwners();
+		owners.removeAll(dd);
+		r.setOwners(owners);
+	}
 
 	public static void removeMember(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain members = r.getMembers();
 		members.removePlayer(p.getUniqueId());
+		r.setMembers(members);
+	}
+	public static void removeMembers(DefaultDomain dd, ProtectedRegion r){
+		DefaultDomain members = r.getMembers();
+		members.removeAll(dd);
 		r.setMembers(members);
 	}
 
@@ -281,24 +312,24 @@ public class WorldGuardManager {
 		region.setFlag(regionGroupFlag, regionGroup);
 	}
 	public static void hotelFlags(ProtectedRegion region, String hotelName, World world){
-		YamlConfiguration flagsConfig = HotelsConfigHandler.getFlags();
+		YamlConfiguration flagsConfig = HTConfigHandler.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
 		setFlags(section, region, hotelName, world);
 	}
 	public static void roomFlags(ProtectedRegion region, int roomNum, World world){
-		YamlConfiguration flagsConfig = HotelsConfigHandler.getFlags();
+		YamlConfiguration flagsConfig = HTConfigHandler.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
 		setFlags(section, region, String.valueOf(roomNum), world);
 	}
 	public static void makeRoomAccessible(ProtectedRegion region){
-		if(HotelsConfigHandler.getconfigyml().getBoolean(".allowPlayersIntoFreeRooms")){
+		if(HTConfigHandler.getconfigYML().getBoolean("allowPlayersIntoFreeRooms", true)){
 			region.setFlag(DefaultFlag.INTERACT, null);
 			region.setFlag(DefaultFlag.USE, null);
 			makeRoomContainersAccessible(region);
 		}
 	}
 	public static void makeRoomContainersAccessible(ProtectedRegion region){
-		if(HotelsConfigHandler.getconfigyml().getBoolean("allowPlayersToOpenContainersInFreeRooms"))
+		if(HTConfigHandler.getconfigYML().getBoolean("allowPlayersToOpenContainersInFreeRooms", false))
 			region.setFlag(DefaultFlag.CHEST_ACCESS, null);
 	}
 }

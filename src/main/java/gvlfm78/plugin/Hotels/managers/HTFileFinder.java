@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 
-public class HotelsFileFinder {
+public class HTFileFinder {
 
 	public static ArrayList<String> listFiles(String dir) {
 

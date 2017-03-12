@@ -21,8 +21,9 @@ import org.bukkit.plugin.Plugin;
 
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
+import kernitus.plugin.Hotels.managers.Mes;
 
-public class HotelsConfigHandler {
+public class HTConfigHandler {
 
 	private static HotelsMain PLUGIN;
 	private static YamlConfiguration locale, flags;
@@ -71,14 +72,14 @@ public class HotelsConfigHandler {
 		}
 	}
 	public static String getLanguage(){
-		return PLUGIN.getConfig().getString("language");
+		return PLUGIN.getConfig().getString("language", "enGB");
 	}
 
 	public static File getFile(String filepath){
 		return new File(PLUGIN.getDataFolder() + File.separator + filepath);
 	}
 
-	public static YamlConfiguration getyml(File file){
+	public static YamlConfiguration getYML(File file){
 		YamlConfiguration config = new YamlConfiguration();
 		FileInputStream fileinputstream;
 
@@ -96,15 +97,15 @@ public class HotelsConfigHandler {
 		return config;
 	}
 
-	public static YamlConfiguration getyml(String filepath){
-		return getyml(getFile(filepath));
+	public static YamlConfiguration getYML(String filepath){
+		return getYML(getFile(filepath));
 	}
 
-	public static File getconfigFile(String configName){
-		return getFile(configName+".yml");
+	public static File getConfigFile(String configName){
+		return getFile(configName + ".yml");
 	}
 
-	public static File getconfigymlFile(){
+	public static File getconfigYMLFile(){
 		return getFile("config.yml");
 	}
 
@@ -130,29 +131,25 @@ public class HotelsConfigHandler {
 		return getReceptionFile(hotelName, String.valueOf(receptionNum));
 	}
 	public static File getReceptionFile(String hotelName, String receptionNum){
-		return getFile("Signs"+File.separator+"Reception"+File.separator+hotelName.toLowerCase()+File.separator+receptionNum+".yml");
+		return getFile("Signs" + File.separator + "Reception" + File.separator + hotelName.toLowerCase() + File.separator + receptionNum + ".yml");
 	}
 	public static File getHotelFile(String hotelName){
-		return getFile("Hotels"+File.separator+hotelName+".yml");
+		return getFile("Hotels" + File.separator + hotelName + ".yml");
 	}
 	public static File getInventoryFile(UUID uuid){
-		return getFile("Inventories"+File.separator+uuid+".yml");
+		return getFile("Inventories" + File.separator + uuid + ".yml");
 	}
 	public static File getSchematicFile(String hotelName, String roomNum){
-		return getFile("Schematics"+File.separator+hotelName+"-"+roomNum+".schematic");
+		return getFile("Schematics" + File.separator + hotelName + "-" + roomNum + ".schematic");
 	}
 	public static File getSchematicFile(Room room){
-		return getFile("Schematics"+File.separator+room.getHotel().getName()+"-"+room.getNum()+".schematic");
+		return getFile("Schematics" + File.separator + room.getHotel().getName() + "-" + room.getNum() + ".schematic");
 	}
-	public static File getSchematicFileNoExtension(Room room){
-		//Don't add .schematic as TerrainManager does it automatically
-		return getFile("Schematics"+File.separator+room.getHotel().getName()+"-"+room.getNum());
-	}
-	public static YamlConfiguration getconfig(String configName){
-		return getyml(getconfigFile(configName));
+	public static YamlConfiguration getConfig(String configName){
+		return getYML(getConfigFile(configName));
 	}
 
-	public static FileConfiguration getconfigyml(){
+	public static FileConfiguration getconfigYML(){
 		return PLUGIN.getConfig();
 	}
 
@@ -161,23 +158,23 @@ public class HotelsConfigHandler {
 	}
 
 	public static YamlConfiguration getMessageQueue(){
-		return getyml(getMessageQueueFile());
+		return getYML(getMessageQueueFile());
 	}
 
 	public static YamlConfiguration getFlags(){
 		return flags;
 	}
 	public YamlConfiguration getSignConfig(String hotelName, String roomNum){
-		return getyml(getSignFile(hotelName, roomNum));
+		return getYML(getSignFile(hotelName, roomNum));
 	}
 	public static YamlConfiguration getSignConfig(String hotelName, int roomNum){
-		return getyml(getSignFile(hotelName, String.valueOf(roomNum)));
+		return getYML(getSignFile(hotelName, String.valueOf(roomNum)));
 	}
 	public static YamlConfiguration getInventoryConfig(UUID uuid){
-		return getyml(getInventoryFile(uuid));
+		return getYML(getInventoryFile(uuid));
 	}
 	public static YamlConfiguration getHotelConfig(String hotelName){
-		return getyml(getHotelFile(hotelName));
+		return getYML(getHotelFile(hotelName));
 	}
 
 	public static void saveConfiguration(File file, YamlConfiguration config){
@@ -202,26 +199,23 @@ public class HotelsConfigHandler {
 	public static void saveFlags(YamlConfiguration config){
 		saveConfiguration(getFlagsFile(), config);
 	}
-
-	public static void saveconfigyml(YamlConfiguration config){
-		saveConfiguration(getconfigymlFile(), config);
-	}
-	public static void backupconfigyml(){
+	public static void backupconfigYML(){
 		File backup = getFile("backup-config.yml");
 		if(backup.exists()) backup.delete();
-		getconfigymlFile().renameTo(backup);
+		getconfigYMLFile().renameTo(backup);
 	}
 	@SuppressWarnings("deprecation")
 	public static void reloadConfigs(){
 		//Reload config.yml
-		if(getconfigymlFile().exists()){
+		if(getconfigYMLFile().exists()){
 			PLUGIN.reloadConfig(); //Making sure they haven't pasted a new version manually	
 
 			//If there's a newer version of the config.yml embedded
 			if(PLUGIN.getConfig().getInt("version", 0) <
 					YamlConfiguration.loadConfiguration(
 							PLUGIN.getResource("config.yml")).getInt("version") ){
-				backupconfigyml();
+				Mes.printConsole("Newer config version available, backing up old one and saving new...");
+				backupconfigYML();
 				setupConfigyml();
 			}
 		}
@@ -235,13 +229,13 @@ public class HotelsConfigHandler {
 			setupFlags();
 
 		//Locale language selector needs it
-		locale = getyml(getLocaleFile());
+		locale = getYML(getLocaleFile());
 		//Locale
 		localeLanguageSelector();
 
 		//Now that we're sure they exist we load up new instances of them
-		locale = getyml(getLocaleFile());
-		flags = getyml(getFlagsFile());
+		locale = getYML(getLocaleFile());
+		flags = getYML(getFlagsFile());
 	}
 
 	public static void setupLanguage(String langCode, Plugin PLUGIN){
@@ -254,7 +248,6 @@ public class HotelsConfigHandler {
 	}
 
 	public static void setupFlags(){
-
 		File flagsFile = getFlagsFile();
 		if(!flagsFile.exists())
 			try {
@@ -264,7 +257,7 @@ public class HotelsConfigHandler {
 				e.printStackTrace();
 			}
 
-		YamlConfiguration flagsConfig = getyml(flagsFile);
+		YamlConfiguration flagsConfig = getYML(flagsFile);
 
 		flagsConfig.options().header("These are the flag values the hotel and room regions will have set to upon creation. Refer here for what each does and the data type http://docs.enginehub.org/manual/worldguard/latest/regions/flags/");
 		//Hotel flags

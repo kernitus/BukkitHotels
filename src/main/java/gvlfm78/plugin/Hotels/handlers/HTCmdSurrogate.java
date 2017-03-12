@@ -19,7 +19,7 @@ import com.sk89q.worldedit.world.DataException;
 
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
-import kernitus.plugin.Hotels.HotelsCreationMode;
+import kernitus.plugin.Hotels.HTCreationMode;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.exceptions.BlockNotSignException;
 import kernitus.plugin.Hotels.exceptions.EventCancelledException;
@@ -32,19 +32,19 @@ import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
 import kernitus.plugin.Hotels.exceptions.UserNonExistentException;
 import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
 import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.managers.SignManager;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.managers.HTSignManager;
+import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
 
-public class HotelsCommandExecutor {
+public class HTCmdSurrogate {
 
-	public void cmdCreate(Player p,String hotelName){//Hotel creation command
+	public static void cmdCreate(Player p, String hotelName){//Hotel creation command
 		UUID playerUUID = p.getUniqueId();
-		if(HotelsCreationMode.isInCreationMode(playerUUID))
-			HotelsCreationMode.hotelSetup(hotelName, p);
+		if(HTCreationMode.isInCreationMode(playerUUID))
+			HTCreationMode.hotelSetup(hotelName, p);
 		else
 			Mes.mes(p, "chat.commands.create.fail");
 	}
-	public void cmdCommandsAll(CommandSender s){
+	public static void cmdCommandsAll(CommandSender s){
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.header"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.subheader"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.help"));
@@ -75,7 +75,7 @@ public class HotelsCommandExecutor {
 
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.footer"));
 	}
-	public void cmdCommandsOnly(CommandSender s){
+	public static void cmdCommandsOnly(CommandSender s){
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.header"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.subheader"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.help"));
@@ -125,7 +125,7 @@ public class HotelsCommandExecutor {
 
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.footer"));
 	}
-	public void cmdHelp1(CommandSender s){
+	public static void cmdHelp1(CommandSender s){
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.header"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.subheader"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.page1.1"));
@@ -135,7 +135,7 @@ public class HotelsCommandExecutor {
 		s.sendMessage((Mes.getStringNoPrefix("chat.commands.help.prefooter")).replaceAll("%num%", "2"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.footer"));
 	}
-	public void cmdHelp2(CommandSender s){
+	public static void cmdHelp2(CommandSender s){
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.header"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.subheader"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.page2.1"));
@@ -143,7 +143,7 @@ public class HotelsCommandExecutor {
 		s.sendMessage((Mes.getStringNoPrefix("chat.commands.help.prefooter")).replaceAll("%num%", "3"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.footer"));
 	}
-	public void cmdHelp3(CommandSender s){
+	public static void cmdHelp3(CommandSender s){
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.header"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.subheader"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.page3.1"));
@@ -153,7 +153,7 @@ public class HotelsCommandExecutor {
 		s.sendMessage((Mes.getStringNoPrefix("chat.commands.help.prefooter")).replaceAll("%num%", "4"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.footer"));
 	}
-	public void cmdHelp4(CommandSender s){
+	public static void cmdHelp4(CommandSender s){
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.header"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.subheader"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.page4.1"));
@@ -166,7 +166,7 @@ public class HotelsCommandExecutor {
 		s.sendMessage((Mes.getStringNoPrefix("chat.commands.help.prefooter")).replaceAll("%num%", "5"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.footer"));
 	}
-	public void cmdHelp5(CommandSender s){
+	public static void cmdHelp5(CommandSender s){
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.header"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.subheader"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.page5.1"));
@@ -181,26 +181,26 @@ public class HotelsCommandExecutor {
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.help.footer"));
 	}
 
-	public void cmdCreateModeEnter(Player p){
-		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
+	public static void cmdCreateModeEnter(Player p){
+		if(HTCreationMode.isInCreationMode(p.getUniqueId())){
 			Mes.mes(p, "chat.commands.creationMode.alreadyIn"); return; }
 
-		HotelsCreationMode.saveInventory(p);
-		HotelsCreationMode.giveItems(p);
+		HTCreationMode.saveInventory(p);
+		HTCreationMode.giveItems(p);
 		Mes.mes(p, "chat.commands.creationMode.enter");	
 	}
-	public void cmdCreateModeExit(Player p){
-		if(!HotelsCreationMode.isInCreationMode(p.getUniqueId())){
+	public static void cmdCreateModeExit(Player p){
+		if(!HTCreationMode.isInCreationMode(p.getUniqueId())){
 			Mes.mes(p, "chat.commands.creationMode.notAlreadyIn"); return; }
 
 		Mes.mes(p, "chat.commands.creationMode.exit");
-		HotelsCreationMode.loadInventory(p);	
+		HTCreationMode.loadInventory(p);	
 	}
-	public void cmdCreateModeReset(Player p){
-		HotelsCreationMode.resetInventoryFiles(p);
+	public static void cmdCreateModeReset(Player p){
+		HTCreationMode.resetInventoryFiles(p);
 		Mes.mes(p, "chat.commands.creationMode.reset");
 	}
-	public void cmdFriendAdd(Player player, String hotelName, String roomNum, String friendName){
+	public static void cmdFriendAdd(Player player, String hotelName, String roomNum, String friendName){
 
 		Room room = new Room(player.getWorld(), hotelName, roomNum);
 
@@ -224,7 +224,7 @@ public class HotelsCommandExecutor {
 			Mes.mes(player, "chat.commands.friend.wrongData");
 		}
 	}
-	public void cmdFriendRemove(Player player, String hotelName, String roomNum, String friendName){
+	public static void cmdFriendRemove(Player player, String hotelName, String roomNum, String friendName){
 		Room room = new Room(player.getWorld(), hotelName, roomNum);
 
 		if(!room.isRenter(player.getUniqueId())){
@@ -244,7 +244,7 @@ public class HotelsCommandExecutor {
 			Mes.mes(player, "chat.commands.friend.wrongData");
 		}
 	}
-	public void cmdFriendList(CommandSender s, String hotelName, String roomNum){
+	public static void cmdFriendList(CommandSender s, String hotelName, String roomNum){
 		Room room = new Room(hotelName, roomNum);
 
 		if(!room.doesSignFileExist()){ Mes.mes(s, "chat.commands.friend.wrongData"); return; }
@@ -266,15 +266,15 @@ public class HotelsCommandExecutor {
 
 		Mes.mes(s, "chat.commands.friend.list.footer");
 	}
-	public void cmdRoomListPlayer(Player p, String hotelName, World w){
+	public static void cmdRoomListPlayer(Player p, String hotelName, World w){
 		cmdRoomListPlayer(((CommandSender) p), hotelName, w);
 	}
-	public void cmdRoomListPlayer(CommandSender s, String hotelName, World w){
+	public static void cmdRoomListPlayer(CommandSender s, String hotelName, World w){
 		Hotel hotel = new Hotel(w, hotelName);
 		if(hotel.exists()) listRooms(hotel,s);
 		else s.sendMessage(Mes.getString("chat.commands.hotelNonExistent").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
-	public void renumber(Room room, String newNum, CommandSender sender){
+	public static void renumber(Room room, String newNum, CommandSender sender){
 		int oldNum = room.getNum();
 		Hotel hotel = room.getHotel();
 		String hotelName = hotel.getName();
@@ -285,7 +285,7 @@ public class HotelsCommandExecutor {
 
 		Player player = (Player) sender;
 
-		if(!WorldGuardManager.isOwner(player, "hotel-"+hotelName, player.getWorld()) || Mes.hasPerm(player, "hotels.renumber.admin")){
+		if(!HTWorldGuardManager.isOwner(player, "hotel-"+hotelName, player.getWorld()) || Mes.hasPerm(player, "hotels.renumber.admin")){
 			Mes.mes(player, "chat.commands.youDoNotOwnThat"); return; }
 
 		try {
@@ -309,7 +309,7 @@ public class HotelsCommandExecutor {
 			Mes.mes(player, "chat.use.fileNonExistent");
 		}
 	}
-	public void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
+	public static void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
 		Room room = new Room(world, hotelName, roomNum);
 
 		try {
@@ -317,7 +317,7 @@ public class HotelsCommandExecutor {
 			Mes.mes(sender, "chat.commands.removeRoom.success");
 		} catch (EventCancelledException e) {}
 	}
-	public void removePlayer(Room room, String toRemovePlayer, CommandSender sender){
+	public static void removePlayer(Room room, String toRemovePlayer, CommandSender sender){
 
 		@SuppressWarnings("deprecation")
 		OfflinePlayer player = Bukkit.getOfflinePlayer(toRemovePlayer);
@@ -348,7 +348,7 @@ public class HotelsCommandExecutor {
 			e.printStackTrace();
 		}
 	}
-	public void check(String playername, CommandSender sender){
+	public static void check(String playername, CommandSender sender){
 
 		@SuppressWarnings("deprecation")
 		OfflinePlayer p = Bukkit.getOfflinePlayer(playername);
@@ -386,7 +386,7 @@ public class HotelsCommandExecutor {
 			long expiryDate = room.getExpiryMinute();
 
 			if(expiryDate>0){
-				String timeleft = SignManager.TimeFormatter(expiryDate - (System.currentTimeMillis()/1000/60) );
+				String timeleft = HTSignManager.TimeFormatter(expiryDate - (System.currentTimeMillis()/1000/60) );
 				sender.sendMessage(Mes.getString("chat.commands.check.lineRooms")
 						.replaceAll("%hotel%", hotelName).replaceAll("%room%", roomNum).replaceAll("%timeleft%", String.valueOf(timeleft)));
 			}
@@ -395,7 +395,7 @@ public class HotelsCommandExecutor {
 						.replaceAll("%hotel%", hotelName).replaceAll("%room%", roomNum).replaceAll("%timeleft%", Mes.getStringNoPrefix("sign.permanent")));
 		}
 	}
-	public void listHotels(World w, CommandSender sender){
+	public static void listHotels(World w, CommandSender sender){
 		Mes.mes(sender, "chat.commands.listHotels.heading");
 
 		ArrayList<Hotel> hotels = HotelsAPI.getHotelsInWorld(w);
@@ -411,7 +411,7 @@ public class HotelsCommandExecutor {
 					);
 		}
 	}
-	public void listRooms(Hotel hotel, CommandSender sender){
+	public static void listRooms(Hotel hotel, CommandSender sender){
 
 		ArrayList<Room> rooms = hotel.getRooms();
 

@@ -36,11 +36,11 @@ import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.exceptions.EventCancelledException;
 import kernitus.plugin.Hotels.exceptions.RoomNotSetupException;
 import kernitus.plugin.Hotels.exceptions.RoomSignInRoomException;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
+import kernitus.plugin.Hotels.handlers.HTConfigHandler;
+import kernitus.plugin.Hotels.handlers.HTMessageQueue;
 import kernitus.plugin.Hotels.handlers.MessageType;
 
-public class SignManager {
+public class HTSignManager {
 
 	public static void placeReceptionSign(SignChangeEvent e){
 		Player p = e.getPlayer();
@@ -69,9 +69,9 @@ public class SignManager {
 		e.setLine(3, (ChatColor.GREEN + String.valueOf(free) + ChatColor.BLACK + " " + Mes.getStringNoPrefix("sign.room.free")));
 
 		//Loop will stop once a non-existent file is found
-		File receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, 1);
+		File receptionFile = HTConfigHandler.getReceptionFile(hotelName, 1);
 		for(int i = 1; receptionFile.exists(); i++)
-			receptionFile = HotelsConfigHandler.getReceptionFile(hotelName, i);
+			receptionFile = HTConfigHandler.getReceptionFile(hotelName, i);
 
 		try {
 			receptionFile.createNewFile();
@@ -97,7 +97,7 @@ public class SignManager {
 		}
 	}
 
-	public static void placeRoomSign(SignChangeEvent e){
+	public static void placeRoomSign(SignChangeEvent e) throws RoomSignInRoomException{
 		Player p = e.getPlayer();
 		World world = p.getWorld();
 		//Sign Lines
@@ -111,7 +111,7 @@ public class SignManager {
 		if(!hotel.isOwner(p.getName()) && !hotel.isOwner(p.getUniqueId()) && !Mes.hasPerm(p, "hotels.sign.create.admin")){
 			Mes.mes(p, "chat.commands.youDoNotOwnThat"); e.setCancelled(true); return; }
 
-		if(!Line3.contains(":")){ Mes.mes(p, "chat.sign.place.noSeparator"); e.setLine(0, ChatColor.DARK_RED+"]hotels["); return; }
+		if(!Line3.contains(":")){ Mes.mes(p, "chat.sign.place.noSeparator"); e.setLine(0, ChatColor.DARK_RED + "]hotels["); return; }
 
 		String[] Line3parts = Line3.split(":");
 		int roomNum = Integer.parseInt(Line3parts[0]); //Room Number
@@ -123,16 +123,21 @@ public class SignManager {
 		Room room = new Room(hotel,roomNum);
 
 
-		if(room.doesSignFileExist()){ Mes.mes(p, "chat.sign.place.alreadyExists"); e.setLine(0, ChatColor.DARK_RED+"]hotels["); return; }
+		if(room.doesSignFileExist()){ Mes.mes(p, "chat.sign.place.alreadyExists"); e.setLine(0, ChatColor.DARK_RED + "]hotels["); return; }
 
 		//If sign is within hotel region
 		Block block = e.getBlock();
 		int x = block.getX();
 		int y = block.getY();
 		int z = block.getZ();
-		if(!hotel.getRegion().contains(x, y, z)){ Mes.mes(p, "chat.sign.place.outOfRegion"); e.setLine(0, ChatColor.DARK_RED+"]hotels["); return; }
+		if(!hotel.getRegion().contains(x, y, z)){ Mes.mes(p, "chat.sign.place.outOfRegion"); e.setLine(0, ChatColor.DARK_RED + "]hotels["); return; }
 
 		if(!room.exists()){ Mes.mes(p, "chat.sign.place.noRegion"); return; }
+		
+		//Checking sign is not inside any resettable room
+		for(Room tempRoom : hotel.getRooms())
+			if(tempRoom.shouldReset() && tempRoom.getRegion().contains(x, y, z)) throw new RoomSignInRoomException();
+		
 		//Successful Sign
 
 		String immutedTime = Line4.trim(); //Time
@@ -152,7 +157,7 @@ public class SignManager {
 
 		//Room reset setup
 		try {
-			room.setShouldReset(HotelsConfigHandler.getconfigyml().getBoolean("defaultReset"));
+			room.setShouldReset(HTConfigHandler.getconfigYML().getBoolean("defaultReset", false));
 		} catch (DataException | IOException | WorldEditException e1) {
 			Mes.mes(p, "chat.commands.somethingWentWrong");
 			e1.printStackTrace();
@@ -221,13 +226,14 @@ public class SignManager {
 
 		if(room.isFree()){
 			if(isPlayerOverRoomLimitPerHotel(hotelName, p)){//If player is under per-hotel limit
-				p.sendMessage(Mes.getString("chat.sign.use.overRoomsPerHotelLimit").replaceAll("%limit%", HotelsConfigHandler.getconfigyml().getString("max_rooms_owned_per_hotel"))); return; }
+				p.sendMessage(Mes.getString("chat.sign.use.overRoomsPerHotelLimit").replaceAll("%limit%", HTConfigHandler.getconfigYML().getString("maxRoomsOwnedPerHotel", "2"))); return; }
 			double account = HotelsMain.economy.getBalance(p);
 			double price = room.getCost();
 			if(account>=price){//If player has enough money
 				//If player is under max owned rooms limit
-				if(HotelsAPI.getRoomsRentedBy(p.getUniqueId()).size() >= HotelsConfigHandler.getconfigyml().getInt("max_rooms_owned")){
-					p.sendMessage(Mes.getString("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(HotelsConfigHandler.getconfigyml().getInt("max_rooms_owned")))); return; }
+				int maxRoomsOwned = HTConfigHandler.getconfigYML().getInt("maxRoomsOwned", 3);
+				if(HotelsAPI.getRoomsRentedBy(p.getUniqueId()).size() >= maxRoomsOwned){
+					p.sendMessage(Mes.getString("chat.sign.use.maxRoomsReached").replaceAll("%max%", String.valueOf(maxRoomsOwned))); return; }
 				//Renter has passed all conditions and is able to rent this room
 				HotelsMain.economy.withdrawPlayer(p, price);//Taking money from renter
 				payOwners(price, room, false); //Pay the hotel owners the net profit
@@ -257,7 +263,7 @@ public class SignManager {
 	}
 	public static void payOwners(double price, Room room, boolean isRentExtend){
 		Hotel hotel = room.getHotel();
-		String tax = HotelsConfigHandler.getconfigyml().getString("tax");
+		String tax = HTConfigHandler.getconfigYML().getString("tax", "20%");
 		double revenue = price;
 		double taxValue;
 		if(tax.matches("\\d+%")){//If it's a percentage
@@ -297,7 +303,7 @@ public class SignManager {
 			if(revenue<0)
 				revenue = 0;
 
-			if(!owner.isOnline()){ HotelsMessageQueue.addMessage(MessageType.revenue, owner.getUniqueId(), Mes.getString(chatMessage).replaceAll("%revenue%", new DecimalFormat("#.00").format(revenue)).replaceAll("%room%", String.valueOf(room.getNum())).replaceAll("%hotel%", hotel.getName())); return; }
+			if(!owner.isOnline()){ HTMessageQueue.addMessage(MessageType.revenue, owner.getUniqueId(), Mes.getString(chatMessage).replaceAll("%revenue%", new DecimalFormat("#.00").format(revenue)).replaceAll("%room%", String.valueOf(room.getNum())).replaceAll("%hotel%", hotel.getName())); return; }
 			Player player = (Player) owner;
 			player.sendMessage(Mes.getString(chatMessage)
 					.replaceAll("%revenue%",  new DecimalFormat("#.00").format(revenue))
@@ -353,7 +359,7 @@ public class SignManager {
 		if(room.getTime()<=0) return;
 
 		int extended = room.getTimesExtended();
-		int max = HotelsConfigHandler.getconfigyml().getInt("max_rent_extend");
+		int max = HTConfigHandler.getconfigYML().getInt("maxRentExtend", 3);
 
 		if(extended >= max){ p.sendMessage(Mes.getString("chat.sign.use.maxEntendReached").replaceAll("%max%", String.valueOf(max))); return; }
 
@@ -366,7 +372,7 @@ public class SignManager {
 
 			ProtectedRegion region = room.getRegion();
 
-			if(HotelsConfigHandler.getconfigyml().getBoolean("stopOwnersEditingRentedRooms")){
+			if(HTConfigHandler.getconfigYML().getBoolean("stopOwnersEditingRentedRooms", true)){
 				region.setFlag(DefaultFlag.BLOCK_BREAK, State.DENY);
 				region.setFlag(DefaultFlag.BLOCK_PLACE, State.DENY);
 			}
@@ -410,19 +416,19 @@ public class SignManager {
 	}
 
 	public static boolean isPlayerOverRoomLimitPerHotel(String hotelName, Player player){
-		int limit = HotelsConfigHandler.getconfigyml().getInt("max_rooms_owned_per_hotel");
-		int rented = howManyRoomsPlayerHasRentedInHotel(hotelName,player);
+		int limit = HTConfigHandler.getconfigYML().getInt("maxRoomsOwnedPerHotel", 2);
+		int rented = howManyRoomsPlayerHasRentedInHotel(hotelName, player);
 		return rented>=limit;
 	}
 
 	public static long getRemainingTime(String hotelName, String roomNum){
-		File file = HotelsConfigHandler.getFile("Signs"+File.separator+hotelName+"-"+roomNum+".yml");
+		File file = HTConfigHandler.getFile("Signs" + File.separator + hotelName + "-" + roomNum + ".yml");
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		long expiryDate = config.getLong("Sign.expiryDate");
 		long currentMins = System.currentTimeMillis()/1000/60;
 		return expiryDate-currentMins;
 	}
-	public static long TimeConverter(String immutedtime){
+	public static long TimeConverter(final String immutedtime){
 		final Pattern p = Pattern.compile("(\\d+)([hmd])");
 		final Matcher m = p.matcher(immutedtime);
 
@@ -473,7 +479,7 @@ public class SignManager {
 		default: throw new IllegalArgumentException(String.format("%s is not a valid cost code [thkmb]", c));
 		}
 	}
-	public static String TimeFormatter(long input){
+	public static String TimeFormatter(final long input){
 		if(input<=0) return Mes.getStringNoPrefix("sign.permanent");
 		//Formats time in minutes to days, hours and minutes
 		long[] ftime = new long[3];

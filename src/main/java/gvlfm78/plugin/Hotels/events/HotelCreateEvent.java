@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.Hotel;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
 
 public class HotelCreateEvent extends Event implements Cancellable {
 
@@ -63,7 +63,7 @@ public class HotelCreateEvent extends Event implements Cancellable {
 	}
 	public void setName(String name){
 		this.name = name;
-		ProtectedRegion temp = WorldGuardManager.getHotelRegion(world, name);
+		ProtectedRegion temp = HTWorldGuardManager.getHotelRegion(world, name);
 		temp.copyFrom(region);
 		this.region = temp; //TODO check if this correctly copies over everything but the name
 	}

@@ -24,10 +24,10 @@ import kernitus.plugin.Hotels.events.HotelRenameEvent;
 import kernitus.plugin.Hotels.exceptions.EventCancelledException;
 import kernitus.plugin.Hotels.exceptions.HotelAlreadyPresentException;
 import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsFileFinder;
+import kernitus.plugin.Hotels.handlers.HTConfigHandler;
+import kernitus.plugin.Hotels.managers.HTFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
 import kernitus.plugin.Hotels.signs.ReceptionSign;
 import kernitus.plugin.Hotels.trade.HotelBuyer;
 import kernitus.plugin.Hotels.trade.TradesHolder;
@@ -67,7 +67,7 @@ public class Hotel {
 	////////Getters////////
 	///////////////////////
 	public boolean exists(){
-		return (world == null || name == null) ? false : WorldGuardManager.hasRegion(world, "hotel-"+name);
+		return (world == null || name == null) ? false : HTWorldGuardManager.hasRegion(world, "hotel-"+name);
 	}
 	public World getWorld(){
 		return world;
@@ -76,11 +76,11 @@ public class Hotel {
 		return name;
 	}
 	public ProtectedRegion getRegion(){
-		return WorldGuardManager.getHotelRegion(world, name);
+		return HTWorldGuardManager.getHotelRegion(world, name);
 	}
 	public ArrayList<Room> getRooms(){
 		ArrayList<Room> rooms = new ArrayList<Room>();
-		for(ProtectedRegion r : WorldGuardManager.getRegions(world)){
+		for(ProtectedRegion r : HTWorldGuardManager.getRegions(world)){
 			String id = r.getId();
 			if(id.matches("hotel-"+name+"-\\d+")){
 				String num = id.replaceFirst("hotel-"+name+"-", "");
@@ -118,7 +118,7 @@ public class Hotel {
 		return false;
 	}
 	public ArrayList<ReceptionSign> getAllReceptionSigns(){
-		ArrayList<String> fileList = HotelsFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+"Reception"+File.separator+name.toLowerCase());
+		ArrayList<String> fileList = HTFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+"Reception"+File.separator+name.toLowerCase());
 		ArrayList<ReceptionSign> signs = new ArrayList<ReceptionSign>();
 
 		for(String x : fileList)
@@ -126,10 +126,10 @@ public class Hotel {
 		return signs;
 	}
 	public File getHotelFile(){
-		return HotelsConfigHandler.getHotelFile(name.toLowerCase());
+		return HTConfigHandler.getHotelFile(name.toLowerCase());
 	}
 	public YamlConfiguration getHotelConfig(){
-		return HotelsConfigHandler.getHotelConfig(name.toLowerCase());
+		return HTConfigHandler.getHotelConfig(name.toLowerCase());
 	}
 	public DefaultDomain getOwners(){
 		return getRegion().getOwners();
@@ -178,10 +178,10 @@ public class Hotel {
 		for(Room room : rooms){
 			room.renameRoom(newName);
 			File hotelsFile = getHotelFile();
-			File newHotelsfile = HotelsConfigHandler.getHotelFile(newName.toLowerCase()+".yml");
+			File newHotelsfile = HTConfigHandler.getHotelFile(newName.toLowerCase()+".yml");
 			hotelsFile.renameTo(newHotelsfile);
 		}
-		WorldGuardManager.renameRegion("hotel-" + name, "hotel-" + newName, world);
+		HTWorldGuardManager.renameRegion("hotel-" + name, "hotel-" + newName, world);
 		name = newName;
 		ProtectedRegion r = getRegion();
 
@@ -236,7 +236,7 @@ public class Hotel {
 		//Remove Hotel file if existent
 		deleteHotelFile();
 		//Delete hotel region
-		WorldGuardManager.removeRegion(world, getRegion());
+		HTWorldGuardManager.removeRegion(world, getRegion());
 	}
 	public boolean isOwner(UUID uuid){
 		return getOwners().contains(uuid);
@@ -253,12 +253,11 @@ public class Hotel {
 		world = hce.getWorld();
 		name = hce.getName();
 		region = hce.getRegion();
-		if(WorldGuardManager.doHotelRegionsOverlap(region, world)) throw new HotelAlreadyPresentException();
+		if(HTWorldGuardManager.doHotelRegionsOverlap(region, world)) throw new HotelAlreadyPresentException();
 
-		WorldGuardManager.addRegion(world, region);
-		WorldGuardManager.hotelFlags(region, name, world);
-		region.setPriority(5);
-		WorldGuardManager.saveRegions(world);
+		HTWorldGuardManager.addRegion(world, region);
+		HTWorldGuardManager.hotelFlags(region, name, world);
+		HTWorldGuardManager.saveRegions(world);
 	}
 	public void updateReceptionSigns(){
 		ArrayList<ReceptionSign> rss = getAllReceptionSigns();
@@ -271,8 +270,8 @@ public class Hotel {
 	public void setNewOwner(UUID uuid){
 		ArrayList<UUID> uuids = new ArrayList<UUID>();
 		uuids.add(uuid);
-		WorldGuardManager.setOwners(uuids, getRegion());
-		WorldGuardManager.saveRegions(world);
+		HTWorldGuardManager.setOwners(uuids, getRegion());
+		HTWorldGuardManager.saveRegions(world);
 	}
 	public void setBuyer(UUID uuid, double price){
 		TradesHolder.addHotelBuyer(Bukkit.getPlayer(uuid), this, price);
@@ -288,13 +287,13 @@ public class Hotel {
 		hconfig.set("Hotel.home.yaw", loc.getYaw());
 	}
 	public void addOwner(OfflinePlayer p){
-		WorldGuardManager.addOwner(p, getRegion());
+		HTWorldGuardManager.addOwner(p, getRegion());
 	}
 	public void addOwner(UUID uuid){
 		addOwner(Bukkit.getOfflinePlayer(uuid));
 	}
 	public void removeOwner(OfflinePlayer p){
-		WorldGuardManager.removeOwner(p, getRegion());
+		HTWorldGuardManager.removeOwner(p, getRegion());
 	}
 	public void removeOwner(UUID uuid){
 		removeOwner(Bukkit.getOfflinePlayer(uuid));

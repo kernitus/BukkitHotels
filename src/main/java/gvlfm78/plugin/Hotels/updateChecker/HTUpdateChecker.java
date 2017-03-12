@@ -13,13 +13,13 @@ import kernitus.plugin.Hotels.managers.Mes;
 import net.gravitydevelopment.updater.Updater;
 import net.gravitydevelopment.updater.Updater.UpdateResult;
 
-public class HotelsUpdateChecker {
+public class HTUpdateChecker {
 
 	private HotelsMain plugin;
 	private final File pluginFile;
 	private final SpigotUpdateChecker SUC;
 
-	public HotelsUpdateChecker(HotelsMain plugin, File pluginFile){
+	public HTUpdateChecker(HotelsMain plugin, File pluginFile){
 		this.plugin = plugin;
 		this.pluginFile = pluginFile;
 		SUC = new SpigotUpdateChecker(plugin);

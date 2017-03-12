@@ -137,7 +137,7 @@ chat:
       buyh:  '&6/ht buyh <nomeHotel> - &aCompra l''hotel specificato se è in vendita'
       sellr:  '&6/ht sellr <nomeHotel> <numStanza> <nomeGiocatore> <prezzo> - &aOffre in vendita la tua stanza al giocatore specificato'
       buyr: '&6/ht buyr <nomeHotel> <numStanza> - &aAcquista la stanza dal padrone se te l''ha offerta in vendita'
-      roomreset: '&6/ht roomreset <nomeHotel> <numStanza> - &aSpegne/accende il reset della stanza allo scadere dell''affitto'
+      roomreset: '&6/ht roomreset <nomeHotel> <numStanza> - &a(Dis)attiva il reset della stanza allo scadere dell''affitto'
       resetroom: '&6/ht resetroom <nomeHotel> <numStanza> - &aResetta la stanza specificata'
     help:
       header: '&4================================'
@@ -289,7 +289,7 @@ chat:
     sellroom:
       usage: '&4Utilizzo corretto: &6&o/ht sellr <nomeHotel> <numStanza> <nomeAcquirente> <prezzo>'
       sellingAlreadyAsked: '&4Hai già chiesto al giocatore %buyer% se vogliono comprare la tua stanza!'
-      sellingAsked: '&aHai chiesto al giocatore %buyer% se voglion comprare la tua stanza'
+      sellingAsked: '&aHai chiesto al giocatore %buyer% se vuole comprare la tua stanza'
       selling: '&aIl giocatore %seller% sta vendendo la propria stanza %room% dell'' %hotel% per $%price%. Scrivi &6&o/ht buyr %hotel% %room% &r&per comprarla'
       success: '&aHai appena venduto la tua stanza %room% dell''hotel %hotel% a %buyer% per $%price%'
       

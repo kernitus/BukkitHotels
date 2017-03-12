@@ -9,21 +9,21 @@
 language: enGB
 
 # Maximum amount of hotels a player can own
-max_hotels_owned: 3
+maxHotelsOwned: 3
 
 # Maximum amount of rooms a player can own (in total)
-max_rooms_owned: 3
+maxRoomsOwned: 3
 
 # Maximum amount of rooms a player can own (per hotel)
-max_rooms_owned_per_hotel: 2
+maxRoomsOwnedPerHotel: 2
 
 # Maximum times a player can extend their rent (per rented room)
-max_rent_extend: 3
+maxRentExtend: 3
 
 # How often Hotels checks for expired rooms and updates room signs
 roomTaskTimerMinutes: 2
 
-# How long, in seconds Hotels should wait before updating reception
+# How long, in seconds, Hotels should wait before updating reception
 # signs after rent has expired
 receptionSignUpdateDelay: 10
 
@@ -44,25 +44,25 @@ allowPlayersIntoFreeRooms: true
 # If players should be allowed to open containers in free rooms
 allowPlayersToOpenContainersInFreeRooms: false
 
-# If hotel owners should not be allowed to interfere with rented rooms
+# If hotel owners should be stopped from interfering with rented rooms
 stopOwnersEditingRentedRooms: true
 
 # If doing /ht commands should only display the commands a player has permission for
 onlyDisplayAllowedCommands: true
 
 # If rooms upon creation should be resettable
-# You can override this in-game per-room with the roomreset commands
+# You can override this in-game per-room with the /roomreset command
 defaultReset: false
 
 ####################
 #### EXTRA BITS ####
 ####################
 
-# If hotels should check for updates
+# If Hotels should check for updates
 # This doesn't download the update, it just tells you it's available
 checkForUpdates: true
 
-# Enabled this option for troubleshooting purposes only.
+# Enable this option for troubleshooting purposes only.
 # This will make debug messages appear
 debug: false
 

@@ -31,17 +31,17 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import kernitus.plugin.Hotels.events.RoomCreateEvent;
 import kernitus.plugin.Hotels.exceptions.EventCancelledException;
 import kernitus.plugin.Hotels.exceptions.HotelAlreadyPresentException;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
+import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
 
-public class HotelsCreationMode {
+public class HTCreationMode {
 
 	public static boolean isInCreationMode(String uuid){
 		return isInCreationMode(UUID.fromString(uuid));
 	}
 	public static boolean isInCreationMode(UUID uuid){
-		return HotelsConfigHandler.getInventoryFile(uuid).exists();
+		return HTConfigHandler.getInventoryFile(uuid).exists();
 	}
 
 	public static void hotelSetup(String hotelName, CommandSender s){
@@ -57,7 +57,7 @@ public class HotelsCreationMode {
 		if(sel==null){ Mes.mes(p, "chat.creationMode.noSelection"); return; }
 
 		int ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
-		int maxHotels = HotelsConfigHandler.getconfigyml().getInt("max_hotels_owned");
+		int maxHotels = HTConfigHandler.getconfigYML().getInt("maxHotelsOwned", 3);
 		if(ownedHotels>maxHotels && !Mes.hasPerm(p, "hotels.create.admin")){
 			p.sendMessage((Mes.getString("chat.commands.create.maxHotelsReached")).replaceAll("%max%", String.valueOf(maxHotels))); return;
 		}
@@ -84,7 +84,7 @@ public class HotelsCreationMode {
 		try{ hotel.create(r); // <- Exception could be thrown here
 
 		r = hotel.getRegion(); //In case it was modified by the event
-		WorldGuardManager.addOwner(p, r);
+		HTWorldGuardManager.addOwner(p, r);
 
 		p.sendMessage(Mes.getString("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", hotel.getName()));
 		ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
@@ -139,7 +139,7 @@ public class HotelsCreationMode {
 	public static void resetInventoryFiles(CommandSender s){
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
-		File invFile = HotelsConfigHandler.getInventoryFile(playerUUID);
+		File invFile = HTConfigHandler.getInventoryFile(playerUUID);
 		if(invFile.exists())
 			invFile.delete();
 	}
@@ -148,7 +148,7 @@ public class HotelsCreationMode {
 		Player p = ((Player) s);
 		UUID playerUUID = p.getUniqueId();
 		PlayerInventory pinv = p.getInventory();
-		File file = HotelsConfigHandler.getInventoryFile(playerUUID);
+		File file = HTConfigHandler.getInventoryFile(playerUUID);
 
 		if(file.exists()){ Mes.mes(p, "chat.commands.creationMode.alreadyIn"); return; }
 		try {
@@ -158,7 +158,7 @@ public class HotelsCreationMode {
 			e.printStackTrace();
 		}
 
-		YamlConfiguration inv = HotelsConfigHandler.getInventoryConfig(playerUUID);
+		YamlConfiguration inv = HTConfigHandler.getInventoryConfig(playerUUID);
 
 		inv.set("inventory", pinv.getContents());
 		inv.set("armour", pinv.getArmorContents());
@@ -188,7 +188,7 @@ public class HotelsCreationMode {
 		UUID playerUUID = p.getUniqueId();
 		PlayerInventory inv = p.getInventory();
 
-		File invFile = HotelsConfigHandler.getInventoryFile(playerUUID);
+		File invFile = HTConfigHandler.getInventoryFile(playerUUID);
 		if(!invFile.exists()){ Mes.mes(p, "chat.creationMode.inventory.restoreFail"); return; }
 
 		YamlConfiguration invConfig = YamlConfiguration.loadConfiguration(invFile);		

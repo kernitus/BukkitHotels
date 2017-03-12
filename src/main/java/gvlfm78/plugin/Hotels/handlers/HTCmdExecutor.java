@@ -18,7 +18,7 @@ import com.sk89q.worldedit.world.DataException;
 
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
-import kernitus.plugin.Hotels.HotelsCreationMode;
+import kernitus.plugin.Hotels.HTCreationMode;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.events.HotelSaleEvent;
@@ -28,22 +28,17 @@ import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
 import kernitus.plugin.Hotels.exceptions.RoomNotSetupException;
 import kernitus.plugin.Hotels.exceptions.RoomSignInRoomException;
 import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.managers.SignManager;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
+import kernitus.plugin.Hotels.managers.HTSignManager;
+import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
 import kernitus.plugin.Hotels.trade.HotelBuyer;
 import kernitus.plugin.Hotels.trade.RoomBuyer;
 
-public class HotelsCommandHandler implements CommandExecutor {
-
-
+public class HTCmdExecutor implements CommandExecutor {
 
 	private HotelsMain plugin;
-	private HotelsCommandExecutor HCE;
 
-	public HotelsCommandHandler(HotelsMain plugin){
+	public HTCmdExecutor(HotelsMain plugin){
 		this.plugin = plugin;
-
-		HCE = new HotelsCommandExecutor();
 	}
 
 	@Override
@@ -62,29 +57,29 @@ public class HotelsCommandHandler implements CommandExecutor {
 			}
 			//Command checks
 			if(args[0].equalsIgnoreCase("commands")){//Commands list
-				if(plugin.getConfig().getBoolean("onlyDisplayAllowedCommands"))
-					HCE.cmdCommandsOnly(sender);
+				if(plugin.getConfig().getBoolean("onlyDisplayAllowedCommands", true))
+					HTCmdSurrogate.cmdCommandsOnly(sender);
 				else
-					HCE.cmdCommandsAll(sender);
+					HTCmdSurrogate.cmdCommandsAll(sender);
 			}
 			else if(args[0].equalsIgnoreCase("create") || args[0].equalsIgnoreCase("c")){//Create command
 				if(!isPlayer){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
 				Player p = (Player) sender;
 				if(length<2){ Mes.mes(p ,"chat.commands.create.noName"); return false; }
 				if(Mes.hasPerm(sender, "hotels.create"))
-					HCE.cmdCreate(p, args[1]);
+					HTCmdSurrogate.cmdCreate(p, args[1]);
 				else Mes.mes(p ,"chat.noPermission");		
 			}
 			else if(args[0].equalsIgnoreCase("help")){//Help pages
 				if(!Mes.hasPerm(sender, "hotels.create")){ Mes.mes(sender, "chat.noPermission"); return false; }
-				if(length<2){ HCE.cmdHelp1(sender); return false; } //If they didn't specify a help page show first
+				if(length<2){ HTCmdSurrogate.cmdHelp1(sender); return false; } //If they didn't specify a help page show first
 				switch(args[1]){
-				case "1": HCE.cmdHelp1(sender); break;
-				case "2": HCE.cmdHelp2(sender); break;
-				case "3": HCE.cmdHelp3(sender); break;
-				case "4": HCE.cmdHelp4(sender); break;
-				case "5": HCE.cmdHelp5(sender); break;
-				default: HCE.cmdHelp1(sender); //if help page doesn't exist show first
+				case "1": HTCmdSurrogate.cmdHelp1(sender); break;
+				case "2": HTCmdSurrogate.cmdHelp2(sender); break;
+				case "3": HTCmdSurrogate.cmdHelp3(sender); break;
+				case "4": HTCmdSurrogate.cmdHelp4(sender); break;
+				case "5": HTCmdSurrogate.cmdHelp5(sender); break;
+				default: HTCmdSurrogate.cmdHelp1(sender); //if help page doesn't exist show first
 				}
 			}
 			else if(args[0].equalsIgnoreCase("createmode") || args[0].equalsIgnoreCase("cm")){
@@ -94,9 +89,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(!Mes.hasPerm(p, "hotels.createmode")){ Mes.mes(p ,"chat.noPermission"); return false; }
 
 				switch(args[1].toLowerCase()){
-				case "enter": HCE.cmdCreateModeEnter(p); break;
-				case "exit": HCE.cmdCreateModeExit(p); break;
-				case "reset": HCE.cmdCreateModeReset(p); break;
+				case "enter": HTCmdSurrogate.cmdCreateModeEnter(p); break;
+				case "exit": HTCmdSurrogate.cmdCreateModeExit(p); break;
+				case "reset": HTCmdSurrogate.cmdCreateModeReset(p); break;
 				default: Mes.mes(p ,"chat.commands.creationMode.noarg");
 				}
 			}
@@ -104,22 +99,22 @@ public class HotelsCommandHandler implements CommandExecutor {
 			else if(args[0].equalsIgnoreCase("check")){
 				if(isPlayer){
 					if(length==1)
-						HCE.check(sender.getName(), sender);
+						HTCmdSurrogate.check(sender.getName(), sender);
 					else if(length>=2){
 						if(args[1].equalsIgnoreCase(sender.getName()))					
-							HCE.check(args[1], sender);
+							HTCmdSurrogate.check(args[1], sender);
 						else if(sender.hasPermission("hotels.check.others"))					
-							HCE.check(args[1], sender);
+							HTCmdSurrogate.check(args[1], sender);
 						else Mes.mes((Player) sender ,"chat.noPermission");
 					}
 				} else if(length>=2)					
-					HCE.check(args[1], sender);
+					HTCmdSurrogate.check(args[1], sender);
 				else Mes.mes(sender ,"chat.commands.noPlayer");
 			}
 
 			else if(args[0].equalsIgnoreCase("reload")){
 				if(!Mes.hasPerm(sender, "hotels.reload")){ Mes.mes(sender ,"chat.noPermission"); return false; }
-				HotelsConfigHandler.reloadConfigs();
+				HTConfigHandler.reloadConfigs();
 				Mes.mes(sender ,"chat.commands.reload.success");	
 			}
 			else if(args[0].equalsIgnoreCase("rent")){
@@ -146,7 +141,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(!hotel.getName().equalsIgnoreCase(room.getHotelNameFromConfig())){ Mes.mes(p, "chat.sign.use.differentHotelNames"); return false; }
 				if(room.getNum()!=room.getRoomNumFromConfig()){ Mes.mes(p, "chat.sign.use.differentRoomNums"); return false; };
-				SignManager.rentRoom(p, room);
+				HTSignManager.rentRoom(p, room);
 			}
 			else if(args[0].equalsIgnoreCase("friend") || args[0].equalsIgnoreCase("f")){
 				if(!isPlayer){ Mes.mes(sender ,"chat.commands.consoleRejected"); return false; }
@@ -158,14 +153,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				case "add":
 					if(length>4)
-						HCE.cmdFriendAdd(p, args[2], args[3], args[4]);
+						HTCmdSurrogate.cmdFriendAdd(p, args[2], args[3], args[4]);
 					else
 						Mes.mes(p ,"chat.commands.friend.usage");
 					break;
 
 				case "remove":
 					if(length>4)
-						HCE.cmdFriendRemove(p, args[2], args[3], args[4]);
+						HTCmdSurrogate.cmdFriendRemove(p, args[2], args[3], args[4]);
 					else
 						Mes.mes(p ,"chat.commands.friend.usage");
 					break;
@@ -174,7 +169,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					if(length<4){ Mes.mes(p ,"chat.commands.friend.usage");  return false; }
 					Room room = new Room(args[2], args[3]);
 					if(!(isPlayer) || (isPlayer && room.isRenter(((Player) sender).getUniqueId())))
-						HCE.cmdFriendList(sender, args[2], args[3]);
+						HTCmdSurrogate.cmdFriendList(sender, args[2], args[3]);
 					else Mes.mes(p ,"chat.commands.friend.notRenter"); break;
 
 				default: Mes.mes(p ,"chat.commands.friend.usage");	
@@ -187,7 +182,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(isPlayer){//Is player
 					Player p = (Player) sender;
 					World w = p.getWorld();
-					HCE.cmdRoomListPlayer(p, args[1], w);
+					HTCmdSurrogate.cmdRoomListPlayer(p, args[1], w);
 				}
 				else{//Not a player issuing the command
 					Hotel hotel = new Hotel(args[1]);
@@ -196,7 +191,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 					World w = hotel.getWorld();
 
-					HCE.cmdRoomListPlayer(sender, args[1], w);
+					HTCmdSurrogate.cmdRoomListPlayer(sender, args[1], w);
 				}	
 			}
 			else if(args[0].equalsIgnoreCase("hotelslist") || args[0].equalsIgnoreCase("hlist") || args[0].equalsIgnoreCase("list")){
@@ -208,7 +203,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				else if(length>1) w = Bukkit.getWorld(args[1]);
 				else Mes.mes(sender ,"chat.commands.noWorld");
 
-				if(w!=null)	HCE.listHotels(w, sender);
+				if(w!=null)	HTCmdSurrogate.listHotels(w, sender);
 				else Mes.mes(sender ,"chat.commands.worldNonExistent");				
 			}
 			else if(args[0].equalsIgnoreCase("deleteroom") || args[0].equalsIgnoreCase("delr")){
@@ -232,7 +227,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(!room.exists()){ Mes.mes(sender,"chat.commands.roomNonExistent"); return false; }
 
 				if(Mes.hasPerm(sender, "hotels.delete.rooms.admin") || room.isFree())
-					HCE.removeRoom(args[1], roomNum, room.getWorld(), sender);
+					HTCmdSurrogate.removeRoom(args[1], roomNum, room.getWorld(), sender);
 				else Mes.mes(sender, "chat.commands.deleteRoom.roomRented");	
 			}
 			else if(args[0].equalsIgnoreCase("rename") || args[0].equalsIgnoreCase("ren")){
@@ -250,7 +245,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(!hotel.exists()){ Mes.mes(sender, "chat.commands.hotelNonExistent"); return false; }
 
 				if(!Mes.hasPerm(sender, "hotels.rename.admin") && 
-						!(isPlayer && WorldGuardManager.isOwner((Player) sender, WorldGuardManager.getHotelRegion(hotel.getWorld(), args[1])))){
+						!(isPlayer && HTWorldGuardManager.isOwner((Player) sender, HTWorldGuardManager.getHotelRegion(hotel.getWorld(), args[1])))){
 					Mes.mes(sender, "chat.commands.youDoNotOwnThat"); return false; }
 
 				try {
@@ -273,7 +268,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				Room room = null;
 
 				room = world==null ? new Room(args[1], args[2]) : new Room(world, args[1], args[2]); 
-				HCE.renumber(room, args[3], sender);
+				HTCmdSurrogate.renumber(room, args[3], sender);
 			}
 
 			else if(args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("del")){
@@ -306,7 +301,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(length<4){ Mes.mes(sender, "chat.commands.remove.usage"); return false; }
 
-				HCE.removePlayer(new Room(args[2], args[3], sender), args[1], sender);
+				HTCmdSurrogate.removePlayer(new Room(args[2], args[3], sender), args[1], sender);
 			}
 
 			else if(args[0].equalsIgnoreCase("room")){
@@ -316,7 +311,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 
 				if(!Mes.hasPerm(p, "hotels.sign.create")){ Mes.mes(p, "chat.noPermission"); return false; }
 
-				if(!HotelsCreationMode.isInCreationMode(p.getUniqueId())){ Mes.mes(p, "chat.commands.creationMode.notAlreadyIn");  return false; }
+				if(!HTCreationMode.isInCreationMode(p.getUniqueId())){ Mes.mes(p, "chat.commands.creationMode.notAlreadyIn");  return false; }
 
 				Hotel hotel = new Hotel(p.getWorld(), args[1]);
 				String hotelName = hotel.getName();
@@ -327,13 +322,13 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(length>2){
 					try{
 						int roomNum = Integer.parseInt(args[2]);
-						HotelsCreationMode.roomSetup(hotelName, roomNum, p);
+						HTCreationMode.roomSetup(hotelName, roomNum, p);
 					} catch(NumberFormatException e){
 						Mes.mes(p, "chat.commands.room.roomNumInvalid");
 					}
 				} else { //Player did not specify room number
 					int roomNum = hotel.getNextNewRoom();
-					if(roomNum!=0) HotelsCreationMode.roomSetup(hotelName, roomNum, p);
+					if(roomNum!=0) HTCreationMode.roomSetup(hotelName, roomNum, p);
 					else Mes.mes(p, "chat.commands.room.nextNewRoomFail");
 				}
 			}
@@ -370,7 +365,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 							e.printStackTrace();
 						}
 					} //If they aren't renter but are hotel owner set default home
-					else if(Mes.hasPerm(p, "hotels.sethome.admin") || WorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
+					else if(Mes.hasPerm(p, "hotels.sethome.admin") || HTWorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
 						room.setDefaultHome(p.getLocation());
 						try {
 							room.saveSignConfig();
@@ -383,7 +378,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					else Mes.mes(p, "chat.commands.home.notRenterNoPermission");
 				}
 				else { //They're just in a hotel region
-					if(!Mes.hasPerm(p, "hotels.sethome.admin") && !WorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
+					if(!Mes.hasPerm(p, "hotels.sethome.admin") && !HTWorldGuardManager.isOwner(p, hotel.getRegion().getId(), w)){
 						Mes.mes(p, "chat.commands.youDoNotOwnThat"); return false; }
 
 					hotel.setHome(p.getLocation());
@@ -443,7 +438,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				if(length<3){ Mes.mes(p, "chat.commands.sellhotel.usage"); return false; }
 
 				World world = p.getWorld();
-				Hotel hotel = new Hotel(world,args[1]);
+				Hotel hotel = new Hotel(world, args[1]);
 
 				if(!hotel.exists()){ Mes.mes(p, "chat.commands.hotelNonExistent"); return false; }
 
@@ -457,12 +452,14 @@ public class HotelsCommandHandler implements CommandExecutor {
 				try{
 					price = Integer.parseInt(args[3]);
 				}
-				catch(NumberFormatException e){
+				catch(Exception e){
 					Mes.mes(p, "chat.commands.sellhotel.invalidPrice");
 					return false;
 				}
-
-				if(hotel.getBuyer()!=null || buyer.getUniqueId().equals(hotel.getBuyer().getPlayer().getUniqueId())){
+				
+				if(p.getUniqueId().equals(buyer.getUniqueId())){ Mes.mes(p, "chat.commands.sellhotel.selfSale"); return false; }
+				
+				if(hotel.getBuyer()!=null || hotel.getBuyer()!=null && buyer.getUniqueId().equals(hotel.getBuyer().getPlayer().getUniqueId())){
 					sender.sendMessage(Mes.getString("chat.commands.sellhotel.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName())); return false; }
 
 				hotel.setBuyer(buyer.getUniqueId(), price);
@@ -502,7 +499,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				HotelsMain.economy.withdrawPlayer(p, price);
 				String onlineOwner = "";
 
-				String taxString = plugin.getConfig().getString("tax");
+				String taxString = plugin.getConfig().getString("tax", "20%");
 				double revenue = price;
 				boolean isPercentage = taxString.matches("\\d+%");
 				double tax;
@@ -532,7 +529,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					OfflinePlayer op = Bukkit.getOfflinePlayer(uuid);
 
 					if(!op.isOnline()){
-						HotelsMessageQueue.addMessage(MessageType.revenue, uuid, Mes.getString("chat.commands.sellHotel.success")
+						HTMessageQueue.addMessage(MessageType.revenue, uuid, Mes.getString("chat.commands.sellHotel.success")
 								.replaceAll("%hotel%", hotel.getName())
 								.replaceAll("%buyer%", p.getName())
 								.replaceAll("%price%", String.valueOf(price)));
@@ -551,6 +548,9 @@ public class HotelsCommandHandler implements CommandExecutor {
 				}
 
 				hotel.addOwner(p);
+				for(Room room : hotel.getRooms())
+					room.setOwner(p);
+					
 				p.sendMessage(Mes.getString("chat.commands.buyhotel.success")
 						.replaceAll("%hotel%", hotel.getName())
 						.replaceAll("%seller%", onlineOwner)
@@ -592,6 +592,8 @@ public class HotelsCommandHandler implements CommandExecutor {
 					Mes.mes(p, "chat.commands.sellhotel.invalidPrice");
 					return false;
 				}
+				
+				if(p.getUniqueId().equals(buyer.getUniqueId())){ Mes.mes(p, "chat.commands.sellhotel.selfSale"); return false; }
 
 				if(room.getBuyer()!=null || buyer.getUniqueId().equals(room.getBuyer().getPlayer().getUniqueId())){
 					sender.sendMessage(Mes.getString("chat.commands.sellroom.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName())); return false; }
@@ -639,7 +641,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 				HotelsMain.economy.withdrawPlayer(p, price);
 				String onlineOwner = "";
 
-				String taxString = plugin.getConfig().getString("tax");
+				String taxString = plugin.getConfig().getString("tax", "20%");
 				double revenue = price;
 				boolean isPercentage = taxString.matches("\\d+%");
 				double tax;
@@ -678,7 +680,7 @@ public class HotelsCommandHandler implements CommandExecutor {
 					p.sendMessage(message);
 				}
 				else
-					HotelsMessageQueue.addMessage(MessageType.revenue, op.getUniqueId(),message);
+					HTMessageQueue.addMessage(MessageType.revenue, op.getUniqueId(),message);
 
 				room.setRenter(p.getUniqueId()); //Removing old owner
 

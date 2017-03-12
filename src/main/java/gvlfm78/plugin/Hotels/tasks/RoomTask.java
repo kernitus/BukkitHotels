@@ -25,8 +25,8 @@ import kernitus.plugin.Hotels.exceptions.RenterNonExistentException;
 import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
 import kernitus.plugin.Hotels.exceptions.ValuesNotMatchingException;
 import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.managers.HotelsFileFinder;
+import kernitus.plugin.Hotels.handlers.HTConfigHandler;
+import kernitus.plugin.Hotels.managers.HTFileFinder;
 import kernitus.plugin.Hotels.managers.Mes;
 
 public class RoomTask extends BukkitRunnable {
@@ -41,13 +41,13 @@ public class RoomTask extends BukkitRunnable {
 	public void run() {
 
 		//Getting all files that end with .yml in Signs folder
-		ArrayList<String> fileslist = HotelsFileFinder.listFiles("plugins" + File.separator + "Hotels" + File.separator + "Signs");
+		ArrayList<String> fileslist = HTFileFinder.listFiles("plugins" + File.separator + "Hotels" + File.separator + "Signs");
 
 		//HashSet to store unique Hotel entries that had at least one of their rooms updated/changed
 		final HashSet<Hotel> hotelsThatHadRoomsUpdate = new HashSet<Hotel>();
 
 		for(String fileName : fileslist){ //Looping through all the files
-			File file = HotelsConfigHandler.getFile("Signs" + File.separator + fileName);
+			File file = HTConfigHandler.getFile("Signs" + File.separator + fileName);
 			if(!fileName.matches("\\w+-\\d+.yml")){ file.delete(); continue; }//Delete all non-room signs in folder
 
 			Mes.debug("Checking room sign: " + file.getAbsolutePath());

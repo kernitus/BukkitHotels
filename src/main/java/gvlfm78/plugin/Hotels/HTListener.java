@@ -16,14 +16,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
+import kernitus.plugin.Hotels.exceptions.RoomSignInRoomException;
+import kernitus.plugin.Hotels.handlers.HTMessageQueue;
 import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.managers.SignManager;
+import kernitus.plugin.Hotels.managers.HTSignManager;
 import kernitus.plugin.Hotels.trade.TradesHolder;
 
-public class HotelsListener implements Listener {
-	
-	public HotelsListener(){}
+public class HTListener implements Listener {
 
 	@EventHandler
 	public void onSignPlace(SignChangeEvent e){
@@ -37,14 +36,19 @@ public class HotelsListener implements Listener {
 				String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
 
 				if(Line3.isEmpty() && Line4.isEmpty()) //Reception sign?
-					SignManager.placeReceptionSign(e);
-				else //Room sign?
-					SignManager.placeRoomSign(e);
+					HTSignManager.placeReceptionSign(e);
+				else
+					try {
+						HTSignManager.placeRoomSign(e);
+					} catch (RoomSignInRoomException e1) {
+						e.setLine(0, ChatColor.DARK_RED + "]hotels[");
+						Mes.mes(p, "chat.sign.place.inRoomRegion");
+					}
 			}
 			else{
 				//No permission
 				Mes.mes(p, "chat.noPermission"); 
-				e.setLine(0, ChatColor.DARK_RED + e.getLine(0));
+				e.setLine(0, ChatColor.DARK_RED + "]hotels[");
 			}
 		}
 	}
@@ -59,7 +63,7 @@ public class HotelsListener implements Listener {
 		Player p = e.getPlayer();
 		//Permission check
 		if(Mes.hasPerm(p, "hotels.sign.use"))
-			SignManager.useRoomSign(e);
+			HTSignManager.useRoomSign(e);
 		else Mes.mes(p, "chat.noPermission"); 
 	}
 
@@ -69,14 +73,14 @@ public class HotelsListener implements Listener {
 		Block b = e.getBlock();
 		Material mat = b.getType();
 		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN))
-			SignManager.breakRoomSign(e);
+			HTSignManager.breakRoomSign(e);
 	}
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e){
 		final Player p = e.getPlayer();
 		//Send player all queued up messages for them
-		HotelsMessageQueue.sendPlayerAllMessages(p);
+		HTMessageQueue.sendPlayerAllMessages(p);
 	}
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent e){
@@ -85,16 +89,16 @@ public class HotelsListener implements Listener {
 		TradesHolder.removeFromAll(p);
 
 		//Exiting them from creation mode
-		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
+		if(HTCreationMode.isInCreationMode(p.getUniqueId())){
 			Mes.mes(p, "chat.commands.creationMode.exit");
-			HotelsCreationMode.loadInventory(p);
+			HTCreationMode.loadInventory(p);
 		}
 	}
 	//When a player tries to drop an item/block
 	@EventHandler
 	public void avoidDrop(PlayerDropItemEvent e) {
 		Player p = e.getPlayer();
-		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
+		if(HTCreationMode.isInCreationMode(p.getUniqueId())){
 			e.setCancelled(true);
 			Mes.mes(p, "chat.creationMode.deniedAction");
 		}
@@ -103,7 +107,7 @@ public class HotelsListener implements Listener {
 	@EventHandler
 	public void avoidPickup(PlayerPickupItemEvent e) {
 		Player p = e.getPlayer();
-		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
+		if(HTCreationMode.isInCreationMode(p.getUniqueId())){
 			e.setCancelled(true);
 			Mes.mes(p, "chat.creationMode.deniedAction");
 		}
@@ -112,7 +116,7 @@ public class HotelsListener implements Listener {
 	public void avoidChestInteraction(InventoryClickEvent e){
 		Player p = (Player) e.getWhoClicked();
 		if(!Mes.hasPerm(p, "hotels.createmode.admin")) return;
-		if(HotelsCreationMode.isInCreationMode(p.getUniqueId())){
+		if(HTCreationMode.isInCreationMode(p.getUniqueId())){
 			e.setCancelled(true);
 			Mes.mes(p, "chat.creationMode.deniedAction");
 		}

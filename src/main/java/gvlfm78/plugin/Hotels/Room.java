@@ -23,7 +23,8 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.flags.StateFlag.State;
+import com.sk89q.worldguard.protection.flags.RegionGroup;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 import kernitus.plugin.Hotels.events.RentExpiryEvent;
@@ -45,13 +46,13 @@ import kernitus.plugin.Hotels.exceptions.RoomSignInRoomException;
 import kernitus.plugin.Hotels.exceptions.UserNonExistentException;
 import kernitus.plugin.Hotels.exceptions.ValuesNotMatchingException;
 import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
-import kernitus.plugin.Hotels.handlers.HotelsConfigHandler;
-import kernitus.plugin.Hotels.handlers.HotelsMessageQueue;
+import kernitus.plugin.Hotels.handlers.HTConfigHandler;
+import kernitus.plugin.Hotels.handlers.HTMessageQueue;
 import kernitus.plugin.Hotels.handlers.MessageType;
+import kernitus.plugin.Hotels.managers.HTSignManager;
+import kernitus.plugin.Hotels.managers.HTTerrainManager;
+import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
 import kernitus.plugin.Hotels.managers.Mes;
-import kernitus.plugin.Hotels.managers.SignManager;
-import kernitus.plugin.Hotels.managers.TerrainManager;
-import kernitus.plugin.Hotels.managers.WorldGuardManager;
 import kernitus.plugin.Hotels.signs.RoomSign;
 import kernitus.plugin.Hotels.tasks.RoomResetQueue;
 import kernitus.plugin.Hotels.trade.RoomBuyer;
@@ -112,7 +113,7 @@ public class Room {
 	///////Getters////////
 	//////////////////////
 	public boolean exists(){
-		return world==null ? false : WorldGuardManager.hasRegion(world, "hotel-" + hotel.getName() + "-" + num);
+		return world==null ? false : HTWorldGuardManager.hasRegion(world, "hotel-" + hotel.getName() + "-" + num);
 	}
 	public int getNum(){
 		return num;
@@ -121,7 +122,7 @@ public class Room {
 		return hotel;
 	}
 	public ProtectedRegion getRegion(){
-		return WorldGuardManager.getRoomRegion(world, hotel.getName(), num);
+		return HTWorldGuardManager.getRoomRegion(world, hotel.getName(), num);
 	}
 	public OfflinePlayer getRenter(){
 		String renter = sconfig.getString("Sign.renter");
@@ -238,8 +239,8 @@ public class Room {
 	///////Setters////////
 	//////////////////////
 	public void createRegion(ProtectedRegion r){
-		WorldGuardManager.addRegion(world, r);
-		WorldGuardManager.saveRegions(world);
+		HTWorldGuardManager.addRegion(world, r);
+		HTWorldGuardManager.saveRegions(world);
 	}
 	public void setRentTime(long timeInMins){
 		sconfig.set("Sign.time", timeInMins);
@@ -299,7 +300,7 @@ public class Room {
 		DefaultDomain dd = new DefaultDomain();
 		dd.addPlayer(uuid);
 		getRegion().setMembers(dd);
-		WorldGuardManager.setMember(uuid, getRegion());
+		HTWorldGuardManager.setMember(uuid, getRegion());
 		//Placing their UUID in the sign config
 		sconfig.set("Sign.renter", uuid.toString());
 	}
@@ -324,14 +325,11 @@ public class Room {
 
 		//Setting room flags back in case they were changed to allow players in
 		ProtectedRegion region = getRegion();
-		WorldGuardManager.roomFlags(region, num, world);
-		if(HotelsConfigHandler.getconfigyml().getBoolean("stopOwnersEditingRentedRooms")){
-			region.setPriority(10);
-			region.setFlag(DefaultFlag.BLOCK_BREAK, State.DENY);
-			region.setFlag(DefaultFlag.BLOCK_PLACE, State.DENY);
-		}
+		HTWorldGuardManager.roomFlags(region, num, world);
+		
+		setOwnerEditing(region, false);
 
-		WorldGuardManager.saveRegions(world);//Saving WG regions
+		HTWorldGuardManager.saveRegions(world);//Saving WG regions
 
 		updateSign(); //Update this room sign with new info
 
@@ -345,11 +343,16 @@ public class Room {
 		sconfig.set("Sign.reset", value);
 		if(value){
 			Block b = getSign().getBlock();
+			
 			if(getRegion().contains(b.getX(), b.getY(), b.getZ())) throw new RoomSignInRoomException();
-			//Create and save schematic file based on room region
-			TerrainManager tm = new TerrainManager(world);
+			
+			for(Room room : getHotel().getRooms())
+				if(room.shouldReset() && room.getRegion().contains(b.getX(), b.getY(), b.getZ())) throw new RoomSignInRoomException();
 
-			File schematicFile = HotelsConfigHandler.getSchematicFile(this);
+			//Create and save schematic file based on room region
+			HTTerrainManager tm = new HTTerrainManager(world);
+
+			File schematicFile = HTConfigHandler.getSchematicFile(this);
 
 			// Save the region to a schematic file
 			tm.saveTerrain(schematicFile, world, getRegion());
@@ -364,7 +367,7 @@ public class Room {
 	}
 	///Config stuff
 	private File getSignFile(){
-		return HotelsConfigHandler.getSignFile(hotel.getName(), num);
+		return HTConfigHandler.getSignFile(hotel.getName(), num);
 	}
 	private YamlConfiguration getSignConfig(){
 		return YamlConfiguration.loadConfiguration(getSignFile());
@@ -388,14 +391,14 @@ public class Room {
 			Sign s = (Sign) b.getState();
 			String Line1 = ChatColor.stripColor(s.getLine(0));
 			if(Line1.equalsIgnoreCase(hotel.getName())){
-				if(WorldGuardManager.getHotelRegion(world, hotel.getName()).contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()))
+				if(HTWorldGuardManager.getHotelRegion(world, hotel.getName()).contains(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()))
 					deleteSignFile();
 				b.setType(Material.AIR);
 			}
 		}
 	}
 	public void deleteSchematic(){
-		File file = HotelsConfigHandler.getSchematicFile(this);
+		File file = HTConfigHandler.getSchematicFile(this);
 		if(file.exists()) file.delete();
 	}
 
@@ -448,18 +451,18 @@ public class Room {
 		sconfig.set("Sign.region", "hotel-"+hotel+"-"+newNum);
 		saveSignConfig();
 
-		File newFile = HotelsConfigHandler.getFile("Signs"+File.separator+hotelName+"-"+newNum+".yml");
+		File newFile = HTConfigHandler.getFile("Signs"+File.separator+hotelName+"-"+newNum+".yml");
 		getSignFile().renameTo(newFile);
 
 		//Renaming region and changing number in greet/farewell messages
-		ProtectedRegion oldRegion = WorldGuardManager.getRegion(world, "hotel-"+hotel+"-"+num);
+		ProtectedRegion oldRegion = HTWorldGuardManager.getRegion(world, "hotel-"+hotel+"-"+num);
 
 		if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
 			oldRegion.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.getStringNoPrefix("message.room.enter").replaceAll("%room%", String.valueOf(newNum))));
 		if(Mes.flagValue("room.map-making.FAREWELL").equalsIgnoreCase("true"))
 			oldRegion.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.getStringNoPrefix("message.room.exit").replaceAll("%room%", String.valueOf(newNum))));
-		WorldGuardManager.renameRegion("Hotel-"+hotelName+"-"+num, "Hotel-"+hotelName+"-"+newNum, world);
-		WorldGuardManager.saveRegions(world);
+		HTWorldGuardManager.renameRegion("Hotel-"+hotelName+"-"+num, "Hotel-"+hotelName+"-"+newNum, world);
+		HTWorldGuardManager.saveRegions(world);
 
 		num = newNum;
 		sconfig = getSignConfig();
@@ -492,7 +495,7 @@ public class Room {
 			s.setLine(3, ChatColor.DARK_RED + getRenter().getName());
 		}
 
-		String formattedRemainingTime = SignManager.TimeFormatter(remainingTime);
+		String formattedRemainingTime = HTSignManager.TimeFormatter(remainingTime);
 
 		RoomSignUpdateEvent rsue = new RoomSignUpdateEvent(this, s, remainingTime, formattedRemainingTime);
 
@@ -507,8 +510,8 @@ public class Room {
 	}
 
 	public void renameRoom(String newHotelName){
-		WorldGuardManager.renameRegion(getRegion().getId(), "Hotel-" + newHotelName + "-" + String.valueOf(num), world);
-		WorldGuardManager.saveRegions(world);
+		HTWorldGuardManager.renameRegion(getRegion().getId(), "Hotel-" + newHotelName + "-" + String.valueOf(num), world);
+		HTWorldGuardManager.saveRegions(world);
 		hotel = new Hotel(world, newHotelName);
 	}
 
@@ -522,7 +525,7 @@ public class Room {
 
 		//Adding player as region member
 
-		WorldGuardManager.addMember(friend, getRegion());
+		HTWorldGuardManager.addMember(friend, getRegion());
 		//Adding player to config under friends list
 		List<String> stringList = getFriends();
 		stringList.add(friend.getUniqueId().toString());
@@ -540,7 +543,7 @@ public class Room {
 			throw new FriendNotFoundException();
 
 		//Removing player as region member
-		WorldGuardManager.removeMember(friend, getRegion());
+		HTWorldGuardManager.removeMember(friend, getRegion());
 
 		//Removing player from config under friends list
 		List<String> stringList = sconfig.getStringList("Sign.friends");
@@ -554,26 +557,29 @@ public class Room {
 		RoomDeleteEvent rde = new RoomDeleteEvent(this);
 		Bukkit.getPluginManager().callEvent(rde);
 		if(rde.isCancelled()) throw new EventCancelledException();
-		WorldGuardManager.removeRegion(world, getRegion());
-		WorldGuardManager.saveRegions(world);
+		HTWorldGuardManager.removeRegion(world, getRegion());
+		HTWorldGuardManager.saveRegions(world);
 		deleteSignAndFile();
 		deleteSchematic();
 	}
 
 	public void createRegion(ProtectedRegion region, Player p){
 		World world = p.getWorld();
-		ProtectedRegion hotelRegion = WorldGuardManager.getRegion(world, "hotel-"+hotel.getName());
+		ProtectedRegion hotelRegion = HTWorldGuardManager.getRegion(world, "hotel-"+hotel.getName());
 		if(!Mes.hasPerm(p, "hotels.create")){ Mes.mes(p, "chat.noPermission"); return; }
-		if(WorldGuardManager.doesRoomRegionOverlap(region, world)){ Mes.mes(p, "chat.commands.room.alreadyPresent"); return; }
-		if(!WorldGuardManager.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){ Mes.mes(p, "chat.commands.youDoNotOwnThat"); return; }
-		WorldGuardManager.addRegion(world, region);
-		WorldGuardManager.roomFlags(region, num, world);
-		if(HotelsConfigHandler.getconfigyml().getBoolean("stopOwnersEditingRentedRooms"))
-			region.setPriority(1);
-		else
-			region.setPriority(10);
-		WorldGuardManager.makeRoomAccessible(region);
-		WorldGuardManager.saveRegions(p.getWorld());
+		if(HTWorldGuardManager.doesRoomRegionOverlap(region, world)){ Mes.mes(p, "chat.commands.room.alreadyPresent"); return; }
+		if(!HTWorldGuardManager.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){ Mes.mes(p, "chat.commands.youDoNotOwnThat"); return; }
+		HTWorldGuardManager.addRegion(world, region);
+		HTWorldGuardManager.roomFlags(region, num, world);
+		
+		if(HTConfigHandler.getconfigYML().getBoolean("stopOwnersEditingRentedRooms", true)){
+			region.setFlag(DefaultFlag.BLOCK_BREAK, StateFlag.State.DENY);
+			region.setFlag(DefaultFlag.BLOCK_PLACE, StateFlag.State.DENY);
+		}
+			
+			
+		HTWorldGuardManager.makeRoomAccessible(region);
+		HTWorldGuardManager.saveRegions(p.getWorld());
 		p.sendMessage(Mes.getString("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
 	}
 
@@ -601,20 +607,17 @@ public class Room {
 		if(ree.isCancelled()) throw new EventCancelledException();
 
 		//Removing renter
-		WorldGuardManager.removeMember(p, region); //Removing renter as member of room region
+		HTWorldGuardManager.removeMember(p, region); //Removing renter as member of room region
 		//Removing friends
 		for(String currentFriend : friendList){
 			OfflinePlayer cf = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
-			WorldGuardManager.removeMember(cf, region);
+			HTWorldGuardManager.removeMember(cf, region);
 		}
 
 		//If set in config, make room accessible to all players now that it is not rented
-		WorldGuardManager.makeRoomAccessible(region);
-		if(HotelsConfigHandler.getconfigyml().getBoolean("stopOwnersEditingRentedRooms")){
-			region.setFlag(DefaultFlag.BLOCK_BREAK, null);
-			region.setFlag(DefaultFlag.BLOCK_PLACE, null);
-			region.setPriority(1);
-		}
+		HTWorldGuardManager.makeRoomAccessible(region);
+		
+		setOwnerEditing(region, true);
 
 		Mes.debug(Mes.getStringNoPrefix("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
 
@@ -622,7 +625,7 @@ public class Room {
 			p.getPlayer().sendMessage(Mes.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
 
 		else //Player is offline, place their expiry message in the message queue
-			HotelsMessageQueue.addMessage(MessageType.expiry, p.getUniqueId(), Mes.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
+			HTMessageQueue.addMessage(MessageType.expiry, p.getUniqueId(), Mes.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
 
 		sconfig.set("Sign.renter", null);
 		sconfig.set("Sign.timeRentedAt", null);
@@ -639,11 +642,11 @@ public class Room {
 	}
 
 	public void reset() throws IOException, WorldEditException, DataException {
-		TerrainManager tm = new TerrainManager(world);
+		HTTerrainManager tm = new HTTerrainManager(world);
 		ProtectedRegion region = getRegion();
 		Vector origin = tm.getOriginFromRegion(tm.getRegionFromProtectedRegion(world, region));
 		Location loc = new Location(world, origin.getX(), origin.getY(), origin.getZ());
-		tm.loadSchematic(HotelsConfigHandler.getSchematicFile(this), loc, region);
+		tm.loadSchematic(HTConfigHandler.getSchematicFile(this), loc, region);
 	}
 
 	public void checkRent() throws IOException, ValuesNotMatchingException, RoomNonExistentException, BlockNotSignException, RenterNonExistentException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, NotRentedException, DataException {
@@ -706,7 +709,7 @@ public class Room {
 		saveSignConfig();
 
 		sign.setLine(3, ChatColor.GREEN + Mes.getStringNoPrefix("sign.vacant"));
-		sign.setLine(2, SignManager.TimeFormatter(sconfig.getLong("Sign.time")));
+		sign.setLine(2, HTSignManager.TimeFormatter(sconfig.getLong("Sign.time")));
 		sign.update();
 
 		//If room was rented but there was no expiry date somethign went wrong
@@ -717,5 +720,18 @@ public class Room {
 	}
 	public void removeBuyer(){
 		TradesHolder.removeHotelBuyer(TradesHolder.getBuyerFromRoom(this).getPlayer());
+	}
+	public void setOwnerEditing(ProtectedRegion region, boolean state){
+		if(HTConfigHandler.getconfigYML().getBoolean("stopOwnersEditingRentedRooms", true)){
+			region.setFlag(DefaultFlag.BLOCK_BREAK, StateFlag.State.DENY);
+			region.setFlag(DefaultFlag.BLOCK_PLACE, StateFlag.State.DENY);
+			region.setFlag(DefaultFlag.BLOCK_BREAK.getRegionGroupFlag(), RegionGroup.NON_OWNERS);
+			region.setFlag(DefaultFlag.BLOCK_PLACE.getRegionGroupFlag(), RegionGroup.NON_OWNERS);
+			if(state) HTWorldGuardManager.addOwners(hotel.getOwners(), region);
+			else HTWorldGuardManager.removeOwners(hotel.getOwners(), region);
+		}
+	}
+	public void setOwner(OfflinePlayer p){
+		HTWorldGuardManager.setOwner(p, getRegion());
 	}
 }

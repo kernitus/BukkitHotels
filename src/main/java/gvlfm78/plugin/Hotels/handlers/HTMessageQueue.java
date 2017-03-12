@@ -9,9 +9,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-public class HotelsMessageQueue {
+public class HTMessageQueue {
 
-	private static YamlConfiguration queue = HotelsConfigHandler.getMessageQueue();
+	private static YamlConfiguration queue = HTConfigHandler.getMessageQueue();
 
 	public static HashMap<UUID, Set<String>> getMessages(MessageType type){ //Get all messages, regardless of player
 
@@ -37,7 +37,7 @@ public class HotelsMessageQueue {
 
 			queue.set("messages." + type + "." + key, null); //Remove the gathered messages from the queue
 		}
-		HotelsConfigHandler.saveMessageQueue(queue);
+		HTConfigHandler.saveMessageQueue(queue);
 		return allExpiryMessages;
 	}
 
@@ -60,7 +60,7 @@ public class HotelsMessageQueue {
 
 			//Remove found messages
 			queue.set("messages." + type + "." + key, null);
-			HotelsConfigHandler.saveMessageQueue(queue);
+			HTConfigHandler.saveMessageQueue(queue);
 		}
 		return expiryMessages;
 	}
