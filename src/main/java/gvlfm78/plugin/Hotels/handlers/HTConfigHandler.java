@@ -13,14 +13,19 @@ import java.nio.charset.Charset;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
+import kernitus.plugin.Hotels.Hotel;
+import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsMain;
 import kernitus.plugin.Hotels.Room;
+import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
 import kernitus.plugin.Hotels.managers.Mes;
 
 public class HTConfigHandler {
@@ -217,6 +222,14 @@ public class HTConfigHandler {
 				Mes.printConsole("Newer config version available, backing up old one and saving new...");
 				backupconfigYML();
 				setupConfigyml();
+				//Also set room region priorities to 10 to upgrade to new system
+				for(Hotel hotel: HotelsAPI.getAllHotels()){
+					for(Room room: hotel.getRooms())
+						room.getRegion().setPriority(10);
+				}
+				//Save regions
+				for(World world: Bukkit.getWorlds())
+					HTWorldGuardManager.saveRegions(world);
 			}
 		}
 		else setupConfigyml();

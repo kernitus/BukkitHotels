@@ -21,7 +21,6 @@ import org.bukkit.entity.Player;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.world.DataException;
-import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.RegionGroup;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -297,10 +296,11 @@ public class Room {
 	}
 	public void setRenter(UUID uuid){
 		//Setting them as members of the region
-		DefaultDomain dd = new DefaultDomain();
-		dd.addPlayer(uuid);
-		getRegion().setMembers(dd);
-		HTWorldGuardManager.setMember(uuid, getRegion());
+		ProtectedRegion region = getRegion();
+		HTWorldGuardManager.setMember(uuid, region);
+		if(!HTConfigHandler.getconfigYML().getBoolean("stopOwnersEditingRentedRooms"))
+			HTWorldGuardManager.addMembers(hotel.getOwners(), region); //Add the owners if they're allows to modify while rented
+		
 		//Placing their UUID in the sign config
 		sconfig.set("Sign.renter", uuid.toString());
 	}
@@ -346,7 +346,7 @@ public class Room {
 			
 			if(getRegion().contains(b.getX(), b.getY(), b.getZ())) throw new RoomSignInRoomException();
 			
-			for(Room room : getHotel().getRooms())
+			for(Room room : hotel.getRooms())
 				if(room.shouldReset() && room.getRegion().contains(b.getX(), b.getY(), b.getZ())) throw new RoomSignInRoomException();
 
 			//Create and save schematic file based on room region
@@ -593,7 +593,7 @@ public class Room {
 		if(isFree()) throw new NotRentedException();
 
 		ProtectedRegion region = getRegion();
-		String hotelName = getHotel().getName();
+		String hotelName = hotel.getName();
 
 		if(!isBlockAtSignLocationSign()) throw new BlockNotSignException();
 
@@ -666,7 +666,7 @@ public class Room {
 			throw new BlockNotSignException();
 		}
 
-		String hotelName = getHotel().getName();
+		String hotelName = hotel.getName();
 
 		Sign sign = (Sign) signBlock.getState();
 		if(!hotelName.equalsIgnoreCase(ChatColor.stripColor(sign.getLine(0)))){//If hotelName on sign doesn't match that in config
