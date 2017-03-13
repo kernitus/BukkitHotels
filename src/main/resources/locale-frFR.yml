@@ -37,6 +37,7 @@ sign:
     roomNum: 'Le fichier signe %filename% ne correspondé pas à la nombre de la pièce dans le jeu et il a été annulé'
     hotelName: 'Le fichier signe %filename% ne correspondé pas a la nome de l''hôtel dans le jeu et il a été annulé'
     location: 'Le fichier signe %filename% ne correspondé au lieu dans le jeu et il a été annulé'
+    roomNonExistent: 'Le fichier signe %filename% a été supprimé car la pièce n'existe pas'
 
 chat:
   prefix: '&9[Hotels]&r'
@@ -48,6 +49,7 @@ chat:
     place:
       fileFail: '&4Impossible sauver le fichier de signe'
       outOfRegion: '&4Le fichier n''est pas dans la région de l''hôtel!'
+      inRoomRegion: '&4Le signe ne peut pas être à l'intérieur de la salle!'
       noHotel: '&4Hôtel inexistant'
       emptySign: '&4Fichier vide'
       success: '&2Fichier crée avec succès!'
@@ -129,6 +131,9 @@ chat:
     hotelNonExistent: '&4L''hôtel spécifié n''existe pas'
     worldNonExistent: '&4Le monde spécifié n''existe pas'
     youDoNotOwnThat: '&4Tu ne possédes pas ça'
+    somethingWentWrong: '&4Une erreur s'est produite lors de l'exécution de cette commande'
+    fileSaveFail: '&4Une erreur s'est produite lors de l'enregistrement d'un fichier'
+    consoleRejected: 'La console ne peut pas exécuter cette commande!'
   
   commands:
       header: '&4================================'
@@ -149,10 +154,14 @@ chat:
       friendList: '&6/ht friend list <nomHôtel> <numPièce> - &aLister les joueurs dans la liste d''amis dans la spécifié pièce d''un hôtel'
       sellh: '&6/ht sellh <nomHôtel> <nomLocataire> <prix> - &aPropose à la vente votre hôtel à la joueur spécifié pour le prix spécifié'
       buyh:  '&6/ht buyh <nomHôtel> - &aAcheter l''hôtel spécifié si il est en vente'
+      sellr: '&6/ht sellr <nomHotel> <numéroPièce> <nomJoueur> <prix> - &aPropose le vente de votre pièce au joueur spécifié'
+      buyr: '&6/ht buyr <nomHotel> <numéroPièce> - &aAcheter pièce du propriétaire de la pièce si ils vous l'ont offert'
       reload: '&6/ht reload - &aCharger tous les fichiers de configuration'
       remove: '&6/ht remove <nomLocataire> <nomHôtel> <numPièce> - &aSupprimer joueur de sa pièce loué'
       delr: '&6/ht delr <nomHôtel> <numPièce> - &aSupprimer pièce spécifié'
       delete: '&6/ht delete <nomHôtel> - &aSupprimer hôtel spécifié'
+      roomreset: '&6/ht roomreset <nomHotel> <numéroPièce> - &aActiver/désactiver la réinitialisation de la pièce à la fin du loyer'
+      resetroom: '&6/ht resetroom <nomHotel> <numéroPièce> - &aRéinitialise la chambre spécifiée'
      
   help:
       header: '&4================================'
@@ -314,6 +323,7 @@ chat:
       sellingAsked: '&aDemande d''achète envoyé au joueur %buyer%'
       sellingAlreadyAsked: '&4Vous avez déjà demandé au joueur %buyer% si il veut acheter votre hôtel!'
       invalidPrice: '&4Le prix que vous avez mis n''est pas valide!'
+      selfSale: '&4Vous ne pouvez pas le vendre à vous-même!'
       success: '&aVous avez vendu l''hôtel %hotel% au joueur %buyer% pour $%price%'
       expired: '&4Votre offre pour la vente de l''hôtel %hotel% est terminé'
 
@@ -323,3 +333,25 @@ chat:
       notOnSale: '&4Ce hôtel n''est pas en vent!'
       notEnoughMoney: '&4Vous n''avez pas assez d''argent!'
       expired: '&4L''offere de vent de l''hôtel %hotel% est terminé'
+      
+  sellroom:
+      usage: '&4Utilisation correcte: &6&o/ht sellr <nomHotel> <numéroPièce> <nomAcheteur> <prix>'
+      sellingAlreadyAsked: '&4Vous avez déjà demandé au joueur %buyer% s'ils veulent acheter votre pièce!'
+      sellingAsked: '&aLe joueur %buyer% a été demandé s'il souhaite acheter votre chambre'
+      selling: '&aJoueur %seller% vend sa pièce %room% du %hotel% hotel a vous pour $%price%. Écrire &6&o/ht buyr %hotel% %room% &r&apour l''acheter'
+      success: '&aVous avez vendu votre pièce %room% du %hotel% hotel au joueur %buyer% pour $%price%'
+      
+  buyroom:
+      usage: '&4Utilisation correcte: &6&o/ht buyr <nomHotel> <numéroPièce>'
+      notOnSale: '&4Cette pièce n'est pas en vente!'
+      success: '&aVous avez acheté %room% du %hotel% hotel de %seller% pour $%price%'
+   
+  roomreset:
+      enable: '&3La pièce %room% du %hotel% hotel sera réinitialisé à l'échéance du loyer'
+      disable: '&cLa pièce %room% du %hotel% hotel ne sera plus réinitialisé à l'expiration du loyer'
+      usage: '&4Utilisation correcte: &6&o/ht roomreset <nomHotel> <numéroPièce>'
+      
+  resetroom:
+      usage: '&4Utilisation correcte: &6&o/ht resetroom <nomHotel> <numéroPièce>'
+      notSetup: '&4Cette pièce n'est pas configurée pour réinitialiser!'
+      success: '&aPièce %room% du %hotel% hotel a été réinitialisé'

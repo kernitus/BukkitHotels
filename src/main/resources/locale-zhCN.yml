@@ -282,6 +282,7 @@ chat:
       sellingAsked: '&a已向 %buyer% 发送了请求, 询问其是否愿意购买你的旅馆'
       sellingAlreadyAsked: '&4你之前已经向 %buyer% 发送了询问其是否愿意购买你的旅馆的请求了!'
       invalidPrice: '&4你输入的价格不可用或无效!'
+      selfSale: '&4你不能把这个卖给自己!'
       success: '&a你已以 $%price% 售出了旅馆 %hotel% 给 %buyer%'
       expired: '&4你的旅馆 %hotel% 出售已过期'
     buyhotel:
