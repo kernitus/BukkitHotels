@@ -24,6 +24,7 @@ import org.bukkit.plugin.Plugin;
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
 import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.Language;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
 import kernitus.plugin.Hotels.managers.Mes;
@@ -48,36 +49,24 @@ public class HTConfigHandler {
 	}
 
 	public static void localeLanguageSelector(){
-		String lang = getLanguage().toLowerCase();
+		Language lang = getLanguage();
 		String loclang = locale.getString("language"); //From already-generated locale.yml
 
-		if(loclang!=null) return;
+		if(loclang!=null && !lang.equals(Language.getFromCode(loclang)))//If languages mismatch
+			backupconfig(getLocaleFile()); //Backup current locale and make new one
 
-		switch(lang){
+		locale = getYML(getLocaleFile());//TODO STUFF
+		loclang = locale.getString("language"); //Get it again in case we backed up the locale
 
-		case "en": case "engb":
-			setupLanguage("enGB", PLUGIN); break;
-		case "it": case "itit":
-			setupLanguage("itIT", PLUGIN); break;
-		case "zhcn": case "zh":
-			setupLanguage("zhCN", PLUGIN); break;
-		case "zhtw":
-			setupLanguage("zhTW", PLUGIN); break;
-		case "frfr": case "fr":
-			setupLanguage("frFR", PLUGIN); break;
-		case "ruru": case "ru":
-			setupLanguage("ruRU", PLUGIN); break;
-		case "eses": case "es":
-			setupLanguage("esES", PLUGIN); break;
-
-		case "custom": break;
-
-		default: setupLanguage("enGB", PLUGIN);
-
-		}
+		if(loclang==null)
+			setupLanguage(lang, PLUGIN);
 	}
-	public static String getLanguage(){
+	public static String getLanguageCode(){
 		return PLUGIN.getConfig().getString("language", "enGB");
+	}
+
+	public static Language getLanguage(){
+		return Language.getFromCode(getLanguageCode());
 	}
 
 	public static File getFile(String filepath){
@@ -204,10 +193,11 @@ public class HTConfigHandler {
 	public static void saveFlags(YamlConfiguration config){
 		saveConfiguration(getFlagsFile(), config);
 	}
-	public static void backupconfigYML(){
-		File backup = getFile("backup-config.yml");
+	public static File backupconfig(File file){
+		File backup = getFile(file.getName() + "-backup");
 		if(backup.exists()) backup.delete();
-		getconfigYMLFile().renameTo(backup);
+		file.renameTo(backup);
+		return backup;
 	}
 	@SuppressWarnings("deprecation")
 	public static void reloadConfigs(){
@@ -216,20 +206,22 @@ public class HTConfigHandler {
 			PLUGIN.reloadConfig(); //Making sure they haven't pasted a new version manually	
 
 			//If there's a newer version of the config.yml embedded
-			if(PLUGIN.getConfig().getInt("version", 0) <
-					YamlConfiguration.loadConfiguration(
-							PLUGIN.getResource("config.yml")).getInt("version") ){
+			int version = PLUGIN.getConfig().getInt("version", 0);
+			if( version < YamlConfiguration.loadConfiguration(PLUGIN.getResource("config.yml")).getInt("version") ){
 				Mes.printConsole("Newer config version available, backing up old one and saving new...");
-				backupconfigYML();
+				backupconfig(getconfigYMLFile());
 				setupConfigyml();
-				//Also set room region priorities to 10 to upgrade to new system
-				for(Hotel hotel: HotelsAPI.getAllHotels()){
-					for(Room room: hotel.getRooms())
-						room.getRegion().setPriority(10);
+
+				if(version < 2){ //This also include people that were testing 1.0.0 before the change
+					//Also set room region priorities to 10 to upgrade to new system
+					for(Hotel hotel: HotelsAPI.getAllHotels()){
+						for(Room room: hotel.getRooms())
+							room.getRegion().setPriority(10);
+					}
+					//Save regions
+					for(World world: Bukkit.getWorlds())
+						HTWorldGuardManager.saveRegions(world);
 				}
-				//Save regions
-				for(World world: Bukkit.getWorlds())
-					HTWorldGuardManager.saveRegions(world);
 			}
 		}
 		else setupConfigyml();
@@ -251,13 +243,17 @@ public class HTConfigHandler {
 		flags = getYML(getFlagsFile());
 	}
 
-	public static void setupLanguage(String langCode, Plugin PLUGIN){
-		PLUGIN.saveResource("locale-" + langCode + ".yml", false);
+	public static void setupLanguage(Language lang, Plugin PLUGIN){
+		if(lang.equals(Language.Custom)) return;
+		String code = lang.getStandardCode();
+		
+		
+		PLUGIN.saveResource("locale-" + code + ".yml", false);
 		File loc = getLocaleFile();
-		File codeLoc = getFile("locale-" + langCode + ".yml");
+		File codeLoc = getFile("locale-" + code + ".yml");
 		loc.delete();
 		codeLoc.renameTo(loc);
-		PLUGIN.getLogger().info(langCode + " Language strings generated");
+		PLUGIN.getLogger().info(code + " Language strings generated");
 	}
 
 	public static void setupFlags(){

@@ -18,13 +18,13 @@ public class Mes {
 			mes = ChatColor.translateAlternateColorCodes('&', (prefix + mes));
 		}
 		else
-			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
+			mes = ChatColor.DARK_RED + "Message 2" + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
 		return mes;
 	}
 
 	public static String getStringNoPrefix(String path){
 		String mes = HTConfigHandler.getLocale().getString(path);
-		return mes!=null ? ChatColor.translateAlternateColorCodes('&', mes) : "Message " + path + " is null!";
+		return mes!=null ? ChatColor.translateAlternateColorCodes('&', mes) : "Message 1" + path + " is null!";
 	}
 	public static void mes(Player p, String path){
 		p.sendMessage(getString(path));

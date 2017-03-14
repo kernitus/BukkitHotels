@@ -24,13 +24,13 @@ public class HotelsMain extends JavaPlugin{
 
 	//Task loops
 	private RoomTask roomTask;
-	
+
 	private static HotelsMain INSTANCE;
 
 	@Override
 	public void onEnable(){
 		INSTANCE = this;
-		
+
 		HTConfigHandler.initialise(this);
 
 		PluginDescriptionFile pdfFile = this.getDescription();
@@ -126,55 +126,11 @@ public class HotelsMain extends JavaPlugin{
 			}
 
 			//Languages
-			switch(HTConfigHandler.getLanguage()){
-			case "en": case "enGB":
-				language.addPlotter(new MCMetrics.Plotter("English") {
+			for(final Language lang : Language.values()){
+				language.addPlotter(new MCMetrics.Plotter(lang.getHumanName()) {
 					@Override
 					public int getValue() {
-						return 1;
-					}
-				}); break;
-
-			case "it": case "itIT":
-				language.addPlotter(new MCMetrics.Plotter("Italian") {
-					@Override
-					public int getValue() {
-						return 2;
-					}
-				}); break;
-			case "fr": case "frFR":
-				language.addPlotter(new MCMetrics.Plotter("French") {
-					@Override
-					public int getValue() {
-						return 3;
-					}
-				}); break;
-			case "ru": case "ruRU":
-				language.addPlotter(new MCMetrics.Plotter("Russian") {
-					@Override
-					public int getValue() {
-						return 4;
-					}
-				}); break;
-			case "zhCN":
-				language.addPlotter(new MCMetrics.Plotter("Simplified Chinese") {
-					@Override
-					public int getValue() {
-						return 5;
-					}
-				}); break;
-			case "zhTW":
-				language.addPlotter(new MCMetrics.Plotter("Traditional Cninese") {
-					@Override
-					public int getValue() {
-						return 6;
-					}
-				}); break;
-			default:
-				language.addPlotter(new MCMetrics.Plotter("Custom") {
-					@Override
-					public int getValue() {
-						return 7;
+						return lang.ordinal();
 					}
 				});
 			}
@@ -206,15 +162,7 @@ public class HotelsMain extends JavaPlugin{
 		metrics.addCustomChart(new Metrics.SimplePie("locale_language") {
 			@Override
 			public String getValue() {
-				switch(HTConfigHandler.getLanguage()){
-				case "en": case "enGB": return "English";
-				case "it": case "itIT": return "Italian";
-				case "fr": case "frFR": return "French";
-				case "ru": case "ruRU": return "Russian";
-				case "zhCN": return "Simplified Chinese";
-				case "zhTW": return "Traditional Chinese";
-				default: return "Custom";
-				}
+				return HTConfigHandler.getLanguage().getHumanName();
 			}
 		});
 

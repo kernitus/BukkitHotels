@@ -37,7 +37,7 @@ sign:
     roomNum: 'Le fichier signe %filename% ne correspondé pas à la nombre de la pièce dans le jeu et il a été annulé'
     hotelName: 'Le fichier signe %filename% ne correspondé pas a la nome de l''hôtel dans le jeu et il a été annulé'
     location: 'Le fichier signe %filename% ne correspondé au lieu dans le jeu et il a été annulé'
-    roomNonExistent: 'Le fichier signe %filename% a été supprimé car la pièce n'existe pas'
+    roomNonExistent: 'Le fichier signe %filename% a été supprimé car la pièce n''existe pas'
 
 chat:
   prefix: '&9[Hotels]&r'
@@ -49,7 +49,7 @@ chat:
     place:
       fileFail: '&4Impossible sauver le fichier de signe'
       outOfRegion: '&4Le fichier n''est pas dans la région de l''hôtel!'
-      inRoomRegion: '&4Le signe ne peut pas être à l'intérieur de la salle!'
+      inRoomRegion: '&4Le signe ne peut pas être à l''intérieur de la salle!'
       noHotel: '&4Hôtel inexistant'
       emptySign: '&4Fichier vide'
       success: '&2Fichier crée avec succès!'
@@ -73,7 +73,6 @@ chat:
       extensionSuccess: '&aLe loyer a été prolongé %tot% fois. Vous pouvez le prolonger %left% fois.'
       extensionSuccessNoMore: '&aLe loyer a été prolongé %tot% fois. Vous ne pouvez plus le pronlogner.'
       overRoomsPerHotelLimit: '&4Vous avez arrivé à la limite de %limit% pièces que vous pouvez loyer dans ce hôtel'
-      
   creationMode:
     hotelCreationFailed: '&4Impossibile créer l''hôtel, l''hôtel existe déjà'
     hotelCreationSuccessful: '&2Vous avez créé avec succès l''hôtel %hotel%'
@@ -131,11 +130,11 @@ chat:
     hotelNonExistent: '&4L''hôtel spécifié n''existe pas'
     worldNonExistent: '&4Le monde spécifié n''existe pas'
     youDoNotOwnThat: '&4Tu ne possédes pas ça'
-    somethingWentWrong: '&4Une erreur s'est produite lors de l'exécution de cette commande'
-    fileSaveFail: '&4Une erreur s'est produite lors de l'enregistrement d'un fichier'
+    somethingWentWrong: '&4Une erreur s''est produite lors de l''exécution de cette commande'
+    fileSaveFail: '&4Une erreur s''est produite lors de l''enregistrement d''un fichier'
     consoleRejected: 'La console ne peut pas exécuter cette commande!'
-  
-  commands:
+
+    commands:
       header: '&4================================'
       subheader: '&5--Plugin Hotels page d''aide pour commandes--'
       footer: '&4================================'
@@ -155,7 +154,7 @@ chat:
       sellh: '&6/ht sellh <nomHôtel> <nomLocataire> <prix> - &aPropose à la vente votre hôtel à la joueur spécifié pour le prix spécifié'
       buyh:  '&6/ht buyh <nomHôtel> - &aAcheter l''hôtel spécifié si il est en vente'
       sellr: '&6/ht sellr <nomHotel> <numéroPièce> <nomJoueur> <prix> - &aPropose le vente de votre pièce au joueur spécifié'
-      buyr: '&6/ht buyr <nomHotel> <numéroPièce> - &aAcheter pièce du propriétaire de la pièce si ils vous l'ont offert'
+      buyr: '&6/ht buyr <nomHotel> <numéroPièce> - &aAcheter pièce du propriétaire de la pièce si ils vous l''ont offert'
       reload: '&6/ht reload - &aCharger tous les fichiers de configuration'
       remove: '&6/ht remove <nomLocataire> <nomHôtel> <numPièce> - &aSupprimer joueur de sa pièce loué'
       delr: '&6/ht delr <nomHôtel> <numPièce> - &aSupprimer pièce spécifié'
@@ -163,7 +162,7 @@ chat:
       roomreset: '&6/ht roomreset <nomHotel> <numéroPièce> - &aActiver/désactiver la réinitialisation de la pièce à la fin du loyer'
       resetroom: '&6/ht resetroom <nomHotel> <numéroPièce> - &aRéinitialise la chambre spécifiée'
      
-  help:
+    help:
       header: '&4================================'
       subheader: '&5--Plugin Hotels page d''aide--'
       prefooter: '&4Scrivi &3&o/ht help %num%&r&4 pour aller à la page %num%'
@@ -201,15 +200,15 @@ chat:
         '7': '&9&oVous pouvez utiliser &20 &9&ocomme temps pour rendre le loyer infini'
         '8': '&9&oDans le prix, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2milliard'
     
-  reload:
+    reload:
       success: '&aFichier de configuration chargé correctement'
 
-  rent:
+    rent:
       usage: '&4Utilisation correct: &6&o/ht rent <nomHôtel> <numéroPièce>'
       invalidLocation: '&4Les coordonnées dans le fichier de signe ne correspond pas à un signe!'
       invalidData: '&4Le nom de l''hôtel ou pièce mis ne sont pas valides!'
 
-  creationMode:
+    creationMode:
       enter: '&aVous êtes en mode de création d''hôtel.'
       exit: '&cVous n''est plus en mode de création d''hôtel.'
       alreadyIn: '&4Vous êtes déjà en mode de création!'
@@ -217,53 +216,53 @@ chat:
       reset: '&2Les fichiers d''inventaires ont été reset.'
       noarg: '&4S''il vous plaît spécifier &6&oenter &4o &6&oexit (entrer ou sortir)'
       
-  create:
+    create:
       fail: '&4Impossible créer l''hôtel. Vous êtes déjà en mode de création hôtel? (&3&o/hotels cm enter&r&4)'
       noName: '&4Nommer votre hôtel!'
       maxHotelsReached: '&Vous avez atteint votre limite de %max% hôtel que vous pouvez possedér'
       creationSuccess: '&aActuellemente vous possédez %tot% hôtel. Vous pouvez posséder d''autre %left%'
       hotelAlreadyPresent: '&4Il existe déjà un hôtel ici'
 
-  room:
+    room:
       success: '&aVous avez créé %room% de l''hôtel %hotel%'
       roomNumInvalid: '&4Le numéro de la pièce n''est pas un numéro complet!'
       nextNewRoomFail: '&4Impossible trouver la prochaine pièce disponible! Essayez de spécifier la pièce manuellement'
       usage: '&4Utilisation correct: &6&o/ht room <nomHôtel> <numéroPièce>'
       alreadyPresent: '&4Il y a déjà une pièce present ici'
       
-  deleteRoom:
+    deleteRoom:
       usage: '&4Utilisation correct: &6&o/ht delr <nomHôtel> <numéroPièce> [nomMonde]'
       roomRented: '&4Vous ne pouvez pas éliminer ce pièce car c''est loué'
     
-  deleteHotel:
+    deleteHotel:
       hasRentedRooms: '&4Vous ne pouvez pas éliminer ce hôtel car certaines pièces sont loués'
 
-  renumber:
+    renumber:
       usage: '&4Utilisation correct: &6&o/ht renum <nomHôtel> <ancienNuméro> <nouveaunuméro> [nomMonde]'
       success: '&2Vouz aves changé la pièce %oldnum% à la pièce %newnum% de l''hôtel %hotel% aves succès'
       fail: '&4Impossible renommer la pièce %oldnum%'
       newNumTooBig: '&4Le nouveau numéro est trop grand!'
 
-  rename:
+    rename:
       usage: '&4Utilisation correct: &6&o/ht rent <ancienNom> <nouveauNom> [monde]'
       success: '&2Vous avez renommé avec succès l''hôtel %hotel%'
       failRooms: '&4Impossible renommer les pièces'
 
-  removeRoom:
+    removeRoom:
       success: '&aPièce enlevé avec succès'
       fail: '&4Impossible enlever la pièce'
 
-  removeRegions:
+    removeRegions:
       success: '&aRégions hôtel enlevé avec succès'
       fail: '&4Impossible supprimer regions hôtel'
 
-  remove:
+    remove:
       playerNotRenter: '&4Le joueur spécifié n''a pas loué la pièce spécifié'
       noRenter: '&4La pièce spécifié n''est pas loué!'
       success: '&aLe joueur %player% a été enlevé de la pièce %room% de l''hôtel %hotel%'
       usage: '&4Utilisation correct: &6&o/ht remove <nomJoueur> <nomHôtel> <numéroPièce> [nomMonde]'
 
-  check:
+    check:
       headerHotels: '&a==Liste hôtel en possession de %player%=='
       noHotels: '&cVous ne possedez pas aucun hôtel!'
       lineHotels: '&6Hôtel: &c%hotel% &9Totale: &r%total% &aLibre: &r%free%'
@@ -271,22 +270,22 @@ chat:
       noRooms: '&cVous n''avez pas loué aucun pièce!'
       lineRooms: '&6Hôtel: &c%hotel%    &6Pièce: &c%room%    &6Expire en: &c%timeleft%'
       
-  listHotels:
+    listHotels:
       heading: '&a==  Liste hôtel  =='
       footer: '&c==  Fin liste hôtel  =='
       line: '&6Hôtel: &c%hotel%%space%&9Totale: &r%total%   &aLibre: &r%free%'
       
-  listRooms:
+    listRooms:
       heading: '&a==  Liste pièces pour l''hôtel %hotel%  =='
       footer: '&c==  Fin liste pièces pour l''hôtel %hotel%  =='
       line: '&6Pièce n: &c%room%%space%%state%'
       noRooms: '&cIl n''y a pas pièces libres dans ce hôtel'
       usage: '&4Utilisation correct: &6&o/ht rlist <nomHôtel>'
 
-  removeSigns:
+    removeSigns:
       success: '&aToutes les signes sont été enlevés'
 
-  friend:
+    friend:
       usage: '&4Utilisation correct: &6&o/ht friend <add/remove/list> <nomHôtel> <numéroPièce> [nomAmi]'
       wrongData: '&4L''hôtel ou la pièce mis ne correspond pas à aucun place existant'
       noRenter: '&4La pièce spécifié n''a pas un tenant!'
@@ -303,20 +302,20 @@ chat:
         footer: '&c==Fin liste d''amis=='
         line: '&6Ami: &c%name%'
         
-  sethome:
+    sethome:
       notInHotelRegion: '&4Vous n''êtes pas dans une région d''hôtel!'
       notInCreationMode: '&4Vous n''êtes pas dans mode de création!'
       defaultHomeSet: '&aHome de défaut set'
       userHomeSet: '&aHome d''utilisateur set'
       hotelHomeSet: '&aHome de l''hôtel set'
       
-  home:
+    home:
       noHomeSet: '&4Pas aucun home set!'
       regionNotFound: '&4L''hôtel ou la pièce spécifié n''ont pas été trouvé!'
       usage: '&4Utilisation correct: &6&o/ht home <nomHôtel> [numéroPièce]'
       notRenterNoPermission: '&4Vous n''êtes pas le propriétaire ou vous n''avez pas me permis de faire ça'
 
-  sellhotel:
+    sellhotel:
       usage: '&4Utilisation correct: &6&o/ht sellh <nomhôtel> <nomAcheteur> <prix>'
       buyerNotOnline: '&4L''acheteur n''est pas en ligne!'
       selling: '&aLe joueur %seller% vend son hôtel %hotel% à toi pour $%price%. écrivez &6&o/ht buyh %hotel% &r&apour l''acheter'
@@ -327,31 +326,31 @@ chat:
       success: '&aVous avez vendu l''hôtel %hotel% au joueur %buyer% pour $%price%'
       expired: '&4Votre offre pour la vente de l''hôtel %hotel% est terminé'
 
-  buyhotel:
+    buyhotel:
       usage: '&4Utilisation correct: &6&o/ht buyh <nomHôtel>'
       success: '&aVous avez acheté l''hôtel %hotel% de %seller% pour $%price%'
       notOnSale: '&4Ce hôtel n''est pas en vent!'
       notEnoughMoney: '&4Vous n''avez pas assez d''argent!'
       expired: '&4L''offere de vent de l''hôtel %hotel% est terminé'
       
-  sellroom:
+    sellroom:
       usage: '&4Utilisation correcte: &6&o/ht sellr <nomHotel> <numéroPièce> <nomAcheteur> <prix>'
-      sellingAlreadyAsked: '&4Vous avez déjà demandé au joueur %buyer% s'ils veulent acheter votre pièce!'
-      sellingAsked: '&aLe joueur %buyer% a été demandé s'il souhaite acheter votre chambre'
+      sellingAlreadyAsked: '&4Vous avez déjà demandé au joueur %buyer% s''ils veulent acheter votre pièce!'
+      sellingAsked: '&aLe joueur %buyer% a été demandé s''il souhaite acheter votre chambre'
       selling: '&aJoueur %seller% vend sa pièce %room% du %hotel% hotel a vous pour $%price%. Écrire &6&o/ht buyr %hotel% %room% &r&apour l''acheter'
       success: '&aVous avez vendu votre pièce %room% du %hotel% hotel au joueur %buyer% pour $%price%'
       
-  buyroom:
+    buyroom:
       usage: '&4Utilisation correcte: &6&o/ht buyr <nomHotel> <numéroPièce>'
-      notOnSale: '&4Cette pièce n'est pas en vente!'
+      notOnSale: '&4Cette pièce n''est pas en vente!'
       success: '&aVous avez acheté %room% du %hotel% hotel de %seller% pour $%price%'
    
-  roomreset:
-      enable: '&3La pièce %room% du %hotel% hotel sera réinitialisé à l'échéance du loyer'
-      disable: '&cLa pièce %room% du %hotel% hotel ne sera plus réinitialisé à l'expiration du loyer'
+    roomreset:
+      enable: '&3La pièce %room% du %hotel% hotel sera réinitialisé à l''échéance du loyer'
+      disable: '&cLa pièce %room% du %hotel% hotel ne sera plus réinitialisé à l''expiration du loyer'
       usage: '&4Utilisation correcte: &6&o/ht roomreset <nomHotel> <numéroPièce>'
       
-  resetroom:
+    resetroom:
       usage: '&4Utilisation correcte: &6&o/ht resetroom <nomHotel> <numéroPièce>'
-      notSetup: '&4Cette pièce n'est pas configurée pour réinitialiser!'
+      notSetup: '&4Cette pièce n''est pas configurée pour réinitialiser!'
       success: '&aPièce %room% du %hotel% hotel a été réinitialisé'
