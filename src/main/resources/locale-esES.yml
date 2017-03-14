@@ -36,7 +36,8 @@ sign:
     reception: El archivo de recepción %filename% no coincidia con la características en el juego y ha sido borrado
     roomNum: El archivo del cartel %filename% no coincidia con el número de habitación en el juego y ha sido borrado
     hotelName: El archivo del cartel %filename% no coincidia con el nombre de hotel en el juego y ha sido borrado
-    location: El archivo del cartel %filename% no coincidia con la locaclización en el juego y ha sido borrado
+    location: El archivo del cartel %filename% no coincidia con la localización en el juego y ha sido borrado
+    roomNonExistent: 'Archivo del cartel %filename% fue eliminado ya que la habita'
 
 chat:
   prefix: '&9[Hoteles]&r'
@@ -48,6 +49,7 @@ chat:
     place:
       fileFail: '&4No pudo guardarse el archivo del cartel'
       outOfRegion: '&4El cartel no está dentro de la región del hotel!'
+      inRoomRegion: '&4El cartel no puede estar dentro de la región de una habitación!'
       noHotel: '&4El hotel no existe'
       emptySign: '&4Cartel vacio'
       success: '&2El cartel del hotel ha sido correctamente creado!'
@@ -125,6 +127,7 @@ chat:
     worldNonExistent: '&4El mundo especificado no existe'
     youDoNotOwnThat: '&4No te pertenece eso!'
     somethingWentWrong: '&4Whoops! algo ha fallado mientras ejecutabas el comando'
+    fileSaveFail: '&4Algo falló mientras se guardaba el archivo'
 
     commands:
       header: '&4================================'
@@ -145,10 +148,14 @@ chat:
       friendList: '&6/ht <friend/f> list <nombreHotel> <numHabitación> - &aLista de jugadores amigos dentro de una habitación del hotel'
       sellh: '&6/ht sellh <nombreHotel> <nombreUsuario> <precio> - &aOfrece vender tu hotel a un jugador por cierta cantidad de dinero'
       buyh: '&6/ht buyh <nombreHotel> - &aCompra el hotel especificado si el hotel está en venta'
+      sellr: '&6/ht sellr <nombreHotel> <numeroHabitación> <playerName> <precio> - &aOfrece a la venta una habitación al jugador especificado'
+      buyr: '&6/ht buyr <nombreHotel> <numeroHabitación> - &aCompra la habitación del dueño si este te la ha ofrecido'
       reload: '&6/ht reload - &aRecarga todos los archivos de la configuración'
       remove: '&6/ht remove <nombreUsuario> <nombreHotel> <numHabitación> - &aQuita al jugador de la habitación alquilada'
       delr: '&6/ht delr <nombreHotel> <numHabitación> - &aElimina la habitación especificada'
       delete: '&6/ht delete <nombreHotel> - &aElimina el hotel especificado'
+      roomreset: '&6/ht roomreset <nombreHotel> <numeroHabitación> - &aHabilita el reseteo en la habitación alquilada especificada'
+      resetroom: '&6/ht resetroom <nombreHotel> <numeroHabitación> - &aResetea la habitación especificada'
 
     help:
       header: '&4================================'
@@ -333,3 +340,8 @@ chat:
       enable: '&aLa habitación %room% del hotel %hotel% se reestablecerá cuando se agote el tiempo'
       disable: '&cLa habitación %room% del hotel %hotel% no se reestablecerá cuando se agote el tiempo'
       usage: '&4Uso correcto: &6&o/ht roomreset <nombreHotel> <numHabitación>'
+      
+    resetroom:
+      usage: '&4Uso correcto: &6&o/ht resetroom <nombreHotel> <numeroHabitación>'
+      notSetup: '&4Esta habitación no está preparada para resetearla!'
+      success: '&aHabitación %room% del hotel %hotel% acaba de ser reseteada'
