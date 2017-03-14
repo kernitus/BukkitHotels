@@ -40,7 +40,7 @@ public enum Language {
 	public static Language getFromCode(String code){
 		for(Language lang : values()){
 			for(String currentCode: lang.getCodes()){
-				if(currentCode.equalsIgnoreCase(code))
+				if(currentCode != null && currentCode.equalsIgnoreCase(code))
 					return lang;
 			}
 		}

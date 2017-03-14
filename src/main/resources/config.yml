@@ -3,9 +3,15 @@
 # Spigot Page: https://www.spigotmc.org/resources/hotels.2047/
 # GitHub Page: https://github.com/kernitus/BukkitHotels
 
-# Available languages: enGB, itIT, zhCN, znTW, frFR, ruRU, esES
 # Looking for translator for German or any other language
-# You must delete the current locale.yml and do /ht reload for the locale to update
+# Available languages: (you can use any of the listed codes, case insensitive)
+# English (U.K.): en, enGB
+# Italian (Italiano): it, itIT
+# Simplified Chinese (简体中文): zh, zhCN
+# Traditional Chinese (繁體中文): zhTW
+# French (Français): fr, frFR
+# Russian (Русский): ru, ruRU
+# Spanish (Español): es, esES
 language: enGB
 
 # Maximum amount of hotels a player can own

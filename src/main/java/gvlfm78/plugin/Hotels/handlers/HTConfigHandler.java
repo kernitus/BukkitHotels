@@ -194,7 +194,7 @@ public class HTConfigHandler {
 		saveConfiguration(getFlagsFile(), config);
 	}
 	public static File backupconfig(File file){
-		File backup = getFile(file.getName() + "-backup");
+		File backup = getFile("backup-" + file.getName());
 		if(backup.exists()) backup.delete();
 		file.renameTo(backup);
 		return backup;
