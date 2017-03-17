@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -290,10 +290,8 @@ public class HTSignManager {
 			revenue = revenue - taxValue;
 		}
 		//Giving to all owners the revenue
-		Set<String> hotelOwners = hotel.getOwners().getPlayers();
-		for(String ownerName : hotelOwners){
-			@SuppressWarnings("deprecation")
-			OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerName);
+		for(UUID uuid : hotel.getOwners().getUniqueIds()){
+			OfflinePlayer owner = Bukkit.getPlayer(uuid);
 			HotelsMain.economy.depositPlayer(owner, revenue);
 			String chatMessage;
 			if(isRentExtend==true)
@@ -309,7 +307,8 @@ public class HTSignManager {
 					.replaceAll("%revenue%",  new DecimalFormat("#.00").format(revenue))
 					.replaceAll("%hotel%", hotel.getName())
 					.replaceAll("%room%", String.valueOf(room.getNum()))
-					);	
+					);
+			Mes.debug("Payed owner");
 		}
 	}
 	public static void breakRoomSign(BlockBreakEvent e){
