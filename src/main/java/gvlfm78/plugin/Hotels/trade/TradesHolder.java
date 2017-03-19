@@ -56,7 +56,7 @@ public class TradesHolder {
 	}
 	public static RoomBuyer getBuyerFromRoom(Room room){
 		for(RoomBuyer rb : rbuyers.values()){
-			if(rb.getNum()==room.getNum())
+			if(rb.getRegion().getId().equalsIgnoreCase(room.getRegion().getId()))
 				return rb;
 		}
 		return null;

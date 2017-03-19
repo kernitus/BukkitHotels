@@ -303,6 +303,14 @@ public class Room {
 		
 		//Placing their UUID in the sign config
 		sconfig.set("Sign.renter", uuid.toString());
+		try {
+			saveSignConfig();
+			updateSign();
+		} catch (IOException | EventCancelledException e) {
+			e.printStackTrace();
+		}
+		
+		//Updating the sign
 	}
 	public void rent(Player p) throws IOException, EventCancelledException {
 		if(!exists() || !doesSignFileExist()){
@@ -406,7 +414,7 @@ public class Room {
 		renumber(Integer.parseInt(newNum));
 	}
 
-	public void renumber(int newNum) throws NumberTooLargeException, HotelNonExistentException, RoomNonExistentException, BlockNotSignException, OutOfRegionException, EventCancelledException, IOException {
+	public void renumber(int newNum) throws NumberTooLargeException, HotelNonExistentException, RoomNonExistentException, BlockNotSignException, OutOfRegionException, EventCancelledException, FileNotFoundException, IOException {
 		int oldNum = num;
 		Hotel hotel = getHotel();
 		String hotelName = hotel.getName();
@@ -422,7 +430,7 @@ public class Room {
 		Block sign = getBlockAtSignLocation();
 		Material mat = sign.getType();
 
-		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)){
+		if(!mat.equals(Material.SIGN_POST) && !mat.equals(Material.WALL_SIGN)){
 			sign.setType(Material.AIR);
 			deleteSignFile();
 			throw new BlockNotSignException();
@@ -455,7 +463,7 @@ public class Room {
 		getSignFile().renameTo(newFile);
 
 		//Renaming region and changing number in greet/farewell messages
-		ProtectedRegion oldRegion = HTWorldGuardManager.getRegion(world, "hotel-"+hotel+"-"+num);
+		ProtectedRegion oldRegion = HTWorldGuardManager.getRegion(world, "hotel-"+hotel.getName()+"-"+num);
 
 		if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
 			oldRegion.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.getStringNoPrefix("message.room.enter").replaceAll("%room%", String.valueOf(newNum))));
@@ -512,7 +520,14 @@ public class Room {
 	public void renameRoom(String newHotelName){
 		HTWorldGuardManager.renameRegion(getRegion().getId(), "Hotel-" + newHotelName + "-" + String.valueOf(num), world);
 		HTWorldGuardManager.saveRegions(world);
+		sconfig.set("Sign.hotel", newHotelName);
+		try {
+			saveSignConfig();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		hotel = new Hotel(world, newHotelName);
+		sconfig = getSignConfig();
 	}
 
 	public void addFriend(OfflinePlayer friend) throws UserNonExistentException, NotRentedException, IOException {
@@ -719,7 +734,7 @@ public class Room {
 		TradesHolder.addRoomBuyer(Bukkit.getPlayer(uuid), this, price);
 	}
 	public void removeBuyer(){
-		TradesHolder.removeHotelBuyer(TradesHolder.getBuyerFromRoom(this).getPlayer());
+		TradesHolder.removeRoomBuyer(getBuyer().getPlayer());
 	}
 	public void setOwnerEditing(ProtectedRegion region, boolean state){
 		if(HTConfigHandler.getconfigYML().getBoolean("stopOwnersEditingRentedRooms", true)){

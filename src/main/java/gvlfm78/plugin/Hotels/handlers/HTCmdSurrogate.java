@@ -1,5 +1,6 @@
 package kernitus.plugin.Hotels.handlers;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +18,9 @@ import org.bukkit.entity.Player;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.world.DataException;
 
+import kernitus.plugin.Hotels.HTCreationMode;
 import kernitus.plugin.Hotels.Hotel;
 import kernitus.plugin.Hotels.HotelsAPI;
-import kernitus.plugin.Hotels.HTCreationMode;
 import kernitus.plugin.Hotels.Room;
 import kernitus.plugin.Hotels.exceptions.BlockNotSignException;
 import kernitus.plugin.Hotels.exceptions.EventCancelledException;
@@ -31,9 +32,8 @@ import kernitus.plugin.Hotels.exceptions.OutOfRegionException;
 import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
 import kernitus.plugin.Hotels.exceptions.UserNonExistentException;
 import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
-import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.HTSignManager;
-import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
+import kernitus.plugin.Hotels.managers.Mes;
 
 public class HTCmdSurrogate {
 
@@ -68,10 +68,16 @@ public class HTCmdSurrogate {
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.sellh"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.buyh"));
 
+		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.sellr"));
+		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.buyr"));
+
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.reload"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.remove"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.delete"));
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.delr"));
+
+		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.roomreset"));
+		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.resetroom"));
 
 		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.footer"));
 	}
@@ -108,10 +114,22 @@ public class HTCmdSurrogate {
 			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.friend"));
 			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.friendList"));}
 
-		if(Mes.hasPerm(s, "hotels.sell.room")){
+		if(Mes.hasPerm(s, "hotels.sell.hotel"))
 			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.sellh"));
+		if(Mes.hasPerm(s, "hotels.buy.hotel"))
 			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.buyh"));
-		}
+
+
+		if(Mes.hasPerm(s, "hotels.sell.room"))
+			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.sellr"));
+		if(Mes.hasPerm(s, "hotels.buy.room"))
+			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.buyr"));
+
+
+		if(Mes.hasPerm(s, "hotels.resetroom.toggle"))
+			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.roomreset"));
+		if(Mes.hasPerm(s, "hotels.resetroom.reset"))
+			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.resetroom"));
 
 		if(Mes.hasPerm(s,"hotels.reload"))
 			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.reload"));
@@ -277,36 +295,31 @@ public class HTCmdSurrogate {
 	public static void renumber(Room room, String newNum, CommandSender sender){
 		int oldNum = room.getNum();
 		Hotel hotel = room.getHotel();
-		String hotelName = hotel.getName();
 
-		if(!(sender instanceof Player)){
-			sender.sendMessage(Mes.getString("chat.commands.renumber.fail").replaceAll("%oldnum%", String.valueOf(oldNum)));
-			return; }
-
-		Player player = (Player) sender;
-
-		if(!HTWorldGuardManager.isOwner(player, "hotel-"+hotelName, player.getWorld()) || Mes.hasPerm(player, "hotels.renumber.admin")){
-			Mes.mes(player, "chat.commands.youDoNotOwnThat"); return; }
+		if(!Mes.hasPerm(sender, "hotels.renumber.admin") && !hotel.isOwner(((Player) sender).getUniqueId())){
+			Mes.mes(sender, "chat.commands.youDoNotOwnThat"); return; }
 
 		try {
 			room.renumber(newNum);
-			player.sendMessage(Mes.getString("chat.commands.renumber.success").replaceAll("%oldnum%", String.valueOf(oldNum)).replaceAll("%newnum%", String.valueOf(newNum)).replaceAll("%hotel%", hotel.getName()));
+			sender.sendMessage(Mes.getString("chat.commands.renumber.success").replaceAll("%oldnum%", String.valueOf(oldNum)).replaceAll("%newnum%", String.valueOf(newNum)).replaceAll("%hotel%", hotel.getName()));
 		} catch (NumberFormatException e) {
-			player.sendMessage("chat.commands.somethingWentWrong");
+			sender.sendMessage("chat.commands.somethingWentWrong");
 			e.printStackTrace();
 		} catch (NumberTooLargeException e) {
-			Mes.mes(player, "chat.commands.renumber.newNumTooBig");
+			Mes.mes(sender, "chat.commands.renumber.newNumTooBig");
 		} catch (HotelNonExistentException e) {
-			Mes.mes(player, "chat.commands.hotelNonExistent");
+			Mes.mes(sender, "chat.commands.hotelNonExistent");
 		} catch (RoomNonExistentException e) {
-			Mes.mes(player, "chat.commands.roomNonExistent");
+			Mes.mes(sender, "chat.commands.roomNonExistent");
 		} catch (BlockNotSignException e) {
-			Mes.mes(player, "chat.commands.rent.invalidLocation");
+			Mes.mes(sender, "chat.commands.rent.invalidLocation");
 		} catch (OutOfRegionException e) {
-			Mes.mes(player, "chat.sign.place.outOfRegion");
+			Mes.mes(sender, "chat.sign.place.outOfRegion");
 		} catch (EventCancelledException e) {
+		} catch (FileNotFoundException e) {
+			Mes.mes(sender, "chat.sign.use.fileNonExistent");
 		} catch (IOException e) {
-			Mes.mes(player, "chat.use.fileNonExistent");
+			e.printStackTrace();
 		}
 	}
 	public static void removeRoom(String hotelName, String roomNum, World world, CommandSender sender){
@@ -359,7 +372,7 @@ public class HTCmdSurrogate {
 
 		sender.sendMessage(Mes.getString("chat.commands.check.headerHotels").replaceAll("%player%", playername));
 		if(hotels.size() < 1){ Mes.mes(sender, "chat.commands.check.noHotels"); return; }
-		
+
 		for(Hotel hotel : hotels){
 			String hotelName = hotel.getName();
 			int total = hotel.getTotalRoomCount();

@@ -201,7 +201,7 @@ public class HTCmdExecutor implements CommandExecutor {
 
 				if(length<2 && isPlayer) w = ((Player) sender).getWorld();
 				else if(length>1) w = Bukkit.getWorld(args[1]);
-				else Mes.mes(sender ,"chat.commands.noWorld");
+				else{ Mes.mes(sender ,"chat.commands.noWorld"); return false; }
 
 				if(w!=null)	HTCmdSurrogate.listHotels(w, sender);
 				else Mes.mes(sender ,"chat.commands.worldNonExistent");				
@@ -456,9 +456,9 @@ public class HTCmdExecutor implements CommandExecutor {
 					Mes.mes(p, "chat.commands.sellhotel.invalidPrice");
 					return false;
 				}
-				
+
 				if(p.getUniqueId().equals(buyer.getUniqueId())){ Mes.mes(p, "chat.commands.sellhotel.selfSale"); return false; }
-				
+
 				if(hotel.getBuyer()!=null || hotel.getBuyer()!=null && buyer.getUniqueId().equals(hotel.getBuyer().getPlayer().getUniqueId())){
 					sender.sendMessage(Mes.getString("chat.commands.sellhotel.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName())); return false; }
 
@@ -475,6 +475,8 @@ public class HTCmdExecutor implements CommandExecutor {
 
 			else if(args[0].equalsIgnoreCase("buyhotel") || args[0].equalsIgnoreCase("buyh")){
 				if(!isPlayer){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
+
+				if(Mes.hasPerm(sender, "hotels.buy.hotel")){ Mes.mes(sender, "chat.noPermission"); return false; }
 
 				Player p = (Player) sender;
 				if(length<2){ Mes.mes(p, "chat.commands.buyhotel.usage"); return false; }
@@ -550,7 +552,7 @@ public class HTCmdExecutor implements CommandExecutor {
 				hotel.addOwner(p);
 				for(Room room : hotel.getRooms())
 					room.setOwner(p);
-					
+
 				p.sendMessage(Mes.getString("chat.commands.buyhotel.success")
 						.replaceAll("%hotel%", hotel.getName())
 						.replaceAll("%seller%", onlineOwner)
@@ -568,7 +570,7 @@ public class HTCmdExecutor implements CommandExecutor {
 
 				if(!Mes.hasPerm(p, "hotels.sell.room")){ Mes.mes(p, "chat.noPermission"); return false; }
 
-				if(length<4){ Mes.mes(p, "chat.commands.sellroom.usage"); return false; }
+				if(length<5){ Mes.mes(p, "chat.commands.sellroom.usage"); return false; }
 
 				World world = p.getWorld();
 				Hotel hotel = new Hotel(world, args[1]);
@@ -592,10 +594,10 @@ public class HTCmdExecutor implements CommandExecutor {
 					Mes.mes(p, "chat.commands.sellhotel.invalidPrice");
 					return false;
 				}
-				
+
 				if(p.getUniqueId().equals(buyer.getUniqueId())){ Mes.mes(p, "chat.commands.sellhotel.selfSale"); return false; }
 
-				if(room.getBuyer()!=null || buyer.getUniqueId().equals(room.getBuyer().getPlayer().getUniqueId())){
+				if(room.getBuyer()!=null || room.getBuyer()!=null && buyer.getUniqueId().equals(room.getBuyer().getPlayer().getUniqueId())){
 					sender.sendMessage(Mes.getString("chat.commands.sellroom.sellingAlreadyAsked").replaceAll("%buyer%", buyer.getName())); return false; }
 
 				room.setBuyer(buyer.getUniqueId(), price);
@@ -627,6 +629,7 @@ public class HTCmdExecutor implements CommandExecutor {
 				if(!room.exists()){ Mes.mes(p, "chat.commands.roomNonExistent"); return false; }
 
 				RoomBuyer rb = room.getBuyer();
+				if(rb==null){ Mes.mes(p, "chat.commands.buyroom.notOnSale"); return false; }
 				Player buyer = rb.getPlayer();
 
 				if(!buyer.hasPlayedBefore() || !buyer.equals(p) || buyer == null){ Mes.mes(p, "chat.commands.buyroom.notOnSale"); return false; }
@@ -637,17 +640,18 @@ public class HTCmdExecutor implements CommandExecutor {
 
 				if((balance-price)<0){ Mes.mes(p, "chat.commands.buyhotel.notEnoughMoney"); return false; }
 
+				OfflinePlayer owner = room.getRenter();
+
 				//Player has enough money
 				HotelsMain.economy.withdrawPlayer(p, price);
-				String onlineOwner = "";
 
 				String taxString = plugin.getConfig().getString("tax", "20%");
 				double revenue = price;
 				boolean isPercentage = taxString.matches("\\d+%");
 				double tax;
 
-				if(isPercentage)
-					taxString = taxString.replaceAll("%", "");
+				if(isPercentage) taxString = taxString.replaceAll("%", "");
+
 				try{
 					tax = Double.parseDouble(taxString);
 				}
@@ -675,12 +679,8 @@ public class HTCmdExecutor implements CommandExecutor {
 						.replaceAll("%price%", String.valueOf(price))
 						.replaceAll("%hotel%", hotel.getName());
 
-				if(op.isOnline()){
-					onlineOwner = p.getName();
-					p.sendMessage(message);
-				}
-				else
-					HTMessageQueue.addMessage(MessageType.revenue, op.getUniqueId(),message);
+				if(owner.isOnline()) owner.getPlayer().sendMessage(message);
+				else HTMessageQueue.addMessage(MessageType.revenue, op.getUniqueId(),message);
 
 				room.setRenter(p.getUniqueId()); //Removing old owner
 
@@ -688,7 +688,7 @@ public class HTCmdExecutor implements CommandExecutor {
 
 				p.sendMessage(Mes.getString("chat.commands.buyroom.success")
 						.replaceAll("%room%", String.valueOf(room.getNum()))
-						.replaceAll("%seller%", onlineOwner)
+						.replaceAll("%seller%", owner.getName())
 						.replaceAll("%price%", String.valueOf(price))
 						.replaceAll("%hotel%", hotel.getName()) );
 
@@ -708,6 +708,8 @@ public class HTCmdExecutor implements CommandExecutor {
 				//Command to toggle resetting of rooms upon rent expiry
 				Room room = new Room(args[1], args[2], sender);
 				if(!room.exists()){ Mes.mes(sender, "chat.commands.roomNonExistent"); return false; }
+
+				if(!Mes.hasPerm(sender, "hotels.reset.toggle.admin") && !room.getHotel().getOwners().contains(((Player) sender).getUniqueId())){Mes.mes(sender, "chat.commands.youDoNotOwnThat");  return false; }
 
 				try {
 					if(room.toggleShouldReset())

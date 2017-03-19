@@ -164,7 +164,7 @@ public class Hotel {
 	public void setName(String name){
 		this.name = name;
 	}
-	public void rename(String newName) throws EventCancelledException, HotelNonExistentException{
+	public void rename(String newName) throws EventCancelledException, HotelNonExistentException {
 		HotelRenameEvent hre = new HotelRenameEvent(this, newName);
 		Bukkit.getPluginManager().callEvent(hre);
 		newName = hre.getNewName(); //In case it was modified by the event
@@ -241,6 +241,7 @@ public class Hotel {
 	public boolean isOwner(UUID uuid){
 		return getOwners().contains(uuid);
 	}
+	@Deprecated
 	public boolean isOwner(String name){
 		return getOwners().contains(name);
 	}
@@ -264,6 +265,7 @@ public class Hotel {
 		for(ReceptionSign rs : rss)
 			rs.update();
 	}
+	
 	//////////////////////////
 	////////Setters///////////
 	//////////////////////////
