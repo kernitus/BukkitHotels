@@ -81,6 +81,7 @@ public class RoomTask extends BukkitRunnable {
 			} catch (ValuesNotMatchingException | RoomNonExistentException | BlockNotSignException
 					| RenterNonExistentException | EventCancelledException | IOException | DataException
 					| WorldEditException | WorldNonExistentException | HotelNonExistentException | NotRentedException e) {
+				file.delete();
 				Mes.debug(e.getMessage());
 			}
 			finally{

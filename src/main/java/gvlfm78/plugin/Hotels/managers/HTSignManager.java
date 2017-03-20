@@ -97,7 +97,8 @@ public class HTSignManager {
 		}
 	}
 
-	public static void placeRoomSign(SignChangeEvent e) throws RoomSignInRoomException{
+	@SuppressWarnings("deprecation")
+	public static void placeRoomSign(SignChangeEvent e) throws RoomSignInRoomException {
 		Player p = e.getPlayer();
 		World world = p.getWorld();
 		//Sign Lines
@@ -192,7 +193,7 @@ public class HTSignManager {
 		String hotelName = (ChatColor.stripColor(Line1)); //Hotel name
 
 		Hotel hotel = new Hotel(world, hotelName);
-
+		
 		//If Hotel exists
 		if(!hotel.exists()) return;
 		
@@ -325,7 +326,15 @@ public class HTSignManager {
 		if(!hotel.getRegion().contains(b.getX(), b.getY(), b.getZ())) return;
 		String Line2 = ChatColor.stripColor(s.getLine(1));
 		String[] Line2split = Line2.split(" ");
-		int roomNum = Integer.parseInt(Line2split[1]);
+		
+		int roomNum;
+		
+		try{
+		roomNum = Integer.parseInt(Line2split[1]);
+		}
+		catch(Exception e1){
+			return;
+		}
 
 		Room room = new Room(hotel, roomNum);
 
@@ -451,7 +460,6 @@ public class HTSignManager {
 		}
 	}
 	public static double CostConverter(String immutedcost){
-
 		final Pattern p = Pattern.compile("(\\d+)([thkmb]||)");
 		final Matcher m = p.matcher(immutedcost);
 

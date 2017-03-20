@@ -491,6 +491,8 @@ public class Room {
 		Sign s = getSign();
 
 		if(s==null) return;
+		
+		s.setLine(0, ChatColor.DARK_BLUE + getHotelNameFromConfig());
 
 		long remainingTime;
 
@@ -526,8 +528,14 @@ public class Room {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		File oldFile = getSignFile();
 		hotel = new Hotel(world, newHotelName);
+		oldFile.renameTo(getSignFile());
 		sconfig = getSignConfig();
+		try {
+			updateSign();
+		} catch (EventCancelledException e) {
+		}
 	}
 
 	public void addFriend(OfflinePlayer friend) throws UserNonExistentException, NotRentedException, IOException {
