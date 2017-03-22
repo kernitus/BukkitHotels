@@ -296,6 +296,7 @@ chat:
       addSuccess: '&aLe joueur %friend% a été ajouté à votre liste d''amis avec succès'
       removeSuccess: '&aLe joueur %friend% a été enlevé de votre liste d''amis avec succès'
       noFriends: '&2Vous n''avez pas ajouté aucun ami à la pièce spécifié'
+      alreadyFriend: '&4Vous avez déjà ajouté cet amie!'
 
       list:
         heading: '&a==Liste d''amis pour la pièce n. %room% de l''hôtel %hotel%=='

@@ -42,6 +42,7 @@ import kernitus.plugin.Hotels.exceptions.RenterNonExistentException;
 import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
 import kernitus.plugin.Hotels.exceptions.RoomNotSetupException;
 import kernitus.plugin.Hotels.exceptions.RoomSignInRoomException;
+import kernitus.plugin.Hotels.exceptions.UserAlreadyThereException;
 import kernitus.plugin.Hotels.exceptions.UserNonExistentException;
 import kernitus.plugin.Hotels.exceptions.ValuesNotMatchingException;
 import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
@@ -300,7 +301,7 @@ public class Room {
 		HTWorldGuardManager.setMember(uuid, region);
 		if(!HTConfigHandler.getconfigYML().getBoolean("stopOwnersEditingRentedRooms"))
 			HTWorldGuardManager.addMembers(hotel.getOwners(), region); //Add the owners if they're allows to modify while rented
-		
+
 		//Placing their UUID in the sign config
 		sconfig.set("Sign.renter", uuid.toString());
 		try {
@@ -309,7 +310,7 @@ public class Room {
 		} catch (IOException | EventCancelledException e) {
 			e.printStackTrace();
 		}
-		
+
 		//Updating the sign
 	}
 	public void rent(Player p) throws IOException, EventCancelledException {
@@ -334,7 +335,7 @@ public class Room {
 		//Setting room flags back in case they were changed to allow players in
 		ProtectedRegion region = getRegion();
 		HTWorldGuardManager.roomFlags(region, num, world);
-		
+
 		setOwnerEditing(region, false);
 
 		HTWorldGuardManager.saveRegions(world);//Saving WG regions
@@ -351,9 +352,9 @@ public class Room {
 		sconfig.set("Sign.reset", value);
 		if(value){
 			Block b = getSign().getBlock();
-			
+
 			if(getRegion().contains(b.getX(), b.getY(), b.getZ())) throw new RoomSignInRoomException();
-			
+
 			for(Room room : hotel.getRooms())
 				if(room.shouldReset() && room.getRegion().contains(b.getX(), b.getY(), b.getZ())) throw new RoomSignInRoomException();
 
@@ -491,7 +492,7 @@ public class Room {
 		Sign s = getSign();
 
 		if(s==null) return;
-		
+
 		s.setLine(0, ChatColor.DARK_BLUE + getHotelNameFromConfig());
 
 		long remainingTime;
@@ -538,7 +539,14 @@ public class Room {
 		}
 	}
 
-	public void addFriend(OfflinePlayer friend) throws UserNonExistentException, NotRentedException, IOException {
+	public boolean isFriend(UUID id){
+		for(String friend : getFriends())
+			if(id.toString().equalsIgnoreCase(friend))
+				return true;
+		return false;
+	}
+
+	public void addFriend(OfflinePlayer friend) throws UserNonExistentException, NotRentedException, IOException, UserAlreadyThereException {
 
 		if(!doesSignFileExist()) throw new FileNotFoundException();
 
@@ -546,9 +554,11 @@ public class Room {
 
 		if(!friend.hasPlayedBefore()) throw new UserNonExistentException();
 
-		//Adding player as region member
+		if(isFriend(friend.getUniqueId())) throw new UserAlreadyThereException();
 
-		HTWorldGuardManager.addMember(friend, getRegion());
+			//Adding player as region member
+
+			HTWorldGuardManager.addMember(friend, getRegion());
 		//Adding player to config under friends list
 		List<String> stringList = getFriends();
 		stringList.add(friend.getUniqueId().toString());
@@ -594,13 +604,13 @@ public class Room {
 		if(!HTWorldGuardManager.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){ Mes.mes(p, "chat.commands.youDoNotOwnThat"); return; }
 		HTWorldGuardManager.addRegion(world, region);
 		HTWorldGuardManager.roomFlags(region, num, world);
-		
+
 		if(HTConfigHandler.getconfigYML().getBoolean("stopOwnersEditingRentedRooms", true)){
 			region.setFlag(DefaultFlag.BLOCK_BREAK, StateFlag.State.DENY);
 			region.setFlag(DefaultFlag.BLOCK_PLACE, StateFlag.State.DENY);
 		}
-			
-			
+
+
 		HTWorldGuardManager.makeRoomAccessible(region);
 		HTWorldGuardManager.saveRegions(p.getWorld());
 		p.sendMessage(Mes.getString("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
@@ -639,7 +649,7 @@ public class Room {
 
 		//If set in config, make room accessible to all players now that it is not rented
 		HTWorldGuardManager.makeRoomAccessible(region);
-		
+
 		setOwnerEditing(region, true);
 
 		Mes.debug(Mes.getStringNoPrefix("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));

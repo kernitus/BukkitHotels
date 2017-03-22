@@ -30,6 +30,7 @@ import kernitus.plugin.Hotels.exceptions.NotRentedException;
 import kernitus.plugin.Hotels.exceptions.NumberTooLargeException;
 import kernitus.plugin.Hotels.exceptions.OutOfRegionException;
 import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
+import kernitus.plugin.Hotels.exceptions.UserAlreadyThereException;
 import kernitus.plugin.Hotels.exceptions.UserNonExistentException;
 import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
 import kernitus.plugin.Hotels.managers.HTSignManager;
@@ -240,6 +241,8 @@ public class HTCmdSurrogate {
 			Mes.mes(player, "chat.commands.friend.noRenter");
 		} catch (IOException e) {
 			Mes.mes(player, "chat.commands.friend.wrongData");
+		} catch (UserAlreadyThereException e) {
+			Mes.mes(player, "chat.commands.friend.alreadyFriend");
 		}
 	}
 	public static void cmdFriendRemove(Player player, String hotelName, String roomNum, String friendName){

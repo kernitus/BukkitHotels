@@ -152,6 +152,7 @@ public class HTCreationMode {
 
 		if(file.exists()){ Mes.mes(p, "chat.commands.creationMode.alreadyIn"); return; }
 		try {
+			file.getParentFile().mkdirs();
 			file.createNewFile();
 		} catch (IOException e){
 			Mes.mes(p, "chat.creationMode.inventory.storeFail");

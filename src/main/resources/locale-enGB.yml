@@ -292,6 +292,7 @@ chat:
       addSuccess: '&aSuccessfully added %friend% to the friend list'
       removeSuccess: '&aSuccessfully removed %friend% from the friend list'
       noFriends: '&2You have not added any friends to the specified room'
+      alreadyFriend: '&4You have already added this friend!'
       
       list:
         heading: '&a==Friend list for room n. %room% of the %hotel% hotel=='

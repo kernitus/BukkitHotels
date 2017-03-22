@@ -74,6 +74,7 @@ public class HTSignManager {
 			receptionFile = HTConfigHandler.getReceptionFile(hotelName, i);
 
 		try {
+			receptionFile.getParentFile().mkdirs();
 			receptionFile.createNewFile();
 		} catch (IOException e1){
 			Mes.mes(p, "chat.sign.place.fileFail");
