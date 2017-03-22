@@ -10,12 +10,12 @@ public class RoomRenumberEvent extends Event implements Cancellable {
 	
 	private Room room;
 	private static final HandlerList handlers = new HandlerList();
-	private int oldNum;
+	private String oldNum;
 	private boolean cancel;
 
-	public RoomRenumberEvent(Room room, int oldNum){
+	public RoomRenumberEvent(Room room, String oldNum2){
 		this.room = room;
-		this.oldNum = oldNum;
+		this.oldNum = oldNum2;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class RoomRenumberEvent extends Event implements Cancellable {
 	public Room getRoom(){
 		return room;
 	}
-	public int getOldNum(){
+	public String getOldNum(){
 		return oldNum;
 	}
 

@@ -116,7 +116,7 @@ public class HTSignManager {
 		if(!Line3.contains(":")){ Mes.mes(p, "chat.sign.place.noSeparator"); e.setLine(0, ChatColor.DARK_RED + "]hotels["); return; }
 
 		String[] Line3parts = Line3.split(":");
-		int roomNum = Integer.parseInt(Line3parts[0]); //Room Number
+		String roomNum = Line3parts[0]; //Room Number
 		String roomnumb = String.valueOf(roomNum);
 		String cost = Line3parts[1]; //Cost
 		if((roomnumb.length() + cost.length() + 9) > 21){ Mes.mes(p, "chat.sign.place.tooLong");			
@@ -208,13 +208,13 @@ public class HTSignManager {
 		if(!hotel.getRegion().contains(x, y, z)){ Mes.mes(p, "chat.sign.use.signOutOfRegion"); return; }
 
 		String[] Line2parts = Line2.split("\\s"); //Splitting Line2 into room num + cost
-		int roomNum = Integer.valueOf(Line2parts[1]); //Room Number
+		String roomNum = Line2parts[1]; //Room Number
 		Room room = new Room(hotel, roomNum);
 
 		if(!room.doesSignFileExist()){ Mes.mes(p, "chat.sign.use.fileNonExistent"); return; }
 
 		if(!hotelName.equalsIgnoreCase(room.getHotelNameFromConfig())){ Mes.mes(p, "chat.sign.use.differentHotelNames"); return; }
-		if(roomNum==room.getRoomNumFromConfig())//If room nums match
+		if(roomNum.equals(room.getRoomNumFromConfig()))//If room nums match
 			rentRoom(p, room); //This will also check if rent should be extended and not new
 		else Mes.mes(p, "chat.sign.use.differentRoomNums");	 	
 	}
@@ -337,14 +337,14 @@ public class HTSignManager {
 			return;
 		}
 
-		Room room = new Room(hotel, roomNum);
+		Room room = new Room(hotel, String.valueOf(roomNum));
 
 		if(!room.exists()) return;
 
 		if(!room.doesSignFileExist()) return;
 
 		if(!room.getHotelNameFromConfig().equalsIgnoreCase(Line1)) return; //If sign and config hotel names match
-		if(room.getRoomNumFromConfig()!=roomNum) return; //If sign and config room nums match
+		if(!room.getRoomNumFromConfig().equals(roomNum)) return; //If sign and config room nums match
 
 		World cWorld = room.getWorldFromConfig();
 		if(cWorld==null || cWorld!=w) return; //If sign and config worlds match

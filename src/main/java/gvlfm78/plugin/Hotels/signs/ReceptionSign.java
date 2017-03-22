@@ -1,6 +1,7 @@
 package kernitus.plugin.Hotels.signs;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -20,14 +21,17 @@ public class ReceptionSign extends AbstractSign {
 
 	private Hotel hotel;
 	private String num;
+	private YamlConfiguration config;
 
 	public ReceptionSign(Hotel hotel, int num){
 		this.hotel = hotel;
 		this.num = String.valueOf(num);
+		config = YamlConfiguration.loadConfiguration(getFile());
 	}
 	public ReceptionSign(Hotel hotel, String num){
 		this.hotel = hotel;
 		this.num = num;
+		config = YamlConfiguration.loadConfiguration(getFile());
 	}
 	public void update(){
 		Sign s = getSign();
@@ -35,10 +39,9 @@ public class ReceptionSign extends AbstractSign {
 		if(s==null) return;
 		
 		s.setLine(0, (ChatColor.GREEN + Mes.getStringNoPrefix("sign.reception")));
-		s.setLine(1, (ChatColor.DARK_BLUE + hotel.getName() + " Hotel"));
+		s.setLine(1, (ChatColor.DARK_BLUE + getHotelName() + " Hotel"));
 		s.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(hotel.getTotalRoomCount()) + ChatColor.BLACK + " " + Mes.getStringNoPrefix("sign.room.total")));
 		s.setLine(3, (ChatColor.GREEN + String.valueOf(hotel.getFreeRoomCount()) + ChatColor.BLACK + " " + Mes.getStringNoPrefix("sign.room.free")));
-
 		s.update();
 	}
 	public Block getBlock(){
@@ -53,7 +56,7 @@ public class ReceptionSign extends AbstractSign {
 		return (mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN)) ? (Sign) b.getState() : null;
 	}
 	public World getWorldFromConfig(){
-		String world = getConfig().getString("location.world"); //Could be name or UUID
+		String world = config.getString("location.world"); //Could be name or UUID
 
 		if(world==null || world.isEmpty()) return null; //String useless, can't proceed
 
@@ -72,12 +75,13 @@ public class ReceptionSign extends AbstractSign {
 		//Failed, return null
 		return null;
 	}
+	public String getHotelName(){
+		return config.getString("hotel");
+	}
 	public Location getLocation(){
 		World world = getWorldFromConfig();
 
 		if(world==null) return null;
-
-		YamlConfiguration config = getConfig();
 
 		int x = config.getInt("location.x");
 		int y = config.getInt("location.y");
@@ -105,5 +109,16 @@ public class ReceptionSign extends AbstractSign {
 					b.setType(Material.AIR);
 			}
 		}
+	}
+	public void saveConfig(){
+		try {
+			config.save(getFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void setHotelNameInConfig(String name){
+		config.set("hotel", name);
+		saveConfig();
 	}
 }

@@ -316,10 +316,10 @@ public class HTWorldGuardManager {
 		ConfigurationSection section = flagsConfig.getConfigurationSection("hotel");
 		setFlags(section, region, hotelName, world);
 	}
-	public static void roomFlags(ProtectedRegion region, int roomNum, World world){
+	public static void roomFlags(ProtectedRegion region, String num, World world){
 		YamlConfiguration flagsConfig = HTConfigHandler.getFlags();
 		ConfigurationSection section = flagsConfig.getConfigurationSection("room");
-		setFlags(section, region, String.valueOf(roomNum), world);
+		setFlags(section, region, String.valueOf(num), world);
 	}
 	public static void makeRoomAccessible(ProtectedRegion region){
 		if(HTConfigHandler.getconfigYML().getBoolean("allowPlayersIntoFreeRooms", true)){

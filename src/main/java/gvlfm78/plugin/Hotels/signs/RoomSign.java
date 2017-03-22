@@ -25,23 +25,14 @@ public class RoomSign extends AbstractSign{
 	public RoomSign(Room room){
 		this.room = room;
 	}
-	public RoomSign(Hotel hotel, int num){
-		room = new Room(hotel, num);
-	}
 	public RoomSign(Hotel hotel, String num){
-		room = new Room(hotel, Integer.parseInt(num));
-	}
-	public RoomSign(World world, String hotelName, int num){
-		room = new Room(world, hotelName, num);
+		room = new Room(hotel, num);
 	}
 	public RoomSign(World world, String hotelName, String num){
 		room = new Room(world, hotelName, num);
 	}
-	public RoomSign(String hotelName, int num){
-		room = new Room(hotelName, num);
-	}
 	public RoomSign(String hotelName, String num){
-		room = new Room(hotelName, Integer.parseInt(num));
+		room = new Room(hotelName, num);
 	}
 	public void update(){
 		Block b = getBlock();

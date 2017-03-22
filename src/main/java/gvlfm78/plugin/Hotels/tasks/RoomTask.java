@@ -71,7 +71,7 @@ public class RoomTask extends BukkitRunnable {
 				continue;
 			}
 			
-			Room room = new Room(world, hotelName, roomNum); //Creating room object with info from file
+			Room room = new Room(world, hotelName, String.valueOf(roomNum)); //Creating room object with info from file
 
 			boolean changed = true;
 			

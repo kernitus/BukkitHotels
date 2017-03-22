@@ -118,7 +118,7 @@ public class Hotel {
 		return false;
 	}
 	public ArrayList<ReceptionSign> getAllReceptionSigns(){
-		ArrayList<String> fileList = HTFileFinder.listFiles("plugins"+File.separator+"Hotels"+File.separator+"Signs"+File.separator+"Reception"+File.separator+name.toLowerCase());
+		ArrayList<String> fileList = HTFileFinder.listFiles(HTConfigHandler.getReceptionSignsFolder(name).toString());
 		ArrayList<ReceptionSign> signs = new ArrayList<ReceptionSign>();
 
 		for(String x : fileList)
@@ -154,7 +154,7 @@ public class Hotel {
 	public int getNextNewRoom(){
 		for(Room room : getRooms()){
 			if(!room.exists())
-				return room.getNum();
+				return Integer.parseInt(room.getNum());
 		}
 		return 0;
 	}
@@ -172,6 +172,14 @@ public class Hotel {
 		if(hre.isCancelled()) throw new EventCancelledException();
 		if(!exists()) throw new HotelNonExistentException();
 
+		//Change hotel name inside reception sign files
+		ArrayList<ReceptionSign> rss = getAllReceptionSigns();
+		for(ReceptionSign rs : rss)
+			rs.setHotelNameInConfig(newName);
+		
+		//Renaming reception signs folder to new name
+		HTConfigHandler.getReceptionSignsFolder(name).renameTo(HTConfigHandler.getReceptionSignsFolder(newName));
+		
 		//Rename rooms
 		ArrayList<Room> rooms = getRooms();
 
@@ -195,13 +203,13 @@ public class Hotel {
 	public void removeAllSigns(){
 		deleteAllReceptionSigns();
 
-		for(Room room : getRooms()){
+		for(Room room : getRooms())
 			room.deleteSignAndFile();
-		}
 	}
 	public void deleteAllReceptionSigns(){
 		for(ReceptionSign rs : getAllReceptionSigns())
-			rs.deleteSignAndConfig();
+			rs.removeSign();
+		HTConfigHandler.getReceptionSignsFolder(name).delete();
 	}
 	public void deleteHotelFile(){
 		getHotelFile().delete();
@@ -222,7 +230,7 @@ public class Hotel {
 			return false;
 		}
 	}
-	public void delete() throws EventCancelledException, HotelNonExistentException{
+	public void delete() throws EventCancelledException, HotelNonExistentException {
 		HotelDeleteEvent hde = new HotelDeleteEvent(this);
 		Bukkit.getPluginManager().callEvent(hde);
 		if(hde.isCancelled()) throw new EventCancelledException();
@@ -245,7 +253,7 @@ public class Hotel {
 	public boolean isOwner(String name){
 		return getOwners().contains(name);
 	}
-	public void create(ProtectedRegion region) throws EventCancelledException, HotelAlreadyPresentException{
+	public void create(ProtectedRegion region) throws EventCancelledException, HotelAlreadyPresentException {
 		HotelCreateEvent hce = new HotelCreateEvent(this, region);
 		Bukkit.getPluginManager().callEvent(hce); //Call HotelCreateEvent
 		if(hce.isCancelled()) throw new EventCancelledException();
@@ -262,6 +270,7 @@ public class Hotel {
 	}
 	public void updateReceptionSigns(){
 		ArrayList<ReceptionSign> rss = getAllReceptionSigns();
+		Mes.debug("Updating reception signs for hotel " + name);
 		for(ReceptionSign rs : rss)
 			rs.update();
 	}

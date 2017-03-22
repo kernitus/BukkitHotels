@@ -61,39 +61,30 @@ import kernitus.plugin.Hotels.trade.TradesHolder;
 public class Room {
 
 	private Hotel hotel;
-	private int num;
+	private String num;
 	public YamlConfiguration sconfig;
 	private World world;
 
-	public Room(Hotel hotel, int num){
+	public Room(Hotel hotel, String num){
 		this.hotel = hotel;
 		this.num = num;
 		this.sconfig = getSignConfig();
 		this.world = hotel.getWorld();
 	}
-	public Room(Hotel hotel, String num){
-		this(hotel, Integer.parseInt(num));
-	}
-	public Room(World world, String hotelName, int num){
+	public Room(World world, String hotelName, String roomNum){
 		this.hotel = new Hotel(world, hotelName);
-		this.num = num;
+		this.num = roomNum;
 		this.sconfig = getSignConfig();
 		this.world = world;
 	}
-	public Room(World world, String hotelName, String num){
-		this(world, hotelName, Integer.parseInt(num));
-	}
-	public Room(String hotelName, int num){
+	public Room(String hotelName, String num){
 		//Use only when world is unknown, due to extra calculations involved to find it
 		hotel = new Hotel(hotelName);
 		this.num = num;
 		sconfig = getSignConfig();
 		world = hotel.getWorld();
 	}
-	public Room(String hotelName, String num){
-		this(hotelName, Integer.parseInt(num));
-	}
-	public Room(String hotelName, int num, CommandSender sender){
+	public Room(String hotelName, String num, CommandSender sender){
 		this.num = num;
 		if(sender instanceof Player){
 			world = ((Player) sender).getWorld();
@@ -105,9 +96,6 @@ public class Room {
 		}
 		sconfig = getSignConfig();
 	}
-	public Room(String hotelName, String num, CommandSender sender){
-		this(hotelName, Integer.parseInt(num), sender);
-	}
 
 	//////////////////////
 	///////Getters////////
@@ -115,7 +103,7 @@ public class Room {
 	public boolean exists(){
 		return world==null ? false : HTWorldGuardManager.hasRegion(world, "hotel-" + hotel.getName() + "-" + num);
 	}
-	public int getNum(){
+	public String getNum(){
 		return num;
 	}
 	public Hotel getHotel(){
@@ -156,8 +144,8 @@ public class Room {
 	public String getHotelNameFromConfig(){
 		return sconfig.getString("Sign.hotel");
 	}
-	public int getRoomNumFromConfig(){
-		return sconfig.getInt("Sign.room");
+	public String getRoomNumFromConfig(){
+		return sconfig.getString("Sign.room");
 	}
 	public Location getSignLocation(){
 		return new Location(getWorldFromConfig(), sconfig.getInt("Sign.location.coords.x"), sconfig.getInt("Sign.location.coords.y"), sconfig.getInt("Sign.location.coords.z"));
@@ -248,7 +236,7 @@ public class Room {
 	private void setHotelNameInConfig(String name){
 		sconfig.set("Sign.hotel", name);
 	}
-	private void setRoomNumInConfig(int num){
+	private void setRoomNumInConfig(String num){
 		sconfig.set("Sign.room", num);
 	}
 	public void setCost(double cost){
@@ -416,7 +404,7 @@ public class Room {
 	}
 
 	public void renumber(int newNum) throws NumberTooLargeException, HotelNonExistentException, RoomNonExistentException, BlockNotSignException, OutOfRegionException, EventCancelledException, FileNotFoundException, IOException {
-		int oldNum = num;
+		String oldNum = num;
 		Hotel hotel = getHotel();
 		String hotelName = hotel.getName();
 
@@ -473,7 +461,7 @@ public class Room {
 		HTWorldGuardManager.renameRegion("Hotel-"+hotelName+"-"+num, "Hotel-"+hotelName+"-"+newNum, world);
 		HTWorldGuardManager.saveRegions(world);
 
-		num = newNum;
+		num = String.valueOf(newNum);
 		sconfig = getSignConfig();
 	}
 
@@ -672,6 +660,8 @@ public class Room {
 		updateSign();
 
 		if(shouldReset()) RoomResetQueue.add(this);
+		
+		hotel.updateReceptionSigns();
 	}
 
 	public void reset() throws IOException, WorldEditException, DataException {
@@ -709,8 +699,8 @@ public class Room {
 		}
 
 		String[] Line2parts = ChatColor.stripColor(sign.getLine(1)).split("\\s");
-		int roomNumfromSign = Integer.valueOf(Line2parts[1].trim()); //Room Number 
-		if(getRoomNumFromConfig()!=roomNumfromSign){ //If roomNum on sign doesn't match that in config
+		String roomNumFromSign = Line2parts[1].trim(); //Room Number
+		if(!getRoomNumFromConfig().equals(roomNumFromSign)){ //If roomNum on sign doesn't match that in config
 			file.delete(); deleteSchematic();
 			Mes.debug(Mes.getStringNoPrefix("sign.delete.roomNum").replaceAll("%filename%", file.getName()));
 			throw new ValuesNotMatchingException();

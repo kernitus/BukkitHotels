@@ -296,7 +296,7 @@ public class HTCmdSurrogate {
 		else s.sendMessage(Mes.getString("chat.commands.hotelNonExistent").replaceAll("(?i)&([a-fk-r0-9])", ""));
 	}
 	public static void renumber(Room room, String newNum, CommandSender sender){
-		int oldNum = room.getNum();
+		String oldNum = room.getNum();
 		Hotel hotel = room.getHotel();
 
 		if(!Mes.hasPerm(sender, "hotels.renumber.admin") && !hotel.isOwner(((Player) sender).getUniqueId())){

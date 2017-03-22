@@ -100,7 +100,7 @@ public class HTCreationMode {
 		catch (EventCancelledException e){}
 	}
 
-	public static void roomSetup(String hotelName, int roomNum, Player p){
+	public static void roomSetup(String hotelName, String roomNum, Player p){
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
 		Hotel hotel = new Hotel(world, hotelName);

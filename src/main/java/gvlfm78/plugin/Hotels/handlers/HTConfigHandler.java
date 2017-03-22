@@ -139,6 +139,9 @@ public class HTConfigHandler {
 	public static File getSchematicFile(Room room){
 		return getFile("Schematics" + File.separator + room.getHotel().getName() + "-" + room.getNum() + ".schematic");
 	}
+	public static File getReceptionSignsFolder(String hotelName){
+		return getFile("Signs" + File.separator + "Reception" + File.separator + hotelName.toLowerCase());
+	}
 	public static YamlConfiguration getConfig(String configName){
 		return getYML(getConfigFile(configName));
 	}

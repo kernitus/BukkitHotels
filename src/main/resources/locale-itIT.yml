@@ -24,8 +24,8 @@ sign:
     total: Stanze Totali
     breakDenied: '&4Non puoi rompere questo cartello dato che la stanza è in affitto'
   reception: Reception
-  vacant: Libero
-  occupied: Occupato
+  vacant: Libera
+  occupied: Occupata
   rentExpiredConsole: 'L''affitto di %player% della stanza %room% dell''hotel %hotel% è scaduto'
   rentExpiredPlayer: '&9Il tuo affitto della stanza %room% dell''hotel %hotel% è scaduto'
   delete:
