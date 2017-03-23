@@ -303,10 +303,10 @@ public class HTCmdSurrogate {
 			Mes.mes(sender, "chat.commands.youDoNotOwnThat"); return; }
 
 		try {
-			room.renumber(newNum);
+			room.renumber(String.valueOf(Integer.parseInt(newNum)));
 			sender.sendMessage(Mes.getString("chat.commands.renumber.success").replaceAll("%oldnum%", String.valueOf(oldNum)).replaceAll("%newnum%", String.valueOf(newNum)).replaceAll("%hotel%", hotel.getName()));
 		} catch (NumberFormatException e) {
-			sender.sendMessage("chat.commands.somethingWentWrong");
+			Mes.mes(sender, "chat.commands.room.roomNumInvalid");
 			e.printStackTrace();
 		} catch (NumberTooLargeException e) {
 			Mes.mes(sender, "chat.commands.renumber.newNumTooBig");

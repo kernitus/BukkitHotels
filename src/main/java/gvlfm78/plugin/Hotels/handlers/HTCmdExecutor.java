@@ -321,8 +321,8 @@ public class HTCmdExecutor implements CommandExecutor {
 				//Hotel exists, therefore proceed
 				if(length>2){
 					try{
-						String roomNum = args[2];
-						HTCreationMode.roomSetup(hotelName, roomNum, p);
+						int roomNum = Integer.parseInt(args[2]);
+						HTCreationMode.roomSetup(hotelName, String.valueOf(roomNum), p);
 					} catch(NumberFormatException e){
 						Mes.mes(p, "chat.commands.room.roomNumInvalid");
 					}
