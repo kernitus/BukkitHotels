@@ -124,7 +124,7 @@ chat:
       rename: '&6/ht rename <vecchioNome> <nuovoNome> - &aRinomina hotel specificato'
       sethome: '&6/ht sethome - &aImposta home di hotel/stanza'
       home: '&6/ht home <nomeHotel> [numStanza] - &aTi teletrasporta ad una home di hotel/stanza'
-      check: '&6/ht check [nomeGiocatore>] - &aLista tutte le stanze affittate da te/giocatore specificato'
+      check: '&6/ht check [nomeGiocatore] - &aLista tutte le stanze affittate da te/giocatore specificato'
       list: '&6/ht list [nomeMondo] - &aLista tutti gli hotel nell''attuale/specificato mondo'
       rlist: '&6/ht rlist <nomeHotel> - &aLista tutte le stanze nell''albergo specificato'
       friend: '&6/ht friend <add/remove> <nomeHotel> <numStanza> <nomeGiocatore> - &aAggiunge/rimuove un giocatore dalla lista di amici che hanno accesso ad una specificata stanza'
@@ -281,6 +281,7 @@ chat:
       invalidPrice: '&4Il prezzo che hai immesso non è valido!'
       success: '&aHai appena venduto l''hotel %hotel% al giocatore %buyer% per $%price%'
       expired: '&4La tua offerta di vendita dell''hotel %hotel% è scaduta'
+      selfSale: '&4Non puoi vendere a te stesso!'
     buyhotel:
       usage: '&4Utilizzo corretto: &6&o/ht buyh <nomeHotel>'
       success: '&aHai appena comprato l''hotel %hotel% da %seller% per $%price%'

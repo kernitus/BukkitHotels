@@ -286,6 +286,7 @@ chat:
       addSuccess: '&aSe ha añadido a %friend% a tu lista de amigos'
       removeSuccess: '&aSe ha quitado a %friend% de tu lista de amigos'
       noFriends: '&2No has añadido a ningún amigo a la habitación especificada'
+      alreadyFriend: '&4Ya has añadido este amigo'
       
       list:
         heading: '&a==Lista de amigos para la habitación n. %room% del hotel %hotel%=='
@@ -317,6 +318,7 @@ chat:
       invalidPrice: '&4El precio introducido no es válido!'
       success: '&aAcabas de vender el hotel %hotel% al jugador %buyer% por %price%$'
       expired: '&4La venta de tu hotel %hotel% ha caducado'
+      selfSale: '&4¡No puedes vender esto a ti mismo!'
     
     buyhotel:
       usage: '&4Uso correcto: &6&o/ht buyh <nombreHotel>'
