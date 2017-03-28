@@ -26,7 +26,9 @@ sign:
     total: 'Pièces total'
     breakDenied: '&4Vous ne pouvez pas rompre ce signe parce que la pièce est louée'
     
-  reception: 'Réception'
+  reception:
+    reception: '&aRéception'
+    hotel: '&1Hôtel %hotel%'
   vacant: 'Inoccupé'
   occupied: 'Occupé'
   rentExpiredConsole: 'Le loyer de %player% de la pièce %room% de l''hôtel %hotel% est épuisé'

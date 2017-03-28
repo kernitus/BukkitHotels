@@ -5,6 +5,7 @@
 # REPORT BUGS HERE: https://github.com/kernitus/BukkitHotels/issues
 
 # Looking for translator for German or any other language
+
 # Available languages: (you can use any of the listed codes, case insensitive)
 # English (U.K.): en, enGB
 # Italian (Italiano): it, itIT
@@ -13,7 +14,7 @@
 # French (Français): fr, frFR
 # Russian (Русский): ru, ruRU
 # Spanish (Español): es, esES
-language: enGB
+language: auto
 
 # Maximum amount of hotels a player can own
 maxHotelsOwned: 3
@@ -75,4 +76,4 @@ debug: false
 
 # This denotes the current config version
 # Changing this will reset the config
-version: 2
+version: 3

@@ -3,6 +3,8 @@
  */
 package kernitus.plugin.Hotels;
 
+import java.util.Locale;
+
 /**
  * @author kernitus
  * Converts between language codes and names
@@ -15,8 +17,7 @@ public enum Language {
 	Traditional_Chinese (new String[] {"zhTW"}),
 	French (new String[] {"frFR", "fr"}),
 	Russian (new String[] {"ruRU", "ru"}),
-	Spanish (new String[] {"esES", "es"}),
-	Custom (new String[] {"custom"});
+	Spanish (new String[] {"esES", "es"});
 
 	private final String[] codes = new String[2];       
 
@@ -38,12 +39,17 @@ public enum Language {
 	}
 
 	public static Language getFromCode(String code){
+		
+		//If "auto" choose language from current system, if language unavailable default to english
+		if(code.equalsIgnoreCase("auto"))
+			code = Locale.getDefault().getLanguage();
+		
 		for(Language lang : values()){
 			for(String currentCode: lang.getCodes()){
 				if(currentCode != null && currentCode.equalsIgnoreCase(code))
 					return lang;
 			}
 		}
-		return Language.Custom;
+		return Language.English;
 	}
 }

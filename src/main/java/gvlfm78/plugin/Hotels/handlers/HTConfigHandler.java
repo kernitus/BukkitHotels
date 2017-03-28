@@ -55,14 +55,14 @@ public class HTConfigHandler {
 		if(loclang!=null && !lang.equals(Language.getFromCode(loclang)))//If languages mismatch
 			backupconfig(getLocaleFile()); //Backup current locale and make new one
 
-		locale = getYML(getLocaleFile());//TODO STUFF
+		locale = getYML(getLocaleFile());
 		loclang = locale.getString("language"); //Get it again in case we backed up the locale
 
 		if(loclang==null)
 			setupLanguage(lang, PLUGIN);
 	}
 	public static String getLanguageCode(){
-		return PLUGIN.getConfig().getString("language", "enGB");
+		return PLUGIN.getConfig().getString("language", "auto");
 	}
 
 	public static Language getLanguage(){
@@ -247,9 +247,7 @@ public class HTConfigHandler {
 	}
 
 	public static void setupLanguage(Language lang, Plugin PLUGIN){
-		if(lang.equals(Language.Custom)) return;
 		String code = lang.getStandardCode();
-		
 		
 		PLUGIN.saveResource("locale-" + code + ".yml", false);
 		File loc = getLocaleFile();

@@ -63,7 +63,7 @@ public class HTSignManager {
 		String free = String.valueOf(hotel.getFreeRoomCount()); //Getting amount of free rooms in hotel
 
 		//Setting all sign lines
-		e.setLine(0, (ChatColor.GREEN + Mes.getStringNoPrefix("sign.reception")));
+		e.setLine(0, (ChatColor.GREEN + Mes.getStringNoPrefix("sign.reception.reception")));
 		e.setLine(1, (ChatColor.DARK_BLUE + hotelName + " Hotel"));
 		e.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(tot) + ChatColor.BLACK + " " + Mes.getStringNoPrefix("sign.room.total")));
 		e.setLine(3, (ChatColor.GREEN + String.valueOf(free) + ChatColor.BLACK + " " + Mes.getStringNoPrefix("sign.room.free")));
@@ -116,12 +116,29 @@ public class HTSignManager {
 		if(!Line3.contains(":")){ Mes.mes(p, "chat.sign.place.noSeparator"); e.setLine(0, ChatColor.DARK_RED + "]hotels["); return; }
 
 		String[] Line3parts = Line3.split(":");
-		String roomNum = Line3parts[0]; //Room Number
-		String roomnumb = String.valueOf(roomNum);
+		String roomNum = Line3parts[0];
+		try{
+		Integer.parseInt(Line3parts[0]); //Room Number
+		}
+		catch(NumberFormatException e1){
+			e.setLine(0, ChatColor.DARK_RED + "]Hotels[");
+			Mes.mes(p, "chat.commands.room.roomNumInvalid");
+			return;
+		}
+		
 		String cost = Line3parts[1]; //Cost
-		if((roomnumb.length() + cost.length() + 9) > 21){ Mes.mes(p, "chat.sign.place.tooLong");			
+		if((roomNum.length() + cost.length() + 9) > 21){ Mes.mes(p, "chat.sign.place.tooLong");			
 		e.setLine(0, ChatColor.DARK_RED + "]Hotels["); return; }
 
+		try{
+			Integer.parseInt(Line3parts[1]); //Cost
+			}
+			catch(NumberFormatException e1){
+				e.setLine(0, ChatColor.DARK_RED + "]Hotels[");
+				Mes.mes(p, "chat.commands.sellhotel.invalidPrice");
+				return;
+			}
+		
 		Room room = new Room(hotel,roomNum);
 
 
@@ -182,7 +199,7 @@ public class HTSignManager {
 		Mes.mes(p, "chat.sign.place.success");
 	}
 	public static boolean isReceptionSign(Sign s){
-		return ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase(Mes.getStringNoPrefix("sign.reception"));
+		return ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase(Mes.getStringNoPrefix("sign.reception.reception"));
 	}
 	public static void useRoomSign(PlayerInteractEvent e){
 		Player p = e.getPlayer();
@@ -322,35 +339,36 @@ public class HTSignManager {
 
 		Hotel hotel = new Hotel(w, Line1);
 		if(!hotel.exists()) return;
-
+		
 		//Room sign has been broken?
 		if(!hotel.getRegion().contains(b.getX(), b.getY(), b.getZ())) return;
 		String Line2 = ChatColor.stripColor(s.getLine(1));
 		String[] Line2split = Line2.split(" ");
 		
-		int roomNum;
+		String roomNum = Line2split[1];
 		
 		try{
-		roomNum = Integer.parseInt(Line2split[1]);
+		Integer.parseInt(Line2split[1]);
 		}
 		catch(Exception e1){
 			return;
 		}
-
+		
 		Room room = new Room(hotel, String.valueOf(roomNum));
 
 		if(!room.exists()) return;
 
 		if(!room.doesSignFileExist()) return;
-
+		
 		if(!room.getHotelNameFromConfig().equalsIgnoreCase(Line1)) return; //If sign and config hotel names match
-		if(!room.getRoomNumFromConfig().equals(roomNum)) return; //If sign and config room nums match
-
+		
+		if(!room.getRoomNumFromConfig().equalsIgnoreCase(roomNum)) return; //If sign and config room nums match
+		
 		World cWorld = room.getWorldFromConfig();
 		if(cWorld==null || cWorld!=w) return; //If sign and config worlds match
-
+		
 		if(!room.getSignLocation().equals(b.getLocation())) return; //If sign and config location match
-
+		
 		if(room.isFree() || Mes.hasPerm(p, "hotels.delete.rooms.admin")){
 			room.deleteSignFile();
 			room.deleteSchematic();

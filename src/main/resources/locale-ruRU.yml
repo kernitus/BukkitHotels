@@ -22,7 +22,9 @@ sign:
     free: Свободных номер
     total: Количество номеров
     breakDenied: '&4Вы не можете сломать знак в этой комнате так как она уже арендована!'
-  reception: Приемная
+  reception:
+    reception: '&aПриемная'
+    hotel: '&1Отеля %hotel%'
   vacant: вакантный
   occupied: занятый
   rentExpiredConsole: 'аренда %player% комнаты %room% в %hotel% отеле  истекла'
@@ -260,6 +262,7 @@ chat:
       addSuccess: '&aУспешно добавлен %friend% в список друзей'
       removeSuccess: '&aУспешно удалили %friend% с списока друзей'
       noFriends: '&2Вы еще не добавил друзей в указанную комнату'
+      alreadyFriend: '&4Вы уже добавили этого друга'
       list:
         heading: '&a==Список друзей для комнаты %room% в %hotel% отеле=='
         footer: '&c==Конец списка друзей=='

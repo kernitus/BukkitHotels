@@ -26,7 +26,9 @@ sign:
     total: Habitaciones totales
     breakDenied: '&4No puedes romper el cartel de esta habitación ya que ha sido alquilada!'
 
-  reception: Recepción
+  reception:
+    reception: '&aRecepción'
+    hotel: '&1Hotel %hotel%'
   vacant: Vacante
   occupied: Ocupada
   rentExpiredConsole: 'El alquiler de la habitación %room% del hotel %hotel% ha caducado para %player%'

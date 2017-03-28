@@ -23,7 +23,9 @@ sign:
     free: 空閑的房間
     total: 房間數總計
     breakDenied: '&4這個房間已被租用, 你不能破壞它的房間牌子!'
-  reception: 前臺
+  reception:
+    reception: '&a前臺'
+    hotel: '&1%hotel% Hotel'
   vacant: 空閑中
   occupied: 已被租用
   rentExpiredConsole: '%player%在 %hotel% 旅館租住的 %room% 已經過期'

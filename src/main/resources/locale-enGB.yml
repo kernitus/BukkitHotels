@@ -25,7 +25,9 @@ sign:
     total: Total Rooms
     breakDenied: '&4You cannot break this room sign as the room has been rented!'
     
-  reception: Reception
+  reception:
+    reception: '&aReception'
+    hotel: '&1%hotel% Hotel'
   vacant: Vacant
   occupied: Occupied
   rentExpiredConsole: '%player%''s rent of room %room% of the %hotel% hotel has expired'
