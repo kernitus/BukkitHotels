@@ -25,7 +25,7 @@ sign:
     breakDenied: '&4這個房間已被租用, 你不能破壞它的房間牌子!'
   reception:
     reception: '&a前臺'
-    hotel: '&1%hotel% Hotel'
+    hotel: '&1%hotel% 旅館'
   vacant: 空閑中
   occupied: 已被租用
   rentExpiredConsole: '%player%在 %hotel% 旅館租住的 %room% 已經過期'
@@ -262,6 +262,7 @@ chat:
       addSuccess: '&a成功將 %friend% 添加至好友列表'
       removeSuccess: '&a成功將 %friend% 移出好友列表'
       noFriends: '&2妳沒有在指定房間添加任何好友'
+      alreadyFriend: '&4妳已經將他添加為好友了!'
       list:
         heading: '&a==.  %hotel%旅館%room% 房間的好友列表=='
         footer: '&c==好友列表末端=='
