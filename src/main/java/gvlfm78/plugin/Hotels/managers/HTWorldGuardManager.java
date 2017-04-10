@@ -59,7 +59,7 @@ public class HTWorldGuardManager {
 		owners.addPlayer(p.getUniqueId());
 		r.setOwners(owners);
 	}
-	
+
 	public static void addOwners(DefaultDomain dd, ProtectedRegion r){
 		DefaultDomain owners = r.getOwners();
 		owners.addAll(dd);
@@ -83,12 +83,12 @@ public class HTWorldGuardManager {
 	}
 	public static void setMember(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain members = new DefaultDomain();
-			members.addPlayer(p.getUniqueId());
+		members.addPlayer(p.getUniqueId());
 		r.setMembers(members);
 	}
 	public static void setOwner(OfflinePlayer p, ProtectedRegion r){
 		DefaultDomain owners = new DefaultDomain();
-			owners.addPlayer(p.getUniqueId());
+		owners.addPlayer(p.getUniqueId());
 		r.setOwners(owners);
 	}
 	public static void setMembers(ArrayList<UUID> uuids, ProtectedRegion r){
@@ -239,13 +239,14 @@ public class HTWorldGuardManager {
 					if(isHotel) message = Mes.getStringNoPrefix("message.hotel.enter").replaceAll("%hotel%", name);
 					else message = Mes.getStringNoPrefix("message.room.enter").replaceAll("%room%", name);
 					flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), message);
-				}
-				break;
+				} break;
 			case "FAREWELL":
-				String message;
-				if(isHotel)	message = Mes.getStringNoPrefix("message.hotel.exit").replaceAll("%hotel%", name);
-				else message = Mes.getStringNoPrefix("message.room.exit").replaceAll("%room%", name);
-				flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), message); break;
+				if(Boolean.valueOf(keyValue)){
+					String message;
+					if(isHotel)	message = Mes.getStringNoPrefix("message.hotel.exit").replaceAll("%hotel%", name);
+					else message = Mes.getStringNoPrefix("message.room.exit").replaceAll("%room%", name);
+					flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), message);
+				} break;
 				//String
 			case "DENY-MESSAGE": case "ENTRY-DENY-MESSAGE": case "EXIT-DENY-MESSAGE": case "TIME-LOCK":
 				flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), keyValue); break;
