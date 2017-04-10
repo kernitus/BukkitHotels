@@ -17,7 +17,8 @@ public enum Language {
 	Traditional_Chinese (new String[] {"zhTW"}),
 	French (new String[] {"frFR", "fr"}),
 	Russian (new String[] {"ruRU", "ru"}),
-	Spanish (new String[] {"esES", "es"});
+	Spanish (new String[] {"esES", "es"}),
+	German (new String[] {"deDE", "de"});
 
 	private final String[] codes = new String[2];       
 
