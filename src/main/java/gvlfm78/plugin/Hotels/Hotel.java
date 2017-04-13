@@ -40,7 +40,7 @@ public class Hotel {
 
 	public Hotel(World world, String name){
 		this.world = world;
-		this.name = name.toLowerCase();
+		this.name = name;
 		hconfig = getHotelConfig();
 	}
 	public Hotel(String name){
