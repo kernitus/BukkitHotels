@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -26,8 +27,8 @@ import kernitus.plugin.Hotels.exceptions.HotelAlreadyPresentException;
 import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
 import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import kernitus.plugin.Hotels.managers.HTFileFinder;
-import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
+import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.signs.ReceptionSign;
 import kernitus.plugin.Hotels.trade.HotelBuyer;
 import kernitus.plugin.Hotels.trade.TradesHolder;
@@ -40,12 +41,12 @@ public class Hotel {
 
 	public Hotel(World world, String name){
 		this.world = world;
-		this.name = name;
+		this.name = ChatColor.stripColor(name);
 		hconfig = getHotelConfig();
 	}
 	public Hotel(String name){
 		//Use only when world is unknown, due to extra calculations involved to find it
-		this.name = name;
+		this.name = ChatColor.stripColor(name);
 		for(Hotel hotel : HotelsAPI.getAllHotels()){
 			if(hotel.getName().equalsIgnoreCase(name))
 				world = hotel.getWorld();
@@ -67,7 +68,7 @@ public class Hotel {
 	////////Getters////////
 	///////////////////////
 	public boolean exists(){
-		return (world == null || name == null) ? false : HTWorldGuardManager.hasRegion(world, "hotel-"+name);
+		return (world == null || name == null) ? false : HTWorldGuardManager.hasRegion(world, "hotel-" + name);
 	}
 	public World getWorld(){
 		return world;
@@ -82,8 +83,8 @@ public class Hotel {
 		ArrayList<Room> rooms = new ArrayList<Room>();
 		for(ProtectedRegion r : HTWorldGuardManager.getRegions(world)){
 			String id = r.getId();
-			if(id.matches("hotel-"+name+"-\\d+")){
-				String num = id.replaceFirst("hotel-"+name+"-", "");
+			if(id.matches("hotel-"+name.toLowerCase()+"-\\d+")){
+				String num = id.replaceFirst("hotel-"+name.toLowerCase()+"-", "");
 				Room room = new Room(this, num);
 				rooms.add(room);
 			}
@@ -118,9 +119,8 @@ public class Hotel {
 		return false;
 	}
 	public ArrayList<ReceptionSign> getAllReceptionSigns(){
-		ArrayList<String> fileList = HTFileFinder.listFiles(HTConfigHandler.getReceptionSignsFolder(name).toString());
+		ArrayList<String> fileList = HTFileFinder.listFiles(HTConfigHandler.getReceptionSignsFolder(name).getAbsolutePath());
 		ArrayList<ReceptionSign> signs = new ArrayList<ReceptionSign>();
-
 		for(String x : fileList)
 			signs.add(new ReceptionSign(this, x.replace(".yml", "")));
 		return signs;
@@ -186,7 +186,7 @@ public class Hotel {
 		for(Room room : rooms){
 			room.renameRoom(newName);
 			File hotelsFile = getHotelFile();
-			File newHotelsfile = HTConfigHandler.getHotelFile(newName.toLowerCase()+".yml");
+			File newHotelsfile = HTConfigHandler.getHotelFile(newName);
 			hotelsFile.renameTo(newHotelsfile);
 		}
 		HTWorldGuardManager.renameRegion("hotel-" + name, "hotel-" + newName, world);
@@ -207,8 +207,9 @@ public class Hotel {
 			room.deleteSignAndFile();
 	}
 	public void deleteAllReceptionSigns(){
+		Mes.debug("Deleting all reception signs...");
 		for(ReceptionSign rs : getAllReceptionSigns())
-			rs.removeSign();
+			rs.deleteSignAndConfig();
 		HTConfigHandler.getReceptionSignsFolder(name).delete();
 	}
 	public void deleteHotelFile(){

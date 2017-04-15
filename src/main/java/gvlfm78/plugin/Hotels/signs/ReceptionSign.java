@@ -37,7 +37,7 @@ public class ReceptionSign extends AbstractSign {
 		Sign s = getSign();
 
 		if(s==null) return;
-		
+
 		s.setLine(0, (Mes.getStringNoPrefix("sign.reception.reception")));
 		s.setLine(1, (Mes.getStringNoPrefix("sign.reception.hotel").replaceAll("%hotel%", getHotelName())));
 		s.setLine(2, (ChatColor.DARK_BLUE + String.valueOf(hotel.getTotalRoomCount()) + ChatColor.BLACK + " " + Mes.getStringNoPrefix("sign.room.total")));
@@ -100,13 +100,13 @@ public class ReceptionSign extends AbstractSign {
 	}
 	public void removeSign(){
 		Sign s = getSign();
+		if(s==null) return;
 		Block b = s.getBlock();
 
 		if(s!=null){
 			String Line1 = ChatColor.stripColor(s.getLine(0));
-			if(Line1.matches("Reception") || Line1.matches(Mes.getStringNoPrefix("Sign.reception"))){
-				if(hotel.getRegion().contains(b.getX(), b.getY(), b.getZ()))
-					b.setType(Material.AIR);
+			if(Line1.matches("Reception") || ChatColor.stripColor(Line1).matches(ChatColor.stripColor(Mes.getStringNoPrefix("Sign.reception")))){
+				b.setType(Material.AIR);
 			}
 		}
 	}

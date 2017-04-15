@@ -115,29 +115,29 @@ public class HTConfigHandler {
 		return getFile("flags.yml");
 	}
 	public static File getSignFile(String hotelName, String roomNum){
-		return getFile("Signs" + File.separator + hotelName + "-" + roomNum + ".yml");
+		return getFile("Signs" + File.separator + hotelName.toLowerCase() + "-" + roomNum + ".yml");
 	}
 
 	public static File getSignFile(String hotelName, int roomNum){
-		return getSignFile(hotelName, String.valueOf(roomNum));
+		return getSignFile(hotelName.toLowerCase(), String.valueOf(roomNum));
 	}
 	public static File getReceptionFile(String hotelName, int receptionNum){
-		return getReceptionFile(hotelName, String.valueOf(receptionNum));
+		return getReceptionFile(hotelName.toLowerCase(), String.valueOf(receptionNum));
 	}
 	public static File getReceptionFile(String hotelName, String receptionNum){
 		return getFile("Signs" + File.separator + "Reception" + File.separator + hotelName.toLowerCase() + File.separator + receptionNum + ".yml");
 	}
 	public static File getHotelFile(String hotelName){
-		return getFile("Hotels" + File.separator + hotelName + ".yml");
+		return getFile("Hotels" + File.separator + hotelName.toLowerCase() + ".yml");
 	}
 	public static File getInventoryFile(UUID uuid){
 		return getFile("Inventories" + File.separator + uuid + ".yml");
 	}
 	public static File getSchematicFile(String hotelName, String roomNum){
-		return getFile("Schematics" + File.separator + hotelName + "-" + roomNum + ".schematic");
+		return getFile("Schematics" + File.separator + hotelName.toLowerCase() + "-" + roomNum + ".schematic");
 	}
 	public static File getSchematicFile(Room room){
-		return getFile("Schematics" + File.separator + room.getHotel().getName() + "-" + room.getNum() + ".schematic");
+		return getFile("Schematics" + File.separator + room.getHotel().getName().toLowerCase() + "-" + room.getNum() + ".schematic");
 	}
 	public static File getReceptionSignsFolder(String hotelName){
 		return getFile("Signs" + File.separator + "Reception" + File.separator + hotelName.toLowerCase());

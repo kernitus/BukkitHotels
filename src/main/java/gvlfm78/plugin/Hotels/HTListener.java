@@ -73,7 +73,7 @@ public class HTListener implements Listener {
 		Block b = e.getBlock();
 		Material mat = b.getType();
 		if(mat.equals(Material.SIGN_POST) || mat.equals(Material.WALL_SIGN))
-			HTSignManager.breakRoomSign(e);
+			HTSignManager.breakSign(e);
 	}
 
 	@EventHandler

@@ -448,11 +448,11 @@ public class Room {
 		sconfig.set("Sign.region", "hotel-"+hotel+"-"+newNum);
 		saveSignConfig();
 
-		File newFile = HTConfigHandler.getFile("Signs"+File.separator+hotelName+"-"+newNum+".yml");
+		File newFile = HTConfigHandler.getFile("Signs" + File.separator + hotelName.toLowerCase() + "-" + newNum + ".yml");
 		getSignFile().renameTo(newFile);
 
 		//Renaming region and changing number in greet/farewell messages
-		ProtectedRegion oldRegion = HTWorldGuardManager.getRegion(world, "hotel-"+hotel.getName()+"-"+num);
+		ProtectedRegion oldRegion = HTWorldGuardManager.getRegion(world, "hotel-" + hotel.getName() + "-" + num);
 
 		if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
 			oldRegion.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.getStringNoPrefix("message.room.enter").replaceAll("%room%", String.valueOf(newNum))));

@@ -39,6 +39,7 @@ import kernitus.plugin.Hotels.exceptions.RoomSignInRoomException;
 import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import kernitus.plugin.Hotels.handlers.HTMessageQueue;
 import kernitus.plugin.Hotels.handlers.MessageType;
+import kernitus.plugin.Hotels.signs.ReceptionSign;
 
 public class HTSignManager {
 
@@ -118,27 +119,27 @@ public class HTSignManager {
 		String[] Line3parts = Line3.split(":");
 		String roomNum = Line3parts[0];
 		try{
-		Integer.parseInt(Line3parts[0]); //Room Number
+			Integer.parseInt(Line3parts[0]); //Room Number
 		}
 		catch(NumberFormatException e1){
 			e.setLine(0, ChatColor.DARK_RED + "]Hotels[");
 			Mes.mes(p, "chat.commands.room.roomNumInvalid");
 			return;
 		}
-		
+
 		String cost = Line3parts[1]; //Cost
 		if((roomNum.length() + cost.length() + 9) > 21){ Mes.mes(p, "chat.sign.place.tooLong");			
 		e.setLine(0, ChatColor.DARK_RED + "]Hotels["); return; }
 
 		try{
 			Integer.parseInt(Line3parts[1]); //Cost
-			}
-			catch(NumberFormatException e1){
-				e.setLine(0, ChatColor.DARK_RED + "]Hotels[");
-				Mes.mes(p, "chat.commands.sellhotel.invalidPrice");
-				return;
-			}
-		
+		}
+		catch(NumberFormatException e1){
+			e.setLine(0, ChatColor.DARK_RED + "]Hotels[");
+			Mes.mes(p, "chat.commands.sellhotel.invalidPrice");
+			return;
+		}
+
 		Room room = new Room(hotel,roomNum);
 
 
@@ -152,11 +153,11 @@ public class HTSignManager {
 		if(!hotel.getRegion().contains(x, y, z)){ Mes.mes(p, "chat.sign.place.outOfRegion"); e.setLine(0, ChatColor.DARK_RED + "]hotels["); return; }
 
 		if(!room.exists()){ Mes.mes(p, "chat.sign.place.noRegion"); return; }
-		
+
 		//Checking sign is not inside any resettable room
 		for(Room tempRoom : hotel.getRooms())
 			if(tempRoom.shouldReset() && tempRoom.getRegion().contains(x, y, z)) throw new RoomSignInRoomException();
-		
+
 		//Successful Sign
 
 		String immutedTime = Line4.trim(); //Time
@@ -199,7 +200,7 @@ public class HTSignManager {
 		Mes.mes(p, "chat.sign.place.success");
 	}
 	public static boolean isReceptionSign(Sign s){
-		return ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase(Mes.getStringNoPrefix("sign.reception.reception"));
+		return ChatColor.stripColor(s.getLine(0)).equalsIgnoreCase(ChatColor.stripColor(Mes.getStringNoPrefix("sign.reception.reception")));
 	}
 	public static void useRoomSign(PlayerInteractEvent e){
 		Player p = e.getPlayer();
@@ -211,16 +212,16 @@ public class HTSignManager {
 		String hotelName = (ChatColor.stripColor(Line1)); //Hotel name
 
 		Hotel hotel = new Hotel(world, hotelName);
-		
+
 		//If Hotel exists
 		if(!hotel.exists()) return;
-		
+
 		Block block = e.getClickedBlock();
-		
+
 		int x = block.getX();
 		int y = block.getY();
 		int z = block.getZ();
-		
+
 		//If sign is within region
 		if(!hotel.getRegion().contains(x, y, z)){ Mes.mes(p, "chat.sign.use.signOutOfRegion"); return; }
 
@@ -330,6 +331,19 @@ public class HTSignManager {
 			Mes.debug("Payed owner");
 		}
 	}
+	public static void breakSign(BlockBreakEvent e){
+		Block b = e.getBlock();
+		Sign s = (Sign) b.getState();
+		if(isReceptionSign(s)){
+			String hotelName = s.getLine(1).split(" ")[0];
+			Hotel hotel = new Hotel(b.getWorld(), hotelName);
+
+			for(ReceptionSign rs : hotel.getAllReceptionSigns())
+				if(rs.getLocation().equals(b.getLocation()))
+					rs.deleteSignAndConfig();
+		}
+	}
+
 	public static void breakRoomSign(BlockBreakEvent e){
 		Block b = e.getBlock();
 		Sign s = (Sign) b.getState();
@@ -339,36 +353,36 @@ public class HTSignManager {
 
 		Hotel hotel = new Hotel(w, Line1);
 		if(!hotel.exists()) return;
-		
+
 		//Room sign has been broken?
 		if(!hotel.getRegion().contains(b.getX(), b.getY(), b.getZ())) return;
 		String Line2 = ChatColor.stripColor(s.getLine(1));
 		String[] Line2split = Line2.split(" ");
-		
+
 		String roomNum = Line2split[1];
-		
+
 		try{
-		Integer.parseInt(Line2split[1]);
+			Integer.parseInt(Line2split[1]);
 		}
 		catch(Exception e1){
 			return;
 		}
-		
+
 		Room room = new Room(hotel, String.valueOf(roomNum));
 
 		if(!room.exists()) return;
 
 		if(!room.doesSignFileExist()) return;
-		
+
 		if(!room.getHotelNameFromConfig().equalsIgnoreCase(Line1)) return; //If sign and config hotel names match
-		
+
 		if(!room.getRoomNumFromConfig().equalsIgnoreCase(roomNum)) return; //If sign and config room nums match
-		
+
 		World cWorld = room.getWorldFromConfig();
 		if(cWorld==null || cWorld!=w) return; //If sign and config worlds match
-		
+
 		if(!room.getSignLocation().equals(b.getLocation())) return; //If sign and config location match
-		
+
 		if(room.isFree() || Mes.hasPerm(p, "hotels.delete.rooms.admin")){
 			room.deleteSignFile();
 			room.deleteSchematic();
