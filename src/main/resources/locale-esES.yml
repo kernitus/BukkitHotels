@@ -1,6 +1,6 @@
 # Hotels plugin by kernitus
 # Traducción de theismarius
-# https://poeditor.com/join/project/JZCEZoYecm to help with translations
+# https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 message: 
  hotel: 
   exit: "&aVuelve pronto al hotel %hotel%"

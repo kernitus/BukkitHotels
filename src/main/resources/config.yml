@@ -14,7 +14,7 @@
 # French (Français): fr, frFR
 # Russian (Русский): ru, ruRU
 # Spanish (Español): es, esES
-# German (Deutsche): de, deDE
+# German (Deutsch): de, deDE
 language: auto
 
 # Maximum amount of hotels a player can own
@@ -69,7 +69,8 @@ defaultReset: false
 
 # If Hotels should check for updates
 # This doesn't download the update, it just tells you it's available
-checkForUpdates: true
+# Modes: auto, bukkit, spigot, off
+updates: auto
 
 # Enable this option for troubleshooting purposes only.
 # This will make debug messages appear
@@ -77,4 +78,4 @@ debug: false
 
 # This denotes the current config version
 # Changing this will reset the config
-version: 4
+version: 5

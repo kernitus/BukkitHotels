@@ -1,6 +1,6 @@
 # Hotels plugin by kernitus
 # 汉化 By NOBUTS
-# https://poeditor.com/join/project/JZCEZoYecm to help with translations
+# https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 message: 
  hotel: 
   exit: "&a离开了 %hotel% 旅馆"

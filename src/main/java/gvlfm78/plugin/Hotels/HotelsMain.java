@@ -14,8 +14,8 @@ import kernitus.plugin.Hotels.handlers.HTCmdExecutor;
 import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.tasks.RoomTask;
-import kernitus.plugin.Hotels.updateChecker.HTUpdateChecker;
-import kernitus.plugin.Hotels.updateChecker.HTUpdateListener;
+import kernitus.plugin.Hotels.updates.HTUpdateChecker;
+import kernitus.plugin.Hotels.updates.HTUpdateListener;
 import net.milkbowl.vault.economy.Economy;
 
 public class HotelsMain extends JavaPlugin{
@@ -167,7 +167,7 @@ public class HotelsMain extends JavaPlugin{
 		});
 
 		//Checking for updates
-		if(getConfig().getBoolean("checkForUpdates", true)){
+		if(getConfig().getBoolean("updates", true)){
 			getServer().getPluginManager().registerEvents((new HTUpdateListener(this, this.getFile())), this);
 
 			final HotelsMain plugin = this;

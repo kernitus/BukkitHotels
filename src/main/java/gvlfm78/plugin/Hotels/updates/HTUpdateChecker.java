@@ -1,4 +1,4 @@
-package kernitus.plugin.Hotels.updateChecker;
+package kernitus.plugin.Hotels.updates;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -27,7 +27,15 @@ public class HTUpdateChecker {
 
 	private String[] getUpdateMessages(){
 		String[] updateMessages = new String[2];
-		if(Bukkit.getVersion().toLowerCase().contains("spigot")){
+		
+		boolean useSpigot = false;
+		String updates = plugin.getConfig().getString("updates");
+		if(updates.equalsIgnoreCase("spigot")
+				|| (!updates.equalsIgnoreCase("bukkit") && Bukkit.getVersion().toLowerCase().contains("spigot")
+						)) useSpigot = true;
+		
+		if(useSpigot){
+			Mes.debug("Using Spigot update checker");
 			//Get messages from Spigot update checker
 			if(SUC.getResult().name().equalsIgnoreCase("UPDATE_AVAILABLE")){
 				//An update is available
@@ -36,6 +44,7 @@ public class HTUpdateChecker {
 			}
 		}
 		else{//Get messages from bukkit update checker
+			Mes.debug("Using Bukkit update checker");
 			Updater updater = new Updater(plugin, 70177, pluginFile, Updater.UpdateType.NO_DOWNLOAD, false);
 			if(updater.getResult().equals(UpdateResult.UPDATE_AVAILABLE)){
 				//Updater knows local and remote versions are different, but not if it's an update
@@ -51,14 +60,14 @@ public class HTUpdateChecker {
 
 	public void sendUpdateMessages(Player p){//Sends messages to a player
 		for(String message : getUpdateMessages()){
-			if(message!=null&&!message.isEmpty())//If there was no update/check is disabled message will be null
+			if(message != null && !message.isEmpty())//If there was no update/check is disabled message will be null
 				p.sendMessage(message);
 		}
 	}
 	public void sendUpdateMessages(Logger l){//Sends messages to console
 		for(String message : getUpdateMessages()){
 			message = ChatColor.stripColor(message);
-			if(message!=null&&!message.isEmpty())//If there was no update/check is disabled message will be null
+			if(message != null && !message.isEmpty())//If there was no update/check is disabled message will be null
 				l.info(message);
 		}
 	}

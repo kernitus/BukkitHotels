@@ -112,12 +112,14 @@ public class HTListener implements Listener {
 			Mes.mes(p, "chat.creationMode.deniedAction");
 		}
 	}
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void avoidChestInteraction(InventoryClickEvent e){
 		Player p = (Player) e.getWhoClicked();
-		if(!Mes.hasPerm(p, "hotels.createmode.admin")) return;
+		if(Mes.hasPerm(p, "hotels.createmode.admin")) return;
 		if(HTCreationMode.isInCreationMode(p.getUniqueId())){
 			e.setCancelled(true);
+			p.updateInventory();
 			Mes.mes(p, "chat.creationMode.deniedAction");
 		}
 	}

@@ -1,5 +1,5 @@
 # Hotels plugin by kernitus
-# https://poeditor.com/join/project/JZCEZoYecm to help with translations
+# https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 message: 
  hotel: 
   exit: "&aCome back soon to the %hotel% hotel"

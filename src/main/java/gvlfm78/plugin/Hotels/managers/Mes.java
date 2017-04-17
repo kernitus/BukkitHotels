@@ -37,12 +37,12 @@ public class Mes {
 		return sender instanceof Player ? hasPerm( ( (Player) sender), perm) : true;
 	}
 	public static boolean hasPerm(Player player, String perm){
-		return player.hasPermission("hotels.*") || player.hasPermission(perm) || player.hasPermission(perm+".user") || player.hasPermission(perm+".admin");
+		return player.hasPermission("hotels.*") || player.hasPermission(perm) || player.hasPermission(perm + ".user") || player.hasPermission(perm + ".admin");
 	}
 	public static String flagValue(String path){
 		String mes = HTConfigHandler.getFlags().getString(path);
 		if(mes==null)
-			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED +" is null!";
+			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
 		return mes;
 	}
 	public static void debug(String mes){
