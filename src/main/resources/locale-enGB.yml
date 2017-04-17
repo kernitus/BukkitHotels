@@ -1,357 +1,312 @@
 # Hotels plugin by kernitus
+# https://poeditor.com/join/project/JZCEZoYecm to help with translations
+message: 
+ hotel: 
+  exit: "&aCome back soon to the %hotel% hotel"
+  enter: "&bWelcome to the %hotel% hotel"
+ room: 
+  exit: "&aCome back soon to Room %room%"
+  enter: "&bWelcome to room %room%"
+main: 
+ noConnection: "Could not connect to update site!"
+ enable: 
+  success: "%pluginname% v%version% has been enabled correctly"
+ updateAvailable: "Hotels v%version% is available for download!"
+ disable: 
+  success: "%pluginname% v%version% has been disabled"
+ updateAvailableLink: "To download it, go to %link%"
 language: enGB
-main:
-  enable:
-    success: '%pluginname% v%version% has been enabled correctly'
-  disable:
-    success: '%pluginname% v%version% has been disabled'
-  updateAvailable: Hotels v%version% is available for download!
-  updateAvailableLink: To download it, go to %link%
-  noConnection: Could not connect to update site!
-  
-message:
-  hotel:
-    enter: '&bWelcome to the %hotel% hotel'
-    exit: '&aCome back soon to the %hotel% hotel'
-  room:
-    enter: '&bWelcome to room %room%'
-    exit: '&aCome back soon to Room %room%'
-    
-sign:
-  permanent: Permanent
-  room:
-    name: '&2Room'
-    free: Free Rooms
-    total: Total Rooms
-    breakDenied: '&4You cannot break this room sign as the room has been rented!'
-    
-  reception:
-    reception: '&aReception'
-    hotel: '&1%hotel% Hotel'
-  vacant: Vacant
-  occupied: Occupied
-  rentExpiredConsole: '%player%''s rent of room %room% of the %hotel% hotel has expired'
-  rentExpiredPlayer: '&9Your rent of room %room% of the %hotel% hotel has expired'
-  
-  delete:
-    reception: Reception file %filename% did not match in-game characteristics and has been deleted
-    roomNum: Sign file %filename% did not match in-game roomNum and has been deleted
-    hotelName: Sign file %filename% did not match in-game hotelName and has been deleted
-    location: Sign file %filename% did not match in-game location and has been deleted
-    roomNonExistent: 'Sign file %filename% was deleted as the room doesn''t exist'
-    
-    
-chat:
-  prefix: '&9[Hotels]&r'
-  noPermission: '&4You do not have permission!'
-  moneyEarned: '&aYou have earned $%revenue% from the rent of room %room% in your hotel %hotel%'
-  moneyEarnedExtend: '&aYou have earned $%revenue% from the extension of the rent of room %room% in your hotel %hotel%'
-  
-  sign:
-    place:
-      fileFail: '&4Could not save sign file'
-      outOfRegion: '&4Sign is not within hotel region!'
-      inRoomRegion: '&4Sign can''t be inside room region!'
-      noHotel: '&4Hotel does not exist'
-      emptySign: '&4Empty sign'
-      success: '&2Hotel sign has been successfully created!'
-      noRegion: '&4The specified hotel or room does not exist!'
-      alreadyExists: '&4Sign for this hotel room already exists!'
-      tooLong: '&4The room number or the price is too big!'
-      noSeparator: '&4Line 3 must contain the separator &3:'
-      
-    use:
-      success: '&aYou have rented room %room% of the %hotel% hotel for $%price%'
-      notEnoughMoney: '&4You do not have enough money! You need another %missingmoney%'
-      noAccount: '&4You do not have an economy account!'
-      taken: '&4This room has already been rented'
-      nonExistentRoom: '&4This room does not exist!'
-      differentRoomNums: '&4Room numbers don''t match!'
-      differentHotelNames: '&4Hotel names don''t match!'
-      fileNonExistent: '&4Sign file does not exist!'
-      signOutOfRegion: '&4Sign is not inside specified hotel region'
-      maxEntendReached: '&4You have reached the limit of rent extention of %max% times!'
-      maxRoomsReached: '&4You have reached the limit of %max% rooms you can own'
-      extensionSuccess: '&aRent has been extended %tot% times. You can extend it another %left% times.'
-      extensionSuccessNoMore: '&aRent has been extended %tot% times. You can''t extend it any more.'
-      overRoomsPerHotelLimit: '&4You have reached the limit of %limit% rooms you can rent in this hotel'
-  
-  creationMode:
-    hotelCreationFailed: '&4Could not create hotel, hotel already exists'
-    hotelCreationSuccessful: '&2You have successfully created the %hotel% hotel'
-    noSelection: '&4Please select an area using the WE wand'
-    selectionInvalid: '&4Invalid selection. Please select the area again'
-    invalidChar: '&4Name must not contain the character &6&l-'
-    deniedAction: '&4You can''t do this while in creation mode!'
-    
-    rooms:
-      alreadyExists: '&4This room already exists!'
-      notInHotel: '&4The room is not in the specified hotel!'
-      fail: '&4Could not create room!'
-      
-    inventory:
-      storeFail: '&4Could not store your inventory'
-      storeSuccess: '&aSuccessfully stored your inventory'
-      restoreFail: '&4Failed to find your stored inventory'
-      restoreSuccess: '&aSuccessfully restored your inventory'
-      
-    armour:
-      storeFail: '&4Could not store your armour'
-      storeSuccess: '&aSuccessfully stored your armour'
-      restoreFail: '&4Failed to find your stored armour'
-      restoreSuccess: '&aSuccessfully restored your armour'
-      
-    items:
-    
-      wand:
-        name: '&bWorldEdit Wand'
-        lore1: L-click one corner
-        lore2: R-click opposite corner
-        
-      compass:
-        name: '&bWorldEdit Compass'
-        lore1: L-click to tp to
-        lore2: R-click to pass through
-        
-      sign:
-        name: '&bEpic Sign'
-        lore1: R-click to place
-        lore2: 'First Line: &9[Hotels]'
-        
-      leather:
-        name: '&bPiece O'' Leather'
-        lore1: R-click to check for
-        lore2: conflict between regions
-        
-  commands:
-    unknownArg: '&4Unknown argument. Try &3&o/hotels'
-    noWorld: '&cPlease specify world'
-    noHotel: '&cPlease specify hotel'
-    noPlayer: '&cPlease specify player'
-    userNonExistent: '&4Specified user does not exist'
-    roomNonExistent: '&4Specified room does not exist'
-    hotelNonExistent: '&4Specified hotel does not exist'
-    worldNonExistent: '&4Specified world does not exist'
-    youDoNotOwnThat: '&4You do not own that!'
-    somethingWentWrong: '&4Whoops! Something went wrong while executing that command'
-    fileSaveFail: '&4Something went wrong while saving a file'
-    consoleRejected: 'The console can''t run this command!'
-    
-    commands:
-      header: '&4================================'
-      subheader: '&5--Hotels plugin command help page--'
-      footer: '&4================================'
-      help: '&6/ht help - &aDisplays help page'
-      creationMode: '&6/ht <creationmode/cm> <enter/exit> - &aEnter/exit creation mode'
-      create: '&6/ht <create/c> <hotelName> - &aCreate a hotel with current selection'
-      room: '&6/ht room <hotelName> <roomNum> - &aCreate room with current selection within specified hotel'
-      renum: '&6/ht renum <hotelName> <oldNum> <newNum> - &aRenumbers specified room'
-      rename: '&6/ht rename <oldName> <newName> - &aRenames specified hotel'
-      sethome: '&6/ht sethome - &aSets a hotel/room home'
-      home: '&6/ht home <hotelName> [roomNum] - &aTeleports you to a hotel/room home'
-      check: '&6/ht check [playerName] - &aLists all rooms rented by you/specified player'
-      list: '&6/ht list [worldName] - &aLists all hotels in current/specified world'
-      rlist: '&6/ht rlist <hotelName> - &aLists all rooms in specified hotel'
-      friend: '&6/ht <friend/f> <add/remove> <hotelName> <roomNum> <playerName> - &aAdds/removes a player from the list of friends that can access the specified room'
-      friendList: '&6/ht <friend/f> list <hotelName> <roomNum> - &aLists players in friend list of specified hotel room'
-      sellh: '&6/ht sellh <hotelName> <playerName> <price> - &aOffers for sale your hotel to specified player'
-      buyh: '&6/ht buyh <hotelName> - &aBuys specified hotel from owner if it is on sale'
-      sellr: '&6/ht sellr <hotelName> <roomNum> <playerName> <price> - &aOffers for sale your room to specified player'
-      buyr: '&6/ht buyr <hotelName> <roomNum> - &aBuys room off of room owner if they offered it for sale to you'
-      reload: '&6/ht reload - &aReloads all configuration files'
-      remove: '&6/ht remove <playerName> <hotelName> <roomNum> - &aRemoves player from his rented room'
-      delr: '&6/ht delr <hotelName> <roomNum> - &aDeletes specified room'
-      delete: '&6/ht delete <hotelName> - &aDelete specified hotel'
-      roomreset: '&6/ht roomreset <hotelName> <roomNum> - &aToggles resetting on unrent for specified room'
-      resetroom: '&6/ht resetroom <hotelName> <roomNum> - &aResets specified room'
-      
-    help:
-      header: '&4================================'
-      subheader: '&5--Hotels plugin help page--'
-      prefooter: '&4Type &3&o/ht help %num%&r&4 to get to page %num%'
-      footer: '&4================================'
-      
-      page1:
-        '1': '&4-Page 1- &9Selection of hotel cuboid'
-        '2': '&e1. Type &3&o/ht [creationmode&r&3|&3&ocm] enter'
-        '3': '&e2. Take your WorldEdit wand in hand'
-        '4': '&e3. Left click and right click opposing corners of your hotel'
-      page2:
-        '1': '&4-Page 2- &9Creation of the hotel'
-        '2': '&e1. Type &3&o/ht [create&r&3|&oc] [nameofhotel]'
-      page3:
-        '1': '&4-Page 3- &9Creation of a room'
-        '2': '&e1. Get out your WorldEdit wand again'
-        '3': '&e2. Left click and right click opposing corners of the room'
-        '4': '&e3. Type &3&o/ht room [hotelname] [roomNum]'
-      page4:
-        '1': '&4-Page 4- &9Adding a sign'
-        '2': '&e1. Grab a sign and place it outside of the room'
-        '3': '&e2. Type on the sign:'
-        '4': '&e    [Hotels]'
-        '5': '&e    hotelname'
-        '6': '&e    roomNum:cost'
-        '7': '&e    time'
-      page5:
-        '1': '&4-Page 5- &9Example of a sign'
-        '2': '&e1. Example of a sign:'
-        '3': '&e    [Hotels]'
-        '4': '&e    TheBestHotel'
-        '5': '&e    15:1m3k'
-        '6': '&e    3d 6m 2s'
-        '7': '&9&oYou can use &20 &9&oas a time to make the rent infinite'
-        '8': '&9&oIn cost, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2billion (1000 million)'
-    
-    rent:
-      usage: '&4Correct usage: &6&o/ht rent <hotelName> <roomNum>'
-      invalidLocation: '&4Sign location in sign file does not resolve to a sign!'
-      invalidData: '&4Hotel name or room number entered are not valid'
-    
-    creationMode:
-      enter: '&aYou have entered hotel creation mode.'
-      exit: '&cYou have exited hotel creation mode.'
-      alreadyIn: '&4You are already in creation mode!'
-      notAlreadyIn: '&4You are not in creation mode!'
-      reset: '&2The inventory files have been reset.'
-      noarg: '&4Please specify &6&oenter &4or &6&oexit &4mode'
-      
-    create:
-      maxHotelsReached: '&4You have reached the limit of %max% hotels you can own'
-      creationSuccess: '&aYou currently own %tot% hotels. You can own another %left%.'
-      hotelAlreadyPresent: '&4There is already a hotel present here'
-      fail: '&4Could not create hotel. Did you enter Hotel Creation Mode? (&3&o/hotels cm enter&r&4)'
-      noName: '&4Give a name to your hotel!'
-   
-    room:
-      success: '&aYou have created room %room% of the %hotel% hotel'
-      roomNumInvalid: '&4The room number is not a valid integer!'
-      nextNewRoomFail: '&4Could not find next available room! Try specifying the room number manually'
-      usage: '&4Correct Usage: &6&o/ht room <hotelName> <roomNum>'
-      alreadyPresent: '&4There is already a room present here'
-    deleteHotel:
-      hasRentedRooms: '&4You cannot delete this hotel as some rooms in it have been rented!'
-    
-    deleteRoom:
-      usage: '&4Correct usage: &6&o/ht delr <hotelName> <roomNum> [worldName]'
-      roomRented: '&4You cannot delete this room as it has been rented!'
-    
-    renumber:
-      usage: '&4Correct usage: &6&o/ht renum <hotelName> <oldNum> <newNum> [worldName]'
-      success: '&2You have successfully changed room %oldnum% to room %newnum% of the %hotel% hotel'
-      fail: '&4Could not renumber room %oldnum%'
-      newNumTooBig: '&4New number is too big!'
-    
-    rename:
-      usage: '&4Correct usage: &6&o/ht ren <oldName> <newName> [worldName]'
-      success: '&2You have successfully renamed the %hotel% hotel'
-      failRooms: '&4Could not rename rooms'
-    
-    removeRoom:
-      success: '&aSuccessfully deleted room'
-      fail: '&4Could not delete room'
-    
-    removeRegions:
-      success: '&aSuccessfully deleted hotel regions'
-      fail: '&4Could not delete hotel regions'
-    
-    remove:
-      playerNotRenter: '&4Specified player did not rent specified room!'
-      noRenter: '&4The specified room has not been rented!'
-      success: '&aSuccessfully removed %player% from room %room% of the %hotel% hotel'
-      usage: '&4Correct usage: &6&o/ht remove <playerName> <hotelname> <roomNum> [worldname]'
-    
-    check:
-      headerHotels: '&a==Owned hotels list for %player%=='
-      noHotels: '&cYou do not own any hotels!'
-      lineHotels: '&6Hotel: &c%hotel%    &9Total: &r%total%   &aFree: &r%free%'
-      headerRooms: '&a==Rented rooms list for %player%=='
-      noRooms: '&cYou have not rented any rooms!'
-      lineRooms: '&6Hotel: &c%hotel%    &6Room: &c%room%    &6Expires in: &c%timeleft%'
-    
-    listHotels:
-      heading: '&a==  Hotel list  =='
-      footer: '&c==  End of hotel list  =='
-      line: '&6Hotel: &c%hotel%%space%&9Total: &r%total%   &aFree: &r%free%'
-      
-    listRooms:
-      heading: '&a==  Room list for %hotel% hotel  =='
-      footer: '&c==  End of room list for %hotel% hotel  =='
-      line: '&6Room n: &c%room%%space%%state%'
-      noRooms: '&cThere are no rooms in that hotel'
-      usage: '&4Correct usage: &6&o/ht rlist <hotelname>'
-      
-    removeSigns:
-      success: '&aSuccessfully removed all signs'
-      
-    friend:
-      usage: '&4Correct usage: &6&o/ht friend <add/remove/list> <hotelName> <roomName> [friendName]'
-      wrongData: '&4The hotel or room number entered do not match any existing location'
-      noRenter: '&4The room you specified has no renter!'
-      notRenter: '&4You are not the renter of the specified room!'
-      addYourself: '&4You can''t add yourself to the friend list!'
-      nonExistent: '&4You can''t add imaginary friends to the friend list!'
-      friendNotInList: '&4The user you specified is not in the friend list!'
-      addSuccess: '&aSuccessfully added %friend% to the friend list'
-      removeSuccess: '&aSuccessfully removed %friend% from the friend list'
-      noFriends: '&2You have not added any friends to the specified room'
-      alreadyFriend: '&4You have already added this friend!'
-      
-      list:
-        heading: '&a==Friend list for room n. %room% of the %hotel% hotel=='
-        footer: '&c==End of friend list=='
-        line: '&6Friend: &c%name%'
-        
-    sethome:
-      notInHotelRegion: '&4You are not in a hotel region!'
-      notInCreationMode: '&4You are not in creation mode!'
-      defaultHomeSet: '&aDefault home set'
-      userHomeSet: '&aUser home set'
-      hotelHomeSet: '&aHotel home set'
-      
-    home:
-      noHomeSet: '&4No home is set!'
-      regionNotFound: '&4Specified hotel or room not found!'
-      usage: '&4Correct usage: &6&o/ht home <hotelName> [roomNum]'
-      notRenterNoPermission: '&4You are not the renter or have the permission to do this!'
-    
-    reload:
-      success: '&aConfiguration files reloaded'
-      
-    sellhotel:
-      usage: '&4Correct usage: &6&o/ht sellh <hotelName> <buyerName> <price>'
-      buyerNotOnline: '&4The buyer is not online!'
-      selling: '&aPlayer %seller% is selling their hotel %hotel% to you for $%price%. Type &6&o/ht buyh %hotel% &r&ato buy it'
-      sellingAsked: '&aThe player %buyer% has been asked if they wish to buy your hotel'
-      sellingAlreadyAsked: '&4You have already asked the player %buyer% if they wish to buy your hotel!'
-      selfSale: '&4You can''t sell this to yourself!'
-      invalidPrice: '&4The price you entered is not valid!'
-      success: '&aYou have just sold the %hotel% hotel to player %buyer% for $%price%'
-      expired: '&4Your sale of the hotel %hotel% has expired'
-    
-    buyhotel:
-      usage: '&4Correct usage: &6&o/ht buyh <hotelName>'
-      success: '&aYou have just bought the %hotel% hotel from %seller% for $%price%'
-      notOnSale: '&4That hotel is not on sale!'
-      notEnoughMoney: '&4You do not have enough money!'
-      
-    sellroom:
-      usage: '&4Correct usage: &6&o/ht sellr <hotelName> <roomNum> <buyerName> <price>'
-      sellingAlreadyAsked: '&4You have already asked the player %buyer% if they wish to buy your room!'
-      sellingAsked: '&aThe player %buyer% has been asked if they wish to buy your room'
-      selling: '&aPlayer %seller% is selling their room %room% of the %hotel% hotel to you for $%price%. Type &6&o/ht buyr %hotel% %room% &r&ato buy it'
-      success: '&aYou have just sold your room %room% of the %hotel% hotel to player %buyer% for $%price%'
-      
-    buyroom:
-      usage: '&4Correct usage: &6&o/ht buyr <hotelName> <roomNum>'
-      notOnSale: '&4That room is not on sale!'
-      success: '&aYou have just bought room %room% of the %hotel% hotel from %seller% for $%price%'
-      
-    roomreset:
-      enable: '&3The room %room% of the %hotel% hotel will now reset on rent expiry'
-      disable: '&cThe room %room% of the %hotel% hotel will no longer reset on rent expiry'
-      usage: '&4Correct usage: &6&o/ht roomreset <hotelName> <roomNum>'
-      
-    resetroom:
-      usage: '&4Correct usage: &6&o/ht resetroom <hotelName> <roomNum>'
-      notSetup: '&4This room is not setup to reset!'
-      success: '&aRoom %room% of the %hotel% hotel has just been reset'
+chat: 
+ commands: 
+  rename: 
+   usage: "&4Correct usage: &6&o/ht ren <oldName> <newName> [worldName]"
+   failRooms: "&4Could not rename rooms"
+   success: "&2You have successfully renamed the %hotel% hotel"
+  help: 
+   subheader: "&5--Hotels plugin help page--"
+   prefooter: "&4Type &3&o/ht help %num%&r&4 to get to page %num%"
+   footer: "&4================================"
+   header: "&4================================"
+   page4: 
+    1: "&4-Page 4- &9Adding a sign"
+    2: "&e1. Grab a sign and place it outside of the room"
+    3: "&e2. Type on the sign:"
+    4: "&e    [Hotels]"
+    5: "&e    hotelname"
+    6: "&e    roomNum:cost"
+    7: "&e    time"
+   page5: 
+    1: "&4-Page 5- &9Example of a sign"
+    2: "&e1. Example of a sign:"
+    3: "&e    [Hotels]"
+    4: "&e    TheBestHotel"
+    5: "&e    15:1m3k"
+    6: "&e    3d 6m 2s"
+    7: "&9&oYou can use &20 &9&oas a time to make the rent infinite"
+    8: "&9&oIn cost, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2billion (1000 million)"
+   page2: 
+    1: "&4-Page 2- &9Creation of the hotel"
+    2: "&e1. Type &3&o/ht [create&r&3|&oc] [nameofhotel]"
+   page3: 
+    1: "&4-Page 3- &9Creation of a room"
+    2: "&e1. Get out your WorldEdit wand again"
+    3: "&e2. Left click and right click opposing corners of the room"
+    4: "&e3. Type &3&o/ht room [hotelname] [roomNum]"
+   page1: 
+    1: "&4-Page 1- &9Selection of hotel cuboid"
+    2: "&e1. Type &3&o/ht [creationmode&r&3|&3&ocm] enter"
+    3: "&e2. Take your WorldEdit wand in hand"
+    4: "&e3. Left click and right click opposing corners of your hotel"
+  buyhotel: 
+   usage: "&4Correct usage: &6&o/ht buyh <hotelName>"
+   notEnoughMoney: "&4You do not have enough money!"
+   notOnSale: "&4That hotel is not on sale!"
+   success: "&aYou have just bought the %hotel% hotel from %seller% for $%price%"
+  creationMode: 
+   reset: "&2The inventory files have been reset."
+   exit: "&cYou have exited hotel creation mode."
+   enter: "&aYou have entered hotel creation mode."
+   alreadyIn: "&4You are already in creation mode!"
+   noarg: "&4Please specify &6&oenter &4or &6&oexit &4mode"
+   notAlreadyIn: "&4You are not in creation mode!"
+  fileSaveFail: "&4Something went wrong while saving a file"
+  rent: 
+   usage: "&4Correct usage: &6&o/ht rent <hotelName> <roomNum>"
+   invalidData: "&4Hotel name or room number entered are not valid"
+   invalidLocation: "&4Sign location in sign file does not resolve to a sign!"
+  home: 
+   usage: "&4Correct usage: &6&o/ht home <hotelName> [roomNum]"
+   regionNotFound: "&4Specified hotel or room not found!"
+   noHomeSet: "&4No home is set!"
+   notRenterNoPermission: "&4You are not the renter or have the permission to do this!"
+  sethome: 
+   notInHotelRegion: "&4You are not in a hotel region!"
+   userHomeSet: "&aUser home set"
+   defaultHomeSet: "&aDefault home set"
+   notInCreationMode: "&4You are not in creation mode!"
+   hotelHomeSet: "&aHotel home set"
+  youDoNotOwnThat: "&4You do not own that!"
+  check: 
+   headerRooms: "&a==Rented rooms list for %player%=="
+   lineRooms: "&6Hotel: &c%hotel%    &6Room: &c%room%    &6Expires in: &c%timeleft%"
+   lineHotels: "&6Hotel: &c%hotel%    &9Total: &r%total%   &aFree: &r%free%"
+   noRooms: "&cYou have not rented any rooms!"
+   noHotels: "&cYou do not own any hotels!"
+   headerHotels: "&a==Owned hotels list for %player%=="
+  removeSigns: 
+   success: "&aSuccessfully removed all signs"
+  deleteHotel: 
+   hasRentedRooms: "&4You cannot delete this hotel as some rooms in it have been rented!"
+  friend: 
+   addSuccess: "&aSuccessfully added %friend% to the friend list"
+   addYourself: "&4You can't add yourself to the friend list!"
+   noRenter: "&4The room you specified has no renter!"
+   notRenter: "&4You are not the renter of the specified room!"
+   list: 
+    line: "&6Friend: &c%name%"
+    heading: "&a==Friend list for room n. %room% of the %hotel% hotel=="
+    footer: "&c==End of friend list=="
+   nonExistent: "&4You can't add imaginary friends to the friend list!"
+   alreadyFriend: "&4You have already added this friend!"
+   removeSuccess: "&aSuccessfully removed %friend% from the friend list"
+   usage: "&4Correct usage: &6&o/ht friend <add/remove/list> <hotelName> <roomName> [friendName]"
+   noFriends: "&2You have not added any friends to the specified room"
+   friendNotInList: "&4The user you specified is not in the friend list!"
+   wrongData: "&4The hotel or room number entered do not match any existing location"
+  buyroom: 
+   usage: "&4Correct usage: &6&o/ht buyr <hotelName> <roomNum>"
+   notOnSale: "&4That room is not on sale!"
+   success: "&aYou have just bought room %room% of the %hotel% hotel from %seller% for $%price%"
+  noWorld: "&cPlease specify world"
+  roomNonExistent: "&4Specified room does not exist"
+  create: 
+   hotelAlreadyPresent: "&4There is already a hotel present here"
+   fail: "&4Could not create hotel. Did you enter Hotel Creation Mode? (&3&o/hotels cm enter&r&4)"
+   noName: "&4Give a name to your hotel!"
+   creationSuccess: "&aYou currently own %tot% hotels. You can own another %left%."
+   maxHotelsReached: "&4You have reached the limit of %max% hotels you can own"
+  hotelNonExistent: "&4Specified hotel does not exist"
+  resetroom: 
+   usage: "&4Correct usage: &6&o/ht resetroom <hotelName> <roomNum>"
+   notSetup: "&4This room is not setup to reset!"
+   success: "&aRoom %room% of the %hotel% hotel has just been reset"
+  sellhotel: 
+   selling: "&aPlayer %seller% is selling their hotel %hotel% to you for $%price%. Type &6&o/ht buyh %hotel% &r&ato buy it"
+   success: "&aYou have just sold the %hotel% hotel to player %buyer% for $%price%"
+   sellingAsked: "&aThe player %buyer% has been asked if they wish to buy your hotel"
+   invalidPrice: "&4The price you entered is not valid!"
+   sellingAlreadyAsked: "&4You have already asked the player %buyer% if they wish to buy your hotel!"
+   buyerNotOnline: "&4The buyer is not online!"
+   usage: "&4Correct usage: &6&o/ht sellh <hotelName> <buyerName> <price>"
+   selfSale: "&4You can't sell this to yourself!"
+   expired: "&4Your sale of the hotel %hotel% has expired"
+  worldNonExistent: "&4Specified world does not exist"
+  consoleRejected: "The console can't run this command!"
+  somethingWentWrong: "&4Whoops! Something went wrong while executing that command"
+  noHotel: "&cPlease specify hotel"
+  noPlayer: "&cPlease specify player"
+  deleteRoom: 
+   usage: "&4Correct usage: &6&o/ht delr <hotelName> <roomNum> [worldName]"
+   roomRented: "&4You cannot delete this room as it has been rented!"
+  listRooms: 
+   usage: "&4Correct usage: &6&o/ht rlist <hotelname>"
+   line: "&6Room n: &c%room%%space%%state%"
+   noRooms: "&cThere are no rooms in that hotel"
+   heading: "&a==  Room list for %hotel% hotel  =="
+   footer: "&c==  End of room list for %hotel% hotel  =="
+  renumber: 
+   usage: "&4Correct usage: &6&o/ht renum <hotelName> <oldNum> <newNum> [worldName]"
+   fail: "&4Could not renumber room %oldnum%"
+   newNumTooBig: "&4New number is too big!"
+   success: "&2You have successfully changed room %oldnum% to room %newnum% of the %hotel% hotel"
+  userNonExistent: "&4Specified user does not exist"
+  roomreset: 
+   usage: "&4Correct usage: &6&o/ht roomreset <hotelName> <roomNum>"
+   enable: "&3The room %room% of the %hotel% hotel will now reset on rent expiry"
+   disable: "&cThe room %room% of the %hotel% hotel will no longer reset on rent expiry"
+  commands: 
+   subheader: "&5--Hotels plugin command help page--"
+   rename: "&6/ht rename <oldName> <newName> - &aRenames specified hotel"
+   rlist: "&6/ht rlist <hotelName> - &aLists all rooms in specified hotel"
+   help: "&6/ht help - &aDisplays help page"
+   sellh: "&6/ht sellh <hotelName> <playerName> <price> - &aOffers for sale your hotel to specified player"
+   list: "&6/ht list [worldName] - &aLists all hotels in current/specified world"
+   friendList: "&6/ht <friend/f> list <hotelName> <roomNum> - &aLists players in friend list of specified hotel room"
+   creationMode: "&6/ht <creationmode/cm> <enter/exit> - &aEnter/exit creation mode"
+   header: "&4================================"
+   delr: "&6/ht delr <hotelName> <roomNum> - &aDeletes specified room"
+   reload: "&6/ht reload - &aReloads all configuration files"
+   renum: "&6/ht renum <hotelName> <oldNum> <newNum> - &aRenumbers specified room"
+   home: "&6/ht home <hotelName> [roomNum] - &aTeleports you to a hotel/room home"
+   sethome: "&6/ht sethome - &aSets a hotel/room home"
+   sellr: "&6/ht sellr <hotelName> <roomNum> <playerName> <price> - &aOffers for sale your room to specified player"
+   check: "&6/ht check [playerName] - &aLists all rooms rented by you/specified player"
+   roomreset: "&6/ht roomreset <hotelName> <roomNum> - &aToggles resetting on unrent for specified room"
+   room: "&6/ht room <hotelName> <roomNum> - &aCreate room with current selection within specified hotel"
+   footer: "&4================================"
+   create: "&6/ht <create/c> <hotelName> - &aCreate a hotel with current selection"
+   buyh: "&6/ht buyh <hotelName> - &aBuys specified hotel from owner if it is on sale"
+   remove: "&6/ht remove <playerName> <hotelName> <roomNum> - &aRemoves player from his rented room"
+   resetroom: "&6/ht resetroom <hotelName> <roomNum> - &aResets specified room"
+   buyr: "&6/ht buyr <hotelName> <roomNum> - &aBuys room off of room owner if they offered it for sale to you"
+   friend: "&6/ht <friend/f> <add/remove> <hotelName> <roomNum> <playerName> - &aAdds/removes a player from the list of friends that can access the specified room"
+   delete: "&6/ht delete <hotelName> - &aDelete specified hotel"
+  room: 
+   usage: "&4Correct Usage: &6&o/ht room <hotelName> <roomNum>"
+   nextNewRoomFail: "&4Could not find next available room! Try specifying the room number manually"
+   roomNumInvalid: "&4The room number is not a valid integer!"
+   alreadyPresent: "&4There is already a room present here"
+   success: "&aYou have created room %room% of the %hotel% hotel"
+  remove: 
+   usage: "&4Correct usage: &6&o/ht remove <playerName> <hotelname> <roomNum> [worldname]"
+   noRenter: "&4The specified room has not been rented!"
+   playerNotRenter: "&4Specified player did not rent specified room!"
+   success: "&aSuccessfully removed %player% from room %room% of the %hotel% hotel"
+  reload: 
+   success: "&aConfiguration files reloaded"
+  removeRegions: 
+   fail: "&4Could not delete hotel regions"
+   success: "&aSuccessfully deleted hotel regions"
+  removeRoom: 
+   fail: "&4Could not delete room"
+   success: "&aSuccessfully deleted room"
+  sellroom: 
+   usage: "&4Correct usage: &6&o/ht sellr <hotelName> <roomNum> <buyerName> <price>"
+   sellingAsked: "&aThe player %buyer% has been asked if they wish to buy your room"
+   selling: "&aPlayer %seller% is selling their room %room% of the %hotel% hotel to you for $%price%. Type &6&o/ht buyr %hotel% %room% &r&ato buy it"
+   success: "&aYou have just sold your room %room% of the %hotel% hotel to player %buyer% for $%price%"
+   sellingAlreadyAsked: "&4You have already asked the player %buyer% if they wish to buy your room!"
+  unknownArg: "&4Unknown argument. Try &3&o/hotels"
+  listHotels: 
+   line: "&6Hotel: &c%hotel%%space%&9Total: &r%total%   &aFree: &r%free%"
+   heading: "&a==  Hotel list  =="
+   footer: "&c==  End of hotel list  =="
+ moneyEarned: "&aYou have earned $%revenue% from the rent of room %room% in your hotel %hotel%"
+ noPermission: "&4You do not have permission!"
+ moneyEarnedExtend: "&aYou have earned $%revenue% from the extension of the rent of room %room% in your hotel %hotel%"
+ prefix: "&9[Hotels]&r"
+ creationMode: 
+  hotelCreationFailed: "&4Could not create hotel, hotel already exists"
+  noSelection: "&4Please select an area using the WE wand"
+  hotelCreationSuccessful: "&2You have successfully created the %hotel% hotel"
+  deniedAction: "&4You can't do this while in creation mode!"
+  items: 
+   leather: 
+    lore1: "R-click to check for"
+    lore2: "conflict between regions"
+    name: "&bPiece O' Leather"
+   compass: 
+    lore1: "L-click to tp to"
+    lore2: "R-click to pass through"
+    name: "&bWorldEdit Compass"
+   wand: 
+    lore1: "L-click one corner"
+    lore2: "R-click opposite corner"
+    name: "&bWorldEdit Wand"
+   sign: 
+    lore1: "R-click to place"
+    lore2: "First Line: &9[Hotels]"
+    name: "&bEpic Sign"
+  armour: 
+   storeSuccess: "&aSuccessfully stored your armour"
+   restoreSuccess: "&aSuccessfully restored your armour"
+   storeFail: "&4Could not store your armour"
+   restoreFail: "&4Failed to find your stored armour"
+  selectionInvalid: "&4Invalid selection. Please select the area again"
+  rooms: 
+   fail: "&4Could not create room!"
+   alreadyExists: "&4This room already exists!"
+   notInHotel: "&4The room is not in the specified hotel!"
+  invalidChar: "&4Name must not contain the character &6&l-"
+  inventory: 
+   storeSuccess: "&aSuccessfully stored your inventory"
+   restoreSuccess: "&aSuccessfully restored your inventory"
+   storeFail: "&4Could not store your inventory"
+   restoreFail: "&4Failed to find your stored inventory"
+ sign: 
+  use: 
+   notEnoughMoney: "&4You do not have enough money! You need another %missingmoney%"
+   differentRoomNums: "&4Room numbers don't match!"
+   success: "&aYou have rented room %room% of the %hotel% hotel for $%price%"
+   maxEntendReached: "&4You have reached the limit of rent extention of %max% times!"
+   differentHotelNames: "&4Hotel names don't match!"
+   nonExistentRoom: "&4This room does not exist!"
+   extensionSuccessNoMore: "&aRent has been extended %tot% times. You can't extend it any more."
+   signOutOfRegion: "&4Sign is not inside specified hotel region"
+   extensionSuccess: "&aRent has been extended %tot% times. You can extend it another %left% times."
+   noAccount: "&4You do not have an economy account!"
+   fileNonExistent: "&4Sign file does not exist!"
+   overRoomsPerHotelLimit: "&4You have reached the limit of %limit% rooms you can rent in this hotel"
+   maxRoomsReached: "&4You have reached the limit of %max% rooms you can own"
+   taken: "&4This room has already been rented"
+  place: 
+   tooLong: "&4The room number or the price is too big!"
+   noRegion: "&4The specified hotel or room does not exist!"
+   success: "&2Hotel sign has been successfully created!"
+   inRoomRegion: "&4Sign can't be inside room region!"
+   fileFail: "&4Could not save sign file"
+   outOfRegion: "&4Sign is not within hotel region!"
+   emptySign: "&4Empty sign"
+   alreadyExists: "&4Sign for this hotel room already exists!"
+   noHotel: "&4Hotel does not exist"
+   noSeparator: "&4Line 3 must contain the separator &3:"
+sign: 
+ room: 
+  total: "Total Rooms"
+  name: "&2Room"
+  free: "Free Rooms"
+  breakDenied: "&4You cannot break this room sign as the room has been rented!"
+ rentExpiredConsole: "%player%'s rent of room %room% of the %hotel% hotel has expired"
+ vacant: Vacant
+ rentExpiredPlayer: "&9Your rent of room %room% of the %hotel% hotel has expired"
+ permanent: Permanent
+ reception: 
+  hotel: "&1%hotel% Hotel"
+  reception: "&aReception"
+ occupied: Occupied
+ delete: 
+  roomNonExistent: "Sign file %filename% was deleted as the room doesn't exist"
+  hotelName: "Sign file %filename% did not match in-game hotelName and has been deleted"
+  roomNum: "Sign file %filename% did not match in-game roomNum and has been deleted"
+  location: "Sign file %filename% did not match in-game location and has been deleted"
+  reception: "Reception file %filename% did not match in-game characteristics and has been deleted"
