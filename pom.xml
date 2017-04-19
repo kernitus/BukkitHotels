@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>me.kernitus</groupId>
 	<artifactId>hotels</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>Hotels</name>
 	<description>Hotels Bukkit/Spigot plugin</description>
 	<url>https://github.com/kernitus/BukkitHotels</url>
