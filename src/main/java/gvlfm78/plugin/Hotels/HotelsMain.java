@@ -37,12 +37,8 @@ public class HotelsMain extends JavaPlugin{
 		//Listeners and stuff
 		getServer().getPluginManager().registerEvents((new HTListener()), this);//Firing event listener
 		getCommand("Hotels").setExecutor(new HTCmdExecutor(this));//Firing commands listener
+		
 		setupEconomy();
-		//Economy and stuff
-		if (!setupEconomy())
-			//If economy is turned on
-			//but no vault is found it will warn the user
-			getLogger().severe(Mes.getStringNoPrefix("main.enable.noVault"));
 
 		//Room sign checker and updater
 		roomTask = new RoomTask(this);
