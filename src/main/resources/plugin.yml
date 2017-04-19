@@ -15,7 +15,7 @@ commands:
 
 permissions:
    hotels.*:
-     description: Gives access to all Hotels commands
+     description: Gives access to all Hotels functions
      children:
        hotels.sign.use: true
        hotels.remove: true
@@ -45,6 +45,11 @@ permissions:
        hotels.rename.admin: true
        hotels.renumber.admin: true
        hotels.sell.hotel: true
+       hotels.sell.room: true
+       hotels.buy.room: true
+       hotels.reset.toggle: true
+       hotels.reset.reset: true
+
 
    hotels.sign.use:
      description: Allows you to use hotel room signs
@@ -130,3 +135,15 @@ permissions:
    hotels.sell.hotel:
      description: Allows you to sell your hotels
      default: true
+   hotels.sell.room:
+     description: Allows you to sell rooms
+     default: true
+   hotels.buy.room:
+     description: Allows you to buy rooms
+     default: true
+   hotels.reset.toggle:
+     description: Allows you to toggle resetting of specific rooms upon unrenting
+     default: op
+   hotels.reset.reset:
+     description: Allows you to reset a room
+     default: op
