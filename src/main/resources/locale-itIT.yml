@@ -2,6 +2,8 @@
 # Traduzione di kernitus
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 language: itIT
+version: 1
+#####################################################################################
 message: 
  hotel: 
   exit: "&aTorna presto all'hotel %hotel%"

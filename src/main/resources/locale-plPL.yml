@@ -2,6 +2,8 @@
 # Translation by Kamilkime
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 language: plPL
+version: 1
+#####################################################################################
 message: 
  hotel: 
   exit: "&aWroc niedlugo do hotelu %hotel%"

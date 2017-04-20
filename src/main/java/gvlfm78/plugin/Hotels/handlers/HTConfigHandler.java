@@ -52,12 +52,18 @@ public class HTConfigHandler {
 		saveMessageQueue(getMessageQueue());
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void localeLanguageSelector(){
 		Language lang = getLanguage();
 		String loclang = locale.getString("language"); //From already-generated locale.yml
 
-		if(loclang!=null && !lang.equals(Language.getFromCode(loclang)))//If languages mismatch
+		if(	(loclang!=null && !lang.equals(Language.getFromCode(loclang)))
+				|| (locale.getInt("version") <
+						YamlConfiguration.loadConfiguration(PLUGIN.getResource("locale-" + lang.getStandardCode() + ".yml")).getInt("version")
+						)	){
 			backupconfig(getLocaleFile()); //Backup current locale and make new one
+			PLUGIN.getLogger().info("Language strings have been backed-up and reset");
+		}
 
 		locale = getYML(getLocaleFile());
 		loclang = locale.getString("language"); //Get it again in case we backed up the locale
@@ -261,9 +267,9 @@ public class HTConfigHandler {
 		Map<String, Object> oldValues = backup.getValues(false); //This works because there are no subnodes in the config
 
 		File file = getconfigYMLFile();
-		
+
 		BufferedReader br = null;
-		
+
 		try {
 			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
 		} catch (FileNotFoundException | UnsupportedEncodingException e2) {
@@ -302,7 +308,7 @@ public class HTConfigHandler {
 				if(pieces[0].equals("version")) continue;
 
 				String oldValue = String.valueOf(oldValues.get(pieces[0]));
-				
+
 				if(oldValue.equals(pieces[1])){ oldValues.remove(pieces[0]); continue; } //Only set it if they differ
 
 				contents.set(i, pieces[0] + ": " + oldValue);

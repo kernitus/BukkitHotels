@@ -1,6 +1,9 @@
 # Hotels plugin by kernitus
 # 漢化 By NOBUTS
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
+language: zhTW
+version: 1
+#####################################################################################
 message: 
  hotel: 
   exit: "&a離開了 %hotel% 旅館"
@@ -16,7 +19,6 @@ main:
  disable: 
   success: "%pluginname% v%version% 現已停用"
  updateAvailableLink: "想要更新嗎！？點擊這裏的鏈接 %link%"
-language: zhTW
 chat: 
  commands: 
   rename: 

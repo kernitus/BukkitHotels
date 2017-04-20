@@ -1,5 +1,8 @@
 # Hotels plugin by kernitus <- He is a good Men // German Translation by StandbyGamer
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
+language: deDE
+version: 1
+#####################################################################################
 message: 
  hotel: 
   exit: "&aKomm bald zurück ins %hotel% Hotel"
@@ -15,7 +18,6 @@ main:
  disable: 
   success: "%pluginname% v%version% wurde deaktiviert"
  updateAvailableLink: "Um es herunterzuladen, geh auf %link%"
-language: deDE
 chat: 
  commands: 
   rename: 

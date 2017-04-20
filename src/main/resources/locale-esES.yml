@@ -1,6 +1,9 @@
 # Hotels plugin by kernitus
 # Traducción de theismarius
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
+language: esES
+version: 1
+#####################################################################################
 message: 
  hotel: 
   exit: "&aVuelve pronto al hotel %hotel%"
@@ -16,7 +19,6 @@ main:
  disable: 
   success: "%pluginname% v%version% ha sido deshabilitado"
  updateAvailableLink: "Para descargarla, ir a %link%"
-language: esES
 chat: 
  commands: 
   rename: 

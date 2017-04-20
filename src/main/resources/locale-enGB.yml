@@ -1,5 +1,8 @@
 # Hotels plugin by kernitus
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
+language: enGB
+version: 1
+#####################################################################################
 message: 
  hotel: 
   exit: "&aCome back soon to the %hotel% hotel"
@@ -15,7 +18,6 @@ main:
  disable: 
   success: "%pluginname% v%version% has been disabled"
  updateAvailableLink: "To download it, go to %link%"
-language: enGB
 chat: 
  commands: 
   rename: 

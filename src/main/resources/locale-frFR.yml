@@ -1,6 +1,9 @@
 # Hotels plugin by kernitus
 # Cette traduction pourrait contenir des erreurs. Si vous avez des améliorations vous pouvez contacter kernitus:
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
+language: frFR
+version: 1
+#####################################################################################
 message: 
  hotel: 
   exit: "&aRetourné bientôt à l'hôtel %hotel%"
@@ -16,7 +19,6 @@ main:
  disable: 
   success: "%pluginname% v%version% a été désactivé"
  updateAvailableLink: "Pour télécharger, aller à %link%"
-language: frFR
 chat: 
  commands: 
   rename: 
