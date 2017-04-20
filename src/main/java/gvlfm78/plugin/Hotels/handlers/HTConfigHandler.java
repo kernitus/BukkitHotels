@@ -266,7 +266,6 @@ public class HTConfigHandler {
 		
 		try {
 			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-			System.out.println("br");
 		} catch (FileNotFoundException | UnsupportedEncodingException e2) {
 			e2.printStackTrace();
 		}
