@@ -1,0 +1,313 @@
+# Hotels plugin by kernitus
+# Translation by Kamilkime
+# https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
+language: plPL
+message: 
+ hotel: 
+  exit: "&aWroc niedlugo do hotelu %hotel%"
+  enter: "&bWitaj w hotelu %hotel%"
+ room: 
+  exit: "&aWroc niedlugo do pokoju %room%"
+  enter: "&bWitaj w pokoju %room%"
+main: 
+ noConnection: "Nie mozna nawiazac polaczenia z serwerem aktualizacji!"
+ enable: 
+  success: "%pluginname% v%version% zostal uruchomiony!"
+ updateAvailable: "Hotels v%version% mozliwy do sciagniecia!"
+ disable: 
+  success: "%pluginname% v%version% zostal wylaczony!"
+ updateAvailableLink: "Aby go pobrac, wejdz na strone %link%"
+chat: 
+ commands: 
+  rename: 
+   usage: "&4Poprawne uzycie: &6&o/ht ren <staraNazwa> <nowaNazwa> [nazwaSwiata]"
+   failRooms: "&4Nie mozna zmienic nazwy pokojow"
+   success: "&2Zmieniles nazwe hotelu %hotel%"
+  help: 
+   subheader: "&5--Pomoc pluginu Hotels--"
+   prefooter: "&4Wpisze &3&o/ht help %num%&r&4, aby wyswietlic strone %num%"
+   footer: "&4================================"
+   header: "&4================================"
+   page4: 
+    1: "&4-Strona 4- &9Dodawanie tabliczki"
+    2: "&e1. Postaw tabliczke na zewnatrz pokoju"
+    3: "&e2. Napisz na tabliczce:"
+    4: "&e    [Hotels]"
+    5: "&e    nazwaHotelu"
+    6: "&e    numerPokoju:koszt"
+    7: "&e    czas"
+   page5: 
+    1: "&4-Strona 5- &9Przykladowa tabliczka"
+    2: "&e1. Przykladowa tabliczka:"
+    3: "&e    [Hotels]"
+    4: "&e    TheBestHotel"
+    5: "&e    15:1m3k"
+    6: "&e    3d 6m 2s"
+    7: "&9&oWpisz &20 &9&ojako czas, aby mozna go bylo wynajac na zawsze"
+    8: "&9&oKoszty, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2miliard (1000 milionow)"
+   page2: 
+    1: "&4-Strona 2- &9Tworzenie hotelu"
+    2: "&e1. Wpisz &3&o/ht [create&r&3|&oc] [nazwaHotelu]"
+   page3: 
+    1: "&4-Strona 3- &9Tworzenie pokoju"
+    2: "&e1. Wyciagnij rozdzke z WorldEdit'a"
+    3: "&e2. Nacisnij LPM i PPM w przeciwnych rogach pokoju"
+    4: "&e3. Wpisz &3&o/ht room [nazwaHotelu] [numerPokoju]"
+   page1: 
+    1: "&4-Strona 1- &9Wybor cuboida hotelu"
+    2: "&e1. Wpisz &3&o/ht [creationmode&r&3|&3&ocm] enter"
+    3: "&e2. Wyciagnij rozdzke z WorldEdit'a"
+    4: "&e3. Nacisnij LPM i PPM w przeciwnych rogach hotelu"
+  buyhotel: 
+   usage: "&4Poprawne uzycie: &6&o/ht buyh <nazwaHotelu>"
+   notEnoughMoney: "&4Nie masz wystarczajaco pieniedzy!"
+   notOnSale: "&4Ten hotel nie jest na sprzedaz!"
+   success: "&aKupiles hotel %hotel% od %seller% za $%price%"
+  creationMode: 
+   reset: "&2Pliki inventory zostaly zresetowane"
+   exit: "&cWyszedles z trybu tworzenia hotelu"
+   enter: "&aWlaczyles tryb tworzenia hotelu"
+   alreadyIn: "&4Jestes juz w trybie tworzenia!"
+   noarg: "&4Podaj czy chcesz uruchomic tryb, czy go wylaczyc (&6&oenter &r&4lub &6&oexit&r&4)"
+   notAlreadyIn: "&4Nie jestes w trybie tworzenia!"
+  fileSaveFail: "&4Cos poszlo nie tak, plik nie zostal zapisany"
+  rent: 
+   usage: "&4Poprawne uzycie: &6&o/ht rent <nazwaHotelu> <numerPokoju>"
+   invalidData: "&4Nazwa hotelu lub numer pokoju nie sa prawidlowe"
+   invalidLocation: "&4Pozycja tabliczki w pliku nie odpowiada tabliczce na mapie!"
+  home: 
+   usage: "&4Poprawne uzycie: &6&o/ht home <nazwaHotelu> [numerPokoju]"
+   regionNotFound: "&4Podany hotel lub pokoj nie zostal znaleziony!"
+   noHomeSet: "&4Brak ustawionego domu!"
+   notRenterNoPermission: "&4Nie jestes wynajmujacym lub nie masz uprawnien, aby to zrobic!"
+  sethome: 
+   notInHotelRegion: "&4Nie jestes w regionie hotelu!"
+   userHomeSet: "&aDom gracza ustawiony!"
+   defaultHomeSet: "&aDomyslny dom ustawiony!"
+   notInCreationMode: "&4Nie jestes w trybie tworzenia!"
+   hotelHomeSet: "&aDom hotelu ustawiony!"
+  youDoNotOwnThat: "&4To nie nalezy do ciebie!"
+  check: 
+   headerRooms: "&a==Wynajete pokoje gracza %player%=="
+   lineRooms: "&6Hotel: &c%hotel%    &6Pokoj: &c%room%    &6Wygasa za: &c%timeleft%"
+   lineHotels: "&6Hotel: &c%hotel%    &9Razem: &r%total%   &aWolnych: &r%free%"
+   noRooms: "&cNie wynajales zadnych pokojow!"
+   noHotels: "&cNie posiadasz zadnych hoteli!"
+   headerHotels: "&a==Hotele gracza %player%=="
+  removeSigns: 
+   success: "&aUsunieto wszystkie tabliczki!"
+  deleteHotel: 
+   hasRentedRooms: "&4Nie mozesz usunac tego hotelu, znajduja sie w nim wynajete pokoje!"
+  friend: 
+   addSuccess: "&aDodano gracza %friend% do listy przyjaciol!"
+   addYourself: "&4Nie mozesz dodac siebie do listy przyjaciol!"
+   noRenter: "&4Tego pokoju nikt nie wynajmuje!"
+   notRenter: "&4Nie wynajmujesz tego pokoju!"
+   list: 
+    line: "&6Przyjaciel: &c%name%"
+    heading: "&a==Lista przyjaciol dla pokoju %room% w hotelu %hotel%=="
+    footer: "&c==Koniec listy przyjaciol=="
+   nonExistent: "&4Nie mozesz dodawac wymyslonych przyjaciol do listy!"
+   alreadyFriend: "&4Juz dodales tego przyjaciela do listy!"
+   removeSuccess: "&aUsunales %friend% z listy przyjaciol!"
+   usage: "&4Poprawne uzycie: &6&o/ht friend <add/remove/list> <nazwaHotelu> <numerPokoju> [nickPrzyjaciela]"
+   noFriends: "&2Nie dodales zadnych przyjaciol do tego pokoju!"
+   friendNotInList: "&4Podany gracz nie jest na liscie przyjaciol!"
+   wrongData: "&4Nazwa hotelu lub numer pokoju nie istnieja!"
+  buyroom: 
+   usage: "&4Poprawne uzycie: &6&o/ht buyr <nazwaHotelu> <numerPokoju>"
+   notOnSale: "&4Ten pokoj nie jest na sprzedaz!"
+   success: "&aKupiles od %seller% pokoj %room% w hotelu %hotel% za $%price%"
+  noWorld: "&cPodaj konkretny swiat"
+  roomNonExistent: "&4Podany pokoj nie istnieje"
+  create: 
+   hotelAlreadyPresent: "&4W tym miejscu znajduje sie juz hotel"
+   fail: "&4Nie mozna utworzyc hotelu, na pewno jestes w trybie tworzenia? (&3&o/hotels cm enter&r&4)"
+   noName: "&4Nazwij jakos ten swoj hotel!"
+   creationSuccess: "&aObecnie posiadasz %tot% joteli, mozesz posiadac jeszcze %left% wiecej"
+   maxHotelsReached: "&4Osiagnales maksymalny limit %max% posiadanych hoteli"
+  hotelNonExistent: "&4Podany hotel nie istnieje"
+  resetroom: 
+   usage: "&4Poprawne uzycie: &6&o/ht resetroom <nazwaHotelu> <numerPokoju>"
+   notSetup: "&4Ten pokoj nie jest ustawiony do resetowania!"
+   success: "&aPokoj %room% w hotelu %hotel% zostal zresetowany"
+  sellhotel: 
+   selling: "&aGracz %seller% sprzedaje ci swoj hotel %hotel% za $%price%, wpisz &6&o/ht buyh %hotel%&r&a, aby go kupic"
+   success: "&aSprzedales hotel %hotel% graczowi %buyer% za $%price%"
+   sellingAsked: "&aGracz %buyer% zostal zapytany, czy chce kupic twoj hotel"
+   invalidPrice: "&4Podana cena jest nieprawidlowa!"
+   sellingAlreadyAsked: "&4Juz pytales gracza %buyer%, czy chce kupic twoj hotel!"
+   buyerNotOnline: "&4Kupujacy nie jest online!"
+   usage: "&4Poprawne uzycie: &6&o/ht sellh <nazwaHotelu> <nickKupujacego> <cena>"
+   selfSale: "&4Nie mozesz sprzedac tego sobie!"
+   expired: "&4Sprzedaz hotelu %hotel% wygasla"
+  worldNonExistent: "&4Taki swiat nie istnieje"
+  consoleRejected: "Tej komendy nie moze uzywac konsola!"
+  somethingWentWrong: "&4Oj, co poszlo nie tak przy wykonywaniu tej komendy..."
+  noHotel: "&cPodaj nazwe hotelu"
+  noPlayer: "&cPodaj nick gracza"
+  deleteRoom: 
+   usage: "&4Poprawne uzycie: &6&o/ht delr <nazwaHotelu> <numerPokoju> [nazwaSwiata]"
+   roomRented: "&4Nie mozesz usunac tego pokoju, bo jest wynajmowany!"
+  listRooms: 
+   usage: "&4Poprawne uzycie: &6&o/ht rlist <nazwaHotelu>"
+   line: "&6Pokoj nr: &c%room%%space%%state%"
+   noRooms: "&cNie ma zadnych pokojow w tym hotelu!"
+   heading: "&a==  Lista pokojow w hotelu %hotel% =="
+   footer: "&a==  Koniec listy pokojow w hotelu %hotel% =="
+  renumber: 
+   usage: "&4Poprawne uzycie: &6&o/ht renum <nazwaHotelu> <staryNumer> <nowyNumer> [nazwaSwiata]"
+   fail: "&4Nie mozna zmienic numeru pokoju %oldnum%"
+   newNumTooBig: "&4Nowy numer jest za duzy!"
+   success: "&2Zmieniles pokoj %oldnum% w hotelu %hotel% na %newnum%"
+  userNonExistent: "&4Podany gracz nie istnieje"
+  roomreset: 
+   usage: "&4Poprawne uzycie: &6&o/ht roomreset <nazwaHotelu> <numerPokoju>"
+   enable: "&3Pokoj %room% w hotelu %hotel% zostanie zresetowany po zakonczeniu wynajmu"
+   disable: "&cPokoj %room% w hotelu %hotel% nie zostanie zresetowany po zakonczeniu wynajmu"
+  commands: 
+   subheader: "&5--Pomoc pluginu Hotels--"
+   rename: "&6/ht rename <staraNazwa> <nowaNazwa> - &aZmienia nazwe hotelu"
+   rlist: "&6/ht rlist <nazwaHotelu> - &aWyswietla liste pokojow w hotelu"
+   help: "&6/ht help - &aPokazuje pomoc pluginu"
+   sellh: "&6/ht sellh <nazwaHotelu> <nickGracza> <cena> - &aOferuje twoj hotel na sprzedaz innej osobie"
+   list: "&6/ht list [nazwaSwiata] - &aWyswietla liste hoteli w tym/[podanym swiecie]"
+   friendList: "&6/ht <friend/f> list <nazwaHotelu> <numerPokoju> - &aWyswietla liste przyjaciol w danym pokoju"
+   creationMode: "&6/ht <creationmode/cm> <enter/exit> - &aWejdz/wyjdz z trybu tworzenia"
+   header: "&4================================"
+   delr: "&6/ht delr <nazwaHotelu> <numerPokoju> - &aUsuwa pokoj"
+   reload: "&6/ht reload - &aLaduje na nowo config"
+   renum: "&6/ht renum <nazwaHotelu> <staryNumer> <nowyNumer> - &aZmienia numer pokoju"
+   home: "&6/ht home <nazwaHotelu> [numerPokoju] - &aTeleportuje do domu w hotelu/[pokoju]"
+   sethome: "&6/ht sethome - &aUstawia dom hotelu/pokoju"
+   sellr: "&6/ht sellr <nazwaHotelu> <numerPokoju> <nickGracza> <cena> - &aOferuje twoj pokoj na sprzedaz innej osobie"
+   check: "&6/ht check [nickGracza] - &aWyswietla liste pokojow wynajmowanych przez ciebie/[podanego gracza]"
+   roomreset: "&6/ht roomreset <nazwaHotelu> <numerPokoju> - &aWlacza/wylacza resetownie pokoju po zakonczeniu wynajmu"
+   room: "&6/ht room <nazwaHotelu> <numerPokoju> - &aTworzy pokoj na podstawie obecnego zaznaczenia"
+   footer: "&4================================"
+   create: "&6/ht <create/c> <nazwaHotelu> - &aTworzy hotel na podstawie obecnego zaznaczenia"
+   buyh: "&6/ht buyh <nazwaHotelu> - &aKupuje hotel, jesli jest on na sprzedaz"
+   remove: "&6/ht remove <nickGracza> <nazwaHotelu> <numerPokoju> - &aUsuwa gracza z wynajmowanego przez niego pokoju"
+   resetroom: "&6/ht resetroom <nazwaHotelu> <numerPokoju> - &aResetuje pokoj"
+   buyr: "&6/ht buyr <nazwaHotelu> <numerPokoju> - &aKupuje pokoj, jesli jest on na sprzedaz"
+   friend: "&6/ht <friend/f> <add/remove> <nazwaHotelu> <numerPokoju> <nickGracza> - &aDodaje/usuwa gracza z listy przyjaciol, ktorzy maja dostep do pokoju"
+   delete: "&6/ht delete <nazwaHotelu> - &aUsuwa hotel"
+  room: 
+   usage: "&4Poprawne uzycie: &6&o/ht room <nazwaHotelu> <numerPokoju>"
+   nextNewRoomFail: "&4Nie znaleziono nastepnego wolnego pokoju! Podaj numer recznie!"
+   roomNumInvalid: "&4Podany numer pokoju to nie liczba calkowita!"
+   alreadyPresent: "&4W tym miejscu znajduje sie juz pokoj!"
+   success: "&aUtworzyles pokoj %room% w hotelu %hotel%"
+  remove: 
+   usage: "&4Poprawne uzycie: &6&o/ht remove <nickGracza> <nazwaHotelu> <numerPokoju> [nazwaSwiata]"
+   noRenter: "&4Podany pokoj nie jest wynajety!"
+   playerNotRenter: "&4Ten gracz nie wynajmuje tego pokoju!"
+   success: "&aUsunieto gracza %player% z pokoju %room% w hotelu %hotel%"
+  reload: 
+   success: "&aPliki konfiguracyjne zaladowane ponownie!"
+  removeRegions: 
+   fail: "&4Nie mozna usuwac regionow hoteli"
+   success: "&aUsunieto region hotelu"
+  removeRoom: 
+   fail: "&4Nie mozna usunac pokoju"
+   success: "&aUsunieto pokoj"
+  sellroom: 
+   usage: "&4Poprawne uzycie: &6&o/ht sellr <nazwaHotelu> <numerPokoju> <nickKupujacego> <cena>"
+   sellingAsked: "&aGracz %buyer% zostal zapytany, czy chce kupic twoj pokoj"
+   selling: "&aGracz %seller% sprzedaje ci swoj pokoj %room% w hotelu %hotel% za $%price%, wpisz &6&o/ht buyr %hotel% %room%&r&a, aby go kupic"
+   success: "&aSprzedales pokoj %room% w hotelu %hotel% graczowi %buyer% za $%price%"
+   sellingAlreadyAsked: "&4Juz pytales gracza %buyer%, czy chce kupic twoj pokoj!"
+  unknownArg: "&4Nieznany argument, sprobuj &3&o/hotels"
+  listHotels: 
+   line: "&6Hotel: &c%hotel%%space%&9Razem: &r%total%   &aWolnych: &r%free%"
+   heading: "&a== Lista hoteli =="
+   footer: "&a== Koniec listy hoteli =="
+ moneyEarned: "&aZarobiles $%revenue% z wynajmu pokoju %room% w hotelu %hotel%"
+ noPermission: "&4Nie masz uprawnien!"
+ moneyEarnedExtend: "&aZarobiles $%revenue% na przedluzeniu wynajmu pokoju %room% w hotelu %hotel%"
+ prefix: "&9[Hotels]&r"
+ creationMode: 
+  hotelCreationFailed: "&4Taki hotel juz istnieje"
+  noSelection: "&4Zaznacz teren uzywajac rozdzki z WorldEdit'a"
+  hotelCreationSuccessful: "&2Utworzyles hotel %hotel%"
+  deniedAction: "&4Nie mozesz tego zrobic bedac w trybie tworzenia!"
+  items: 
+   leather: 
+    lore1: "Nacisnij PPM, aby sprawdzic"
+    lore2: "nakladanie sie regionow"
+    name: "&bKawalek krowy"
+   compass: 
+    lore1: "Nacisnij LPM, aby sie teleportowac"
+    lore2: "Nacisnij PPM, aby przejsc przez sciane"
+    name: "&bWorldEdit'owy kompas"
+   wand: 
+    lore1: "Nacisnij LPM w jednym rogu"
+    lore2: "Nacisnij PPM w przeciwleglym rogu"
+    name: "&bWorldEdit'owa rozdzka"
+   sign: 
+    lore1: "Nacisnij PPM, aby postawic"
+    lore2: "Pierwsza linia: &9[Hotels]"
+    name: "&bFajna tabliczka"
+  armour: 
+   storeSuccess: "&aTwoja zbroja zostala przechowana"
+   restoreSuccess: "&aTwoja zbroja zostala przywrocona"
+   storeFail: "&4Nie mozna przechowac twojej zbroi"
+   restoreFail: "&4Nie znaleziono twojej zbroi w przechowalni"
+  selectionInvalid: "&4Zle zaznaczenie, zaznacz teren jeszcze raz"
+  rooms: 
+   fail: "&4Nie mozna utworzyc pokoju!"
+   alreadyExists: "&4Taki pokoj juz istnieje!"
+   notInHotel: "&4Pokoj nie znajduje sie w podanym hotelu!"
+  invalidChar: "&4Nazwa nie moze zawierac myslnika!"
+  inventory: 
+   storeSuccess: "&aTwoje inventory zostalo przechowane"
+   restoreSuccess: "&aTwoje inventory zostalo przywrocone"
+   storeFail: "&4Nie mozna przechowac twojego inventory"
+   restoreFail: "&4Nie znaleziono twojego inventory w przechowalni"
+ sign: 
+  use: 
+   notEnoughMoney: "&4Masz za malo pieniedzy, potrzebujesz jeszcze %missingmoney%"
+   differentRoomNums: "&4Numery pokojow sie nie zgadzaja!"
+   success: "&aWynajales pokoj %room% w hotelu %hotel% za $%price%"
+   maxEntendReached: "&4Przedluzyles juz wynajem maksymalne %max% razy!"
+   differentHotelNames: "&4Nazwy hoteli sie nie zgadzaja!"
+   nonExistentRoom: "&4Taki pokoj nie istnieje!"
+   extensionSuccessNoMore: "&aWynajem bylo przedluzane %tot% razy, nie mozesz tego wiecej robic!"
+   signOutOfRegion: "&4Tabliczka nie znajduje sie wewnatrz hotelu"
+   extensionSuccess: "&aWynajem bylo przedluzane %tot% razy, mozesz to zrobic jeszcze %left% razy!"
+   noAccount: "&4Nie masz zadnego konta z pieniedzmi!"
+   fileNonExistent: "&4Plik z tabliczkami nie istnieje!"
+   overRoomsPerHotelLimit: "&4Wynajmujesz juz maksymalnie dozwolone %limit% pokojow w tym hotelu!"
+   maxRoomsReached: "&4Osiagnales maksymalny limit %max% posiadanych pokojow"
+   taken: "&4Ten pokoj jest juz wynajety"
+  place: 
+   tooLong: "&4Numer pokoju lub cena sa za duze!"
+   noRegion: "&4Podany hotel lub pokoj nie istnieja!"
+   success: "&2Tabliczka hotelowa zostala utworzona!"
+   inRoomRegion: "&4Tabliczka nie moze byc wewnatrz pokoju!"
+   fileFail: "&4Nie mozna zapisac pliku tabliczek"
+   outOfRegion: "&4Tabliczka nie znajduje sie wewnatrz hotelu!"
+   emptySign: "&4Pusta tabliczka"
+   alreadyExists: "&4Tabliczka dla tego pokoju juz istnieje!"
+   noHotel: "&4Taki hotel nie istnieje"
+   noSeparator: "&4Trzecia linijka musi zawierac dwukropek"
+sign: 
+ room: 
+  total: "Razem pokojow"
+  name: "&2Pokoj"
+  free: "Wolnych pokojow"
+  breakDenied: "&4Nie mozesz zniszczyc tej tabliczki, pokoj jest wynajety!"
+ rentExpiredConsole: "Wynajem pokoju %room% w hotelu %hotel% gracza %player% dobiegl konca"
+ vacant: Wolne
+ rentExpiredPlayer: "&9Twoj wynajem pokoju %room% w hotelu %hotel% dobiegl konca"
+ permanent: Staly
+ reception: 
+  hotel: "&1Hotel %hotel%"
+  reception: "&aRecepcja"
+ occupied: Zajete
+ delete: 
+  roomNonExistent: "Plik tabliczek %filename% zostal usuniety, bo pokoj nie istnieje"
+  hotelName: "Plik tabliczek %filename% zostal usuniety, bo nie zgadzal sie z nazwa hotelu"
+  roomNum: "Plik tabliczek %filename% zostal usuniety, bo nie zgadzal sie z numerem pokoju"
+  location: "Plik tabliczek %filename% zostal usuniety, bo nie zgadzal sie z lokalizacja tabliczek"
+  reception: "Plik recepcji %filename% zostal usuniety, bo nie pokrywal sie z tym, co jest na mapie"

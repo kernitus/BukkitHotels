@@ -1,5 +1,6 @@
 package kernitus.plugin.Hotels.handlers;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,8 +9,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -211,9 +215,8 @@ public class HTConfigHandler {
 			//If there's a newer version of the config.yml embedded
 			int version = PLUGIN.getConfig().getInt("version", 0);
 			if( version < YamlConfiguration.loadConfiguration(PLUGIN.getResource("config.yml")).getInt("version") ){
-				Mes.printConsole("Newer config version available, backing up old one and saving new...");
-				backupconfig(getconfigYMLFile());
-				setupConfigyml();
+				Mes.printConsole("Newer config version available, upgrading you...");
+				upgradeconfigyml();
 
 				if(version < 2){ //This also include people that were testing 1.0.0 before the change
 					//Also set room region priorities to 10 to upgrade to new system
@@ -246,9 +249,83 @@ public class HTConfigHandler {
 		flags = getYML(getFlagsFile());
 	}
 
+	public static void upgradeconfigyml(){
+		//First back up current one
+		backupconfig(getconfigYMLFile());
+		//Then create a fresh copy of new one
+		setupConfigyml();
+
+		//Then go through old one and store all values
+		File backupFile = getFile("backup-config.yml");
+		YamlConfiguration backup = getYML(backupFile);
+		Map<String, Object> oldValues = backup.getValues(false); //This works because there are no subnodes in the config
+
+		File file = getconfigYMLFile();
+		
+		BufferedReader br = null;
+		
+		try {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+			System.out.println("br");
+		} catch (FileNotFoundException | UnsupportedEncodingException e2) {
+			e2.printStackTrace();
+		}
+
+		if(br == null){
+			PLUGIN.getLogger().log(Level.SEVERE, "Something went wrong while upgrading Hotels config.yml");
+			return;
+		}
+
+		//Load up file in arraylist for editing
+		ArrayList<String> contents = new ArrayList<String>();
+		try {
+			String line = br.readLine();
+
+			while(line != null){
+				contents.add(line);
+				line = br.readLine();
+			}
+
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Loop through contents until a line with path + ":" is found, then check value. If they differ set old one, then remove from map
+		for(int i = 0; i < contents.size(); i++){
+			String line = contents.get(i);
+			line.trim(); //Remove interfering spaces
+			String[] pieces = line.split(":"); //Split key and value
+			if(pieces.length <2) continue; //Not a line with a value
+			if(oldValues.containsKey(pieces[0])){ //If keys match
+
+				//If key is "version" we must keep new value
+				if(pieces[0].equals("version")) continue;
+
+				String oldValue = String.valueOf(oldValues.get(pieces[0]));
+				
+				if(oldValue.equals(pieces[1])){ oldValues.remove(pieces[0]); continue; } //Only set it if they differ
+
+				contents.set(i, pieces[0] + ": " + oldValue);
+			}
+		}
+
+		//Save file contents
+		try {
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+			for(String line : contents){
+				bw.write(line);
+				bw.newLine();
+			}
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void setupLanguage(Language lang, Plugin PLUGIN){
 		String code = lang.getStandardCode();
-		
+
 		PLUGIN.saveResource("locale-" + code + ".yml", false);
 		File loc = getLocaleFile();
 		File codeLoc = getFile("locale-" + code + ".yml");

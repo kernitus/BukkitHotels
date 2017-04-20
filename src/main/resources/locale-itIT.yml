@@ -1,6 +1,7 @@
 # Hotels plugin by kernitus
 # Traduzione di kernitus
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
+language: itIT
 message: 
  hotel: 
   exit: "&aTorna presto all'hotel %hotel%"
@@ -16,7 +17,6 @@ main:
  disable: 
   success: "%pluginname% v%version% è stato disabilitato"
  updateAvailableLink: "Per scaricarlo, vai a %link%"
-language: itIT
 chat: 
  commands: 
   rename: 

@@ -15,6 +15,7 @@
 # Russian (Русский): ru, ruRU
 # Spanish (Español): es, esES
 # German (Deutsch): de, deDE
+# Polish (Polski): pl, plPL
 language: auto
 
 # Maximum amount of hotels a player can own
@@ -78,4 +79,4 @@ debug: false
 
 # This denotes the current config version
 # Changing this will reset the config
-version: 5
+version: 6

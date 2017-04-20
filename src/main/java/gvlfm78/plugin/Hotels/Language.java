@@ -18,7 +18,8 @@ public enum Language {
 	French (new String[] {"frFR", "fr"}),
 	Russian (new String[] {"ruRU", "ru"}),
 	Spanish (new String[] {"esES", "es"}),
-	German (new String[] {"deDE", "de"});
+	German (new String[] {"deDE", "de"}),
+	Polish (new String[] {"plPL", "pl"});
 
 	private final String[] codes = new String[2];       
 
