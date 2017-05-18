@@ -52,14 +52,13 @@ public class HTConfigHandler {
 		saveMessageQueue(getMessageQueue());
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void localeLanguageSelector(){
 		Language lang = getLanguage();
 		String loclang = locale.getString("language"); //From already-generated locale.yml
 
 		if(	(loclang!=null && !lang.equals(Language.getFromCode(loclang)))
 				|| (locale.getInt("version") <
-						YamlConfiguration.loadConfiguration(PLUGIN.getResource("locale-" + lang.getStandardCode() + ".yml")).getInt("version")
+						YamlConfiguration.loadConfiguration(new InputStreamReader(PLUGIN.getResource("locale-" + lang.getStandardCode() + ".yml"))).getInt("version")
 						)	){
 			backupconfig(getLocaleFile()); //Backup current locale and make new one
 			PLUGIN.getLogger().info("Language strings have been backed-up and reset");
@@ -212,7 +211,6 @@ public class HTConfigHandler {
 		file.renameTo(backup);
 		return backup;
 	}
-	@SuppressWarnings("deprecation")
 	public static void reloadConfigs(){
 		//Reload config.yml
 		if(getconfigYMLFile().exists()){
@@ -220,7 +218,7 @@ public class HTConfigHandler {
 
 			//If there's a newer version of the config.yml embedded
 			int version = PLUGIN.getConfig().getInt("version", 0);
-			if( version < YamlConfiguration.loadConfiguration(PLUGIN.getResource("config.yml")).getInt("version") ){
+			if( version < YamlConfiguration.loadConfiguration(new InputStreamReader(PLUGIN.getResource("config.yml"))).getInt("version")){
 				Mes.printConsole("Newer config version available, upgrading you...");
 				upgradeconfigyml();
 
