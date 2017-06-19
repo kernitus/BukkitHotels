@@ -79,4 +79,4 @@ debug: false
 
 # This denotes the current config version
 # Changing this will reset the config
-version: 6
+version: 7

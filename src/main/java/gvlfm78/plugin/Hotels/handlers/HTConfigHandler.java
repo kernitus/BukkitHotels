@@ -222,7 +222,7 @@ public class HTConfigHandler {
 				Mes.printConsole("Newer config version available, upgrading you...");
 				upgradeconfigyml();
 
-				if(version < 2){ //This also include people that were testing 1.0.0 before the change
+				if(version < 7){ //This also include people that were testing 1.0.0 before the change
 					//Also set room region priorities to 10 to upgrade to new system
 					for(Hotel hotel: HotelsAPI.getAllHotels()){
 						for(Room room: hotel.getRooms())
