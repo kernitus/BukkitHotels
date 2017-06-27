@@ -460,7 +460,7 @@ public class Room {
 		sconfig = getSignConfig();
 	}
 
-	public void createSignConfig(Player p, long timeInMins, double cost, Location signLocation) throws IOException{
+	public void createSignConfig(Player p, long timeInMins, double cost, Location signLocation) throws IOException {
 		if(!doesSignFileExist()){
 			setRentTime(timeInMins);
 			setHotelNameInConfig(hotel.getName());
@@ -469,6 +469,10 @@ public class Room {
 			setSignLocation(signLocation);
 		}
 		saveSignConfig();
+	}
+	
+	public void createSignConfig(Player p, String time, String cost, Location signLocation) throws IOException {
+		createSignConfig(p, HTSignManager.TimeConverter(time), HTSignManager.CostConverter(cost), signLocation);
 	}
 
 	public void updateSign() throws EventCancelledException {
