@@ -1,22 +1,6 @@
 package kernitus.plugin.Hotels.managers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.BlockVector2D;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.*;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
@@ -36,8 +20,15 @@ import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionType;
-
 import kernitus.plugin.Hotels.handlers.HTConfigHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * @author desht, very heavily modified by kernitus to use only WE 6+ API and support polygonal regions
@@ -50,12 +41,7 @@ public class HTTerrainManager {
 
 	private final WorldEdit we;
 
-	public HTTerrainManager(Player player) {
-		WorldEditPlugin wep = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-		we = wep.getWorldEdit();
-	}
-
-	public HTTerrainManager(org.bukkit.World world) {
+	public HTTerrainManager() {
 		we = ((WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit")).getWorldEdit();
 	}
 	public void saveTerrain(File saveFile, org.bukkit.World world, Location l1, Location l2) throws DataException, IOException, WorldEditException {
@@ -86,7 +72,7 @@ public class HTTerrainManager {
 		EditSession editSession = we.getEditSessionFactory().getEditSession(world, -1);
 		BlockArrayClipboard clipboard = new BlockArrayClipboard(selection);
 		clipboard.setOrigin(origin);
-		
+
 		ForwardExtentCopy copy = new ForwardExtentCopy(editSession, selection, clipboard, origin);
 		Operations.complete(copy);
 		FileOutputStream fos = new FileOutputStream(saveFile);
@@ -112,10 +98,10 @@ public class HTTerrainManager {
 			editSession.enableQueue();
 			editSession.setFastMode(true);
 
-			for (BlockVector vec : cuboid) {
+			for (BlockVector vec : cuboid)
 				if (poly.contains(vec)) //If location in cuboid is also in poly, paste it
 					editSession.setBlock(vec, clipboard.getBlock(vec));
-			}
+
 			editSession.flushQueue(); //Paste all of the blocks once ready
 		}
 		else {
@@ -134,15 +120,15 @@ public class HTTerrainManager {
 		Region region;
 		switch(pregion.getType()){
 
-		case CUBOID:
-			region = new CuboidRegion(pregion.getMinimumPoint(), pregion.getMaximumPoint());
-			break;
+			case CUBOID:
+				region = new CuboidRegion(pregion.getMinimumPoint(), pregion.getMaximumPoint());
+				break;
 
-		case POLYGON:
-			region = new Polygonal2DRegion(bworld, pregion.getPoints(), pregion.getMinimumPoint().getBlockY(), pregion.getMaximumPoint().getBlockY());
-			break;
+			case POLYGON:
+				region = new Polygonal2DRegion(bworld, pregion.getPoints(), pregion.getMinimumPoint().getBlockY(), pregion.getMaximumPoint().getBlockY());
+				break;
 
-		default: throw new RegionOperationException("Region is neither Cuboid or Polygonal");
+			default: throw new RegionOperationException("Region is neither Cuboid or Polygonal");
 		}
 		return region;
 	}
@@ -159,7 +145,7 @@ public class HTTerrainManager {
 				Math.min(l1.getBlockX(), l2.getBlockX()),
 				Math.min(l1.getBlockY(), l2.getBlockY()),
 				Math.min(l1.getBlockZ(), l2.getBlockZ())
-				);
+		);
 	}
 
 	private Vector getMax(Location l1, Location l2) {
@@ -167,6 +153,6 @@ public class HTTerrainManager {
 				Math.max(l1.getBlockX(), l2.getBlockX()),
 				Math.max(l1.getBlockY(), l2.getBlockY()),
 				Math.max(l1.getBlockZ(), l2.getBlockZ())
-				);
+		);
 	}
 }

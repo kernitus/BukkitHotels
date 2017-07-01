@@ -1,28 +1,5 @@
 package kernitus.plugin.Hotels.managers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.WeatherType;
-import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -34,11 +11,18 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.flags.registry.SimpleFlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
-import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
-import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import kernitus.plugin.Hotels.handlers.HTConfigHandler;
+import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class HTWorldGuardManager {
@@ -150,50 +134,36 @@ public class HTWorldGuardManager {
 		return getRM(world).hasRegion(regionName);
 	}
 	public static ProtectedRegion getHotelRegion(World world, String name){
-		return getRegion(world, "hotel-"+name);
+		return getRegion(world, "hotel-" + name);
 	}
 	public static ProtectedRegion getRoomRegion(World world, String hotelName, String num){
-		return getRegion(world, "hotel-"+hotelName+"-"+num);
-	}
-	public static ProtectedRegion getRoomRegion(World world, String hotelName, int num){
-		return getRegion(world, "hotel-"+hotelName+"-"+num);
+		return getRegion(world, "hotel-" + hotelName + "-" + num);
 	}
 	public static void renameRegion(String oldname, String newname, World world){
 		if(!hasRegion(world, oldname)) return; //If old region exists
-		ProtectedRegion oldr = getRegion(world, oldname);//Get old region
-		ProtectedRegion newr2;
-		if(oldr instanceof ProtectedCuboidRegion)
-			newr2 = new ProtectedCuboidRegion(newname, oldr.getMinimumPoint(), oldr.getMaximumPoint());
-		else if(oldr instanceof ProtectedPolygonalRegion)
-			newr2 = new ProtectedPolygonalRegion(newname, oldr.getPoints(), oldr.getMinimumPoint().getBlockY(), oldr.getMaximumPoint().getBlockY());
-		else{ System.out.println("There was a problem renaming the region "+oldname); return; }
+		ProtectedRegion oldRegion = getRegion(world, oldname);//Get old region
 
-		addRegion(world, newr2);
-		ProtectedRegion newr = getRegion(world, newname);
-		Map<Flag<?>, Object> flags = oldr.getFlags();
-		newr.setFlags(flags);
-		DefaultDomain owners = oldr.getOwners();
-		DefaultDomain members = oldr.getMembers();
-		newr.setOwners(owners);
-		newr.setMembers(members);
-		removeRegion(world, oldr.getId());
+		ProtectedRegion newRegion = getRegion(world, newname);
+
+		newRegion.copyFrom(oldRegion);
+
+		removeRegion(world, oldRegion);
 		saveRegions(world);
 	}
 	public static Collection<ProtectedRegion> getRegions(World world){
 		return getRM(world).getRegions().values();
 	}
-	public static boolean isOwner(Player p,ProtectedRegion r){
-		return r.getOwners().contains(p.getName())||r.getOwners().contains(p.getUniqueId());
+	public static boolean isOwner(Player p, ProtectedRegion r){
+		return r.getOwners().contains(p.getName()) || r.getOwners().contains(p.getUniqueId());
 	}
-	public static boolean isOwner(Player p, String id,World w){
-		return hasRegion(w,id) && isOwner(p, getRegion(w, id));
+	public static boolean isOwner(Player p, String id, World w){
+		return hasRegion(w, id) && isOwner(p, getRegion(w, id));
 	}
 	public static boolean doTwoRegionsOverlap(ProtectedRegion r1, ProtectedRegion r2){
 		return r2.containsAny(r1.getPoints());
 	}
 	public static boolean doHotelRegionsOverlap(ProtectedRegion region, World world){
 		Collection<ProtectedRegion> regions = getRegions(world);
-		System.out.println("World: "+world.getName()+" regions "+regions.size()+" Region: "+region.getId());
 		List<ProtectedRegion> inter = region.getIntersectingRegions(regions);
 		for(ProtectedRegion reg : inter)
 			if(reg.getId().startsWith("hotel-")) return true;
@@ -219,7 +189,7 @@ public class HTWorldGuardManager {
 		for(String key : section.getKeys(true)){
 			String pureKey = key.replaceAll(".+\\.", "");
 			String keyValue = section.getString(key);
-			if(keyValue==null || keyValue.equalsIgnoreCase("none") || keyValue.startsWith("MemorySection")) continue;
+			if(keyValue == null || keyValue.equalsIgnoreCase("none") || keyValue.startsWith("MemorySection")) continue;
 
 			if(keyValue.contains("-g ")){	
 				final Pattern pattern = Pattern.compile("(\\s?)(-g\\s)(\\w+)(\\s?)");
@@ -230,8 +200,10 @@ public class HTWorldGuardManager {
 					groupFlags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), keyValue);
 					groupFlagValues.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), pureGroupFlag);
 				}
+
 				keyValue = keyValue.replaceAll("\\s?-g\\s\\w+\\s?", "");
 			}
+
 			switch(pureKey){
 			case "GREETING":
 				if(Boolean.valueOf(keyValue)){
@@ -274,9 +246,7 @@ public class HTWorldGuardManager {
 			case "DENY-SPAWN":
 				List<String> entityList = section.getStringList(key);
 				Set<EntityType> entitySet = new HashSet<EntityType>();
-				for(String entity : entityList)
-					entitySet.add(EntityType.valueOf(entity));
-
+				entityList.forEach(entity -> entitySet.add(EntityType.valueOf(entity)));
 				flags.put(DefaultFlag.fuzzyMatchFlag(registry, pureKey), entitySet); break;
 			case "BLOCKED-CMDS": case "ALLOWED-CMDS":
 				String[] cmdsValues = keyValue.split(",");

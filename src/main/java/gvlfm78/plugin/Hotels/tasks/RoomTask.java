@@ -1,33 +1,24 @@
 package kernitus.plugin.Hotels.tasks;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.UUID;
-
+import com.sk89q.worldedit.WorldEditException;
+import com.sk89q.worldedit.world.DataException;
+import kernitus.plugin.Hotels.Hotel;
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.Room;
+import kernitus.plugin.Hotels.exceptions.*;
+import kernitus.plugin.Hotels.handlers.HTConfigHandler;
+import kernitus.plugin.Hotels.managers.HTFileFinder;
+import kernitus.plugin.Hotels.managers.Mes;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.sk89q.worldedit.WorldEditException;
-import com.sk89q.worldedit.world.DataException;
-
-import kernitus.plugin.Hotels.Hotel;
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.Room;
-import kernitus.plugin.Hotels.exceptions.BlockNotSignException;
-import kernitus.plugin.Hotels.exceptions.EventCancelledException;
-import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
-import kernitus.plugin.Hotels.exceptions.NotRentedException;
-import kernitus.plugin.Hotels.exceptions.RenterNonExistentException;
-import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
-import kernitus.plugin.Hotels.exceptions.ValuesNotMatchingException;
-import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
-import kernitus.plugin.Hotels.handlers.HTConfigHandler;
-import kernitus.plugin.Hotels.managers.HTFileFinder;
-import kernitus.plugin.Hotels.managers.Mes;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.UUID;
 
 public class RoomTask extends BukkitRunnable {
 
@@ -48,6 +39,7 @@ public class RoomTask extends BukkitRunnable {
 
 		for(String fileName : fileslist){ //Looping through all the files
 			File file = HTConfigHandler.getFile("Signs" + File.separator + fileName);
+
 			if(!fileName.matches("\\w+-\\d+.yml")){ file.delete(); continue; }//Delete all non-room signs in folder
 
 			Mes.debug("Checking room sign: " + file.getAbsolutePath());
@@ -71,7 +63,8 @@ public class RoomTask extends BukkitRunnable {
 				continue;
 			}
 
-			Room room = new Room(world, hotelName, String.valueOf(roomNum)); //Creating room object with info from file
+            //Creating room object with info from file
+			Room room = new Room(world, hotelName, String.valueOf(roomNum));
 
 			boolean changed = true;
 
@@ -91,14 +84,11 @@ public class RoomTask extends BukkitRunnable {
 			}
 		}
 
-		Bukkit.getScheduler().runTaskLater(plugin, new Runnable () {
-			public void run() {
-				Mes.debug("Updating reception signs...");
-				//Update the reception signs for hotels that had their rooms changed
-				for(Hotel hotel : hotelsThatHadRoomsUpdate)
-					hotel.updateReceptionSigns();
-			}
-		}, 20 * plugin.getConfig().getLong("receptionSignUpdateDelay", 10L)); //10 seconds after updating rooms we update reception signs to redistribute the lag
+		Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Mes.debug("Updating reception signs...");
+            //Update the reception signs for hotels that had their rooms changed
+            hotelsThatHadRoomsUpdate.forEach(hotel -> hotel.updateReceptionSigns());
+        }, 20 * plugin.getConfig().getLong("receptionSignUpdateDelay", 10L)); //10 seconds after updating rooms we update reception signs to redistribute the lag
 	}
 
 	private World getWorldFromRoomSign(YamlConfiguration config){
@@ -106,7 +96,7 @@ public class RoomTask extends BukkitRunnable {
 
 		if(world==null || world.isEmpty()) return null; //String useless, can't proceed
 
-		World w = null;
+		World w;
 		//Checking if it's a world name
 		w = Bukkit.getWorld(world);
 		if(w!=null) return w;

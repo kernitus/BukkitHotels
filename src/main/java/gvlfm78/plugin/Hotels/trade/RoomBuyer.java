@@ -2,17 +2,22 @@ package kernitus.plugin.Hotels.trade;
 
 import org.bukkit.entity.Player;
 
-import kernitus.plugin.Hotels.Room;
-
-public class RoomBuyer extends Room implements Buyer {
+public class RoomBuyer implements Buyer {
 
 	private final Player p;
 	private double price;
+	private final String hotelName;
+	private final String roomNum;
 
-	public RoomBuyer(Room room, Player p, double price) {
-		super(room.getHotel(), room.getNum());
+	public RoomBuyer(String hotelName, String roomNum, Player p, double price) {
+		this.hotelName = hotelName;
+		this.roomNum = roomNum;
 		this.p = p;
 		this.price = price;
+	}
+
+	public String getRoomNum(){
+		return roomNum;
 	}
 
 	@Override
@@ -23,9 +28,13 @@ public class RoomBuyer extends Room implements Buyer {
 	public double getPrice() {
 		return price;
 	}
+	@Override
+	public String getHotelName(){
+		return hotelName;
+	}
 
 	@Override
 	public void setPrice(double price) {
-		this.price = price;	
+		this.price = price;
 	}
 }

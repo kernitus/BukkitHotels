@@ -1,17 +1,16 @@
 package kernitus.plugin.Hotels.updates;
 
-import java.io.File;
-import java.util.logging.Logger;
-
+import kernitus.plugin.Hotels.HotelsMain;
+import kernitus.plugin.Hotels.managers.Mes;
+import net.gravitydevelopment.updater.Updater;
+import net.gravitydevelopment.updater.Updater.UpdateResult;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.managers.Mes;
-import net.gravitydevelopment.updater.Updater;
-import net.gravitydevelopment.updater.Updater.UpdateResult;
+import java.io.File;
+import java.util.logging.Logger;
 
 public class HTUpdateChecker {
 
@@ -82,7 +81,6 @@ public class HTUpdateChecker {
 	}
 	public boolean shouldUpdate(String localVersion, String remoteVersion) {
 		return versionCompare(localVersion, remoteVersion) < 0;
-		//return !localVersion.equalsIgnoreCase(remoteVersion);
 	}
 	public Integer versionCompare(String oldVer, String newVer){
 		String[] vals1 = oldVer.split("\\.");

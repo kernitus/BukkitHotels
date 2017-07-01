@@ -1,14 +1,13 @@
 package kernitus.plugin.Hotels.trade;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+import kernitus.plugin.Hotels.Hotel;
+import kernitus.plugin.Hotels.Room;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import kernitus.plugin.Hotels.Hotel;
-import kernitus.plugin.Hotels.Room;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class TradesHolder {
 
@@ -49,24 +48,25 @@ public class TradesHolder {
 	}
 	public static HotelBuyer getBuyerFromHotel(Hotel hotel){
 		for(HotelBuyer hb : hbuyers.values()){
-			if(hb.getName().equalsIgnoreCase(hotel.getName()))
+			if(hb.getHotelName().equalsIgnoreCase(hotel.getName()))
 				return hb;
 		}
 		return null;
 	}
 	public static RoomBuyer getBuyerFromRoom(Room room){
 		for(RoomBuyer rb : rbuyers.values()){
-			if(rb.getRegion().getId().equalsIgnoreCase(room.getRegion().getId()))
+			if(rb.getHotelName().equalsIgnoreCase(room.getHotel().getName()) &&
+					rb.getRoomNum().equalsIgnoreCase(room.getNum()))
 				return rb;
 		}
 		return null;
 	}
 	public static void addHotelBuyer(Player p, Hotel hotel, double price){
 		if(!hbuyers.containsKey(p))
-			hbuyers.put(p, new HotelBuyer(hotel, p, price));
+			hbuyers.put(p, new HotelBuyer(hotel.getName(), p, price));
 	}
 	public static void addRoomBuyer(Player p, Room room, double price){
 		if(!rbuyers.containsKey(p))
-			rbuyers.put(p, new RoomBuyer(room, p, price));
+			rbuyers.put(p, new RoomBuyer(room.getHotel().getName(), room.getNum(), p, price));
 	}
 }

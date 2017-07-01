@@ -1,49 +1,12 @@
 package kernitus.plugin.Hotels;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.world.DataException;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
-import kernitus.plugin.Hotels.events.RentExpiryEvent;
-import kernitus.plugin.Hotels.events.RoomDeleteEvent;
-import kernitus.plugin.Hotels.events.RoomRentEvent;
-import kernitus.plugin.Hotels.events.RoomRenumberEvent;
-import kernitus.plugin.Hotels.events.RoomSignUpdateEvent;
-import kernitus.plugin.Hotels.exceptions.BlockNotSignException;
-import kernitus.plugin.Hotels.exceptions.EventCancelledException;
-import kernitus.plugin.Hotels.exceptions.FriendNotFoundException;
-import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
-import kernitus.plugin.Hotels.exceptions.NotRentedException;
-import kernitus.plugin.Hotels.exceptions.NumberTooLargeException;
-import kernitus.plugin.Hotels.exceptions.OutOfRegionException;
-import kernitus.plugin.Hotels.exceptions.RenterNonExistentException;
-import kernitus.plugin.Hotels.exceptions.RoomNonExistentException;
-import kernitus.plugin.Hotels.exceptions.RoomNotSetupException;
-import kernitus.plugin.Hotels.exceptions.RoomSignInRoomException;
-import kernitus.plugin.Hotels.exceptions.UserAlreadyThereException;
-import kernitus.plugin.Hotels.exceptions.UserNonExistentException;
-import kernitus.plugin.Hotels.exceptions.ValuesNotMatchingException;
-import kernitus.plugin.Hotels.exceptions.WorldNonExistentException;
+import kernitus.plugin.Hotels.events.*;
+import kernitus.plugin.Hotels.exceptions.*;
 import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import kernitus.plugin.Hotels.handlers.HTMessageQueue;
 import kernitus.plugin.Hotels.handlers.MessageType;
@@ -55,6 +18,18 @@ import kernitus.plugin.Hotels.signs.RoomSign;
 import kernitus.plugin.Hotels.tasks.RoomResetQueue;
 import kernitus.plugin.Hotels.trade.RoomBuyer;
 import kernitus.plugin.Hotels.trade.TradesHolder;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 public class Room {
 
@@ -343,7 +318,7 @@ public class Room {
 				if(room.shouldReset() && room.getRegion().contains(b.getX(), b.getY(), b.getZ())) throw new RoomSignInRoomException();
 
 			//Create and save schematic file based on room region
-			HTTerrainManager tm = new HTTerrainManager(world);
+			HTTerrainManager tm = new HTTerrainManager();
 
 			File schematicFile = HTConfigHandler.getSchematicFile(this);
 
@@ -675,7 +650,7 @@ public class Room {
 	}
 
 	public void reset() throws IOException, WorldEditException, DataException {
-		HTTerrainManager tm = new HTTerrainManager(world);
+		HTTerrainManager tm = new HTTerrainManager();
 		ProtectedRegion region = getRegion();
 		Vector origin = tm.getOriginFromRegion(tm.getRegionFromProtectedRegion(world, region));
 		Location loc = new Location(world, origin.getX(), origin.getY(), origin.getZ());
@@ -754,8 +729,15 @@ public class Room {
 	public void removeBuyer(){
 		TradesHolder.removeRoomBuyer(getBuyer().getPlayer());
 	}
+
+	/**
+	 * If config option enabled and state true
+	 * allow owner editing of room region
+	 * by setting them as members.
+	 * Otherwise remove them as members
+	 * @param state If we should allow owner editing
+	 */
 	public void setOwnerEditing(ProtectedRegion region, boolean state){
-		//If config option is enabled and state is true we allow owner editing by setting them as room region members
 		if(HTConfigHandler.getconfigYML().getBoolean("stopOwnersEditingRentedRooms", true))
 			if(state) HTWorldGuardManager.addMembers(hotel.getOwners(), region);
 			else HTWorldGuardManager.removeMembers(hotel.getOwners(), region);

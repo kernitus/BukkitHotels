@@ -1,12 +1,11 @@
 package kernitus.plugin.Hotels.managers;
 
-import java.util.logging.Logger;
-
+import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import kernitus.plugin.Hotels.handlers.HTConfigHandler;
+import java.util.logging.Logger;
 
 public class Mes {
 
@@ -17,14 +16,13 @@ public class Mes {
 			String prefix = (HTConfigHandler.getLocale().getString("chat.prefix") + " ");
 			mes = ChatColor.translateAlternateColorCodes('&', (prefix + mes));
 		}
-		else
-			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
+		else mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
 		return mes;
 	}
 
 	public static String getStringNoPrefix(String path){
 		String mes = HTConfigHandler.getLocale().getString(path);
-		return mes!=null ? ChatColor.translateAlternateColorCodes('&', mes) : "Message " + path + " is null!";
+		return mes != null ? ChatColor.translateAlternateColorCodes('&', mes) : "Message " + path + " is null!";
 	}
 	public static void mes(Player p, String path){
 		p.sendMessage(getString(path));
