@@ -140,7 +140,7 @@ public class HTCmdExecutor implements CommandExecutor {
 			if(!room.doesSignFileExist()){ Mes.mes(p, "chat.sign.use.fileNonExistent"); return false; }
 
 			if(!hotel.getName().equalsIgnoreCase(room.getHotelNameFromConfig())){ Mes.mes(p, "chat.sign.use.differentHotelNames"); return false; }
-			if(room.getNum()!=room.getRoomNumFromConfig()){ Mes.mes(p, "chat.sign.use.differentRoomNums"); return false; };
+			if(!(room.getNum().equals(room.getRoomNumFromConfig()))){ Mes.mes(p, "chat.sign.use.differentRoomNums"); return false; }
 			HTSignManager.rentRoom(p, room);
 		}
 		else if(args[0].equalsIgnoreCase("friend") || args[0].equalsIgnoreCase("f")){
@@ -168,11 +168,11 @@ public class HTCmdExecutor implements CommandExecutor {
 			case "list":
 				if(length<4){ Mes.mes(p ,"chat.commands.friend.usage");  return false; }
 				Room room = new Room(args[2], args[3]);
-				if(!(isPlayer) || (isPlayer && room.isRenter(((Player) sender).getUniqueId())))
+				if(room.isRenter(((Player) sender).getUniqueId()))
 					HTCmdSurrogate.cmdFriendList(sender, args[2], args[3]);
 				else Mes.mes(p ,"chat.commands.friend.notRenter"); break;
 
-			default: Mes.mes(p ,"chat.commands.friend.usage");	
+			default: Mes.mes(p ,"chat.commands.friend.usage");
 			}
 
 		}
@@ -489,7 +489,7 @@ public class HTCmdExecutor implements CommandExecutor {
 			HotelBuyer hb = hotel.getBuyer();
 			Player buyer = hb.getPlayer();
 
-			if(!buyer.hasPlayedBefore() || !buyer.equals(p) || buyer == null){ Mes.mes(p, "chat.commands.buyhotel.notOnSale"); return false; }
+			if(buyer == null || !buyer.hasPlayedBefore() || !buyer.equals(p)){ Mes.mes(p, "chat.commands.buyhotel.notOnSale"); return false; }
 
 			//They are the buyer the hotel owner has specified
 			double balance = HotelsMain.economy.getBalance(p);
@@ -632,7 +632,7 @@ public class HTCmdExecutor implements CommandExecutor {
 			if(rb==null){ Mes.mes(p, "chat.commands.buyroom.notOnSale"); return false; }
 			Player buyer = rb.getPlayer();
 
-			if(!buyer.hasPlayedBefore() || !buyer.equals(p) || buyer == null){ Mes.mes(p, "chat.commands.buyroom.notOnSale"); return false; }
+			if(buyer == null || !buyer.hasPlayedBefore() || !buyer.equals(p)){ Mes.mes(p, "chat.commands.buyroom.notOnSale"); return false; }
 
 			//They are the buyer the room owner has specified
 			double balance = HotelsMain.economy.getBalance(p);

@@ -25,15 +25,13 @@ public class HTUpdateListener implements Listener{
 	public void onPlayerJoin(PlayerJoinEvent e){
 		final Player p = e.getPlayer();
 		if(p.hasPermission("hotels.*")){
-			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable () {
-				public void run() {
+			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 
-					HTUpdateChecker updateChecker = new HTUpdateChecker(plugin, pluginFile);
+                HTUpdateChecker updateChecker = new HTUpdateChecker(plugin, pluginFile);
 
-					// Checking for updates
-					updateChecker.sendUpdateMessages(p);
-				}
-			},20L);
+                // Checking for updates
+                updateChecker.sendUpdateMessages(p);
+            },20L);
 		}
 	}
 }

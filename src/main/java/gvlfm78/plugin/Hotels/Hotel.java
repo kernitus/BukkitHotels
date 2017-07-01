@@ -37,7 +37,7 @@ public class Hotel {
 
 	private World world;
 	private String name;
-	public YamlConfiguration hconfig;
+	private YamlConfiguration hconfig;
 
 	public Hotel(World world, String name){
 		this.world = world;
@@ -68,7 +68,7 @@ public class Hotel {
 	////////Getters////////
 	///////////////////////
 	public boolean exists(){
-		return (world == null || name == null) ? false : HTWorldGuardManager.hasRegion(world, "hotel-" + name);
+		return world != null && name != null && HTWorldGuardManager.hasRegion(world, "hotel-" + name);
 	}
 	public World getWorld(){
 		return world;

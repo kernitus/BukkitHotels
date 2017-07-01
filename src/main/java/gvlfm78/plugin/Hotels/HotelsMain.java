@@ -3,6 +3,7 @@ package kernitus.plugin.Hotels;
 import java.io.IOException;
 import java.util.HashMap;
 
+import kernitus.plugin.Hotels.handlers.RoomCommand;
 import org.bstats.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -35,8 +36,9 @@ public class HotelsMain extends JavaPlugin{
 
 		PluginDescriptionFile pdfFile = this.getDescription();
 		//Listeners and stuff
-		getServer().getPluginManager().registerEvents((new HTListener()), this);//Firing event listener
-		getCommand("Hotels").setExecutor(new HTCmdExecutor(this));//Firing commands listener
+		getServer().getPluginManager().registerEvents((new HTListener()), this);//Fire event listener
+		getCommand("Hotels").setExecutor(new HTCmdExecutor(this));//Fire main commands listener
+		getCommand("Room").setExecutor(new RoomCommand(this)); //Fire room command listener
 		
 		setupEconomy();
 
@@ -57,7 +59,9 @@ public class HotelsMain extends JavaPlugin{
 		}
 
 		//Logging to console the correct enabling of Hotels
-		getLogger().info(Mes.getStringNoPrefix("main.enable.success").replaceAll("%pluginname%", pdfFile.getName()).replaceAll("%version%", pdfFile.getVersion()));
+		getLogger().info(Mes.getStringNoPrefix("main.enable.success")
+				.replaceAll("%pluginname%", pdfFile.getName())
+				.replaceAll("%version%", pdfFile.getVersion()));
 
 		final int hotelsCount = HotelsAPI.getHotelCount();
 
@@ -168,12 +172,10 @@ public class HotelsMain extends JavaPlugin{
 
 			final HotelsMain plugin = this;
 
-			Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable (){
-				public void run(){
-					HTUpdateChecker HUC = new HTUpdateChecker(plugin, plugin.getFile());
-					HUC.sendUpdateMessages(getLogger());
-				}
-			},20L);
+			Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
+                HTUpdateChecker HUC = new HTUpdateChecker(plugin, plugin.getFile());
+                HUC.sendUpdateMessages(getLogger());
+            }, 20L);
 		}
 	}
 	@Override

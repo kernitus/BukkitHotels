@@ -72,8 +72,7 @@ public class RoomSign extends AbstractSign{
 
 		//Checking if it's a world UUID
 		UUID id = UUID.fromString(world);
-		if(id!=null)
-			w = Bukkit.getWorld(id);
+		w = Bukkit.getWorld(id);
 
 		return w;
 	}

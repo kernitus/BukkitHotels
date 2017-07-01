@@ -67,8 +67,7 @@ public class ReceptionSign extends AbstractSign {
 
 		//Checking if it's a world UUID
 		UUID id = UUID.fromString(world);
-		if(id!=null)
-			w = Bukkit.getWorld(id);
+		w = Bukkit.getWorld(id);
 
 		if(w!=null) return w; //Successfully got world from UUID
 
@@ -103,11 +102,9 @@ public class ReceptionSign extends AbstractSign {
 		if(s==null) return;
 		Block b = s.getBlock();
 
-		if(s!=null){
-			String Line1 = ChatColor.stripColor(s.getLine(0));
-			if(Line1.matches("Reception") || ChatColor.stripColor(Line1).matches(ChatColor.stripColor(Mes.getStringNoPrefix("Sign.reception")))){
-				b.setType(Material.AIR);
-			}
+		String Line1 = ChatColor.stripColor(s.getLine(0));
+		if(Line1.matches("Reception") || ChatColor.stripColor(Line1).matches(ChatColor.stripColor(Mes.getStringNoPrefix("Sign.reception")))){
+			b.setType(Material.AIR);
 		}
 	}
 	public void saveConfig(){

@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 public interface Buyer {
 	
-	abstract Player getPlayer();
-	abstract double getPrice();
-	abstract void setPrice(double price);
+	Player getPlayer();
+	double getPrice();
+	void setPrice(double price);
 }

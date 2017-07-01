@@ -59,13 +59,7 @@ public class SpigotUpdateChecker {
 			connection.setRequestMethod(REQUEST_METHOD);
 			connection.getOutputStream().write(WRITE_STRING.getBytes("UTF-8"));
 		}
-		catch (ProtocolException e1){
-			result = UpdateResult.FAIL_SPIGOT;
-		}
-		catch (UnsupportedEncodingException e){
-			result = UpdateResult.FAIL_SPIGOT;
-		}
-		catch (IOException e){
+		catch (IOException e1){
 			result = UpdateResult.FAIL_SPIGOT;
 		}
 		String version;

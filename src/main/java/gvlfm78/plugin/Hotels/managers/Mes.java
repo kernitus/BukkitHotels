@@ -34,7 +34,7 @@ public class Mes {
 		else s.sendMessage(getStringNoPrefix(path));
 	}
 	public static boolean hasPerm(CommandSender sender, String perm){
-		return sender instanceof Player ? hasPerm( ( (Player) sender), perm) : true;
+		return !(sender instanceof Player) || hasPerm(((Player) sender), perm);
 	}
 	public static boolean hasPerm(Player player, String perm){
 		return player.hasPermission("hotels.*") || player.hasPermission(perm) || player.hasPermission(perm + ".user") || player.hasPermission(perm + ".admin");

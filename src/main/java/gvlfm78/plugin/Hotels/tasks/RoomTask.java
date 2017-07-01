@@ -32,11 +32,11 @@ import kernitus.plugin.Hotels.managers.Mes;
 public class RoomTask extends BukkitRunnable {
 
 	HotelsMain plugin;
-	
+
 	public RoomTask(HotelsMain plugin){
 		this.plugin = plugin;
 	}
-	
+
 	@Override
 	public void run() {
 
@@ -57,11 +57,11 @@ public class RoomTask extends BukkitRunnable {
 			String hotelName = config.getString("Sign.hotel");
 			String roomNumString = config.getString("Sign.room");
 			World world = getWorldFromRoomSign(config);
-			
+
 			if(world==null || hotelName == null){ file.delete(); continue; }
-			
+
 			int roomNum;
-			
+
 			try{
 				roomNum = Integer.parseInt(roomNumString);
 			}
@@ -70,11 +70,11 @@ public class RoomTask extends BukkitRunnable {
 				Mes.debug(e.getMessage());
 				continue;
 			}
-			
+
 			Room room = new Room(world, hotelName, String.valueOf(roomNum)); //Creating room object with info from file
 
 			boolean changed = true;
-			
+
 			try {
 				room.checkRent();
 				changed = false;
@@ -90,7 +90,7 @@ public class RoomTask extends BukkitRunnable {
 				if(changed) hotelsThatHadRoomsUpdate.add(room.getHotel());
 			}
 		}
-		
+
 		Bukkit.getScheduler().runTaskLater(plugin, new Runnable () {
 			public void run() {
 				Mes.debug("Updating reception signs...");
@@ -113,11 +113,10 @@ public class RoomTask extends BukkitRunnable {
 
 		//Checking if it's a world UUID
 		UUID id = UUID.fromString(world);
-		if(id!=null)
-			w = Bukkit.getWorld(id);
+		w = Bukkit.getWorld(id);
 
 		if(w!=null) return w; //Successfully got world from UUID
-		
+
 		//Failed, return null
 		return null;
 	}

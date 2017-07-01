@@ -32,16 +32,14 @@ public class RoomResetQueue {
 		long secondsUntilLastTaskIsExecuted = delay - (currentTime - lastAdding)/1000;
 		if(secondsUntilLastTaskIsExecuted < 0) secondsUntilLastTaskIsExecuted = 0;
 		
-		Bukkit.getScheduler().runTaskLater(PLUGIN, new Runnable () {
-			public void run() {
-				try {
-					Mes.debug("Resetting room " + room.getNum() + " of Hotel " + room.getHotel().getName());
-					room.reset();
-				} catch (IOException | WorldEditException | DataException e) {
-					e.printStackTrace();
-				}
-			}
-		}, (20 * (delay + secondsUntilLastTaskIsExecuted)) );
+		Bukkit.getScheduler().runTaskLater(PLUGIN, () -> {
+            try {
+                Mes.debug("Resetting room " + room.getNum() + " of Hotel " + room.getHotel().getName());
+                room.reset();
+            } catch (IOException | WorldEditException | DataException e) {
+                e.printStackTrace();
+            }
+        }, (20 * (delay + secondsUntilLastTaskIsExecuted)) );
 		lastAdding = currentTime;
 	}
 }

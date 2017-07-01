@@ -146,7 +146,8 @@ public class Room {
 		return sconfig.getString("Sign.room");
 	}
 	public Location getSignLocation(){
-		return new Location(getWorldFromConfig(), sconfig.getInt("Sign.location.coords.x"), sconfig.getInt("Sign.location.coords.y"), sconfig.getInt("Sign.location.coords.z"));
+		return new Location(getWorldFromConfig(), sconfig.getInt("Sign.location.coords.x"),
+				sconfig.getInt("Sign.location.coords.y"), sconfig.getInt("Sign.location.coords.z"));
 	}
 	public Block getBlockAtSignLocation(){
 		return world.getBlockAt(getSignLocation());
@@ -207,7 +208,7 @@ public class Room {
 		return renter==null || !renter.hasPlayedBefore();
 	}
 	public boolean isFreeOrNotSetup(){
-		return !getSignFile().exists() ? true : isFree();
+		return !getSignFile().exists() || isFree();
 	}
 	public boolean isNotSetup(){
 		return !getSignFile().exists();
@@ -450,9 +451,11 @@ public class Room {
 		ProtectedRegion oldRegion = HTWorldGuardManager.getRegion(world, "hotel-" + hotel.getName() + "-" + num);
 
 		if(Mes.flagValue("room.map-making.GREETING").equalsIgnoreCase("true"))
-			oldRegion.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.getStringNoPrefix("message.room.enter").replaceAll("%room%", String.valueOf(newNum))));
+			oldRegion.setFlag(DefaultFlag.GREET_MESSAGE, (Mes.getStringNoPrefix("message.room.enter")
+					.replaceAll("%room%", String.valueOf(newNum))));
 		if(Mes.flagValue("room.map-making.FAREWELL").equalsIgnoreCase("true"))
-			oldRegion.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.getStringNoPrefix("message.room.exit").replaceAll("%room%", String.valueOf(newNum))));
+			oldRegion.setFlag(DefaultFlag.FAREWELL_MESSAGE, (Mes.getStringNoPrefix("message.room.exit")
+					.replaceAll("%room%", String.valueOf(newNum))));
 		HTWorldGuardManager.renameRegion("Hotel-"+hotelName+"-"+num, "Hotel-"+hotelName+"-"+newNum, world);
 		HTWorldGuardManager.saveRegions(world);
 
@@ -470,7 +473,7 @@ public class Room {
 		}
 		saveSignConfig();
 	}
-	
+
 	public void createSignConfig(Player p, String time, String cost, Location signLocation) throws IOException {
 		createSignConfig(p, HTSignManager.TimeConverter(time), HTSignManager.CostConverter(cost), signLocation);
 	}
@@ -522,8 +525,7 @@ public class Room {
 		sconfig = getSignConfig();
 		try {
 			updateSign();
-		} catch (EventCancelledException e) {
-		}
+		} catch (EventCancelledException e) {}
 	}
 
 	public boolean isFriend(UUID id){
@@ -537,7 +539,7 @@ public class Room {
 
 		if(!doesSignFileExist()) throw new FileNotFoundException();
 
-		if(!isRented()) throw new NotRentedException();	
+		if(!isRented()) throw new NotRentedException();
 
 		if(!friend.hasPlayedBefore()) throw new UserNonExistentException();
 
@@ -588,7 +590,8 @@ public class Room {
 		ProtectedRegion hotelRegion = HTWorldGuardManager.getRegion(world, "hotel-" + hotel.getName());
 		if(!Mes.hasPerm(p, "hotels.create")){ Mes.mes(p, "chat.noPermission"); return; }
 		if(HTWorldGuardManager.doesRoomRegionOverlap(region, world)){ Mes.mes(p, "chat.commands.room.alreadyPresent"); return; }
-		if(!HTWorldGuardManager.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){ Mes.mes(p, "chat.commands.youDoNotOwnThat"); return; }
+		if(!HTWorldGuardManager.isOwner(p, hotelRegion) && !Mes.hasPerm(p, "hotels.create.admin")){
+			Mes.mes(p, "chat.commands.youDoNotOwnThat"); return; }
 
 		region.setPriority(10);
 
@@ -598,7 +601,9 @@ public class Room {
 		HTWorldGuardManager.makeRoomAccessible(region);
 		HTWorldGuardManager.saveRegions(p.getWorld());
 
-		p.sendMessage(Mes.getString("chat.commands.room.success").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotel.getName()));
+		p.sendMessage(Mes.getString("chat.commands.room.success")
+				.replaceAll("%room%", String.valueOf(num))
+				.replaceAll("%hotel%", hotel.getName()));
 	}
 
 	public void unrent() throws IOException, BlockNotSignException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, RoomNonExistentException, NotRentedException, DataException {
@@ -637,13 +642,21 @@ public class Room {
 
 		setOwnerEditing(region, true);
 
-		Mes.debug(Mes.getStringNoPrefix("sign.rentExpiredConsole").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName).replaceAll("%player%", p.getName()));
+		Mes.debug(Mes.getStringNoPrefix("sign.rentExpiredConsole")
+				.replaceAll("%room%", String.valueOf(num))
+				.replaceAll("%hotel%", hotelName)
+				.replaceAll("%player%", p.getName()));
 
 		if(p.isOnline())
-			p.getPlayer().sendMessage(Mes.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
+			p.getPlayer().sendMessage(Mes.getString("sign.rentExpiredPlayer")
+					.replaceAll("%room%", String.valueOf(num))
+					.replaceAll("%hotel%", hotelName));
 
 		else //Player is offline, place their expiry message in the message queue
-			HTMessageQueue.addMessage(MessageType.expiry, p.getUniqueId(), Mes.getString("sign.rentExpiredPlayer").replaceAll("%room%", String.valueOf(num)).replaceAll("%hotel%", hotelName));
+			HTMessageQueue.addMessage(MessageType.expiry, p.getUniqueId(),
+					Mes.getString("sign.rentExpiredPlayer")
+							.replaceAll("%room%", String.valueOf(num))
+							.replaceAll("%hotel%", hotelName));
 
 		sconfig.set("Sign.renter", null);
 		sconfig.set("Sign.timeRentedAt", null);

@@ -112,10 +112,8 @@ public class HTTerrainManager {
 			editSession.enableQueue();
 			editSession.setFastMode(true);
 
-			Iterator<BlockVector> i = cuboid.iterator();
-			while(i.hasNext()){
-				BlockVector vec = i.next();
-				if(poly.contains(vec)) //If location in cuboid is also in poly, paste it
+			for (BlockVector vec : cuboid) {
+				if (poly.contains(vec)) //If location in cuboid is also in poly, paste it
 					editSession.setBlock(vec, clipboard.getBlock(vec));
 			}
 			editSession.flushQueue(); //Paste all of the blocks once ready
@@ -133,7 +131,7 @@ public class HTTerrainManager {
 	}
 	public Region getRegionFromProtectedRegion(org.bukkit.World world, ProtectedRegion pregion) throws RegionOperationException {
 		World bworld = new BukkitWorld(world);
-		Region region = null;
+		Region region;
 		switch(pregion.getType()){
 
 		case CUBOID:
@@ -149,12 +147,11 @@ public class HTTerrainManager {
 		return region;
 	}
 	public Vector getOriginFromRegion(Region region) throws RegionOperationException {
-		Vector origin = null;
-		if(region instanceof CuboidRegion)
+		Vector origin;
+		if(region instanceof CuboidRegion || region instanceof Polygonal2DRegion)
 			origin = region.getMinimumPoint();
-		else if(region instanceof Polygonal2DRegion)
-			origin = ((Polygonal2DRegion) region).getMinimumPoint();
 		else throw new RegionOperationException("Region is neither Cuboid or Polygonal");
+
 		return origin;
 	}
 	private Vector getMin(Location l1, Location l2) {

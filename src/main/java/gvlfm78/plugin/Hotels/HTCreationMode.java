@@ -59,7 +59,8 @@ public class HTCreationMode {
 		int ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
 		int maxHotels = HTConfigHandler.getconfigYML().getInt("maxHotelsOwned", 3);
 		if(ownedHotels>maxHotels && !Mes.hasPerm(p, "hotels.create.admin")){
-			p.sendMessage((Mes.getString("chat.commands.create.maxHotelsReached")).replaceAll("%max%", String.valueOf(maxHotels))); return;
+			p.sendMessage((Mes.getString("chat.commands.create.maxHotelsReached"))
+					.replaceAll("%max%", String.valueOf(maxHotels))); return;
 		}
 		//Creating hotel region
 
@@ -67,7 +68,7 @@ public class HTCreationMode {
 
 		if(sel instanceof CuboidSelection){
 			r = new ProtectedCuboidRegion(
-					"Hotel-"+hotelName, 
+					"Hotel-" + hotelName,
 					new BlockVector(sel.getNativeMinimumPoint()), 
 					new BlockVector(sel.getNativeMaximumPoint())
 					);
@@ -86,13 +87,16 @@ public class HTCreationMode {
 		r = hotel.getRegion(); //In case it was modified by the event
 		HTWorldGuardManager.addOwner(p, r);
 
-		p.sendMessage(Mes.getString("chat.creationMode.hotelCreationSuccessful").replaceAll("%hotel%", hotel.getName()));
+		p.sendMessage(Mes.getString("chat.creationMode.hotelCreationSuccessful")
+				.replaceAll("%hotel%", hotel.getName()));
 		ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
 
 		String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
 
 		if(!Mes.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
-			p.sendMessage(Mes.getString("chat.commands.create.creationSuccess").replaceAll("%tot%", String.valueOf(ownedHotels)).replaceAll("%left%", String.valueOf(hotelsLeft)));
+			p.sendMessage(Mes.getString("chat.commands.create.creationSuccess")
+					.replaceAll("%tot%", String.valueOf(ownedHotels))
+					.replaceAll("%left%", String.valueOf(hotelsLeft)));
 		}
 		catch (HotelAlreadyPresentException e){
 			Mes.mes(p, "chat.commands.create.hotelAlreadyPresent"); 
@@ -104,7 +108,7 @@ public class HTCreationMode {
 		Selection sel = getWorldEdit().getSelection(p);
 		World world = p.getWorld();
 		Hotel hotel = new Hotel(world, hotelName);
-		if(!hotel.exists()){ Mes.mes(p, "chat.creationMode.rooms.fail"); return; }
+		if(!hotel.exists()){ Mes.mes(p, "chat.commands.hotelNonExistent"); return; }
 		Room room = new Room(hotel, roomNum);
 		if(room.exists()){ Mes.mes(p, "chat.creationMode.rooms.alreadyExists"); return; }
 

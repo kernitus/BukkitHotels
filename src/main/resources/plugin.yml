@@ -1,6 +1,6 @@
 main: kernitus.plugin.Hotels.HotelsMain
 name: Hotels
-version: 1.0.4
+version: 1.1.0
 author: kernitus
 description: Allows the making of hotels and renting of rooms.
 website: http://www.spigotmc.org/resources/hotels.2047/
@@ -12,6 +12,8 @@ commands:
   Hotels:
    description: Hotels's main command
    aliases: ht
+  Room:
+   description: Point at sign to create room sign
 
 permissions:
    hotels.*:
