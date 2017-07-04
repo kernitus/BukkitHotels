@@ -196,4 +196,10 @@ public class HotelsMain extends JavaPlugin{
 	public static PluginDescriptionFile getPluginDescription(){
 		return pdfFile;
 	}
+	public static void runTaskLater(long delay, Runnable runnable){
+		Bukkit.getScheduler().runTaskLater(INSTANCE, runnable, delay);
+	}
+	public static void runTaskLaterAsync(long delay, Runnable runnable){
+		Bukkit.getScheduler().runTaskLaterAsynchronously(INSTANCE, runnable, delay);
+	}
 }
