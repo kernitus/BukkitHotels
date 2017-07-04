@@ -50,13 +50,6 @@ public class Room {
 		this.sconfig = getSignConfig();
 		this.world = world;
 	}
-	public Room(String hotelName, String num){
-		//Use only when world is unknown, due to extra calculations involved to find it
-		hotel = new Hotel(hotelName);
-		this.num = num;
-		sconfig = getSignConfig();
-		world = hotel.getWorld();
-	}
 	public Room(String hotelName, String num, CommandSender sender){
 		this.num = num;
 		if(sender instanceof Player){
@@ -64,7 +57,7 @@ public class Room {
 			hotel = new Hotel(world, hotelName);
 		}
 		else{
-			hotel = new Hotel(hotelName);
+			hotel = new Hotel(null, hotelName);
 			world = hotel.getWorld();
 		}
 		sconfig = getSignConfig();
@@ -74,7 +67,7 @@ public class Room {
 	///////Getters////////
 	//////////////////////
 	public boolean exists(){
-		return world==null ? false : HTWorldGuardManager.hasRegion(world, "hotel-" + hotel.getName() + "-" + num);
+		return world != null && HTWorldGuardManager.hasRegion(world, "hotel-" + hotel.getName() + "-" + num);
 	}
 	public String getNum(){
 		return num;
@@ -576,9 +569,9 @@ public class Room {
 		HTWorldGuardManager.makeRoomAccessible(region);
 		HTWorldGuardManager.saveRegions(p.getWorld());
 
-		p.sendMessage(Mes.getString("chat.commands.room.success")
-				.replaceAll("%room%", String.valueOf(num))
-				.replaceAll("%hotel%", hotel.getName()));
+		Mes.mes(p, "chat.commands.room.success",
+				"%room%", String.valueOf(num),
+				"%hotel%", hotel.getName());
 	}
 
 	public void unrent() throws IOException, BlockNotSignException, WorldEditException, EventCancelledException, WorldNonExistentException, HotelNonExistentException, RoomNonExistentException, NotRentedException, DataException {
@@ -618,14 +611,14 @@ public class Room {
 		setOwnerEditing(region, true);
 
 		Mes.debug(Mes.getStringNoPrefix("sign.rentExpiredConsole")
-				.replaceAll("%room%", String.valueOf(num))
+				.replaceAll("%room%", num)
 				.replaceAll("%hotel%", hotelName)
 				.replaceAll("%player%", p.getName()));
 
 		if(p.isOnline())
-			p.getPlayer().sendMessage(Mes.getString("sign.rentExpiredPlayer")
-					.replaceAll("%room%", String.valueOf(num))
-					.replaceAll("%hotel%", hotelName));
+			Mes.mes(p.getPlayer(),"sign.rentExpiredPlayer",
+					"%room%", num,
+					"%hotel%", hotelName);
 
 		else //Player is offline, place their expiry message in the message queue
 			HTMessageQueue.addMessage(MessageType.expiry, p.getUniqueId(),

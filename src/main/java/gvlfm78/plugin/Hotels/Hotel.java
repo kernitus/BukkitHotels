@@ -1,24 +1,8 @@
 package kernitus.plugin.Hotels;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import kernitus.plugin.Hotels.events.HotelCreateEvent;
 import kernitus.plugin.Hotels.events.HotelDeleteEvent;
 import kernitus.plugin.Hotels.events.HotelRenameEvent;
@@ -32,6 +16,16 @@ import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.signs.ReceptionSign;
 import kernitus.plugin.Hotels.trade.HotelBuyer;
 import kernitus.plugin.Hotels.trade.TradesHolder;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class Hotel {
 
@@ -40,29 +34,28 @@ public class Hotel {
 	private YamlConfiguration hconfig;
 
 	public Hotel(World world, String name){
+		if(world == null)
+			this.world = getWorldFromHotelName(name);
 		this.world = world;
 		this.name = ChatColor.stripColor(name);
 		hconfig = getHotelConfig();
 	}
-	public Hotel(String name){
-		//Use only when world is unknown, due to extra calculations involved to find it
-		this.name = ChatColor.stripColor(name);
-		for(Hotel hotel : HotelsAPI.getAllHotels()){
-			if(hotel.getName().equalsIgnoreCase(name))
-				world = hotel.getWorld();
-		}
-		hconfig = getHotelConfig();
+	public Hotel(String name, Player p){
+		this(p.getWorld(), name);
 	}
 	public Hotel(String name, CommandSender sender){
 		this.name = name;
-		if(sender instanceof Player) world = ((Player) sender).getWorld();
-		else{
-			for(Hotel hotel : HotelsAPI.getAllHotels()){
-				if(hotel.getName().equalsIgnoreCase(name))
-					world = hotel.getWorld();
-			}
-		}
+		if(sender instanceof Player) world = ((Player) sender).getWorld();//todo check if necessary with player overloaded method available
+		else world = getWorldFromHotelName(name);
 		hconfig = getHotelConfig();
+	}
+	private World getWorldFromHotelName(String hotelName){
+		World world = null;
+		for(Hotel hotel : HotelsAPI.getAllHotels())
+			if(hotel.getName().equalsIgnoreCase(hotelName))
+				world = hotel.getWorld();
+
+		return world;
 	}
 	///////////////////////
 	////////Getters////////
@@ -176,10 +169,10 @@ public class Hotel {
 		ArrayList<ReceptionSign> rss = getAllReceptionSigns();
 		for(ReceptionSign rs : rss)
 			rs.setHotelNameInConfig(newName);
-		
+
 		//Renaming reception signs folder to new name
 		HTConfigHandler.getReceptionSignsFolder(name).renameTo(HTConfigHandler.getReceptionSignsFolder(newName));
-		
+
 		//Rename rooms
 		ArrayList<Room> rooms = getRooms();
 
@@ -275,7 +268,7 @@ public class Hotel {
 		for(ReceptionSign rs : rss)
 			rs.update();
 	}
-	
+
 	//////////////////////////
 	////////Setters///////////
 	//////////////////////////

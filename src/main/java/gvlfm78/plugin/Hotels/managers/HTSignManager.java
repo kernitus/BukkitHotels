@@ -280,8 +280,8 @@ public class HTSignManager {
 
 		if (room.isFree()) {
 			if (isPlayerOverRoomLimitPerHotel(hotelName, p)) {//If player is under per-hotel limit
-				p.sendMessage(Mes.getString("chat.sign.use.overRoomsPerHotelLimit")
-						.replaceAll("%limit%", HTConfigHandler.getconfigYML().getString("maxRoomsOwnedPerHotel", "2")));
+				Mes.mes(p, "chat.sign.use.overRoomsPerHotelLimit" ,
+						"%limit%", HTConfigHandler.getconfigYML().getString("maxRoomsOwnedPerHotel", "2"));
 				return;
 			}
 
@@ -292,8 +292,8 @@ public class HTSignManager {
 				int maxRoomsOwned = HTConfigHandler.getconfigYML().getInt("maxRoomsOwned", 3);
 
 				if (HotelsAPI.getRoomsRentedBy(p.getUniqueId()).size() >= maxRoomsOwned) {
-					p.sendMessage(Mes.getString("chat.sign.use.maxRoomsReached")
-							.replaceAll("%max%", String.valueOf(maxRoomsOwned)));
+					Mes.mes(p, "chat.sign.use.maxRoomsReached",
+							"%max%", String.valueOf(maxRoomsOwned));
 					return;
 				}
 
@@ -311,14 +311,14 @@ public class HTSignManager {
 
 				DecimalFormat df = new DecimalFormat("#.00");
 
-				p.sendMessage(Mes.getString("chat.sign.use.success")
-						.replaceAll("%room%", String.valueOf(room.getNum()))
-						.replaceAll("%hotel%", hotelName)
-						.replaceAll("%price%", df.format(price)));
+				Mes.mes(p, "chat.sign.use.success",
+						"%room%", String.valueOf(room.getNum()),
+						"%hotel%", hotelName,
+						"%price%", df.format(price));
 				//Successfully rented room	
 			} else
-				p.sendMessage(Mes.getString("chat.sign.use.notEnoughMoney")
-						.replaceAll("%missingmoney%", String.valueOf(price - account)));
+				Mes.mes(p, "chat.sign.use.notEnoughMoney",
+						"%missingmoney%", String.valueOf(price - account));
 		} else if (renter.getUniqueId().equals(p.getUniqueId()))
 			//Renter is same player that right clicked
 			rentExtend(p, room);
@@ -363,19 +363,17 @@ public class HTSignManager {
 			if (revenue < 0) revenue = 0;
 
 			if (!owner.isOnline()) {
-				HTMessageQueue.addMessage(MessageType.revenue, owner.getUniqueId(), Mes.getString(chatMessage)
-						.replaceAll("%revenue%", new DecimalFormat("#.00").format(revenue))
-						.replaceAll("%room%", String.valueOf(room.getNum()))
-						.replaceAll("%hotel%", hotel.getName()));
+				HTMessageQueue.addMessage(MessageType.revenue, owner.getUniqueId(), Mes.getString(chatMessage,
+						"%revenue%", new DecimalFormat("#.00").format(revenue),
+						"%room%", String.valueOf(room.getNum()),
+						"%hotel%", hotel.getName()));
 				return;
 			}
 
 			Player player = (Player) owner;
-			player.sendMessage(Mes.getString(chatMessage)
-					.replaceAll("%revenue%", new DecimalFormat("#.00").format(revenue))
-					.replaceAll("%hotel%", hotel.getName())
-					.replaceAll("%room%", String.valueOf(room.getNum()))
-			);
+			Mes.mes(player, chatMessage, "%revenue%", new DecimalFormat("#.00").format(revenue),
+					"%hotel%", hotel.getName(),
+					"%room%", String.valueOf(room.getNum()));
 			Mes.debug("Payed owner");
 		}
 	}
@@ -461,8 +459,7 @@ public class HTSignManager {
 		int max = HTConfigHandler.getconfigYML().getInt("maxRentExtend", 3);
 
 		if (extended >= max) {
-			p.sendMessage(Mes.getString("chat.sign.use.maxEntendReached")
-					.replaceAll("%max%", String.valueOf(max)));
+			Mes.mes(p, "chat.sign.use.maxEntendReached","%max%", String.valueOf(max));
 			return;
 		}
 
@@ -471,8 +468,7 @@ public class HTSignManager {
 
 		if (account < price) {
 			double topay = price - account;
-			p.sendMessage(Mes.getString("chat.sign.use.notEnoughMoney")
-					.replaceAll("%missingmoney%", String.valueOf(topay)));
+			Mes.mes(p, "chat.sign.use.notEnoughMoney", "%missingmoney%", String.valueOf(topay));
 			return;
 		}
 
@@ -497,12 +493,12 @@ public class HTSignManager {
 		extended++;
 
 		if (max - extended > 0)
-			p.sendMessage(Mes.getString("chat.sign.use.extensionSuccess")
-					.replaceAll("%tot%", String.valueOf(extended))
-					.replaceAll("%left%", String.valueOf(max - extended)));
+			Mes.mes(p, "chat.sign.use.extensionSuccess",
+					"%tot%", String.valueOf(extended),
+					"%left%", String.valueOf(max - extended));
 		else
-			p.sendMessage(Mes.getString("chat.sign.use.extensionSuccessNoMore")
-					.replaceAll("%tot%", String.valueOf(extended)));
+			Mes.mes(p, "chat.sign.use.extensionSuccessNoMore",
+					"%tot%", String.valueOf(extended));
 	}
 
 	public static int howManyRoomsPlayerHasRentedInHotel(String hotelName, Player player){

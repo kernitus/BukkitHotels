@@ -54,8 +54,7 @@ public class HTCreationMode {
 		int ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
 		int maxHotels = HTConfigHandler.getconfigYML().getInt("maxHotelsOwned", 3);
 		if(ownedHotels > maxHotels && !Mes.hasPerm(p, "hotels.create.admin")){
-			p.sendMessage((Mes.getString("chat.commands.create.maxHotelsReached"))
-					.replaceAll("%max%", String.valueOf(maxHotels))); return;
+			Mes.mes(p, "chat.commands.create.maxHotelsReached", "%max%", String.valueOf(maxHotels));
 		}
 		//Creating hotel region
 
@@ -82,16 +81,16 @@ public class HTCreationMode {
 			r = hotel.getRegion(); //In case it was modified by the event
 			HTWorldGuardManager.addOwner(p, r);
 
-			p.sendMessage(Mes.getString("chat.creationMode.hotelCreationSuccessful")
-					.replaceAll("%hotel%", hotel.getName()));
+			Mes.mes(p, "chat.creationMode.hotelCreationSuccessful",
+					"%hotel%", hotel.getName());
 			ownedHotels = HotelsAPI.getHotelsOwnedBy(p.getUniqueId()).size();
 
 			String hotelsLeft = String.valueOf(maxHotels-ownedHotels);
 
 			if(!Mes.hasPerm(p, "hotels.create.admin"))//If the player has hotel limit display message
-				p.sendMessage(Mes.getString("chat.commands.create.creationSuccess")
-						.replaceAll("%tot%", String.valueOf(ownedHotels))
-						.replaceAll("%left%", String.valueOf(hotelsLeft)));
+				Mes.mes(p, "chat.commands.create.creationSuccess",
+						"%tot%", String.valueOf(ownedHotels),
+						"%left%", String.valueOf(hotelsLeft));
 		}
 		catch (HotelAlreadyPresentException e){
 			Mes.mes(p, "chat.commands.create.hotelAlreadyPresent");
