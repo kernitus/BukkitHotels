@@ -226,11 +226,11 @@ chat:
   hotelsList:
    usage: "&4Utilizzo corretto: &6&o/ht list [mondo]"
   mainpage:
-   1: "&7==========&3Hotels&7=========="
+   1: "&8&m-----------------------------------------------------"
    2: "&2&l%plugin%&a plugin di &ckernitus&a versione &2%version%"
-   4: "&eDigita &6/hotels help &eper aiuto sulla creazione di hotel"
-   5: "&eDigita &6/hotels commands &eper aiuto con i comandi"
-   6: "&7=========================="
+   3: "&2Digita &c/hotels help &2per aiuto sulla creazione di hotel"
+   4: "&2Digita &c/hotels commands &2per aiuto con i comandi"
+   5: "&8&m-----------------------------------------------------"
  moneyEarned: "&aHai guadagnato $%revenue% dall'affitto della stanza %room% del tuo hotel %hotel%"
  noPermission: "&4Non hai il permesso!"
  moneyEarnedExtend: "&aHai guadagnato $%revenue% dall'estensione dell'affitto della stanza %room% del tuo hotel %hotel%"

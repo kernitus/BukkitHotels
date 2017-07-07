@@ -124,16 +124,8 @@ public class HTCmdSurrogate {
 		Mes.mesNoPrefix(sender, "chat.commands.help.prefooter", "%num%", String.valueOf(next));
 		Mes.mesNoPrefix(sender, "chat.commands.help.footer");
 	}
-	public static void cmdCreationMode(CommandSender sender, String action){
+	public static void cmdCreationModeEnter(CommandSender sender){
 		Player p = (Player) sender;
-		switch(action.toLowerCase()){
-			case "enter": HTCmdSurrogate.cmdCreateModeEnter(p); break;
-			case "exit": HTCmdSurrogate.cmdCreateModeExit(p); break;
-			case "reset": HTCmdSurrogate.cmdCreateModeReset(p); break;
-			default: Mes.mes(p ,"chat.commands.creationMode.noarg");
-		}
-	}
-	public static void cmdCreateModeEnter(Player p){
 		if(HTCreationMode.isInCreationMode(p.getUniqueId())){
 			Mes.mes(p, "chat.commands.creationMode.alreadyIn"); return; }
 
@@ -141,14 +133,16 @@ public class HTCmdSurrogate {
 		HTCreationMode.giveItems(p);
 		Mes.mes(p, "chat.commands.creationMode.enter");
 	}
-	public static void cmdCreateModeExit(Player p){
+	public static void cmdCreationModeExit(CommandSender sender){
+		Player p = (Player) sender;
 		if(!HTCreationMode.isInCreationMode(p.getUniqueId())){
 			Mes.mes(p, "chat.commands.creationMode.notAlreadyIn"); return; }
 
 		Mes.mes(p, "chat.commands.creationMode.exit");
 		HTCreationMode.loadInventory(p);
 	}
-	public static void cmdCreateModeReset(Player p){
+	public static void cmdCreationModeReset(CommandSender sender){
+		Player p = (Player) sender;
 		HTCreationMode.resetInventoryFiles(p.getUniqueId());
 		Mes.mes(p, "chat.commands.creationMode.reset");
 	}

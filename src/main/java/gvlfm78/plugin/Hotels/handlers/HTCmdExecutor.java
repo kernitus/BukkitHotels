@@ -28,11 +28,16 @@ public class HTCmdExecutor implements CommandExecutor {
 		//todo for 1st of same command 1st place one with more args and w/out player, then most args w/ player, then rest
 		//todo check player only ones where Hotel is create to get world as it is now integrated in Hotel constructor
 		//todo have method for adding subcommands
+		//Place main command label first, then aliases
+		//Make main command label case-sensitively match the locale path for the usage message to work
 		List<HTSubCommand> subCommands = Arrays.asList(
 				new HTSubCommand("hotels.commands", 1, () -> HTCmdSurrogate.cmdCommands(sender), "commands"),
 				new HTSubCommand(true,"hotels.create", 2, () -> HTCmdSurrogate.cmdCreate(sender, args[1]), "create", "c"),
-				new HTSubCommand("hotels.create", 1, () -> HTCmdSurrogate.cmdHelp(sender, args[1]), "help"),
-				new HTSubCommand(true,"hotels.createmode", 2, () -> HTCmdSurrogate.cmdCreationMode(sender, args[1]), "createmode", "cm"),
+				new HTSubCommand("hotels.create", 2, () -> HTCmdSurrogate.cmdHelp(sender, args[1]), "help"),
+				new HTSubCommand("hotels.create", 1, () -> HTCmdSurrogate.cmdHelp(sender, null), "help"),
+				new HTSubCommand("enter",true,"hotels.creationmode", 2, () -> HTCmdSurrogate.cmdCreationModeEnter(sender), "creationMode", "cm"),
+				new HTSubCommand("exit",true,"hotels.creationmode", 2, () -> HTCmdSurrogate.cmdCreationModeExit(sender), "creationMode", "cm"),
+				new HTSubCommand("reset",true,"hotels.creationmode", 2, () -> HTCmdSurrogate.cmdCreationModeReset(sender), "creationMode", "cm"),
 				new HTSubCommand("hotels.check.others", 2, () -> HTCmdSurrogate.cmdCheck(args[1], sender), "check"),
 				new HTSubCommand(true, "hotels.check", 1, () -> HTCmdSurrogate.cmdCheckSelf(sender), "check"),
 				new HTSubCommand("hotels.reload", 1, () -> HTCmdSurrogate.cmdReload(sender), "reload"),
@@ -72,20 +77,21 @@ public class HTCmdExecutor implements CommandExecutor {
 		);
 
 		boolean matchedCommand = false;
+		boolean consoleRejected = false;
 		String pathToUsageToDisplay = null;
 
 		for (HTSubCommand command : subCommands) {
 
-			if(!command.isAlias(args[0]) && !args[0].isEmpty()) continue;
-
+			if(args.length > 0 && !command.isAlias(args[0])) continue;
 			matchedCommand = true;
 
-			if(command.hasSubSubCommand() && !command.isSubSubCommand(args[1])) continue;
+			if(args.length > 1 && !command.isSubSubCommand(args[1])) continue;//todo doesn't return any message
 
 			if(command.needsPlayer() && !(sender instanceof Player)){
-				Mes.mes(sender, "chat.commands.consoleRejected");
+				consoleRejected = true;
 				continue;
 			}
+			else consoleRejected = false;
 
 			if(!Mes.hasPerm(sender, command.getPermission())){
 				Mes.mes(sender ,"chat.noPermission");
@@ -95,7 +101,7 @@ public class HTCmdExecutor implements CommandExecutor {
 			if(args.length < command.getMinArgs()){
 				//If it gets to here it must wait until we have looped through fully to display message
 				//in case another instance of the same subcommand comes up and matches
-				pathToUsageToDisplay = "chat.commands." + label + ".usage";
+				pathToUsageToDisplay = "chat.commands." + command.getLabels()[0] + ".usage";
 				continue;
 			}
 			else if(pathToUsageToDisplay != null && !pathToUsageToDisplay.isEmpty())
@@ -107,6 +113,9 @@ public class HTCmdExecutor implements CommandExecutor {
 
 		//Unknown sub-command
 		if(!matchedCommand){ Mes.mes(sender, "chat.commands.unknownArg"); return false; }
+
+		//Console rejected
+		if(consoleRejected) Mes.mes(sender, "chat.commands.consoleRejected");
 
 		//Display command usage
 		if(pathToUsageToDisplay != null && !pathToUsageToDisplay.isEmpty())

@@ -78,11 +78,8 @@ public class HTSubCommand {
     public String getSubSubCommand(){
         return subSubCommand;
     }
-    public boolean hasSubSubCommand(){
-        return subSubCommand != null;
-    }
     public boolean isSubSubCommand(String subSubCommand){
-        if(!hasSubSubCommand() || subSubCommand == null) return false;
+        if(subSubCommand == null) return false;//todo or isEmpty?
         return subSubCommand.equalsIgnoreCase(this.subSubCommand);
     }
 

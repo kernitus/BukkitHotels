@@ -225,11 +225,11 @@ chat:
   hotelsList:
    usage: "&4Correct usage: &6&o/ht list [world]"
   mainpage:
-   1: "&7==========&3Hotels&7=========="
+   1: "&8&m-----------------------------------------------------"
    2: "&2&l%plugin%&a plugin by &ckernitus&a version &2%version%"
-   4: "&eType &6/hotels help &efor help with creating a hotel"
-   5: "&eType &6/hotels commands &efor help with the commands"
-   6: "&7=========================="
+   3: "&2Type &c/hotels help &2for help with creating a hotel"
+   4: "&2Type &c/hotels commands &2for help with the commands"
+   5: "&8&m-----------------------------------------------------"
  moneyEarned: "&aYou have earned $%revenue% from the rent of room %room% in your hotel %hotel%"
  noPermission: "&4You do not have permission!"
  moneyEarnedExtend: "&aYou have earned $%revenue% from the extension of the rent of room %room% in your hotel %hotel%"
