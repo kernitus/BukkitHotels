@@ -110,7 +110,7 @@ chat:
    nonExistent: "&4You can't add imaginary friends to the friend list!"
    alreadyFriend: "&4You have already added this friend!"
    removeSuccess: "&aSuccessfully removed %friend% from the friend list"
-   usage: "&4Correct usage: &6&o/ht friend <add/remove/list> <hotelName> <roomName> [friendName]"
+   usage: "&4Correct usage: &6&o/ht friend <add/remove/list> <hotelName> <roomNum> [friendName]"
    noFriends: "&2You have not added any friends to the specified room"
    friendNotInList: "&4The user you specified is not in the friend list!"
    wrongData: "&4The hotel or room number entered do not match any existing location"

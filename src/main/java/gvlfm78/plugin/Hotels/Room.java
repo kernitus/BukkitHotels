@@ -409,7 +409,7 @@ public class Room {
 		s.update();
 
 		sconfig.set("Sign.room", Integer.valueOf(newNum));
-		sconfig.set("Sign.region", "hotel-"+hotel+"-"+newNum);
+		sconfig.set("Sign.region", "hotel-" + hotelName + "-" + newNum);
 		saveSignConfig();
 
 		File newFile = HTConfigHandler.getFile("Signs" + File.separator + hotelName.toLowerCase() + "-" + newNum + ".yml");
