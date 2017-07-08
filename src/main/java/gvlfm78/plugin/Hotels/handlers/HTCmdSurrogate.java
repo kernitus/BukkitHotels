@@ -278,7 +278,7 @@ public class HTCmdSurrogate {
 		}
 	}
 	public static void cmdFriendList(CommandSender s, String hotelName, String roomNum){
-		Room room = new Room(null, hotelName, roomNum);
+		Room room = new Room(hotelName, roomNum, s);
 
 		if(!room.doesSignFileExist()){ Mes.mes(s, "chat.commands.friend.wrongData"); return; }
 
@@ -286,8 +286,10 @@ public class HTCmdSurrogate {
 
 		List<String> stringList = room.getFriends();
 
-		if(stringList.isEmpty())
+		if(stringList.isEmpty()) {
 			Mes.mes(s, "chat.commands.friend.noFriends");
+			return;
+		}
 
 		Mes.mes(s, "chat.commands.friend.list.heading", "%room%", roomNum, "%hotel%", hotelName);
 
