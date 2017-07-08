@@ -92,7 +92,6 @@ public class HTSignManager {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void placeRoomSign(SignChangeEvent e) throws RoomSignInRoomException {
 		Player p = e.getPlayer();
 

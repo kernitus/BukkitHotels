@@ -62,7 +62,7 @@ public class HTCmdExecutor implements CommandExecutor {
 				new HTSubCommand(true, "hotels.sign.create", 3, () -> HTCmdSurrogate.cmdRoomCreate(sender, args[1], args[2]), "room"),
 				new HTSubCommand(true, "hotels.sign.create", 2, () -> HTCmdSurrogate.cmdRoomCreate(sender, args[1]), "room"),
 				new HTSubCommand(true, "hotels.sethome", 1, () -> HTCmdSurrogate.cmdSetHome(sender),"sethome"),
-				new HTSubCommand(true, "hotels.home.admin", 3, () -> HTCmdSurrogate.cmdHomeRoom(sender, args[1], args[2])),
+				new HTSubCommand(true, "hotels.home.admin", 3, () -> HTCmdSurrogate.cmdHomeRoom(sender, args[1], args[2]), "home", "hm"),
 				new HTSubCommand(true, "hotels.home", 3, () -> HTCmdSurrogate.cmdHomeRoomUser(sender, args[1], args[2]), "home", "hm"),
 				new HTSubCommand(true, "hotels.home",2, () -> HTCmdSurrogate.cmdHomeHotel(sender, args[1]), "home", "hm"),
 				new HTSubCommand(true, "hotels.sell.hotel", 4, () -> HTCmdSurrogate.cmdSellHotel(sender, args[1], args[2], args[3]), "sellhotel", "sellh"),
@@ -85,7 +85,10 @@ public class HTCmdExecutor implements CommandExecutor {
 			if(args.length > 0 && !command.isAlias(args[0])) continue;
 			matchedCommand = true;
 
-			if(args.length > 1 && !command.isSubSubCommand(args[1])) continue;//todo doesn't return any message
+			if(!Mes.hasPerm(sender, command.getPermission())){
+				Mes.mes(sender ,"chat.noPermission");
+				continue;
+			}
 
 			if(command.needsPlayer() && !(sender instanceof Player)){
 				consoleRejected = true;
@@ -93,16 +96,19 @@ public class HTCmdExecutor implements CommandExecutor {
 			}
 			else consoleRejected = false;
 
-			if(!Mes.hasPerm(sender, command.getPermission())){
-				Mes.mes(sender ,"chat.noPermission");
+			if(args.length > 1 && command.hasSubSubCommand() && !command.isSubSubCommand(args[1])){
+				pathToUsageToDisplay = "chat.commands." + command.getLabels()[0] + ".usage";
 				continue;
 			}
+			else if(pathToUsageToDisplay != null && !pathToUsageToDisplay.isEmpty())
+				pathToUsageToDisplay = null;
 
 			if(args.length < command.getMinArgs()){
 				//If it gets to here it must wait until we have looped through fully to display message
 				//in case another instance of the same subcommand comes up and matches
 				pathToUsageToDisplay = "chat.commands." + command.getLabels()[0] + ".usage";
 				continue;
+
 			}
 			else if(pathToUsageToDisplay != null && !pathToUsageToDisplay.isEmpty())
 				pathToUsageToDisplay = null; //Resetting it as another instance of same subcommand was found and matched
@@ -115,11 +121,12 @@ public class HTCmdExecutor implements CommandExecutor {
 		if(!matchedCommand){ Mes.mes(sender, "chat.commands.unknownArg"); return false; }
 
 		//Console rejected
-		if(consoleRejected) Mes.mes(sender, "chat.commands.consoleRejected");
+		if(consoleRejected){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
 
 		//Display command usage
-		if(pathToUsageToDisplay != null && !pathToUsageToDisplay.isEmpty())
+		if(pathToUsageToDisplay != null && !pathToUsageToDisplay.isEmpty()){
 			Mes.mes(sender, pathToUsageToDisplay);
+			return false; }
 
 		return false; //Shouldn't be getting here anyway, but you never know
 	}
