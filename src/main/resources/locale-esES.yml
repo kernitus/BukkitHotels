@@ -151,7 +151,7 @@ chat:
   deleteRoom: 
    usage: "&4Uso correcto: &6&o/ht delr <nombreHotel> <numHabitación> [nombreMundo]"
    roomRented: "&4No puedes borrar esta habitación, ya que está alquilada!"
-  listRooms: 
+  roomslist: 
    usage: "&4Uso correcto: &6&o/ht rlist <nombreHotel>"
    line: "&6Habitación n: &c%room%%space%%state%"
    noRooms: "&cNo hay habitaciones en ese hotel"

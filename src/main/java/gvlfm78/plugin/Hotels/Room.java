@@ -207,9 +207,9 @@ public class Room {
 	}
 	private void setSignLocation(Location l){
 		sconfig.set("Sign.location.world", l.getWorld().getUID().toString());
-		sconfig.set("Sign.location.coords.x", l.getX());
-		sconfig.set("Sign.location.coords.y", l.getY());
-		sconfig.set("Sign.location.coords.z", l.getZ());
+		sconfig.set("Sign.location.coords.x", l.getBlockX());
+		sconfig.set("Sign.location.coords.y", l.getBlockY());
+		sconfig.set("Sign.location.coords.z", l.getBlockZ());
 	}
 	public void setDefaultHome(Location l){
 		sconfig.set("Sign.defaultHome.x", l.getX());

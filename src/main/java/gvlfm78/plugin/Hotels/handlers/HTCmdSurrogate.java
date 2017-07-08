@@ -167,7 +167,7 @@ public class HTCmdSurrogate {
 			String hotelName = hotel.getName();
 			int total = hotel.getTotalRoomCount();
 			int free = hotel.getFreeRoomCount();
-			Mes.mes(sender, "chat.commands.check.listHotels",
+			Mes.mes(sender, "chat.commands.check.lineHotels",
 					"%player%", playerName,
 					"%hotel%", hotelName,
 					"%total%", String.valueOf(total),
@@ -306,15 +306,6 @@ public class HTCmdSurrogate {
 			Mes.mes(p ,"chat.commands.friend.notRenter");
 		else
 			cmdFriendList(sender, hotelName, roomNum);
-	}
-	public static void cmdRoomListPlayer(CommandSender s, String hotelName){
-		Player p = (Player) s;
-		cmdRoomList(s, hotelName, p.getWorld());
-	}
-	public static void cmdRoomList(CommandSender s, String hotelName, World w){
-		Hotel hotel = new Hotel(w, hotelName);
-		if(hotel.exists()) listRooms(hotel, s);
-		else Mes.mes(s, "chat.commands.hotelNonExistent");
 	}
 	public static void cmdRenumber(CommandSender sender, String hotelName, String roomNum, String newNum){
 		Hotel hotel = new Hotel(hotelName, sender);
@@ -857,14 +848,17 @@ public class HTCmdSurrogate {
 			e.printStackTrace();
 		}
 	}
-	public static void listRooms(Hotel hotel, CommandSender sender){
+	public static void cmdRoomsList(CommandSender sender, String hotelName){
+		Hotel hotel = new Hotel(hotelName, sender);
+		if(!hotel.exists()){ Mes.mes(sender, "chat.commands.hotelNonExistent"); return; }
+
 		ArrayList<Room> rooms = hotel.getRooms();
 
-		String hotelName = WordUtils.capitalizeFully(hotel.getName());
+		hotelName = WordUtils.capitalizeFully(hotel.getName());
 
-		Mes.mes(sender, "chat.commands.listRooms.heading", "%hotel%", hotelName);
+		if(rooms.size() <= 0){ Mes.mes(sender, "chat.commands.roomslist.noRooms"); return; }
 
-		if(rooms.size() <= 0){ Mes.mes(sender, "chat.commands.listRooms.noRooms"); return; }
+		Mes.mes(sender, "chat.commands.roomslist.heading", "%hotel%", hotelName);
 
 		for(Room room : rooms){
 			String roomNum = String.valueOf(room.getNum());
@@ -877,7 +871,7 @@ public class HTCmdSurrogate {
 					state = ChatColor.GREEN+Mes.getStringNoPrefix("sign.vacant");
 				else //Occupied
 					state = ChatColor.BLUE+Mes.getStringNoPrefix("sign.occupied");
-				Mes.mes(sender, "chat.commands.listRooms.line", "%room%", roomNum, "%state%", state, "%space%", rep);
+				Mes.mes(sender, "chat.commands.roomslist.line", "%room%", roomNum, "%state%", state, "%space%", rep);
 			}
 		}
 	}

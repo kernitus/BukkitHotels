@@ -11,6 +11,8 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.flags.registry.SimpleFlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.managers.storage.StorageException;
+import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
+import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import org.bukkit.*;
@@ -143,7 +145,15 @@ public class HTWorldGuardManager {
 		if(!hasRegion(world, oldname)) return; //If old region exists
 		ProtectedRegion oldRegion = getRegion(world, oldname);//Get old region
 
-		ProtectedRegion newRegion = getRegion(world, newname);
+		ProtectedRegion newRegion;
+
+		if(oldRegion instanceof ProtectedCuboidRegion)
+			newRegion = new ProtectedCuboidRegion(newname, oldRegion.getMinimumPoint(), oldRegion.getMaximumPoint());
+		else if(oldRegion instanceof ProtectedPolygonalRegion)
+			newRegion = new ProtectedPolygonalRegion(newname, oldRegion.getPoints(), oldRegion.getMinimumPoint().getBlockY(), oldRegion.getMaximumPoint().getBlockY());
+		else return; //Not the correct type of region
+
+		getRM(world).addRegion(newRegion);
 
 		newRegion.copyFrom(oldRegion);
 

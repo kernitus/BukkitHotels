@@ -37,8 +37,8 @@ public class HotelsMain extends JavaPlugin{
 
 		//Listeners and stuff
 		getServer().getPluginManager().registerEvents((new HTListener()), this);//Fire event listener
-		getCommand("Hotels").setExecutor(new HTCmdExecutor(this));//Fire main commands listener
-		getCommand("Room").setExecutor(new RoomCommand(this)); //Fire room command listener
+		getCommand("Hotels").setExecutor(new HTCmdExecutor());//Fire main commands listener
+		getCommand("Room").setExecutor(new RoomCommand()); //Fire room command listener
 		
 		setupEconomy();
 

@@ -2,35 +2,35 @@
 # 汉化 By NOBUTS
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 language: zhCN
-version: 1
+version: 2
 #####################################################################################
-message: 
- hotel: 
+message:
+ hotel:
   exit: "&a离开了 %hotel% 旅馆"
   enter: "&b欢迎来到 %hotel% 旅馆"
- room: 
+ room:
   exit: "&a离开了房间 %room%"
   enter: "&b欢迎来到房间 %room%"
-main: 
+main:
  noConnection: "无法连接到更新地址!"
- enable: 
+ enable:
   success: "%pluginname% v%version% 现已启用"
  updateAvailable: "插件 Hotels v%version% 现在可以被下载供你更新了!"
- disable: 
+ disable:
   success: "%pluginname% v%version% 现已停用"
  updateAvailableLink: "想要更新吗！？点击这里的链接 %link%"
-chat: 
- commands: 
-  rename: 
+chat:
+ commands:
+  rename:
    usage: "&4正确用法: &6&o/ht ren <旧名称> <新名称> [世界名]"
    failRooms: "&4不能重命名房间"
    success: "&2你已经成功重命名%hotel%旅馆"
-  help: 
+  help:
    subheader: "&5--Hotels 插件帮助界面--"
    prefooter: "&4输入 &3&o/ht help %num%&r&4 来查看 %num%页 的内容"
    footer: "&4================================"
    header: "&4================================"
-   page4: 
+   page4:
     1: "&4-第4页- &9添加标牌"
     2: "&e1. 在房间门口显眼的位置贴上一个牌子"
     3: "&e2. 在牌子上按从上到下输入以下内容:"
@@ -38,7 +38,7 @@ chat:
     5: "&e    旅馆名称"
     6: "&e    房间号码&c&l:&e价格"
     7: "&e    租期时长"
-   page5: 
+   page5:
     1: "&4-第5页- &9牌子示例"
     2: "&e1. 一个房间牌子的示例:"
     3: "&e    [Hotels]"
@@ -47,65 +47,64 @@ chat:
     6: "&e    3d 6m 2s     &7(3天零6分2秒)"
     7: "&9&o你可以设置 &20 &9&o这等效于无限时间"
     8: "&9&o关于价格设置: &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2百万&9 &5b&9 = &2十亿"
-   page2: 
+   page2:
     1: "&4-第2页- &9创建一所旅馆"
     2: "&e1. 输入指令 &3&o/ht [create&r&3|&oc] [旅馆名称]"
-   page3: 
+   page3:
     1: "&4-第3页- &9创建旅馆房间"
     2: "&e1. 再次拿出WE魔杖"
     3: "&e2. 手持木斧左键和右键选取房间空间的对角线2个顶点"
     4: "&e3. 输入指令 &3&o/ht room [旅馆名称] [房间号]"
-   page1: 
+   page1:
     1: "&4-第1页- &9矩形旅馆区域的选择方法"
     2: "&e1. 输入指令 &3&o/ht [creationmode&r&3|&3&ocm] enter"
     3: "&e2. 将你的WorldEdit魔杖(默认木斧) 拿在在手中"
     4: "&e3. 手持木斧左键和右键选取选区的对角线2个顶点"
-  buyhotel: 
+  buyhotel:
    usage: "&4正确用法: &6&o/ht buyh <旅馆名称>"
    notEnoughMoney: "&4你没有足够的钱!"
    notOnSale: "&4那间旅馆不在出售中!"
    success: "&a你以 $%price% 从 %seller% 处购买了旅馆 %hotel%"
-  creationMode: 
+  creationMode:
    reset: "&2该背包文件已被重置"
    exit: "&c你已经退出旅馆的创建模式."
    enter: "&a你已经进入旅馆的创建模式."
    alreadyIn: "&4你已经进入了创建模式了!"
-   noarg: "&4请指定 &6&oenter(进入) &4或者 &6&oexit(离开) &4模式"
    notAlreadyIn: "&4你现在不在创建模式!"
+   usage: "&4正确用法: &6&o/ht cm enter/exit"
   fileSaveFail: "&4在保存文件时发生了一些错误"
-  rent: 
+  rent:
    usage: "&4正确用法: &6&o/ht rent <旅馆名称> <房间编号>"
    invalidData: "&4输入的旅馆名称或房间号无效"
    invalidLocation: "&4记录牌子信息文件中的牌子位置上没有牌子!"
-  home: 
+  home:
    usage: "&4正确用法: &6&o/ht home <旅馆名> [房间]"
-   regionNotFound: "&4指定旅馆或房间未被找到!"
    noHomeSet: "&4为设置传送点!"
    notRenterNoPermission: "&4你无法这么做,因为你没有权限或者你不是租客!"
-  sethome: 
+  sethome:
    notInHotelRegion: "&4你没有在一个旅馆区域内!"
    userHomeSet: "&a用户传送点已被设置"
    defaultHomeSet: "&a默认传送点已被设置"
    notInCreationMode: "&4你没有进入创建模式!"
    hotelHomeSet: "&a旅馆传送点已被设置"
   youDoNotOwnThat: "&4那个不属于你!"
-  check: 
+  check:
    headerRooms: "&a==%player% 租用的房间列表=="
    lineRooms: "&6旅馆: &c%hotel% &6房间: &c%room% &6租期剩余: &c%timeleft%"
    lineHotels: "&6旅馆: &c%hotel% &9总计: &r%total% &a空闲状态: &r%free%"
    noRooms: "&c你没有租用任何一间房间!"
    noHotels: "&c你没有拥有一间旅馆!"
    headerHotels: "&a==%player% 拥有的旅馆列表=="
-  removeSigns: 
+  removeSigns:
    success: "&a成功移除所有牌子"
-  deleteHotel: 
+  deleteHotel:
    hasRentedRooms: "&4这个旅馆中有房间正在被租用, 你目前无法删除!"
-  friend: 
+  friend:
    addSuccess: "&a成功将 %friend% 添加至好友列表"
    addYourself: "&4你不能把你自己加入好友列表!"
    noRenter: "&4指定的房间没有租客!"
    notRenter: "&4你不是指定房间的租客!"
-   list: 
+   list:
     line: "&6好友: &c%name%"
     heading: "&a==.  %hotel%旅馆%room% 房间的好友列表=="
     footer: "&c==好友列表末端=="
@@ -116,24 +115,24 @@ chat:
    noFriends: "&2你没有在指定房间添加任何好友"
    friendNotInList: "&4指定的用户不在好友列表中!"
    wrongData: "&4输入的旅馆或者房间数量不匹配现有的位置"
-  buyroom: 
+  buyroom:
    usage: "&4正确用法: &6&o/ht buyr <旅馆名> <房间号>"
    notOnSale: "&4那个房间没有出售中!"
    success: "&a你刚刚从%seller%以 $%price% 的价格买下了他位于 %hotel% 旅馆的 %room% 房间"
   noWorld: "&c请指定世界名"
   roomNonExistent: "&4指定房间不存在"
-  create: 
+  create:
    hotelAlreadyPresent: "&4这里已经有一家旅馆了"
    fail: "&4无法创建旅馆?请确认是否进入了旅馆创建模式? (&3&o输入指令：/hotels cm enter&r&4)"
-   noName: "&4给你的旅馆起个响亮的名字吧!"
    creationSuccess: "&a你现在拥有 %tot% 间旅馆. 你还可以创建 %left% 间."
    maxHotelsReached: "&4你已经拥有了 %max% 间旅馆, 数量已达上限"
+   usage: "&4正确用法: &6&o/ht c <旅馆名>"
   hotelNonExistent: "&4指定旅馆不存在"
-  resetroom: 
+  resetroom:
    usage: "&4正确用法: &6&o/ht resetroom <旅馆名> <房间号>"
    notSetup: "&4此房间还未设置重置!"
    success: "&a位于 %hotel% 旅馆的 %room% 房间刚刚被重置了"
-  sellhotel: 
+  sellhotel:
    selling: "&a玩家 %seller% 想将旅馆以 $%price% 出售给你 %hotel%. 输入 &6&o/ht buyh %hotel% &r&a来接受交易并购买"
    success: "&a你已以 $%price% 售出了旅馆 %hotel% 给 %buyer%"
    sellingAsked: "&a已向 %buyer% 发送了请求, 询问其是否愿意购买你的旅馆"
@@ -148,26 +147,26 @@ chat:
   somethingWentWrong: "&4哎哟喂! 执行那个命令的时候发生了一些错误"
   noHotel: "&c请指定旅馆名称"
   noPlayer: "&c请指定玩家名"
-  deleteRoom: 
+  deleteRoom:
    usage: "&4正确格式: &6&o/ht delr <旅馆名字> <房间号码> [世界]"
    roomRented: "&4这个房间已被租用, 你目前无法删除!"
-  listRooms: 
+  roomslist:
    usage: "&4正确用法: &6&o/ht rlist <旅馆名称>"
    line: "&6房间 n: &c%room%%space%%state%"
    noRooms: "&c旅馆里没有房间"
    heading: "&a==  %hotel% 旅馆的房间列表  =="
    footer: "&c==  %hotel% 旅馆的房间列表最末  =="
-  renumber: 
+  renumber:
    usage: "&4正确格式: &6&o/ht renum <旅馆名字> <旧号码> <新号码> [世界]"
    fail: "&4不能重新编号%oldnum%房间"
    newNumTooBig: "&4新号码太大了!"
    success: "&2你成功将 %hotel% 旅馆的 %oldnum% 房间换成了 %newnum% 房间"
   userNonExistent: "&4指定用户不存在"
-  roomreset: 
+  roomreset:
    usage: "&4正确用法: &6&o/ht roomreset <旅馆名> <房间号>"
    enable: "&3从现在开始，位于 %hotel% 旅馆的 %room% 房间将在租期结束后重置房间内部"
    disable: "&c从现在开始，位于 %hotel% 旅馆的 %room% 房间将不会在租期结束后重置房间内部"
-  commands: 
+  commands:
    subheader: "&5--Hotels 插件指令帮助页面--"
    rename: "&6/ht rename <旧名称> <新名称> - &a重命名指定的旅馆"
    rlist: "&6/ht rlist <旅馆名> - &a列出目前在你 所在 世界中旅馆的所有房间"
@@ -194,80 +193,88 @@ chat:
    buyr: "&6/ht buyr <旅馆名> <房间号> - &a买下你获得购买邀请的指定的房间"
    friend: "&6/ht friend <add/remove> <旅馆名> <房间名> <玩家名> - &a添加/移除 一名可以在你指定旅馆的指定房间中打开、使用物品的玩家"
    delete: "&6/ht delete <旅馆名> - &a删除指定名称的旅馆"
-  room: 
+  room:
    usage: "&4正确格式: &6&o/ht room <旅馆名字> <房间号码>"
    nextNewRoomFail: "&4无法找到下一个可用房间! 试试手动指定房间号码吧"
    roomNumInvalid: "&4房间号码必须为整数哦!"
    alreadyPresent: "&4这里已经有一个房间了"
    success: "&a你已经创建了 %hotel% 旅馆的 %room% 房间"
-  remove: 
+  remove:
    usage: "&4正确格式: &6&o/ht remove <玩家> <旅馆> <房间> [世界]"
    noRenter: "&4指定房间并没有被租出去!"
    playerNotRenter: "&4指定的玩家并没有租住在指定的房间中!"
    success: "&a成功将 %hotel% 旅馆 %room% 房间的玩家移除"
-  reload: 
+  reload:
    success: "&a配置文件成功重载"
-  removeRegions: 
+  removeRegions:
    fail: "&4无法删除旅馆区域"
    success: "&a成功删除旅馆区域"
-  removeRoom: 
+  removeRoom:
    fail: "&4无法删除房间"
    success: "&a成功删除房间"
-  sellroom: 
+  sellroom:
    usage: "&4正确用法: &6&o/ht sellr <旅馆名> <房间号> <购买者> <价格>"
    sellingAsked: "&a玩家 %buyer% 已经被询问过是否愿意购买你的房间了"
    selling: "&a玩家 %seller% 正在以 $%price% 的价格出售他位于 %hotel% 旅馆的 %room% 房间. 输入 &6&o/ht buyr %hotel% %room% &r&a买下它"
    success: "&a你刚刚以 $%price% 的价格出售给 %buyer% 位于 %hotel% 旅馆的 %room% 房间"
    sellingAlreadyAsked: "&4你已经向 %buyer% 询问过他们是否愿意购买你的房间了!"
   unknownArg: "&4未知参数. 使用 &3&o/hotels 寻找解决方案"
-  listHotels: 
+  listHotels:
    line: "&6旅馆: &c%hotel%%space%&9总数: &r%total%   &a空闲: &r%free%"
    heading: "&a==  旅馆列表  =="
    footer: "&c==  旅馆列表最末  =="
+  hotelsList:
+   usage: "&4正确用法: &6&o/ht list [世界]"
+  mainpage:
+   1: "&8&m-----------------------------------------------------"
+   2: "&2&l%plugin%&a 插件作者 &ckernitus&a 版本 &2%version%"
+   3: "&2输入 &c/hotels help &2查看如何创建旅馆"
+   4: "&2输入 &c/hotels commands &2查看命令帮助"
+   5: "&8&m-----------------------------------------------------"
  moneyEarned: "&a你通过 %hotel% 旅馆的房间 %room% 赚取了 $%revenue%"
  noPermission: "&4你没有权限这样做!"
  moneyEarnedExtend: "&a你通过 %hotel% 旅馆的房间 %room% 赚取了续期费用 $%revenue%"
  prefix: "&9[旅馆]&r"
- creationMode: 
+ creationMode:
   hotelCreationFailed: "&4旅馆已存在，不能创建"
   noSelection: "&4请使用WE魔杖(默认是木斧)选择一个区域"
   hotelCreationSuccessful: "&2你已经成功创建%hotel% 旅馆"
   deniedAction: "&4你不能在处于创建模式时这么做!"
-  items: 
-   leather: 
+  items:
+   leather:
     lore1: "右键点击检查"
     lore2: "区域之间是否有冲突"
     name: "&b一块普通的皮革"
-   compass: 
+   compass:
     lore1: "左键传送到鼠标准星指向的位置"
     lore2: "右键穿墙"
     name: "&bWE传送工具"
-   wand: 
+   wand:
     lore1: "左键区域角落1"
     lore2: "右键区域角落2"
     name: "&bWE魔杖"
-   sign: 
+   sign:
     lore1: "右键点击放置"
     lore2: "第一行写上: &9[Hotels]"
     name: "&b旅馆信息牌"
-  armour: 
+  armour:
    storeSuccess: "&a成功保存了你的盔甲装备信息"
    restoreSuccess: "&a成功恢复了你的盔甲装备"
    storeFail: "&4无法保存你的盔甲装备信息"
    restoreFail: "&4你的盔甲装备恢复失败"
   selectionInvalid: "&4无效的选区!请重新选择!"
-  rooms: 
+  rooms:
    fail: "&4失败!无法创建房间!"
    alreadyExists: "&4这个房间已经存在了!"
    notInHotel: "&4此房间不在指定的旅馆中!"
   invalidChar: "&4名称中不能包含字符 &6&l-"
-  inventory: 
+  inventory:
    storeSuccess: "&a成功保存了你背包中的物品!"
    restoreSuccess: "&a成功恢复背包"
    storeFail: "&4你的背包保存失败!"
    restoreFail: "&4无法恢复您背包中的物品"
- sign: 
-  use: 
+ sign:
+  use:
    notEnoughMoney: "&4竹影币不足! 你还需要 %missingmoney%"
    differentRoomNums: "&4房间号码不匹配!"
    success: "&a你已经在%hotel% 旅馆以$%price%租下了%room%房间"
@@ -282,7 +289,7 @@ chat:
    overRoomsPerHotelLimit: "&4你在这个旅馆中最多只能租 %limit% 间房间"
    maxRoomsReached: "&4您已经拥有了最多 %max% 个房间"
    taken: "&4这个房间已被租用"
-  place: 
+  place:
    tooLong: "&4房间号码太大或者价格太高!"
    noRegion: "&4指定的酒店或房间不存在!"
    success: "&2旅馆信息牌已成功创建!"
@@ -293,8 +300,11 @@ chat:
    alreadyExists: "&4这家酒店的标志已经存在!"
    noHotel: "&4旅馆不存在"
    noSeparator: "&4第三行必须包含分隔符 &3:"
-sign: 
- room: 
+ room:
+  usage: "&4正确的用法: &6&o/room <旅馆名> <时间> <价格> <房间号>"
+  notSign: "&4你没有看向一个牌子!"
+sign:
+ room:
   total: "房间数总计"
   name: "&2房间"
   free: "空闲的房间"
@@ -303,11 +313,11 @@ sign:
  vacant: "空闲中"
  rentExpiredPlayer: "&9您在 %hotel%租住的%room% 已经过期"
  permanent: "永久"
- reception: 
+ reception:
   hotel: "&1%hotel% 旅馆"
   reception: "&a前台"
  occupied: "已被租用"
- delete: 
+ delete:
   roomNonExistent: "牌子文件 %filename% 因为房间不存在而已被删除!"
   hotelName: "牌子文件 %filename% 不匹配游戏中的旅馆名称，已删除"
   roomNum: "牌子文件 %filename% 不匹配游戏中的房间号码，已删除"
