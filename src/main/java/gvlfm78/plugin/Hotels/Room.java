@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -181,8 +182,14 @@ public class Room {
 	public boolean isNotSetup(){
 		return !getSignFile().exists();
 	}
-	public List<String> getFriends(){
-		return sconfig.getStringList("Sign.friends");
+	public List<UUID> getFriends(){
+		List<String> friends = sconfig.getStringList("Sign.friends");
+		List<UUID> ids = new ArrayList<>();
+		for (String friend : friends) {
+			if(friend != null)
+				ids.add(UUID.fromString(friend));
+		}
+		return ids;
 	}
 	public RoomBuyer getBuyer(){
 		return TradesHolder.getBuyerFromRoom(this);
@@ -500,8 +507,8 @@ public class Room {
 	}
 
 	public boolean isFriend(UUID id){
-		for(String friend : getFriends())
-			if(id.toString().equalsIgnoreCase(friend))
+		for(UUID friend : getFriends())
+			if(id.equals(friend))
 				return true;
 		return false;
 	}
@@ -520,9 +527,12 @@ public class Room {
 
 		HTWorldGuardManager.addMember(friend, getRegion());
 		//Adding player to config under friends list
-		List<String> stringList = getFriends();
-		stringList.add(friend.getUniqueId().toString());
-		sconfig.set("Sign.friends", stringList);
+		List<UUID> ids = getFriends();
+		ids.add(friend.getUniqueId());
+
+		List<String> strings = new ArrayList<String>();
+		ids.forEach(id -> strings.add(id.toString()));
+		sconfig.set("Sign.friends", strings);
 
 		saveSignConfig();
 	}
@@ -532,16 +542,18 @@ public class Room {
 
 		if(!isRented()) throw new NotRentedException();
 
-		if(!getFriends().contains(friend.getUniqueId().toString()))
+		if(!getFriends().contains(friend.getUniqueId()))
 			throw new FriendNotFoundException();
 
 		//Removing player as region member
-		HTWorldGuardManager.removeMember(friend, getRegion());
+		HTWorldGuardManager.removeMember(friend.getUniqueId(), getRegion());
 
 		//Removing player from config under friends list
-		List<String> stringList = sconfig.getStringList("Sign.friends");
-		stringList.remove(friend.getUniqueId().toString());
-		sconfig.set("Sign.friends", stringList);
+		List<UUID> ids = getFriends();
+		ids.remove(friend.getUniqueId());
+		List<String> strings = new ArrayList<String>();
+		ids.forEach(id -> strings.add(id.toString()));
+		sconfig.set("Sign.friends", strings);
 
 		saveSignConfig();
 	}
@@ -592,7 +604,7 @@ public class Room {
 		if(!isBlockAtSignLocationSign()) throw new BlockNotSignException();
 
 		OfflinePlayer p = getRenter(); //Getting renter
-		List<String> friendList = getFriends(); //Getting friend list
+		List<UUID> friendList = getFriends(); //Getting friend list
 
 		//Calling rent expiry event
 		RentExpiryEvent ree = new RentExpiryEvent(this, p, friendList);
@@ -601,11 +613,11 @@ public class Room {
 		if(ree.isCancelled()) throw new EventCancelledException();
 
 		//Removing renter
-		HTWorldGuardManager.removeMember(p, region); //Removing renter as member of room region
+		HTWorldGuardManager.removeMember(p.getUniqueId(), region); //Removing renter as member of room region
 		//Removing friends
-		for(String currentFriend : friendList){
-			OfflinePlayer cf = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
-			HTWorldGuardManager.removeMember(cf, region);
+		for(UUID currentFriend : friendList){
+			OfflinePlayer cf = Bukkit.getServer().getOfflinePlayer(currentFriend);
+			HTWorldGuardManager.removeMember(cf.getUniqueId(), region);
 		}
 
 		//If set in config, make room accessible to all players now that it is not rented

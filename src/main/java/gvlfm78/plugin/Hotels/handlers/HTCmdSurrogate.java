@@ -284,17 +284,17 @@ public class HTCmdSurrogate {
 
 		if(room.isFree()){ Mes.mes(s, "chat.commands.friend.noRenter"); return; }
 
-		List<String> stringList = room.getFriends();
+		List<UUID> ids = room.getFriends();
 
-		if(stringList.isEmpty()) {
+		if(ids.isEmpty()) {
 			Mes.mes(s, "chat.commands.friend.noFriends");
 			return;
 		}
 
 		Mes.mes(s, "chat.commands.friend.list.heading", "%room%", roomNum, "%hotel%", hotelName);
 
-		for(String currentFriend : stringList){
-			OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentFriend));
+		for(UUID currentFriend : ids){
+			OfflinePlayer friend = Bukkit.getServer().getOfflinePlayer(currentFriend);
 			String friendName = friend.getName();
 			Mes.mes(s, "chat.commands.friend.list.line", "%name%", friendName);
 		}
@@ -347,7 +347,7 @@ public class HTCmdSurrogate {
 		OfflinePlayer helper = Bukkit.getServer().getOfflinePlayer(helperName);
 
 		try {
-			hotel.removeHelper(helper);
+			hotel.removeHelper(helper.getUniqueId());
 			Mes.mes(player, "chat.commands.helper.removeSuccess", "%helper%", helper.getName());
 		} catch (FriendNotFoundException e) {
 			Mes.mes(player, "chat.commands.helper.helperNotInList");
@@ -360,19 +360,19 @@ public class HTCmdSurrogate {
 
 		if(!hotel.exists()){ Mes.mes(s, "chat.commands.wrongData"); return; }
 
-		if(skipOwnerCheck || hotel.isOwner(((Player) s).getUniqueId())){ Mes.mes(s, "chat.commands.youDoNotOwnThat"); return; }
+		if(!skipOwnerCheck && hotel.isOwner(((Player) s).getUniqueId())){ Mes.mes(s, "chat.commands.youDoNotOwnThat"); return; }
 
-		List<String> stringList = hotel.getHelpers();
+		List<UUID> ids = hotel.getHelpers();
 
-		if(stringList.isEmpty()) {
+		if(ids.isEmpty()) {
 			Mes.mes(s, "chat.commands.helper.noHelpers");
 			return;
 		}
 
 		Mes.mes(s, "chat.commands.helper.list.heading", "%hotel%", hotelName);
 
-		for(String currentHelper : stringList){
-			OfflinePlayer helper = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentHelper));
+		for(UUID currentHelper : ids){
+			OfflinePlayer helper = Bukkit.getServer().getOfflinePlayer(currentHelper);
 			String helperName = helper.getName();
 			Mes.mes(s, "chat.commands.helper.list.line", "%name%", helperName);
 		}
@@ -701,6 +701,13 @@ public class HTCmdSurrogate {
 		//In case they were modified by an event listener
 		hb = hse.getHotelBuyer();
 		price = hse.getRevenue();
+
+		//Remove all hotel helpers
+		hotel.getHelpers().forEach(helper -> {
+			try {
+				hotel.removeHelper(helper);
+			} catch (Exception e) {}
+		});
 
 		for(UUID uuid : hotel.getOwners().getUniqueIds()){//Paying all owners
 			OfflinePlayer op = Bukkit.getOfflinePlayer(uuid);

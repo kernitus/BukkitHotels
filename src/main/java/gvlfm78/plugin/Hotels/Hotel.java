@@ -305,12 +305,19 @@ public class Hotel {
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public List<String> getHelpers(){
-		return hconfig.getStringList("Hotel.helpers");
+
+	public List<UUID> getHelpers(){
+		List<String> helpers = hconfig.getStringList("Hotel.helpers");
+		List<UUID> ids = new ArrayList<>();
+		for (String helper : helpers) {
+			if(helper != null)
+			ids.add(UUID.fromString(helper));
+		}
+		return ids;
 	}
 	public boolean isHelper(UUID id){
-		for(String helper : getHelpers())
-			if(id.toString().equalsIgnoreCase(helper))
+		for(UUID helper : getHelpers())
+			if(id.equals(helper))
 				return true;
 		return false;
 	}
@@ -326,26 +333,34 @@ public class Hotel {
 
 		HTWorldGuardManager.addMember(helper, getRegion());
 		//Adding player to config under helpers list
-		List<String> stringList = getHelpers();
-		stringList.add(helper.getUniqueId().toString());
-		hconfig.set("Hotel.helpers", stringList);
+		List<UUID> ids = getHelpers();
+		ids.add(helper.getUniqueId());
+
+		List<String> strings = new ArrayList<String>();
+		ids.forEach(id -> strings.add(id.toString()));
+
+		hconfig.set("Hotel.helpers", strings);
 
 		saveHotelConfig();
 	}
 
-	public void removeHelper(OfflinePlayer helper) throws FriendNotFoundException, IOException {
+	public void removeHelper(UUID helper) throws FriendNotFoundException, IOException {
 		if(!exists()) throw new FileNotFoundException();
 
-		if(!getHelpers().contains(helper.getUniqueId().toString()))
+		if(!getHelpers().contains(helper))
 			throw new FriendNotFoundException();
 
 		//Removing player as region member
 		HTWorldGuardManager.removeMember(helper, getRegion());
 
 		//Removing player from config under helpers list
-		List<String> stringList = hconfig.getStringList("Hotel.helpers");
-		stringList.remove(helper.getUniqueId().toString());
-		hconfig.set("Hotel.helpers", stringList);
+		List<UUID> ids = getHelpers();
+		ids.remove(helper);
+
+		List<String> strings = new ArrayList<String>();
+		ids.forEach(id -> strings.add(id.toString()));
+
+		hconfig.set("Hotel.helpers", strings);
 
 		saveHotelConfig();
 	}
