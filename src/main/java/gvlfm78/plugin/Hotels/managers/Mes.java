@@ -1,5 +1,6 @@
 package kernitus.plugin.Hotels.managers;
 
+import kernitus.plugin.Hotels.Language;
 import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -14,8 +15,16 @@ public class Mes {
 	}
 	public static String getStringNoPrefix(String path, String... substitutes){
 		String mes = getRawString(path);
-		return mes != null ? ChatColor.translateAlternateColorCodes('&', applySubstitutes(mes, substitutes)) :
-				ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
+		//If null try to get string from default english locale. If that fails print that message is null
+
+		if(mes == null){
+			mes = HTConfigHandler.getDefaultLocale(Language.English).getString(path);
+		}
+		if(mes == null){
+			mes = ChatColor.DARK_RED + "Message " + ChatColor.GOLD + path + ChatColor.DARK_RED + " is null!";
+		}
+
+		return ChatColor.translateAlternateColorCodes('&', applySubstitutes(mes, substitutes));
 	}
 
 	//Utility methods

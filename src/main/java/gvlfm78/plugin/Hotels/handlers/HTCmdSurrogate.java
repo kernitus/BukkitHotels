@@ -251,7 +251,7 @@ public class HTCmdSurrogate {
 		} catch (NotRentedException e) {
 			Mes.mes(player, "chat.commands.friend.noRenter");
 		} catch (IOException e) {
-			Mes.mes(player, "chat.commands.friend.wrongData");
+			Mes.mes(player, "chat.commands.wrongData");
 		} catch (UserAlreadyThereException e) {
 			Mes.mes(player, "chat.commands.friend.alreadyFriend");
 		}
@@ -274,13 +274,13 @@ public class HTCmdSurrogate {
 		} catch (FriendNotFoundException e) {
 			Mes.mes(player, "chat.commands.friend.friendNotInList");
 		} catch (IOException e) {
-			Mes.mes(player, "chat.commands.friend.wrongData");
+			Mes.mes(player, "chat.commands.wrongData");
 		}
 	}
 	public static void cmdFriendList(CommandSender s, String hotelName, String roomNum){
 		Room room = new Room(hotelName, roomNum, s);
 
-		if(!room.doesSignFileExist()){ Mes.mes(s, "chat.commands.friend.wrongData"); return; }
+		if(!room.doesSignFileExist()){ Mes.mes(s, "chat.commands.wrongData"); return; }
 
 		if(room.isFree()){ Mes.mes(s, "chat.commands.friend.noRenter"); return; }
 
@@ -309,6 +309,77 @@ public class HTCmdSurrogate {
 		else
 			cmdFriendList(sender, hotelName, roomNum);
 	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public static void cmdHelperAdd(CommandSender sender, String hotelName, String helperName){
+		Player player = (Player) sender;
+		Hotel hotel = new Hotel(hotelName, sender);
+
+		if(!hotel.isOwner(player.getUniqueId())){
+			Mes.mes(player, "chat.commands.youDoNotOwnThat"); return; }
+
+		@SuppressWarnings("deprecation")
+		OfflinePlayer helper = Bukkit.getServer().getOfflinePlayer(helperName);
+
+		if(player.getUniqueId().equals(helper.getUniqueId())){
+			Mes.mes(player, "chat.commands.helper.addYourself"); return; }
+
+		try {
+			hotel.addHelper(helper);
+			Mes.mes(player, "chat.commands.helper.addSuccess", "%helper%", helper.getName());
+		} catch (UserNonExistentException e) {
+			Mes.mes(player, "chat.commands.userNonExistent");
+		} catch (IOException e) {
+			Mes.mes(player, "chat.commands.wrongData");
+		} catch (UserAlreadyThereException e) {
+			Mes.mes(player, "chat.commands.helper.alreadyHelper");
+		} catch (HotelNonExistentException e) {
+			Mes.mes(player, "chat.commands.hotelNonExistent");
+		}
+	}
+	public static void cmdHelperRemove(CommandSender sender, String hotelName, String helperName){
+		Player player = (Player) sender;
+		Hotel hotel = new Hotel(hotelName, sender);
+
+		if(!hotel.isOwner(player.getUniqueId())){
+			Mes.mes(player, "chat.commands.youDoNotOwnThat"); return; }
+
+		@SuppressWarnings("deprecation")
+		OfflinePlayer helper = Bukkit.getServer().getOfflinePlayer(helperName);
+
+		try {
+			hotel.removeHelper(helper);
+			Mes.mes(player, "chat.commands.helper.removeSuccess", "%helper%", helper.getName());
+		} catch (FriendNotFoundException e) {
+			Mes.mes(player, "chat.commands.helper.helperNotInList");
+		} catch (IOException e) {
+			Mes.mes(player, "chat.commands.wrongData");
+		}
+	}
+	public static void cmdHelperList(CommandSender s, String hotelName, boolean skipOwnerCheck){
+		Hotel hotel = new Hotel(hotelName, s);
+
+		if(!hotel.exists()){ Mes.mes(s, "chat.commands.wrongData"); return; }
+
+		if(skipOwnerCheck || hotel.isOwner(((Player) s).getUniqueId())){ Mes.mes(s, "chat.commands.youDoNotOwnThat"); return; }
+
+		List<String> stringList = hotel.getHelpers();
+
+		if(stringList.isEmpty()) {
+			Mes.mes(s, "chat.commands.helper.noHelpers");
+			return;
+		}
+
+		Mes.mes(s, "chat.commands.helper.list.heading", "%hotel%", hotelName);
+
+		for(String currentHelper : stringList){
+			OfflinePlayer helper = Bukkit.getServer().getOfflinePlayer(UUID.fromString(currentHelper));
+			String helperName = helper.getName();
+			Mes.mes(s, "chat.commands.helper.list.line", "%name%", helperName);
+		}
+
+		Mes.mes(s, "chat.commands.helper.list.footer");
+	}
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public static void cmdRenumber(CommandSender sender, String hotelName, String roomNum, String newNum){
 		Hotel hotel = new Hotel(hotelName, sender);
 		Room room = new Room(hotel, roomNum);

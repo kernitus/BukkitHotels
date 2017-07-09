@@ -1,22 +1,8 @@
 package kernitus.plugin.Hotels.handlers;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Level;
-
+import kernitus.plugin.Hotels.*;
+import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
+import kernitus.plugin.Hotels.managers.Mes;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -25,13 +11,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
-import kernitus.plugin.Hotels.Hotel;
-import kernitus.plugin.Hotels.HotelsAPI;
-import kernitus.plugin.Hotels.HotelsMain;
-import kernitus.plugin.Hotels.Language;
-import kernitus.plugin.Hotels.Room;
-import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
-import kernitus.plugin.Hotels.managers.Mes;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Level;
 
 public class HTConfigHandler {
 
@@ -58,7 +43,7 @@ public class HTConfigHandler {
 
 		if(	(loclang!=null && !lang.equals(Language.getFromCode(loclang)))
 				|| (locale.getInt("version") <
-						YamlConfiguration.loadConfiguration(new InputStreamReader(PLUGIN.getResource("locale-" + lang.getStandardCode() + ".yml"))).getInt("version")
+						getDefaultLocale(lang).getInt("version")
 						)	){
 			backupconfig(getLocaleFile()); //Backup current locale and make new one
 			PLUGIN.getLogger().info("Language strings have been backed-up and reset");
@@ -69,6 +54,9 @@ public class HTConfigHandler {
 
 		if(loclang==null)
 			setupLanguage(lang, PLUGIN);
+	}
+	public static YamlConfiguration getDefaultLocale(Language language){
+		return YamlConfiguration.loadConfiguration(new InputStreamReader(PLUGIN.getResource("locale-" + language.getStandardCode() + ".yml")));
 	}
 	public static String getLanguageCode(){
 		return PLUGIN.getConfig().getString("language", "auto");

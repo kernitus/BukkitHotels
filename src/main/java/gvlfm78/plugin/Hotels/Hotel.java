@@ -6,9 +6,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import kernitus.plugin.Hotels.events.HotelCreateEvent;
 import kernitus.plugin.Hotels.events.HotelDeleteEvent;
 import kernitus.plugin.Hotels.events.HotelRenameEvent;
-import kernitus.plugin.Hotels.exceptions.EventCancelledException;
-import kernitus.plugin.Hotels.exceptions.HotelAlreadyPresentException;
-import kernitus.plugin.Hotels.exceptions.HotelNonExistentException;
+import kernitus.plugin.Hotels.exceptions.*;
 import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import kernitus.plugin.Hotels.managers.HTFileFinder;
 import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
@@ -23,8 +21,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class Hotel {
@@ -303,4 +303,51 @@ public class Hotel {
 	public void removeOwner(UUID uuid){
 		removeOwner(Bukkit.getOfflinePlayer(uuid));
 	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public List<String> getHelpers(){
+		return hconfig.getStringList("Hotel.helpers");
+	}
+	public boolean isHelper(UUID id){
+		for(String helper : getHelpers())
+			if(id.toString().equalsIgnoreCase(helper))
+				return true;
+		return false;
+	}
+	public void addHelper(OfflinePlayer helper) throws UserNonExistentException, IOException, UserAlreadyThereException, HotelNonExistentException {
+
+		if(!exists()) throw new HotelNonExistentException();
+
+		if(!helper.hasPlayedBefore()) throw new UserNonExistentException();
+
+		if(isHelper(helper.getUniqueId())) throw new UserAlreadyThereException();
+
+		//Adding player as region member
+
+		HTWorldGuardManager.addMember(helper, getRegion());
+		//Adding player to config under helpers list
+		List<String> stringList = getHelpers();
+		stringList.add(helper.getUniqueId().toString());
+		hconfig.set("Hotel.helpers", stringList);
+
+		saveHotelConfig();
+	}
+
+	public void removeHelper(OfflinePlayer helper) throws FriendNotFoundException, IOException {
+		if(!exists()) throw new FileNotFoundException();
+
+		if(!getHelpers().contains(helper.getUniqueId().toString()))
+			throw new FriendNotFoundException();
+
+		//Removing player as region member
+		HTWorldGuardManager.removeMember(helper, getRegion());
+
+		//Removing player from config under helpers list
+		List<String> stringList = hconfig.getStringList("Hotel.helpers");
+		stringList.remove(helper.getUniqueId().toString());
+		hconfig.set("Hotel.helpers", stringList);
+
+		saveHotelConfig();
+	}
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
