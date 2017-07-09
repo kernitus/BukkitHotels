@@ -74,6 +74,7 @@ public class HTCmdExecutor implements CommandExecutor {
 
 		boolean matchedCommand = false;
 		boolean consoleRejected = false;
+		boolean noPermission = false;
 		String pathToUsageToDisplay = null;
 
 		for (HTSubCommand command : subCommands) {
@@ -82,9 +83,10 @@ public class HTCmdExecutor implements CommandExecutor {
 			matchedCommand = true;
 
 			if(!Mes.hasPerm(sender, command.getPermission())){
-				Mes.mes(sender ,"chat.noPermission");//todo This gets spammed
+				noPermission = true;
 				continue;
 			}
+			else noPermission = false;
 
 			if(command.needsPlayer() && !(sender instanceof Player)){
 				consoleRejected = true;
@@ -113,6 +115,8 @@ public class HTCmdExecutor implements CommandExecutor {
 
 		//Unknown sub-command
 		if(!matchedCommand){ Mes.mes(sender, "chat.commands.unknownArg"); return false; }
+
+		if(!noPermission){ Mes.mes(sender ,"chat.noPermission"); return false; }
 
 		//Display command usage
 		if(pathToUsageToDisplay != null && !pathToUsageToDisplay.isEmpty()){

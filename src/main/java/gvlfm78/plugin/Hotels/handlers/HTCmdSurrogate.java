@@ -39,67 +39,76 @@ public class HTCmdSurrogate {
 			Mes.mes(p, "chat.commands.create.fail");
 	}
 	public static void cmdCommands(CommandSender s){
-		cmdCommands(s, HTConfigHandler.getconfigYML().getBoolean("onlyDisplayAllowedCommands", true));
+		cmdCommands(s, !HTConfigHandler.getconfigYML().getBoolean("onlyDisplayAllowedCommands", true));
 	}
-	public static void cmdCommands(CommandSender s, boolean onlyPermitted){
-		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.header"));
-		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.subheader"));
-		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.help"));
+	public static void cmdCommands(CommandSender s, boolean skipPermissionChecks){
+		System.out.print("skip? " + skipPermissionChecks);
+		Mes.mesNoPrefix(s, "chat.commands.commands.header");
+		Mes.mesNoPrefix(s, "chat.commands.commands.subheader");
+		Mes.mesNoPrefix(s, "chat.commands.commands.help");
 
-		if(Mes.hasPerm(s,"hotels.createmode") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.creationMode"));
+		if(Mes.hasPerm(s,"hotels.createmode") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.creationMode");
 
-		if(Mes.hasPerm(s,"hotels.create") || onlyPermitted){
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.create"));
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.room"));}
+		if(Mes.hasPerm(s,"hotels.create") || skipPermissionChecks) {
+			Mes.mesNoPrefix(s, "chat.commands.commands.create");
+			Mes.mesNoPrefix(s, "chat.commands.commands.room");
+			Mes.mesNoPrefix(s, "chat.commands.commands.roomStandalone");
+		}
 
-		if(Mes.hasPerm(s,"hotels.renumber") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.renum"));
-		if(Mes.hasPerm(s,"hotels.rename") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.rename"));
+		if(Mes.hasPerm(s,"hotels.renumber") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.renum");
+		if(Mes.hasPerm(s,"hotels.rename") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.rename");
 
-		if(Mes.hasPerm(s, "hotels.sethome") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.sethome"));
-		if(Mes.hasPerm(s, "hotels.home") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.home"));
+		if(Mes.hasPerm(s, "hotels.sethome") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.sethome");
+		if(Mes.hasPerm(s, "hotels.home") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.home");
 
-		if(Mes.hasPerm(s,"hotels.check") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.check"));
-		if(Mes.hasPerm(s,"hotels.list.hotels") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.list"));
-		if(Mes.hasPerm(s,"hotels.list.rooms") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.rlist"));
+		if(Mes.hasPerm(s,"hotels.check") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.check");
+		if(Mes.hasPerm(s,"hotels.list.hotels") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.list");
+		if(Mes.hasPerm(s,"hotels.list.rooms") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.rlist");
 
-		if(Mes.hasPerm(s,"hotels.friend") || onlyPermitted){
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.friend"));
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.friendList"));}
+		if(Mes.hasPerm(s,"hotels.friend") || skipPermissionChecks){
+			Mes.mesNoPrefix(s, "chat.commands.commands.friend");
+			Mes.mesNoPrefix(s, "chat.commands.commands.friendList");}
 
-		if(Mes.hasPerm(s, "hotels.sell.hotel") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.sellh"));
-		if(Mes.hasPerm(s, "hotels.buy.hotel") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.buyh"));
+		if(Mes.hasPerm(s,"hotels.helper") || skipPermissionChecks){
+			Mes.mesNoPrefix(s, "chat.commands.commands.helper");
+			Mes.mesNoPrefix(s, "chat.commands.commands.helperList");}
 
-		if(Mes.hasPerm(s, "hotels.sell.room") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.sellr"));
-		if(Mes.hasPerm(s, "hotels.buy.room") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.buyr"));
+		if(Mes.hasPerm(s, "hotels.sell.hotel") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.sellh");
+		if(Mes.hasPerm(s, "hotels.buy.hotel") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.buyh");
 
-		if(Mes.hasPerm(s, "hotels.resetroom.toggle") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.roomreset"));
-		if(Mes.hasPerm(s, "hotels.resetroom.reset") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.resetroom"));
+		if(Mes.hasPerm(s, "hotels.sell.room") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.sellr");
+		if(Mes.hasPerm(s, "hotels.buy.room") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.buyr");
 
-		if(Mes.hasPerm(s,"hotels.reload") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.reload"));
+		if(Mes.hasPerm(s, "hotels.resetroom.toggle") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.roomreset");
+		if(Mes.hasPerm(s, "hotels.resetroom.reset") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.resetroom");
 
-		if(Mes.hasPerm(s,"hotels.remove") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.remove"));
-		if(Mes.hasPerm(s,"hotels.delete.rooms") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.delr"));
-		if(Mes.hasPerm(s,"hotels.delete") || onlyPermitted)
-			s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.delete"));
+		if(Mes.hasPerm(s,"hotels.reload") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.reload");
 
-		s.sendMessage(Mes.getStringNoPrefix("chat.commands.commands.footer"));
+		if(Mes.hasPerm(s,"hotels.remove") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.remove");
+		if(Mes.hasPerm(s,"hotels.delete.rooms") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.delr");
+		if(Mes.hasPerm(s,"hotels.delete") || skipPermissionChecks)
+			Mes.mesNoPrefix(s, "chat.commands.commands.delete");
+
+
+
+		Mes.mesNoPrefix(s, "chat.commands.commands.footer");
 	}
 	public static void cmdHelp(CommandSender sender, String pageNum){
 		final int last = 5; //Last help page number

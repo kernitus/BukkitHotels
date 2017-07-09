@@ -2,7 +2,7 @@
 # Traduzione di kernitus
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 language: itIT
-version: 2
+version: 3
 #####################################################################################
 message:
  hotel:
@@ -22,7 +22,7 @@ main:
 chat:
  commands:
   rename:
-   usage: "&4Utilizzo corretto: &6&o/ht rent <nomeVecchio> <nomeNuovo> [nomeMondo]"
+   usage: "&4Utilizzo corretto: &6&o/ht ren <nomeVecchio> <nomeNuovo>"
    failRooms: "&4Impossibile rinominare le stanze"
    success: "&2Hai rinominato con successo l'hotel %hotel%"
   help:
@@ -114,7 +114,7 @@ chat:
    usage: "&4Utilizzo corretto: &6&o/ht friend <add/remove/list> <nomeHotel> <numStanza> [nomeAmico]"
    noFriends: "&2Non hai aggiunto alcun amico alla stanza specificata"
    friendNotInList: "&4L'utente specificato non è nella tua lista di amici!"
-   wrongData: "&4L'hotel o la stanza immessi non corrispondono ad alcun luogo esistente"
+  wrongData: "&4L'hotel o la stanza immessi non corrispondono ad alcun luogo esistente"
   buyroom:
    usage: "&4Utilizzo corretto: &6&o/ht buyr <nomeHotel> <numStanza>"
    notOnSale: "&4Quella stanza non è in vendita!"
@@ -148,7 +148,7 @@ chat:
   noHotel: "&cDevi specificare un hotel"
   noPlayer: "&cDevi specificare un giocatore"
   deleteRoom:
-   usage: "&4Utilizzo corretto: &6&o/ht delr <nomeHotel> <numStanza> [nomeMondo]"
+   usage: "&4Utilizzo corretto: &6&o/ht delr <nomeHotel> <numStanza>"
    roomRented: "&4Non puoi eliminare questa stanza dato che è in affitto"
   roomslist:
    usage: "&4Utilizzo corretto: &6&o/ht rlist <nomeHotel>"
@@ -157,7 +157,7 @@ chat:
    heading: "&a==  Lista stanze per l'hotel %hotel%  =="
    footer: "&c==  Fine lista stanze per l'hotel %hotel%  =="
   renumber:
-   usage: "&4Utilizzo corretto: &6&o/ht renum <nomeHotel> <vecchioNumero> <nuovoNumero> [nomeMondo]"
+   usage: "&4Utilizzo corretto: &6&o/ht renum <nomeHotel> <vecchioNumero> <nuovoNumero>"
    fail: "&4Impossibile rinominare la stanza %oldnum%"
    newNumTooBig: "&4Il nuovo numero è troppo grande!"
    success: "&2Hai cambiato la stanza %oldnum% alla stanza %newnum% dell'hotel %hotel% con successo"
@@ -193,6 +193,9 @@ chat:
    buyr: "&6/ht buyr <nomeHotel> <numStanza> - &aAcquista la stanza dal padrone se te l'ha offerta in vendita"
    friend: "&6/ht friend <add/remove> <nomeHotel> <numStanza> <nomeGiocatore> - &aAggiunge/rimuove un giocatore dalla lista di amici che hanno accesso ad una specificata stanza"
    delete: "&6/ht delete <nomeHotel> - &aRimuove hotel specificato"
+   helper: "&6/ht <helper/h> <add/remove> <nomeHotel> <nomeGiocatore> - &aAggiunge/rimuove il giocatore specificato dalla lista degli aiutanti per l'hotel specificato"
+   roomStandalone: "&6&o/room <nomeHotel> <tempo> <prezzo> <numeroStanza> - &aGuardando un cartello, prepara automaticamente la stanza"
+   helperList: "&6/ht <helper/h> list <nomeHotel> - &aLista aiutanti dell'hotel specificato"
   room:
    usage: "&4Utilizzo corretto: &6&o/ht room <nomeHotel> <numStanza>"
    nextNewRoomFail: "&4Impossibile trovare la prossima stanza disponibile! Prova a specificare la stanza manualmente"
@@ -200,7 +203,7 @@ chat:
    alreadyPresent: "&4There is already a room present here"
    success: "&aHai creato la stanza %room% dell'hotel %hotel%"
   remove:
-   usage: "&4Utilizzo corretto: &6&o/ht remove <nomeGiocatore> <nomeHotel> <numStanza> [nomeMondo]"
+   usage: "&4Utilizzo corretto: &6&o/ht remove <nomeGiocatore> <nomeHotel> <numStanza>"
    noRenter: "&4La stanza specificata non è stata affitata!"
    playerNotRenter: "&4Il giocatore specificato non ha affittato la stanza specificata"
    success: "&aIl giocatore %player% è stato rimosso dalla stanza %room% dell'hotel %hotel%"
@@ -231,6 +234,17 @@ chat:
    3: "&2Digita &c/hotels help &2per aiuto sulla creazione di hotel"
    4: "&2Digita &c/hotels commands &2per aiuto con i comandi"
    5: "&8&m-----------------------------------------------------"
+  helper:
+   addYourself: "&4Non puoi aggiungere te stesso alla lista degli aiutanti!"
+   addSuccess: "&aAggiunto %helper% come aiutante"
+   removeSuccess: "&aRimosso %helper% dalla lista degli aiutanti"
+   alreadyHelper: "&4Hai già aggiunto questo aiutante!"
+   helperNotInList: "&4L'utente specificato non è un aiutante"
+   noHelpers: "&2Non hai aggiunto aiutanti all'hotel specificato"
+   list:
+    heading: "&a==Lista aiutanti per l'hotel %hotel%=="
+    line: "&6Aiutante: &c%name%"
+    footer: "&c==Fine lista aiutanti=="
  moneyEarned: "&aHai guadagnato $%revenue% dall'affitto della stanza %room% del tuo hotel %hotel%"
  noPermission: "&4Non hai il permesso!"
  moneyEarnedExtend: "&aHai guadagnato $%revenue% dall'estensione dell'affitto della stanza %room% del tuo hotel %hotel%"

@@ -1,7 +1,7 @@
 # Hotels plugin by kernitus
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 language: enGB
-version: 3
+version: 4
 #####################################################################################
 message:
  hotel:
@@ -21,7 +21,7 @@ main:
 chat:
  commands:
   rename:
-   usage: "&4Correct usage: &6&o/ht ren <oldName> <newName> [worldName]"
+   usage: "&4Correct usage: &6&o/ht ren <oldName> <newName>"
    failRooms: "&4Could not rename rooms"
    success: "&2You have successfully renamed the %hotel% hotel"
   help:
@@ -147,7 +147,7 @@ chat:
   noHotel: "&cPlease specify hotel"
   noPlayer: "&cPlease specify player"
   deleteRoom:
-   usage: "&4Correct usage: &6&o/ht delr <hotelName> <roomNum> [worldName]"
+   usage: "&4Correct usage: &6&o/ht delr <hotelName> <roomNum>"
    roomRented: "&4You cannot delete this room as it has been rented!"
   roomslist:
    usage: "&4Correct usage: &6&o/ht rlist <hotelname>"
@@ -156,7 +156,7 @@ chat:
    heading: "&a==  Room list for %hotel% hotel  =="
    footer: "&c==  End of room list for %hotel% hotel  =="
   renumber:
-   usage: "&4Correct usage: &6&o/ht renum <hotelName> <oldNum> <newNum> [worldName]"
+   usage: "&4Correct usage: &6&o/ht renum <hotelName> <oldNum> <newNum>"
    fail: "&4Could not renumber room %oldnum%"
    newNumTooBig: "&4New number is too big!"
    success: "&2You have successfully changed room %oldnum% to room %newnum% of the %hotel% hotel"
@@ -192,6 +192,9 @@ chat:
    buyr: "&6/ht buyr <hotelName> <roomNum> - &aBuys room off of room owner if they offered it for sale to you"
    friend: "&6/ht <friend/f> <add/remove> <hotelName> <roomNum> <playerName> - &aAdds/removes a player from the list of friends that can access the specified room"
    delete: "&6/ht delete <hotelName> - &aDelete specified hotel"
+   helper: "&6/ht <helper/h> <add/remove> <hotelName> <playerName> - &aAdds/removes player from the list of helpers for the specified hotel"
+   roomStandalone: "&6&o/room <hotelName> <time> <price> <roomNum> - &aLook towards sign, sets up room for you"
+   helperList: "&6/ht <helper/h> list <hotelName> - &aLists players in helper list of specified hotel"
   room:
    usage: "&4Correct Usage: &6&o/ht room <hotelName> <roomNum>"
    nextNewRoomFail: "&4Could not find next available room! Try specifying the room number manually"
@@ -199,7 +202,7 @@ chat:
    alreadyPresent: "&4There is already a room present here"
    success: "&aYou have created room %room% of the %hotel% hotel"
   remove:
-   usage: "&4Correct usage: &6&o/ht remove <playerName> <hotelname> <roomNum> [worldname]"
+   usage: "&4Correct usage: &6&o/ht remove <playerName> <hotelname> <roomNum>"
    noRenter: "&4The specified room has not been rented!"
    playerNotRenter: "&4Specified player did not rent specified room!"
    success: "&aSuccessfully removed %player% from room %room% of the %hotel% hotel"
@@ -230,6 +233,17 @@ chat:
    3: "&2Type &c/hotels help &2for help with creating a hotel"
    4: "&2Type &c/hotels commands &2for help with the commands"
    5: "&8&m-----------------------------------------------------"
+  helper:
+   addYourself: "&4You can't add yourself to the helper list!"
+   addSuccess: "&aSuccessfully added %helper% to the helper list"
+   removeSuccess: "&aSuccessfully removed %helper% from the helper list"
+   alreadyHelper: "&4You have already added this helper!"
+   helperNotInList: "&4The user you specified is not in the helper list!"
+   noHelpers: "&2You have not added any helpers to the specified hotel"
+   list:
+    heading: "&a==Helper list for the %hotel% hotel=="
+    line: "&6Helper: &c%name%"
+    footer: "&c==End of helper list=="
  moneyEarned: "&aYou have earned $%revenue% from the rent of room %room% in your hotel %hotel%"
  noPermission: "&4You do not have permission!"
  moneyEarnedExtend: "&aYou have earned $%revenue% from the extension of the rent of room %room% in your hotel %hotel%"
