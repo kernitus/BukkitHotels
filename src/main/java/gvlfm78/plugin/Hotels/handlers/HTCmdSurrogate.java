@@ -599,16 +599,16 @@ public class HTCmdSurrogate {
 		hotel.setBuyer(buyer.getUniqueId(), price);
 
 		Mes.mes(p, "chat.commands.sellhotel.sellingAsked", "%buyer%", buyer.getName());
-		Mes.mes(buyer, "chat.commands.sell", "%seller%", p.getName(), "%hotel%", hotelName, "%price%", priceString);
+		Mes.mes(buyer, "chat.commands.sellhotel.selling", "%seller%", p.getName(), "%hotel%", hotelName, "%price%", priceString);
 	}
 	public static void cmdBuyHotel(CommandSender sender, String hotelName){
 		Player p = (Player) sender;
-		//World world = p.getWorld();
 		Hotel hotel = new Hotel(hotelName, sender);
 
 		if(!hotel.exists()){Mes.mes(p, "chat.commands.hotelNonExistent"); return; }
 
 		HotelBuyer hb = hotel.getBuyer();
+		if(hb == null){ Mes.mes(p, "chat.commands.buyhotel.notOnSale"); return; }
 		Player buyer = hb.getPlayer();
 
 		if(buyer == null || !buyer.hasPlayedBefore() || !buyer.getUniqueId().equals(p.getUniqueId())){ Mes.mes(p, "chat.commands.buyhotel.notOnSale"); return; }
@@ -623,31 +623,13 @@ public class HTCmdSurrogate {
 		HotelsMain.economy.withdrawPlayer(p, price);
 		String onlineOwner = "";
 
-		String taxString = HTConfigHandler.getconfigYML().getString("tax", "20%");
-		double revenue = price;
-		boolean isPercentage = taxString.matches("\\d+%");
-		double tax;
-
-		if(isPercentage) taxString = taxString.replaceAll("%", "");
-		try{
-			tax = Double.parseDouble(taxString);
-		}
-		catch(Exception e){
-			Mes.mes(p, "chat.commands.sellHotel.invalidPrice");
-			return;
-		}
-
-		revenue = isPercentage ? revenue * (1 - tax/100) : revenue - tax;
-
-		if(revenue < 0) revenue = 0;
-
-		HotelSaleEvent hse = new HotelSaleEvent(hb, revenue);
+		HotelSaleEvent hse = new HotelSaleEvent(hb, price);
 		Bukkit.getPluginManager().callEvent(hse);
 		if(hse.isCancelled()) return;
 
 		//In case they were modified by an event listener
 		hb = hse.getHotelBuyer();
-		revenue = hse.getRevenue();
+		price = hse.getRevenue();
 
 		for(UUID uuid : hotel.getOwners().getUniqueIds()){//Paying all owners
 			OfflinePlayer op = Bukkit.getOfflinePlayer(uuid);
@@ -659,18 +641,17 @@ public class HTCmdSurrogate {
 								"%buyer%", p.getName(),
 								"%price%", String.valueOf(price)
 						));
-				return; }
+				return;
+			}
 
-			onlineOwner = p.getName();
-
-			Mes.mes(p, "chat.commands.sellhotel.success",
+			Mes.mes(op.getPlayer(), "chat.commands.sellhotel.success",
 					"%hotel%", hotel.getName(),
 					"%buyer%", p.getName(),
 					"%price%", String.valueOf(price)
 			);
 
 			hotel.removeOwner(op); //Removing old owner
-			HotelsMain.economy.depositPlayer(op, revenue); //Paying old owner
+			HotelsMain.economy.depositPlayer(op, price); //Paying old owner
 		}
 
 		hotel.addOwner(p);
@@ -753,33 +734,14 @@ public class HTCmdSurrogate {
 		//Player has enough money
 		HotelsMain.economy.withdrawPlayer(p, price);
 
-		String taxString = HTConfigHandler.getconfigYML().getString("tax", "20%");
-		double revenue = price;
-		boolean isPercentage = taxString.matches("\\d+%");
-		double tax;
-
-		if(isPercentage) taxString = taxString.replaceAll("%", "");
-
-		try{
-			tax = Double.parseDouble(taxString);
-		}
-		catch(Exception e){
-			Mes.mes(p, "chat.commands.sellHotel.invalidPrice");
-			return;
-		}
-
-		revenue = isPercentage ? revenue * (1 - tax/100) : revenue - tax;
-
-		if(revenue < 0) revenue = 0;
-
 		OfflinePlayer op = room.getRenter();
 
-		RoomSaleEvent rse = new RoomSaleEvent(rb, revenue);
+		RoomSaleEvent rse = new RoomSaleEvent(rb, price);
 		Bukkit.getPluginManager().callEvent(rse);
 		if(rse.isCancelled()) return;
 		//In case they were modified by an event listener
 		rb = rse.getRoomBuyer();
-		revenue = rse.getRevenue();
+		price = rse.getRevenue();
 
 		String message = Mes.getString("chat.commands.sellroom.success",
 				"%room%", room.getNum(),
@@ -793,7 +755,7 @@ public class HTCmdSurrogate {
 
 		room.setRenter(p.getUniqueId()); //Removing old owner
 
-		HotelsMain.economy.depositPlayer(op, revenue); //Paying old owner
+		HotelsMain.economy.depositPlayer(op, price); //Paying old owner
 
 		Mes.mes(p, "chat.commands.buyroom.success",
 				"%room%", room.getNum(),

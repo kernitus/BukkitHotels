@@ -110,13 +110,13 @@ public class HTCmdExecutor implements CommandExecutor {
 		//Unknown sub-command
 		if(!matchedCommand){ Mes.mes(sender, "chat.commands.unknownArg"); return false; }
 
-		//Console rejected
-		if(consoleRejected){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
-
 		//Display command usage
 		if(pathToUsageToDisplay != null && !pathToUsageToDisplay.isEmpty()){
 			Mes.mes(sender, pathToUsageToDisplay);
 			return false; }
+
+		//Console rejected
+		if(consoleRejected){ Mes.mes(sender, "chat.commands.consoleRejected"); return false; }
 
 		return false; //Shouldn't be getting here anyway, but you never know
 	}
