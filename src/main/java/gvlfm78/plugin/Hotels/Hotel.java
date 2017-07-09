@@ -36,7 +36,7 @@ public class Hotel {
 	public Hotel(World world, String name){
 		if(world == null)
 			this.world = getWorldFromHotelName(name);
-		this.world = world;
+		else this.world = world;
 		this.name = ChatColor.stripColor(name);
 		hconfig = getHotelConfig();
 	}
@@ -76,8 +76,8 @@ public class Hotel {
 		ArrayList<Room> rooms = new ArrayList<Room>();
 		for(ProtectedRegion r : HTWorldGuardManager.getRegions(world)){
 			String id = r.getId();
-			if(id.matches("hotel-"+name.toLowerCase()+"-\\d+")){
-				String num = id.replaceFirst("hotel-"+name.toLowerCase()+"-", "");
+			if(id.matches("hotel-" + name.toLowerCase() + "-\\d+")){
+				String num = id.replaceFirst("hotel-" + name.toLowerCase() + "-", "");
 				Room room = new Room(this, num);
 				rooms.add(room);
 			}
@@ -311,7 +311,7 @@ public class Hotel {
 		List<UUID> ids = new ArrayList<>();
 		for (String helper : helpers) {
 			if(helper != null)
-			ids.add(UUID.fromString(helper));
+				ids.add(UUID.fromString(helper));
 		}
 		return ids;
 	}

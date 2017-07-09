@@ -62,6 +62,10 @@ public class HTWorldGuardManager {
 		members.addAll(dd);
 		r.setMembers(members);
 	}
+	public static void addMembers(List<UUID> ids, ProtectedRegion r){
+		DefaultDomain members = r.getMembers();
+		ids.forEach(members::addPlayer);
+	}
 	public static void setMember(UUID uuid, ProtectedRegion r){
 		DefaultDomain member = new DefaultDomain();
 		member.addPlayer(uuid);
@@ -110,6 +114,13 @@ public class HTWorldGuardManager {
 	public static void removeMembers(DefaultDomain dd, ProtectedRegion r){
 		DefaultDomain members = r.getMembers();
 		members.removeAll(dd);
+		r.setMembers(members);
+	}
+	public static void removeMembers(List<UUID> ids, ProtectedRegion r){
+		DefaultDomain members = r.getMembers();
+		DefaultDomain toRemove = new DefaultDomain();
+		ids.forEach(toRemove::addPlayer);
+		members.removeAll(toRemove);
 		r.setMembers(members);
 	}
 

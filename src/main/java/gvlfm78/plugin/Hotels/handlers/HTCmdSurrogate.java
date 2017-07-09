@@ -234,6 +234,8 @@ public class HTCmdSurrogate {
 		Player player = (Player) sender;
 		Room room = new Room(player.getWorld(), hotelName, roomNum);
 
+		if(!room.doesSignFileExist()){ Mes.mes(player, "chat.commands.wrongData"); return; }
+
 		if(!room.isRenter(player.getUniqueId())){
 			Mes.mes(player, "chat.commands.friend.notRenter"); return; }
 
@@ -260,6 +262,8 @@ public class HTCmdSurrogate {
 		Player player = (Player) sender;
 		Room room = new Room(player.getWorld(), hotelName, roomNum);
 
+		if(!room.doesSignFileExist()){ Mes.mes(player, "chat.commands.wrongData"); return; }
+
 		if(!room.isRenter(player.getUniqueId())){
 			Mes.mes(player, "chat.commands.friend.notRenter"); return; }
 
@@ -277,12 +281,14 @@ public class HTCmdSurrogate {
 			Mes.mes(player, "chat.commands.wrongData");
 		}
 	}
-	public static void cmdFriendList(CommandSender s, String hotelName, String roomNum){
+	public static void cmdFriendList(CommandSender s, String hotelName, String roomNum, boolean skipRenterCheck){
 		Room room = new Room(hotelName, roomNum, s);
 
 		if(!room.doesSignFileExist()){ Mes.mes(s, "chat.commands.wrongData"); return; }
 
 		if(room.isFree()){ Mes.mes(s, "chat.commands.friend.noRenter"); return; }
+
+		if(!skipRenterCheck && !room.isRenter(((Player) s).getUniqueId())){ Mes.mes(s,"chat.commands.friend.notRenter"); return; }
 
 		List<UUID> ids = room.getFriends();
 
@@ -301,18 +307,12 @@ public class HTCmdSurrogate {
 
 		Mes.mes(s, "chat.commands.friend.list.footer");
 	}
-	public static void cmdFriendListIfOwner(CommandSender sender, String hotelName, String roomNum){
-		Player p = (Player) sender;
-		Room room = new Room(null, hotelName, roomNum);
-		if(!room.isRenter(p.getUniqueId()))
-			Mes.mes(p ,"chat.commands.friend.notRenter");
-		else
-			cmdFriendList(sender, hotelName, roomNum);
-	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public static void cmdHelperAdd(CommandSender sender, String hotelName, String helperName){
 		Player player = (Player) sender;
 		Hotel hotel = new Hotel(hotelName, sender);
+
+		if(!hotel.exists()){ Mes.mes(player, "chat.commands.hotelNonExistent"); return; }
 
 		if(!hotel.isOwner(player.getUniqueId())){
 			Mes.mes(player, "chat.commands.youDoNotOwnThat"); return; }
@@ -340,6 +340,8 @@ public class HTCmdSurrogate {
 		Player player = (Player) sender;
 		Hotel hotel = new Hotel(hotelName, sender);
 
+		if(!hotel.exists()){ Mes.mes(player, "chat.commands.hotelNonExistent"); return; }
+
 		if(!hotel.isOwner(player.getUniqueId())){
 			Mes.mes(player, "chat.commands.youDoNotOwnThat"); return; }
 
@@ -358,7 +360,7 @@ public class HTCmdSurrogate {
 	public static void cmdHelperList(CommandSender s, String hotelName, boolean skipOwnerCheck){
 		Hotel hotel = new Hotel(hotelName, s);
 
-		if(!hotel.exists()){ Mes.mes(s, "chat.commands.wrongData"); return; }
+		if(!hotel.exists()){ Mes.mes(s, "chat.commands.hotelNonExistent"); return; }
 
 		if(!skipOwnerCheck && hotel.isOwner(((Player) s).getUniqueId())){ Mes.mes(s, "chat.commands.youDoNotOwnThat"); return; }
 
@@ -476,6 +478,8 @@ public class HTCmdSurrogate {
 	public static void cmdRemovePlayer(CommandSender sender, String playerName, String hotelName, String roomNum){
 
 		Room room = new Room(hotelName, roomNum, sender);
+
+		System.out.println("ROOM world: " + room.getWorld());
 
 		@SuppressWarnings("deprecation")
 		OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
@@ -711,6 +715,7 @@ public class HTCmdSurrogate {
 
 		for(UUID uuid : hotel.getOwners().getUniqueIds()){//Paying all owners
 			OfflinePlayer op = Bukkit.getOfflinePlayer(uuid);
+			onlineOwner = op.getName();
 
 			if(!op.isOnline()){
 				HTMessageQueue.addMessage(MessageType.revenue, uuid,

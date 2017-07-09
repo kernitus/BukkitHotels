@@ -551,7 +551,7 @@ public class Room {
 		//Removing player from config under friends list
 		List<UUID> ids = getFriends();
 		ids.remove(friend.getUniqueId());
-		List<String> strings = new ArrayList<String>();
+		List<String> strings = new ArrayList<>();
 		ids.forEach(id -> strings.add(id.toString()));
 		sconfig.set("Sign.friends", strings);
 
@@ -740,17 +740,25 @@ public class Room {
 
 	/**
 	 * If config option enabled and state true
-	 * allow owner editing of room region
+	 * allow owner and helper editing of room region
 	 * by setting them as members.
 	 * Otherwise remove them as members
 	 * @param state If we should allow owner editing
 	 */
 	public void setOwnerEditing(ProtectedRegion region, boolean state){
-		if(HTConfigHandler.getconfigYML().getBoolean("stopOwnersEditingRentedRooms", true))
-			if(state) HTWorldGuardManager.addMembers(hotel.getOwners(), region);
-			else HTWorldGuardManager.removeMembers(hotel.getOwners(), region);
-		else
+		if(HTConfigHandler.getconfigYML().getBoolean("stopOwnersEditingRentedRooms", true)) {
+			if (state) { //Allow editing
+				HTWorldGuardManager.addMembers(hotel.getOwners(), region);
+				HTWorldGuardManager.addMembers(hotel.getHelpers(), region);
+			} else { //Disallow editing
+				HTWorldGuardManager.removeMembers(hotel.getOwners(), region);
+				HTWorldGuardManager.removeMembers(hotel.getHelpers(), region);
+			}
+		}
+		else { //The owners should always be able to edit rooms
 			HTWorldGuardManager.addMembers(hotel.getOwners(), region);
+			HTWorldGuardManager.addMembers(hotel.getHelpers(), region);
+		}
 	}
 	public void setOwner(OfflinePlayer p){
 		HTWorldGuardManager.setOwner(p, getRegion());

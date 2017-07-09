@@ -31,8 +31,8 @@ public class HTCmdExecutor implements CommandExecutor {
 				new HTSubCommand(true, "hotels.rent", 3, (sendah, argz) -> HTCmdSurrogate.cmdRent(sendah, argz[1], argz[2]), "rent"),
 				new HTSubCommand("add", true,"hotels.friend", 5, (sendah, argz) -> HTCmdSurrogate.cmdFriendAdd(sendah, argz[2], argz[3], argz[4]), "friend", "f"),
 				new HTSubCommand("remove",true, "hotels.friend", 5, (sendah, argz) -> HTCmdSurrogate.cmdFriendRemove(sendah, argz[2], argz[3], argz[4]), "friend", "f"),
-				new HTSubCommand("list", "hotels.friend.list.admin", 4, (sendah, argz) -> HTCmdSurrogate.cmdFriendList(sendah, argz[2], argz[3]), "friend", "f"),
-				new HTSubCommand("list", true, "hotels.friend", 4, (sendah, argz) -> HTCmdSurrogate.cmdFriendListIfOwner(sendah, argz[2], argz[3]), "friend", "f"),
+				new HTSubCommand("list", "hotels.friend.list.admin", 4, (sendah, argz) -> HTCmdSurrogate.cmdFriendList(sendah, argz[2], argz[3], true), "friend", "f"),
+				new HTSubCommand("list", true, "hotels.friend", 4, (sendah, argz) -> HTCmdSurrogate.cmdFriendList(sendah, argz[2], argz[3], false), "friend", "f"),
 				new HTSubCommand("add", true,"hotels.helper", 4, (sendah, argz) -> HTCmdSurrogate.cmdHelperAdd(sendah, argz[2], argz[3]), "helper", "h"),
 				new HTSubCommand("remove",true, "hotels.helper", 4, (sendah, argz) -> HTCmdSurrogate.cmdHelperRemove(sendah, argz[2], argz[3]), "helper", "h"),
 				new HTSubCommand("list", "hotels.helper.list.admin", 3, (sendah, argz) -> HTCmdSurrogate.cmdHelperList(sendah, argz[2], true), "helper", "h"),
@@ -82,7 +82,7 @@ public class HTCmdExecutor implements CommandExecutor {
 			matchedCommand = true;
 
 			if(!Mes.hasPerm(sender, command.getPermission())){
-				Mes.mes(sender ,"chat.noPermission");
+				Mes.mes(sender ,"chat.noPermission");//todo This gets spammed
 				continue;
 			}
 
