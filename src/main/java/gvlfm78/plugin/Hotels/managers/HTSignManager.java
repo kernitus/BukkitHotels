@@ -404,7 +404,6 @@ public class HTSignManager {
 	 */
 	public static boolean breakRoomSign(Sign s, Player p) {
 		World w = s.getWorld();
-
 		String hotelName = ChatColor.stripColor(s.getLine(0));
 
 		Hotel hotel = new Hotel(s.getWorld(), hotelName);
@@ -438,6 +437,7 @@ public class HTSignManager {
 		if (room.isFree() || Mes.hasPerm(p, "hotels.delete.rooms.admin")) {
 			room.deleteSignFile();
 			room.deleteSchematic();
+			room.deleteRegion();
 		} else {
 			Mes.mes(p, "sign.room.breakDenied");
 			return true;

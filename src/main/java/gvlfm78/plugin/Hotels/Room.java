@@ -362,6 +362,9 @@ public class Room {
 		File file = HTConfigHandler.getSchematicFile(this);
 		if(file.exists()) file.delete();
 	}
+	public void deleteRegion(){
+		HTWorldGuardManager.removeRegion(world, getRegion());
+	}
 
 	public void renumber(String newNum) throws NumberFormatException, NumberTooLargeException, HotelNonExistentException, RoomNonExistentException, BlockNotSignException, OutOfRegionException, EventCancelledException, IOException {
 		renumber(Integer.parseInt(newNum));
