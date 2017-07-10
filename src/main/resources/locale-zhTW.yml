@@ -2,7 +2,7 @@
 # 漢化 By NOBUTS
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 language: zhTW
-version: 2
+version: 3
 #####################################################################################
 message:
  hotel:
@@ -114,7 +114,7 @@ chat:
    usage: "&4正確格式: &6&o/ht friend <add/remove/list> <旅館> <房間> [好友ID]"
    noFriends: "&2妳沒有在指定房間添加任何好友"
    friendNotInList: "&4指定的用戶不在好友列表中!"
-   wrongData: "&4輸入的旅館或者房間數量不匹配現有的位置"
+  wrongData: "&4輸入的旅館或者房間數量不匹配現有的位置"
   buyroom:
    usage: "&4正確用法: &6&o/ht buyr <旅館名> <房間號>"
    notOnSale: "&4那個房間沒有出售中!"
@@ -193,6 +193,9 @@ chat:
    buyr: "&6/ht buyr <旅館名> <房間號> - &a買下妳獲得購買邀請的指定的房間"
    friend: "&6/ht friend <add/remove> <旅館名> <房間名> <玩家名> - &a添加/移除 壹名可以在妳指定旅館的指定房間中打開、使用物品的玩家"
    delete: "&6/ht delete <旅館名> - &a刪除指定名稱的旅館"
+   helper: "&6/ht <helper/h> <add/remove> <旅館名> <玩家名> - &a將指定玩家 加入/刪除 從指定的旅館幫助者列表中移除"
+   roomStandalone: "&6&o/room <旅館名> <時間> <價格> <房間號> - &a看向壹個牌子, 為你設置壹個房間"
+   helperList: "&6/ht <helper/h> list <旅館名> - &a列出指定旅館的幫助者列表"
   room:
    usage: "&4正確格式: &6&o/ht room <旅館名字> <房間號碼>"
    nextNewRoomFail: "&4無法找到下壹個可用房間! 試試手動指定房間號碼吧"
@@ -231,6 +234,17 @@ chat:
    3: "&2輸入 &c/hotels help &2查看如何創建旅館"
    4: "&2輸入 &c/hotels commands &2查看命令幫助"
    5: "&8&m-----------------------------------------------------"
+  helper:
+   addYourself: "&4你不能將你自己加入幫助者列表！"
+   addSuccess: "&a成功將 %helper% 加入了幫助者列表"
+   removeSuccess: "&a成功將 %helper% 幫助者列表中移除"
+   alreadyHelper: "&4你已經添加過這名幫助者了！"
+   helperNotInList: "&4你指定的玩家不在幫助者列表中！"
+   noHelpers: "&2你還沒有為指定旅館添加幫助者"
+   list:
+    heading: "&a==旅館 %hotel% 的幫助者列表== "
+    line: "&6幫助者: &c%name%"
+    footer: "&c==幫助者列表結尾== "
  moneyEarned: "&a你通過 %hotel% 旅館的房間 %room% 賺取了 $%revenue%"
  noPermission: "&4妳沒有權限這樣做!"
  moneyEarnedExtend: "&a你通過 %hotel% 旅館的房間 %room% 賺取了續期費用 $%revenue%"

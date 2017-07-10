@@ -2,7 +2,7 @@
 # Translation by Kamilkime
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 language: plPL
-version: 2
+version: 3
 #####################################################################################
 message:
  hotel:
@@ -114,7 +114,7 @@ chat:
    usage: "&4Poprawne uzycie: &6&o/ht friend <add/remove/list> <nazwaHotelu> <numerPokoju> [nickPrzyjaciela]"
    noFriends: "&2Nie dodales zadnych przyjaciol do tego pokoju!"
    friendNotInList: "&4Podany gracz nie jest na liscie przyjaciol!"
-   wrongData: "&4Nazwa hotelu lub numer pokoju nie istnieja!"
+  wrongData: "&4Nazwa hotelu lub numer pokoju nie istnieja!"
   buyroom:
    usage: "&4Poprawne uzycie: &6&o/ht buyr <nazwaHotelu> <numerPokoju>"
    notOnSale: "&4Ten pokoj nie jest na sprzedaz!"
@@ -193,6 +193,9 @@ chat:
    buyr: "&6/ht buyr <nazwaHotelu> <numerPokoju> - &aKupuje pokoj, jesli jest on na sprzedaz"
    friend: "&6/ht <friend/f> <add/remove> <nazwaHotelu> <numerPokoju> <nickGracza> - &aDodaje/usuwa gracza z listy przyjaciol, ktorzy maja dostep do pokoju"
    delete: "&6/ht delete <nazwaHotelu> - &aUsuwa hotel"
+   helper: "&6/ht <helper/h> <add/remove> <nazwaHotelu> <nickGracza> - &aDodaje /usuwa gracza z listy pomocnikow hotelu"
+   roomStandalone: "&6&o/room <nazwaHotelu> <czas> <cena> <numerPokoju> - &aPatrz na tabliczke, ustawia pokoj"
+   helperList: "&6/ht <helper/h> list <nazwaHotelu> - &aPokazuje liste pomocnikow z danego hotelu"
   room:
    usage: "&4Poprawne uzycie: &6&o/ht room <nazwaHotelu> <numerPokoju>"
    nextNewRoomFail: "&4Nie znaleziono nastepnego wolnego pokoju! Podaj numer recznie!"
@@ -231,6 +234,17 @@ chat:
    3: "&2Wpisz &c/hotels help&2, aby uzyskac wiecej pomocy"
    4: "&2Wpisz &c/hotels commands&2, aby uzyskac pomoc z komendami"
    5: "&8&m-----------------------------------------------------"
+  helper:
+   addYourself: "&4Nie mozesz sam siebie dodac do listy pomocnikow!"
+   addSuccess: "&aDodano gracza %helper% do listy pomocnikow"
+   removeSuccess: "&aUsunieto gracza %helper% z listy pomocnikow"
+   alreadyHelper: "&4Juz dodales tego pomocnika!"
+   helperNotInList: "&4Podany gracz nie jest na liscie pomocnikow!"
+   noHelpers: "&2Nie dodales zadnego pomocnika do tego hotelu"
+   list:
+    heading: "&a==Lista pomocnikow hotelu %hotel%=="
+    line: "&6Pomocnik: &c%name%"
+    footer: "&c==Koniec listy pomocnikow=="
  moneyEarned: "&aZarobiles $%revenue% z wynajmu pokoju %room% w hotelu %hotel%"
  noPermission: "&4Nie masz uprawnien!"
  moneyEarnedExtend: "&aZarobiles $%revenue% na przedluzeniu wynajmu pokoju %room% w hotelu %hotel%"
