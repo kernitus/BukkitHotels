@@ -229,9 +229,8 @@ public class HTSignManager {
 
 		//Sign lines
 		Sign s = (Sign) e.getClickedBlock().getState();
-		String Line1 = ChatColor.stripColor(s.getLine(0)); //Line1
 		String Line2 = ChatColor.stripColor(s.getLine(1)); //Line2
-		String hotelName = (ChatColor.stripColor(Line1)); //Hotel name
+		String hotelName = ChatColor.stripColor(s.getLine(0)); //Hotel name
 
 		Hotel hotel = new Hotel(world, hotelName);
 

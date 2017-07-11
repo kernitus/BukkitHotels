@@ -42,7 +42,6 @@ public class HTCmdSurrogate {
 		cmdCommands(s, !HTConfigHandler.getconfigYML().getBoolean("onlyDisplayAllowedCommands", true));
 	}
 	public static void cmdCommands(CommandSender s, boolean skipPermissionChecks){
-		System.out.print("skip? " + skipPermissionChecks);
 		Mes.mesNoPrefix(s, "chat.commands.commands.header");
 		Mes.mesNoPrefix(s, "chat.commands.commands.subheader");
 		Mes.mesNoPrefix(s, "chat.commands.commands.help");
@@ -487,9 +486,6 @@ public class HTCmdSurrogate {
 	public static void cmdRemovePlayer(CommandSender sender, String playerName, String hotelName, String roomNum){
 
 		Room room = new Room(hotelName, roomNum, sender);
-
-		System.out.println("ROOM world: " + room.getWorld());
-
 		@SuppressWarnings("deprecation")
 		OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
 

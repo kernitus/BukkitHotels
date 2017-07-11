@@ -108,7 +108,6 @@ public class HTWorldGuardManager {
 	public static void removeMember(UUID id, ProtectedRegion r){
 		DefaultDomain members = r.getMembers();
 		members.removePlayer(id);
-		System.out.println("Members: " + members.size() + " id: " + id.toString());
 		r.setMembers(members);
 	}
 	public static void removeMembers(DefaultDomain dd, ProtectedRegion r){

@@ -85,7 +85,7 @@ public class Room {
 	}
 	public boolean isRenter(UUID uuid){
 		OfflinePlayer renter = getRenter();
-		return renter==null ? false : renter.getUniqueId().equals(uuid);
+		return renter != null && renter.getUniqueId().equals(uuid);
 	}
 	public boolean isRented(){
 		return getRenter() != null;
@@ -172,9 +172,10 @@ public class Room {
 	}
 	public boolean isFree(){
 		OfflinePlayer renter = null;
-		if(exists() && getSignFile().exists()) //Check if region & file exist
+		if(exists() && doesSignFileExist()) //Check if region & file exist
 			renter = getRenter();
-		return renter==null || !renter.hasPlayedBefore();
+
+		return renter == null || !renter.hasPlayedBefore();
 	}
 	public boolean isFreeOrNotSetup(){
 		return !getSignFile().exists() || isFree();

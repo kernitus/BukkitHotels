@@ -116,7 +116,7 @@ public class HTCmdExecutor implements CommandExecutor {
 		//Unknown sub-command
 		if(!matchedCommand){ Mes.mes(sender, "chat.commands.unknownArg"); return false; }
 
-		if(!noPermission){ Mes.mes(sender ,"chat.noPermission"); return false; }
+		if(noPermission){ Mes.mes(sender ,"chat.noPermission"); return false; }
 
 		//Display command usage
 		if(pathToUsageToDisplay != null && !pathToUsageToDisplay.isEmpty()){
