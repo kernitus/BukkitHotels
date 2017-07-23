@@ -9,7 +9,7 @@ import kernitus.plugin.Hotels.tasks.RoomTask;
 import kernitus.plugin.Hotels.updates.HTUpdateChecker;
 import kernitus.plugin.Hotels.updates.HTUpdateListener;
 import net.milkbowl.vault.economy.Economy;
-import org.bstats.Metrics;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -142,10 +142,10 @@ public class HotelsMain extends JavaPlugin{
 		Metrics metrics = new Metrics(this);
 
 		//Hotel amount
-		metrics.addCustomChart(new Metrics.SimpleBarChart("hotel_amount") {
-			@Override
-			public HashMap<String, Integer> getValues(HashMap<String, Integer> values) {
-				switch(hotelsCount) {
+
+		metrics.addCustomChart(new Metrics.SimpleBarChart("hotel_amount", () -> {
+			HashMap<String, Integer> values = new HashMap<>();
+			switch(hotelsCount) {
 				case 0: values.put("0", 1); break;
 				case 1: case 2: case 3:	values.put("1-3", 1); break;
 				case 4: case 5: values.put("4-5", 1); break;
@@ -153,18 +153,11 @@ public class HotelsMain extends JavaPlugin{
 				case 11: case 12: case 13: case 14: case 15: values.put("11-15", 1); break;
 				case 16: case 17: case 18: case 19: case 20: values.put("16-20", 1); break;
 				default: values.put(">20", 1);
-				}				
-				return values;
 			}
-		});
+			return values;
+		}));
 
-		//Locale
-		metrics.addCustomChart(new Metrics.SimplePie("locale_language") {
-			@Override
-			public String getValue() {
-				return HTConfigHandler.getLanguage().getHumanName();
-			}
-		});
+		metrics.addCustomChart(new Metrics.SimplePie("locale_language", () -> HTConfigHandler.getLanguage().getHumanName()));
 
 		//Checking for updates
 		if(getConfig().getBoolean("updates", true)){

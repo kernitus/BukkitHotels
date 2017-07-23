@@ -1,17 +1,15 @@
 package kernitus.plugin.Hotels;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
-import kernitus.plugin.Hotels.managers.HTWorldGuardManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class HotelsAPI {
 

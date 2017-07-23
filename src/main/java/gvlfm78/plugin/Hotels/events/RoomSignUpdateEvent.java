@@ -1,11 +1,10 @@
 package kernitus.plugin.Hotels.events;
 
+import kernitus.plugin.Hotels.Room;
 import org.bukkit.block.Sign;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
-import kernitus.plugin.Hotels.Room;
 
 public class RoomSignUpdateEvent extends Event implements Cancellable {
 

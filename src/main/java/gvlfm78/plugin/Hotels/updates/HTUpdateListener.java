@@ -1,14 +1,13 @@
 package kernitus.plugin.Hotels.updates;
 
-import java.io.File;
-
+import kernitus.plugin.Hotels.HotelsMain;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import kernitus.plugin.Hotels.HotelsMain;
+import java.io.File;
 
 public class HTUpdateListener implements Listener{
 

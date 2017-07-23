@@ -1,10 +1,9 @@
 package kernitus.plugin.Hotels.events;
 
+import kernitus.plugin.Hotels.trade.RoomBuyer;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
-import kernitus.plugin.Hotels.trade.RoomBuyer;
 
 public class RoomSaleEvent extends Event implements Cancellable {
 

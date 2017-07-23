@@ -1,10 +1,9 @@
 package kernitus.plugin.Hotels.events;
 
+import kernitus.plugin.Hotels.Hotel;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
-import kernitus.plugin.Hotels.Hotel;
 
 public class HotelRenameEvent extends Event implements Cancellable {
 

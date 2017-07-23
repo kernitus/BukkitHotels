@@ -1,12 +1,12 @@
 package kernitus.plugin.Hotels.signs;
 
-import java.io.File;
-
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
 
 public abstract class AbstractSign {
 

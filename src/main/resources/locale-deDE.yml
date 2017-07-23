@@ -1,35 +1,35 @@
 # Hotels plugin by kernitus <- He is a good Men // German Translation by StandbyGamer
 # https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
 language: deDE
-version: 1
+version: 2
 #####################################################################################
-message: 
- hotel: 
-  exit: "&aKomm bald zurück ins %hotel% Hotel"
+message:
+ hotel:
+  exit: "&aKomm bald wieder ins %hotel% Hotel"
   enter: "&bWillkommen im %hotel% Hotel"
- room: 
+ room:
   exit: "&aKomm bald zurück ins Zimmer %room%"
   enter: "&bWillkommen im Zimmer %room%"
-main: 
+main:
  noConnection: "Konnte keine Verbindung zur Update Seite herstellen!"
- enable: 
+ enable:
   success: "%pluginname% v%version% wurde erfolgreich aktiviert"
  updateAvailable: "Hotels v%version% steht zum Download zur Verfügung!"
- disable: 
+ disable:
   success: "%pluginname% v%version% wurde deaktiviert"
  updateAvailableLink: "Um es herunterzuladen, geh auf %link%"
-chat: 
- commands: 
-  rename: 
+chat:
+ commands:
+  rename:
    usage: "&4Richtige Benutzung: &6&o/ht ren <alterName> <neuerName> [WeltName]"
    failRooms: "&4Zimmer konnten nicht umbenannt werden"
    success: "&2Du hast das %hotel% Hotel erfolgreich umbenannt"
-  help: 
+  help:
    subheader: "&5--Hotels Plugin Befehlshilfe--"
    prefooter: "&4Tippe &3&o/ht help %num%&r&4 um auf die Seite %num% zukommen"
    footer: "&4================================"
    header: "&4================================"
-   page4: 
+   page4:
     1: "&4-Seite 4- &9Schild hinzufügen"
     2: "&e1. Nehm ein Schild und setze es ausserhalb des Raumes"
     3: "&e2. Schreib auf das Schild:"
@@ -37,7 +37,7 @@ chat:
     5: "&e    Hotelname"
     6: "&e    RaumNr:Preis"
     7: "&e    Zeit"
-   page5: 
+   page5:
     1: "&4-Seite 5- &9Beispiel eines Schildes"
     2: "&e1. Beispiel eines Schildes:"
     3: "&e    [Hotels]"
@@ -46,65 +46,64 @@ chat:
     6: "&e    3d 6m 2s"
     7: "&9&oDu kannst &20 &9&overwenden, um die Miete unendlich zu machen "
     8: "&9&oBei den Kosten, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2million&9 &5b&9 = &2billion (1000 million)"
-   page2: 
+   page2:
     1: "&4-Seite 2- &9Erstellung des Hotels"
     2: "&e1. Tippe &3&o/ht [create&r&3|&oc] [nameofhotel]"
-   page3: 
+   page3:
     1: "&4-Seite 3- &9Erstellung der Zimmer"
     2: "&e1. Hol dein WorldEdit Zauberstab wieder heraus"
     3: "&e2. Makiere mit einem Rechts- und Linksklick die Ecken deines Zimmers"
-    4: "&e3. Tippe &3&o/ht room [hotelName] [RaumNr]"
-   page1: 
+    4: "&e3. Tippe &3&o/ht room [HotelName] [RaumNr]"
+   page1:
     1: "&4-Seite 1- &9Auswahl der Hotel Region"
     2: "&e1. Tippe &3&o/ht [creationmode&r&3|&3&ocm] enter"
     3: "&e2. Nimm deinen WorldEdit Zauberstab in die Hand"
     4: "&e3. Makiere mit einem Rechts- und Linksklick die Ecken deines Hotels"
-  buyhotel: 
+  buyhotel:
    usage: "&4Richtige Benutzung: &6&o/ht buyh <HotelName>"
    notEnoughMoney: "&4Du hast nicht genug Geld!"
    notOnSale: "&4Das Hotel steht nicht zum Verkauf!"
    success: "&aDu hast gerade das %hotel% Hotel von %seller% für $%price% gekauft"
-  creationMode: 
+  creationMode:
    reset: "&2Die Inventar Dateien wurden zurückgesetzt."
    exit: "&cDu hast den den Hotel-Erstellungsmodus verlassen."
    enter: "&aDu hast den den Hotel-Erstellungsmodus betreten."
    alreadyIn: "&4Du befindest dich bereits im Erstellungsmodus!"
-   noarg: "&4Bitte gebe &6&oenter &4oder &6&oexit &4 ein umd den Modus zu ändern"
    notAlreadyIn: "&4Du bist nicht im Erstellungsmodus!"
+   usage: "&4Richtige Benutzung: &6&o/ht cm enter/exit"
   fileSaveFail: "&4Beim Speichern einer Datei ist etwas schief gelaufen"
-  rent: 
+  rent:
    usage: "&4Richtige Benutzung: &6&o/ht rent <HotelName> <RaumNr>"
    invalidData: "&4Name des Hotels oder der angegebenen Zimmernummer sind nicht gültig"
    invalidLocation: "&4Schildort in der Schild Datei konnte nicht auf ein Schild aufgelöst werden!"
-  home: 
+  home:
    usage: "&4Richtige Benutzung: &6&o/ht home <HotelName> [RaumNr]"
-   regionNotFound: "&4Angegebenes Hotel oder Zimmer nicht gefunden!"
    noHomeSet: "&4Kein Hauspunkt gesetzt!"
    notRenterNoPermission: "&4Du bist nicht der Mieter oder hast keine Berechtigung dazu!"
-  sethome: 
+  sethome:
    notInHotelRegion: "&4Du bist nicht in einer Hotelregion!"
    userHomeSet: "&aSpieler Hauspunkt wurde gesetzt"
    defaultHomeSet: "&aStandard Hauspunkt wurde gesetzt"
    notInCreationMode: "&4Du bist nicht im Erstellungsmodus!"
    hotelHomeSet: "&aHotel Hauspunkt wurde gesetzt"
   youDoNotOwnThat: "&4Das besitzt du nicht!"
-  check: 
+  check:
    headerRooms: "&a==Liste von %player% Zimmern=="
    lineRooms: "&6Hotel: &c%hotel%    &6Raum: &c%room%    &6Läuft ab in: &c%timeleft%"
    lineHotels: "&6Hotel: &c%hotel%    &9Gesamt: &r%total%   &aFrei: &r%free%"
    noRooms: "&cDu hast keine Zimmer gemietet!"
    noHotels: "&c Du besitzt keine Hotels!"
    headerHotels: "&a==Liste von %player%'s Hotels=="
-  removeSigns: 
+  removeSigns:
    success: "&aAlle Schilder erfolgreich entfernt"
-  deleteHotel: 
+  deleteHotel:
    hasRentedRooms: "&4Du kannst dieses Hotel nicht löschen, da einige Zimmer in ihm vermietet wurden!"
-  friend: 
+  friend:
    addSuccess: "&aDu hast %friend% erfolgreich zur Freundesliste hinzugefügt"
    addYourself: "&4Du kannst dich nicht selbst zur Freundesliste hinzufügen!"
    noRenter: "&4Der angegebene Raum hat keinen Mieter!"
    notRenter: "&4Du bist nicht der Mieter des angegebenen Raumes!"
-   list: 
+   list:
     line: "&6Freund: &c%name%"
     heading: "&a==Freundesliste für Raum Nr. %room% des %hotel% Hotel=="
     footer: "&c==Ende der Freundesliste=="
@@ -114,25 +113,25 @@ chat:
    usage: "&4Richtige Benutzung: &6&o/ht friend <add/remove/list> <HotelName> <RaumNr> [FreundName]"
    noFriends: "&2Du hast keine Freunde zum angegebenen Raum hinzugefügt"
    friendNotInList: "&4Der von dir angegebene Spieler befindet sich nicht in der Freundesliste!"
-   wrongData: "&4Die eingegebene Hotel- oder Raumnummer stimmt nicht mit dem vorhandenen Standort überein"
-  buyroom: 
+  wrongData: "&4Die eingegebene Hotel- oder Raumnummer stimmt nicht mit dem vorhandenen Standort überein"
+  buyroom:
    usage: "&4Richtige Benutzung: &6&o/ht buyr <HotelName> <RaumNr>"
    notOnSale: "&4Das Zimmer steht nicht zum Verkauf!"
    success: "&aDu hast gerade Zimmer %room% des %hotel% Hotel von %seller% für $%price% gekauft"
   noWorld: "&cBitte gebe die Welt an"
   roomNonExistent: "&4Der angegebene Raum existiert nicht"
-  create: 
+  create:
    hotelAlreadyPresent: "&4Hier ist schon ein Hotel vorhanden"
    fail: "&4Konnte kein Hotel erstellen. Hast du den Hotel-Erstellungsmodus betreten? (&3&o/hotels cm enter&r&4)"
-   noName: "&4Gebe dein Hotel einen Namen!"
    creationSuccess: "&aDu besitzt derzeit %tot% Hotels. Du darfst noch %left% andere besitzen"
    maxHotelsReached: "&4Du hast die Grenze von %max% Hotels erreicht die du besitzen kannst"
+   usage: "&4Richtige Benutzung: &6&o/ht c <HotelName>"
   hotelNonExistent: "&4Das angegebene Hotel existiert nicht"
-  resetroom: 
+  resetroom:
    usage: "&4Richtige Benutzung: &6&o/ht resetroom <HotelName> <RaumNr>"
    notSetup: "&4Dieses Zimmer ist nicht zum zurückzusetzen eingestellt!"
    success: "&aZimmer %room% des %hotel% Hotel wurde gerade zurückgesetzt"
-  sellhotel: 
+  sellhotel:
    selling: "&a%seller% möchte dir das %hotel% Hotel für $%price% verkaufen. Tippe &6&o/ht buyh %hotel% &r&aum es zu kaufen"
    success: "&aDu hast das %hotel% Hotel an %buyer% für $%price% verkauft"
    sellingAsked: "&a%buyer% wurde ein Hotel Verkauf vorgeschlagen"
@@ -147,26 +146,26 @@ chat:
   somethingWentWrong: "&4Hoppla! Bei der Ausführung des Befehls ist etwas schief gelaufen"
   noHotel: "&cBitte gebe das Hotel an"
   noPlayer: "&cBitte gebe ein Spieler an"
-  deleteRoom: 
+  deleteRoom:
    usage: "&4Richtige Benutzung: &6&o/ht delr <HotelName> <RaumNr> [WeltName]"
    roomRented: "&4Du kannst diesen Raum nicht löschen, da er gemietet wurde!"
-  roomslist: 
+  roomslist:
    usage: "&4Richtige Benutzung: &6&o/ht rlist <HotelName>"
    line: "&6Raum Nr: &c%room%%space%%state%"
    noRooms: "&cEs gibt keine Zimmer in diesem Hotel"
    heading: "&a==  Zimmerliste vom %hotel% Hotel  =="
    footer: "&c==  Ende der Zimmerliste vom %hotel% Hotel  =="
-  renumber: 
+  renumber:
    usage: "&4Richtige Benutzung: &6&o/ht renum <HotelName> <alteNr> <neueNr> [WeltName]"
    fail: "&4Zimmer %oldnum% konnte nicht geändert werden"
    newNumTooBig: "&4Die neue Nummer ist zu gross!"
    success: "&2Du hast das Zimmer erfolgreich von %oldnum% zu %newnum% des %hotel% Hotel geändert"
   userNonExistent: "&4Der angegebene Spieler existiert nicht"
-  roomreset: 
+  roomreset:
    usage: "&4Richtige Benutzung: &6&o/ht roomreset <HotelName> <RaumNr>"
    enable: "&3Zimmer %room% des %hotel% Hotel wird nun bei Mietverzug zurückgesetzt"
    disable: "&cZimmer %room% des %hotel% Hotel wird nicht mehr bei Mietverzug zurückgesetzt"
-  commands: 
+  commands:
    subheader: "&5--Hotels Plugin Befehlshilfe--"
    rename: "&6/ht rename <alterName> <neuerName> - &aBenennt das angegebene Hotel um"
    rlist: "&6/ht rlist <HotelName> - &aListet alle Zimmer im angegebenen Hotel auf"
@@ -193,80 +192,102 @@ chat:
    buyr: "&6/ht buyr <HotelName> <RaumNr> - &aKauft Zimmer von Zimmerbesitzer, wenn es zum Verkauf steht"
    friend: "&6/ht <friend/f> <add/remove> <HotelName> <RaumNr> <SpielerName> - &aEntferne oder füge ein Spieler der Freundesliste des Zimmers hinzu"
    delete: "&6/ht delete <HotelName> - &aLöscht das angegebene Hotel"
-  room: 
+   helper: "&6/ht <helfer/h> <add/remove> <HotelName> <SpielerName> - &aFügt- oder entfernt einen Spieler zur Helferliste des angegebenen Hotels"
+   roomStandalone: "&6&o/room <HotelName> <Zeit> <Preis> <RaumNr> - &aSeh auf ein Schild um das Zimmer zu erstellen"
+   helperList: "&6/ht <helfer/h> list <HotelName> - &aListet alle Helfer im angegebenen Hotel auf"
+  room:
    usage: "&4Richtige Benutzung: &6&o/ht room <HotelName> <RaumNr>"
    nextNewRoomFail: "&4Das nächste verfügbare Zimmer konnte nicht gefunden werden! Versuche die Zimmernummer manuell anzugeben"
    roomNumInvalid: "&4Die Zimmernummer ist keine gültige ganze Zahl!"
    alreadyPresent: "&4Hier ist schon ein Zimmer vorhanden"
    success: "&aDu hast Zimmer %room% des %hotel% Hotel erstellt"
-  remove: 
+  remove:
    usage: "&4Richtige Benutzung: &6&o/ht remove <SpielerName> <HotelName> <RaumNr> [WeltName]"
    noRenter: "&4Der angegebene Raum wurde nicht vermietet!"
    playerNotRenter: "&4Der angegebene Spieler hat kein bestimmtes Zimmer gemietet!"
    success: "&a Erfolgreich %player% von Zimmer %room% des %hotel% Hotel entfernt"
-  reload: 
+  reload:
    success: "&aKonfigurationsdateien wurden neu geladen"
-  removeRegions: 
+  removeRegions:
    fail: "&4Die Hotelregionen konnten nicht gelöscht werden"
    success: "&aDie Hotelregionen wurde erfolgreich gelöscht"
-  removeRoom: 
+  removeRoom:
    fail: "&4Das Zimmer konnte nicht gelöscht werden"
    success: "&aDas Zimmer wurde erfolgreich gelöscht"
-  sellroom: 
+  sellroom:
    usage: "&4Richtige Benutzung: &6&o/ht sellr <HotelName> <RaumNr> <KäuferName> <Preis>"
    sellingAsked: "&a%buyer% wurde ein Zimmer Verkauf vorgeschlagen"
    selling: "&a%seller% möchte dir Zimmer %room% des %hotel% Hotel für $%price% verkaufen. Tippe &6&o/ht buyr %hotel% %room% &r&aum es zu kaufen"
    success: "&aDu hast Zimmer %room% des %hotel% Hotel an %buyer% für $%price% verkauft"
    sellingAlreadyAsked: "&4Du hast %buyer% schon ein Zimmer Verkauf vorgeschlagen!"
   unknownArg: "&4Unbekanntes Argument. Versuche &3&o/hotels"
-  listHotels: 
+  listHotels:
    line: "&6Hotel: &c%hotel%%space%&9Gesamt: &r%total%   &aFrei: &r%free%"
    heading: "&a==  Hotel list  =="
    footer: "&c==  Ende der Hotelliste  =="
+  hotelsList:
+   usage: "&4Richtige Benutzung: &6&o/ht list [Welt]"
+  mainpage:
+   1: "&8&m-----------------------------------------------------"
+   2: "&2&l%plugin%&a Plugin von &ckernitus&a Version &2%version%"
+   3: "&2Tippe &c/hotels help &2um Hilfe zur Hotelerstellung zu erhalten"
+   4: "&2Tippe &c/hotels commands &2um eine Liste mit Befehlen zu sehen"
+   5: "&8&m-----------------------------------------------------"
+  helper:
+   addYourself: "&4 Du kannst dich selbst nicht auf die Helferliste setzen!"
+   addSuccess: "&a%helper% wurde zur Helferliste hinzugefügt"
+   removeSuccess: "&a%helper% wurde von der Helferliste entfernt"
+   alreadyHelper: "&4Du hast diesen Helfer bereits hinzugefügt!"
+   helperNotInList: "&4Der angegebene Spieler ist nicht in der Helferliste!"
+   noHelpers: "&2Du hast keine Helfer zum angegebenen Hotel hinzugefügt"
+   list:
+    heading: "&a==Helferliste von dem %hotel% Hotel=="
+    line: "&6Helfer: &c%name%"
+    footer: "&c==Ende der Helferliste=="
  moneyEarned: "&aDu hast $%revenue% von der Miete des Zimmers %room% in deinem %hotel% Hotel bekommen"
  noPermission: "&4Du hast keine Berechtigung dazu!"
  moneyEarnedExtend: "&aDu hast $%revenue% von der Mietverlängerung des Zimmers %room% in deinem %hotel% Hotel bekommen"
  prefix: "&9[Hotel]&r"
- creationMode: 
+ creationMode:
   hotelCreationFailed: "&4Konnte kein Hotel erstellen, da das Hotel schon existiert"
   noSelection: "&4Bitte wähle einen Bereich mit dem WorldEdit Zauberstab aus"
   hotelCreationSuccessful: "&2Du hast das %hotel% Hotel erfolgreich erstellt"
   deniedAction: "&4Du kannst das im Erstellungsmodus nicht machen!"
-  items: 
-   leather: 
+  items:
+   leather:
     lore1: "R-klick um Konflikte"
     lore2: "zwischen den Regionen zu prüfen"
-    name: "&bLeder Stück"
-   compass: 
+    name: "&bStück Leder"
+   compass:
     lore1: "L-klick tp zu"
     lore2: "R-klick durchlaufen"
     name: "&bWorldEdit Kompass"
-   wand: 
+   wand:
     lore1: "L-klick eine Ecke"
     lore2: "R-klick gegenüberliegende Ecke"
     name: "&bWorldEdit Zauberstab"
-   sign: 
+   sign:
     lore1: "R-klick hinstellen"
     lore2: "Erste Zeile: &9[Hotels]"
     name: "&bEpisches Schild"
-  armour: 
+  armour:
    storeSuccess: "&aDeine Rüstung wurde erfolgreich gespeichert"
    restoreSuccess: "&aDeine Rüstung wurde erfolgreich wiederhergestellt"
    storeFail: "&4Deine Rüstung konnte nicht gespeichert werden"
    restoreFail: "&4Deine gespeicherte Rüstung konnte nicht gefunden werden"
   selectionInvalid: "&4Ungültige Auswahl. Bitte wähle den Bereich erneut aus"
-  rooms: 
+  rooms:
    fail: "&4Raum konnte nicht erstellt werden!"
    alreadyExists: "&4Dieser Raum existiert bereits!"
    notInHotel: "&4Das Zimmer ist nicht im angegebenen Hotel!"
   invalidChar: "&4Der Name darf das Zeichen nicht enthalten &6&l-"
-  inventory: 
+  inventory:
    storeSuccess: "&aDein Inventar wurde erfolgreich gespeichert"
    restoreSuccess: "&aDein Inventar wurde erfolgreich wiederhergestellt"
    storeFail: "&4Dein Inventar konnte nicht gespeichert werden"
    restoreFail: "&4Dein gespeichertes Inventar konnte nicht gefunden werden"
- sign: 
-  use: 
+ sign:
+  use:
    notEnoughMoney: "&4Du hast nicht genug Geld! Du benötigst noch %missingmoney%"
    differentRoomNums: "&4Raumnummern stimmen nicht überein!"
    success: "&aDu hast Zimmer %room% des %hotel% Hotel für $%price% gemietet"
@@ -281,7 +302,7 @@ chat:
    overRoomsPerHotelLimit: "&4Du hast die Grenze von %limit% Zimmern in diesem Hotel erreicht"
    maxRoomsReached: "&4Du hast die Grenze von %max% Räumen erreicht, die du besitzen kannst"
    taken: "&4Dieser Raum wurde bereits vermietet"
-  place: 
+  place:
    tooLong: "&4Die Zimmernummer oder der Preis ist zu gross!"
    noRegion: "&4Das angegebene Hotel oder Zimmer existiert nicht!"
    success: "&2Hotelschild wurde erfolgreich erstellt!"
@@ -292,8 +313,11 @@ chat:
    alreadyExists: "&4Schild für dieses Hotelzimmer existiert bereits!"
    noHotel: "&4Das Hotel existiert nicht"
    noSeparator: "&4Zeile 3 muss den Separator &3: &4enthalten"
-sign: 
- room: 
+ room:
+  usage: "&4Richtige Benutzung: &6&o/room <HotelName> <Zeit> <Preis> <RaumNr>"
+  notSign: "&4Du siehst kein Schild an!"
+sign:
+ room:
   total: "Hotel Zimmer"
   name: "&2Zimmer"
   free: "Zimmer Frei"
@@ -302,11 +326,11 @@ sign:
  vacant: Frei
  rentExpiredPlayer: "&9Deine Miete von Zimmer %room% des %hotel% Hotel ist abgelaufen"
  permanent: Dauerhaft
- reception: 
+ reception:
   hotel: "&1%hotel% Hotel"
   reception: "&aRezeption"
  occupied: Belegt
- delete: 
+ delete:
   roomNonExistent: "Schild Datei %filename% wurde gelöscht, da das Zimmer nicht existiert"
   hotelName: "Schild Datei %filename% stimmte nicht mit dem Hotel Namen im Spiel überein und wurde gelöscht"
   roomNum: "Schild Datei %filename% stimmte nicht mit der RaumNr im Spiel überein und wurde gelöscht"
