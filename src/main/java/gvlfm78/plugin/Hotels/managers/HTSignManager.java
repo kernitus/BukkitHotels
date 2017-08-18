@@ -100,7 +100,7 @@ public class HTSignManager {
 		String Line3 = ChatColor.stripColor(e.getLine(2)).trim();
 		String Line4 = ChatColor.stripColor(e.getLine(3)).trim();
 
-		Sign sign = (Sign) e.getBlock();
+		Sign sign = (Sign) e.getBlock().getState();
 
 		if (!Line3.contains(":")) {
 			Mes.mes(p, "chat.sign.place.noSeparator");
