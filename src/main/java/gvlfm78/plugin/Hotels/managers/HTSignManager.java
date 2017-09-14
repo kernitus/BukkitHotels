@@ -104,7 +104,7 @@ public class HTSignManager {
 
 		if (!Line3.contains(":")) {
 			Mes.mes(p, "chat.sign.place.noSeparator");
-			e.setLine(0, ChatColor.DARK_RED + "]hotels[");
+			e.setLine(0, ChatColor.DARK_RED + "]Hotels[");
 			return;
 		}
 
