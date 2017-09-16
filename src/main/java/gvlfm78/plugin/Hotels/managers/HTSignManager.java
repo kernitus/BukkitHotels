@@ -351,14 +351,15 @@ public class HTSignManager {
 
 		//Giving to all owners the revenue
 		for (UUID uuid : hotel.getOwners().getUniqueIds()) {
-			OfflinePlayer owner = Bukkit.getPlayer(uuid);
-			HotelsMain.economy.depositPlayer(owner, revenue);
+			OfflinePlayer owner = Bukkit.getOfflinePlayer(uuid);
 			String chatMessage;
 
 			if (isRentExtend) chatMessage = "chat.moneyEarnedExtend";
 			else chatMessage = "chat.moneyEarned";
 
 			if (revenue < 0) revenue = 0;
+
+			HotelsMain.economy.depositPlayer(owner, revenue);
 
 			if (!owner.isOnline()) {
 				HTMessageQueue.addMessage(MessageType.revenue, owner.getUniqueId(), Mes.getString(chatMessage,
