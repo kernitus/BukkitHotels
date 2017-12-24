@@ -1,0 +1,339 @@
+# Hotels plugin by kernitus
+# Translation by montlikadani
+# https://github.com/kernitus/BukkitHotels/wiki/Localisation to help with translations
+language: huHU
+version: 1
+#####################################################################################
+message:
+ hotel:
+  exit: "&aGyere vissza hamarosan a %hotel% hotelbe"
+  enter: "&bÜdvözöljük a %hotel% hotelben"
+ room:
+  exit: "&aGyere vissza hamarosan a %room% Szobába"
+  enter: "&bÜdvözöljük a szobában %room%"
+main:
+ noConnection: "Nem sikerült csatlakozni a frissítési webhelyhez!"
+ enable:
+  success: "%pluginname% v%version% engedélyezve van"
+ updateAvailable: "Szállodák v%version% letölthető!"
+ disable:
+  success: "%pluginname% v%version% le van tiltva"
+ updateAvailableLink: "A letöltéshez menjen %link%"
+chat:
+ commands:
+  rename:
+   usage: "&4Helyes használat: &6&o/ht ren <régi név> <új név> "
+   failRooms: "&4Nem lehet átnevezni a szobákat"
+   success: "&2Sikeresen átnevezte a %hotel% hotelt"
+  help:
+   subheader: "&5--Hotels plugin segítség--"
+   prefooter: "&4Típus &3&o/ht help %num%&r&4 oldalra jutni %num%"
+   footer: "&4================================"
+   header: "&4================================"
+   page4:
+    1: "&4-Oldal 4- &9Tábla hozzáadása"
+    2: "&e1. Fogja meg a táblát, és tegye a helyiségbe"
+    3: "&e2. Írja be a táblát:"
+    4: "&e    [Hotels]"
+    5: "&e    hotel név"
+    6: "&e    szoba szám:költség"
+    7: "&e    idő"
+   page5:
+    1: "&4-Oldal 5- &9Példa egy táblára"
+    2: "&e1. Példa egy táblára:"
+    3: "&e    [Hotels]"
+    4: "&e    TheBestHotel"
+    5: "&e    15:1m3k"
+    6: "&e    3d 6m 2s"
+    7: "&9&oHasználd &20 &9&omint egy idő, hogy a bérleti díj végtelen"
+    8: "&9&oIn költség, &5t&9 = &210&9, &5h&9 = &2100&9, &5k&9 = &21000&9, &5m&9 = &2millió&9 &5b&9 = &2ezermilliárd (1000 millió)"
+   page2:
+    1: "&4-Oldal 2- &9A szálloda létrehozása"
+    2: "&e1. Típus &3&o/ht [create&r&3|&oc] [szállodaneve]"
+   page3:
+    1: "&4-Oldal 3- &9Szoba létrehozás"
+    2: "&e1. Vedd ki a WorldEdit pálcát"
+    3: "&e2. Kattints a bal egérgombbal, és kattints a jobb oldali gombra a szoba sarkán"
+    4: "&e3. Típus &3&o/ht room [hotelnév] [szobaszám]"
+   page1:
+    1: "&4-Oldal 1- &9A szálloda kocka kiválasztása"
+    2: "&e1. Típus &3&o/ht [creationmode&r&3|&3&ocm] enter"
+    3: "&e2. Fogd kézbe a WorldEdit pálcáját"
+    4: "&e3. Kattints a bal egérgombbal, és kattints jobb gombbal a szálloda ellentétes sarkára"
+  buyhotel:
+   usage: "&4Helyes használat: &6&o/ht buyh <hotelNév>"
+   notEnoughMoney: "&4Nincs elegendő pénzed!"
+   notOnSale: "&4A szálloda nincs a helyszínen!"
+   success: "&aMost vetted meg a %hotel% szállodából %seller%, ára $%price%"
+  creationMode:
+   reset: "&2Az eszköztárak nullázódtak."
+   exit: "&cKilépett a hotel létrehozásának módjáról."
+   enter: "&aBeállította a hotel létrehozásának módját."
+   alreadyIn: "&4Már létrehozási módban vagy!"
+   notAlreadyIn: "&4Nem vagy a létrehozási módban!"
+   usage: "&4Helyes használat: &6&o/ht cm enter/exit"
+  fileSaveFail: "&4Valami hiba történt a fájl mentése közben"
+  rent:
+   usage: "&4Helyes használat: &6&o/ht rent <hotelnév> <szobaszám>"
+   invalidData: "&4A megadott hotelnév vagy szobaszám nem érvényes"
+   invalidLocation: "&4A tábla helye a táblafájlban nem oldódik fel egy táblához!"
+  home:
+   usage: "&4Helyes használat: &6&o/ht home <hotelnév> [szobaszám]"
+   noHomeSet: "&4Nincs otthon beállítva!"
+   notRenterNoPermission: "&4Nem vagy a bérlő, vagy nem rendelkezik engedéllyel!"
+  sethome:
+   notInHotelRegion: "&4Nem vagy egy szállodai régióban!"
+   userHomeSet: "&aFelhasználó otthoni beállítás"
+   defaultHomeSet: "&aAlapértelmezett otthoni beállítás"
+   notInCreationMode: "&4Nem vagy a létrehozási módban!"
+   hotelHomeSet: "&aA Hotel otthon beállítva"
+  youDoNotOwnThat: "&4Ez nem a te tulajdonodban van!"
+  check:
+   headerRooms: "&a==Bérelt szobák listája %player% játékostól=="
+   lineRooms: "&6Hotel: &c%hotel%    &6Szoba: &c%room%    &6Lejár: &c%timeleft%"
+   lineHotels: "&6Hotel: &c%hotel%    &9Teljes: &r%total%   &aSzabad: &r%free%"
+   noRooms: "&cNem béreltél semmilyen szobát!"
+   noHotels: "&cNem rendelkezel szállodával!"
+   headerHotels: "&a==Tulajdonos szállodák listája %player% játékostól=="
+  removeSigns:
+   success: "&aSikeresen eltávolította az összes táblát"
+  deleteHotel:
+   hasRentedRooms: "&4Ezt a szállodát nem lehet törölni, mivel néhány szobát béreltek!"
+  friend:
+   addSuccess: "&aSikeresen hozzáadva %friend% a barátlistához"
+   addYourself: "&4Nem adhatod hozzá magadat a barátlistához!"
+   noRenter: "&4A megadott helyiségben nincs bérlő!"
+   notRenter: "&4Nem vagy a megadott helyiség bérlője!"
+   list:
+    line: "&6Barát: &c%name%"
+    heading: "&a==Barátlista a szobához n. %room% a %hotel% hotel=="
+    footer: "&c==A barátok listájának vége=="
+   nonExistent: "&4Képes barátokat nem adhat a barátlistához!"
+   alreadyFriend: "&4Már hozzáadtad ezt a barátot!"
+   removeSuccess: "&aSikeresen eltávolítva %friend% a barátlistáról"
+   usage: "&4Helyes használat: &6&o/ht friend <add/remove/list> <hotelnév> <szobaszám> [barátnév]"
+   noFriends: "&2Még nem adtál hozzá egyetlen barátot sem a megadott helyiségbe"
+   friendNotInList: "&4A megadott felhasználó nem szerepel a barátlistában!"
+  wrongData: "&4A beírt szálloda vagy szobaszám nem egyezik a meglévő helyekkel"
+  buyroom:
+   usage: "&4Helyes használat: &6&o/ht buyr <hotelnév> <szobaszám>"
+   notOnSale: "&4Az a szoba nem eladó!"
+   success: "&aVettél egy szobát %room% a %hotel% szállodából %seller%, ára $%price%"
+  noWorld: "&cKérlek, add meg a világot"
+  roomNonExistent: "&4A kiválasztott szoba nem létezik"
+  create:
+   hotelAlreadyPresent: "&4Már itt van szálloda"
+   fail: "&4Nem sikerült szállodát létrehozni. Beléptél a Hotel Creation Mode üzemmódba? (&3&o/hotels cm enter&r&4)"
+   creationSuccess: "&aJelenleg sajátod %tot% hotelek. Birtokolhat egy másikat %left%."
+   maxHotelsReached: "&4Elérte a határértéket %max% neked is lehet szállodáit"
+   usage: "&4Helyes használat: &6&o/ht c <hotelnév>"
+  hotelNonExistent: "&4A kiválasztott hotel nem létezik"
+  resetroom:
+   usage: "&4Helyes használat: &6&o/ht resetroom <hotelnév> <szobaszám>"
+   notSetup: "&4A szoba nem állítható vissza!"
+   success: "&aSzoba %room% a %hotel% a szállodát épp most visszaállították"
+  sellhotel:
+   selling: "&aJátékos %seller% eladja a szállodát %hotel% neked, ára $%price%. Típus &6&o/ht buyh %hotel% &r&aa vásárláshoz"
+   success: "&aEladtad a %hotel% hotelt %buyer% játékosnak $%price% pénzért"
+   sellingAsked: "&aA játékost %buyer% megkérdezte, hogy kívánja-e megvásárolni a szállodát"
+   invalidPrice: "&4A megadott ár nem érvényes!"
+   sellingAlreadyAsked: "&4Már megkérdezte a lejátszót %buyer% ha meg akarja venni a szállodát!"
+   buyerNotOnline: "&4A vásárló nem elérhető!"
+   usage: "&4Helyes használat: &6&o/ht sellh <hotelnév> <vevőneve> <ár>"
+   selfSale: "&4Ezt nem tudod eladni magadnak!"
+   expired: "&4A szálloda értékesítése %hotel% lejárt"
+  worldNonExistent: "&4A kiválasztott világ nem létezik"
+  consoleRejected: "A consoleban nem futtatható ez a parancs!"
+  somethingWentWrong: "&4Hoppá! Valami nem sikerült végrehajtani a parancsot"
+  noHotel: "&cKérjük, adja meg a szállodát"
+  noPlayer: "&cKérjük, add meg a játékost"
+  deleteRoom:
+   usage: "&4Helyes használat: &6&o/ht delr <hotelnév> <szobaszám>"
+   roomRented: "&4Nem lehet törölni ezt a szobát, mivel bérelték!"
+  roomslist:
+   usage: "&4Helyes használat: &6&o/ht rlist <hotelnév>"
+   line: "&6Szoba n: &c%room%%space%%state%"
+   noRooms: "&cA szállodában nincs szoba"
+   heading: "&a==  A szoba listája %hotel% hotel  =="
+   footer: "&c==  A szoba lista vége %hotel% hotel  =="
+  renumber:
+   usage: "&4Helyes használat: &6&o/ht renum <hotelnév> <régiszám> <újszám>"
+   fail: "&4A szoba nem lett volna átszámozva %oldnum%"
+   newNumTooBig: "&4Az új szám túl nagy!"
+   success: "&2Sikeresen megváltoztattad a szobát %oldnum% a helyiségbe %newnum% a %hotel% hotel"
+  userNonExistent: "&4A kiválasztott felhasználó nem létezik"
+  roomreset:
+   usage: "&4Helyes használat: &6&o/ht roomreset <hotelnév> <szobaszám>"
+   enable: "&3A szoba %room% a %hotel% a szálloda most visszaáll a bérleti díj lejáratakor"
+   disable: "&cA szoba %room% a %hotel% a szálloda többé nem áll vissza a bérleti díj lejáratakor"
+  commands:
+   subheader: "&5--Hotels plugin parancs segítség oldal--"
+   rename: "&6/ht rename <réginév> <újnév> - &aMegnevezi a megadott szállodát"
+   rlist: "&6/ht rlist <hotelnév> - &aAz összes szobát felsorolja meghatározott szállodában"
+   help: "&6/ht help - &aA súgóoldal megjelenítése"
+   sellh: "&6/ht sellh <hotelnév> <játékosnév> <ár> - &aAjánlatok eladni a szállodát a meghatározott játékosnak"
+   list: "&6/ht list [világnév] - &aListázza az összes hotelet a jelenlegi/kiválasztott világban"
+   friendList: "&6/ht <friend/f> list <hotelnév> <szobaszám> - &aA játékosok felsorolása a meghatározott szállodai szoba barátlistáján"
+   creationMode: "&6/ht <creationmode/cm> <enter/exit> - &aBelépés/kilépés a létrehozási módból"
+   header: "&4================================"
+   delr: "&6/ht delr <hotelnév> <szobaszám> - &aTörli a megadott helyiséget"
+   reload: "&6/ht reload - &aÚjratölti az összes konfigurációs fájlt"
+   renum: "&6/ht renum <hotelnév> <régiszám> <újszám> - &aRenumbers megadott helyiségben"
+   home: "&6/ht home <hotelnév> [szobaszám] - &aTeleportál egy szállodai/otthoni otthonba"
+   sethome: "&6/ht sethome - &aA szálloda/szobaház beállítása"
+   sellr: "&6/ht sellr <hotelnév> <szobaszám> <játékosnév> <ár> - &aAjánlatok eladni a szobát meghatározott játékosnak"
+   check: "&6/ht check [játékosnév] - &aMegadja az Ön által megadott összes bérelt helyiséget"
+   roomreset: "&6/ht roomreset <hotelnév> <szobaszám> - &aA megadott helyiségen történő újraindításra szolgál"
+   room: "&6/ht room <hotelnév> <szobaszám> - &aKészít egy szobát az aktuális kijelölésen belül meghatározott szállodán belül"
+   footer: "&4================================"
+   create: "&6/ht <create/c> <hotelnév> - &aLétrehoz egy jelenlegi szállodát"
+   buyh: "&6/ht buyh <hotelnév> - &aMegveszi a megadott szállodát a tulajdonosától, ha az eladó"
+   remove: "&6/ht remove <játékosnév> <hotelnév> <szobaszám> - &aEltávolítja a játékost a bérelt szobájából"
+   resetroom: "&6/ht resetroom <hotelnév> <szobaszám> - &aA megadott helyiség visszaállítása"
+   buyr: "&6/ht buyr <hotelnév> <szobaszám> - &aA szobatulajdonos megvásárolja a szobát, ha eladta neked"
+   friend: "&6/ht <friend/f> <add/remove> <hotelnév> <szobaszám> <játékosnév> - &aHozzáadja/eltávolítja a játékost azon ismerősök listájából, amelyek hozzáférhetnek a megadott helyiséghez"
+   delete: "&6/ht delete <hotelnév> - &aTörli a megadott holelt"
+   helper: "&6/ht <helper/h> <add/remove> <hotelnév> <játékosnév> - &aHozzáadja/eltávolítja a játékost a megadott hotelek segítőinek listájából"
+   roomStandalone: "&6&o/room <hotelnév> <idő> <ár> <szobaszám> - &aNézzen a tábla felé, helyet teremt a számodra"
+   helperList: "&6/ht <helper/h> list <hotelnév> - &aA játékosok felsorolása a megadott szálloda segítőlistáján"
+  room:
+   usage: "&4Helyes használat: &6&o/ht room <hotelnév> <szobaszám>"
+   nextNewRoomFail: "&4Nem található a következő szoba! Próbálja meg manuálisan megadni a szoba számát"
+   roomNumInvalid: "&4A szoba szám nem érvényes egész szám!"
+   alreadyPresent: "&4Már itt van egy szoba"
+   success: "&aLétrehozva a %room% szoba a %hotel% hotelben"
+  remove:
+   usage: "&4Helyes használat: &6&o/ht remove <játékosnév> <hotelnéc> <szobaszám>"
+   noRenter: "&4A megadott helyiség nem bérelt!"
+   playerNotRenter: "&4A megadott játékos nem adott bérelt helyiséget!"
+   success: "&aSikeresen törölted %player% játékost a %room% szobából a %hotel% hotelből"
+  reload:
+   success: "&aA konfigurációs fájlok újratöltve"
+  removeRegions:
+   fail: "&4Nem sikerült törölni a szállodai régiókat"
+   success: "&aSikeresen törölt szállodai régiók"
+  removeRoom:
+   fail: "&4A szoba nem törölhető"
+   success: "&aSikeresen törölt helyiség"
+  sellroom:
+   usage: "&4Helyes használat: &6&o/ht sellr <hotelnév> <szobaszám> <vevőneve> <ár>"
+   sellingAsked: "&aA játékos %buyer% megkérdezte, hogy szeretne-e vásárolni a szobát"
+   selling: "&aJátékos %seller% eladja a szobát %room% a %hotel% szállodát neked $%price% pénzért. Típus &6&o/ht buyr %hotel% %room% &r&aa vásárláshoz"
+   success: "&aEladtad a szobádat %room% a %hotel% szálloda a játékosnak %buyer% $%price% pénzért"
+   sellingAlreadyAsked: "&4Már megkérdezte a játékost %buyer% ha meg akarja vásárolni a szobát!"
+  unknownArg: "&4Ismeretlen argumentum. Próbáld a &3&o/hotels"
+  listHotels:
+   line: "&6Hotel: &c%hotel%%space%&9Teljes: &r%total%   &aSzabad: &r%free%"
+   heading: "&a==  Hotel lista  =="
+   footer: "&c==  A szálloda listájának vége  =="
+  hotelsList:
+   usage: "&4Helyes használat: &6&o/ht list [world]"
+  mainpage:
+   1: "&8&m-----------------------------------------------------"
+   2: "&2&l%plugin%&a plugin by &ckernitus&a verzió &2%version%"
+   3: "&2Típus &c/hotels help &2segítség a szálloda létrehozásához"
+   4: "&2Típus &c/hotels commands &2a parancsok segítségére"
+   5: "&8&m-----------------------------------------------------"
+  helper:
+   addYourself: "&4Nem teheted magad a segítő listára!"
+   addSuccess: "&aSikeresen hozzáadva %helper% a segítő listához"
+   removeSuccess: "&aSikeresen törölve %helper% a segítő listából"
+   alreadyHelper: "&4Már felvetted ezt a segítőt!"
+   helperNotInList: "&4A megadott felhasználó nem szerepel a segítő listában!"
+   noHelpers: "&2Nem adott hozzá segítőket a megadott szállodában"
+   list:
+    heading: "&a==Segítő lista a %hotel% hotel=="
+    line: "&6Segítő: &c%name%"
+    footer: "&c==Segítő lista vége=="
+ moneyEarned: "&aMegszerzett $%revenue% a szoba bérleti díjától %room% %hotel% szállodában"
+ noPermission: "&4Nincs jogod ehhez!"
+ moneyEarnedExtend: "&aMegszerzett $%revenue% a bérleti díj meghosszabbításából %room% %hotel% szállodában"
+ prefix: "&9[Hotels]&r"
+ creationMode:
+  hotelCreationFailed: "&4Nem lehet létrehozni a szállodát, mert már létezik"
+  noSelection: "&4Kérlek, válassz ki egy területet a WE pálcával"
+  hotelCreationSuccessful: "&2Sikeresen létrehoztad a %hotel% hotelt"
+  deniedAction: "&4Ezt nem teheted meg létrehozási módban!"
+  items:
+   leather:
+    lore1: "Jobb klikk ellenőrizni"
+    lore2: "konfliktusok között"
+    name: "&bDarab O' bőr"
+   compass:
+    lore1: "Bal klikk teleportálni"
+    lore2: "Jobb klikk, hogy áthaladjon"
+    name: "&bWorldEdit Íránytű"
+   wand:
+    lore1: "Bal klikk egy sarok"
+    lore2: "Jobb klikk szemben a sarokban"
+    name: "&bWorldEdit Pálca"
+   sign:
+    lore1: "Jobb klikk a lehelyezéshez"
+    lore2: "Első Sor: &9[Hotels]"
+    name: "&bEpic Tábla"
+  armour:
+   storeSuccess: "&aSikeresen tárolta a páncélt"
+   restoreSuccess: "&aSikeresen helyreállította a páncélt"
+   storeFail: "&4Nem lehet tárolni a páncélt"
+   restoreFail: "&4Nem sikerült megtalálni a tárolt páncélzatot"
+  selectionInvalid: "&4Érvénytelen kiválasztás. Kérlek, válaszd ki újra a területet"
+  rooms:
+   fail: "&4Nem lehet szobát létrehozni!"
+   alreadyExists: "&4Ez a szoba már létezik!"
+   notInHotel: "&4A szoba nincs a megadott szállodában!"
+  invalidChar: "&4A név nem tartalmazhat karaktert &6&l-"
+  inventory:
+   storeSuccess: "&aSikeresen tárolta az eszköztárat"
+   restoreSuccess: "&aSikeresen visszaállította az eszköztárát"
+   storeFail: "&4Nem sikerült tárolni az eszköztárt"
+   restoreFail: "&4Nem sikerült megtalálni a tárolt eszköztárat"
+ sign:
+  use:
+   notEnoughMoney: "&4Nincs elég pénzed! Szükséged van egy másikra %missingmoney%"
+   differentRoomNums: "&4A szoba számai nem egyeznek!"
+   success: "&aBbéreltél egy szobát %room% a %hotel% hotel $%price% pénzért"
+   maxEntendReached: "&4Elérted a bérleti díj meghosszabbítását %max% alkalommal!"
+   differentHotelNames: "&4A hotelnevek nem egyeznek!"
+   nonExistentRoom: "&4Ez a szoba nem létezik!"
+   extensionSuccessNoMore: "&aA bérletet meghosszabbította %tot% alkalommal. Nem nyújthat tovább."
+   signOutOfRegion: "&4A tábla nem a megadott szállodai régióban van"
+   extensionSuccess: "&aA bérletet meghosszabbította %tot% alkalommal. Ezt kiterjesztheted %left% alkalommal."
+   noAccount: "&4Nincs gazdasági számlád!"
+   fileNonExistent: "&4A tábla fájl nem létezik!"
+   overRoomsPerHotelLimit: "&4Elérte a határértéket %limit% szobákat lehet bérelni ebben a szállodában"
+   maxRoomsReached: "&4Elérte a határértéket %max% szobák neked is lehet"
+   taken: "&4Ezt a szobát már bérelték"
+  place:
+   tooLong: "&4A szoba száma vagy az ár túl nagy!"
+   noRegion: "&4A megadott hotel vagy szoba nem létezik!"
+   success: "&2A Hotel tábla sikeresen létrehozva!"
+   inRoomRegion: "&4A tábla nem lehet a helyiségben!"
+   fileFail: "&4Nem lehet elmenteni a tábla fájlt"
+   outOfRegion: "&4A tábla nem a szállodai régióban van!"
+   emptySign: "&4Üres tábla"
+   alreadyExists: "&Ez a tábla ebben a szállodai szobában már létezik!"
+   noHotel: "&4A Hotel nem létezik"
+   noSeparator: "&4Sor 3 tartalmaznia kell az elválasztót &3:"
+ room:
+  usage: "&4Helyes használat: &6&o/room <hotelnév> <idő> <ár> <szobaszám>"
+  notSign: "&4Nem nézel egy táblát!"
+sign:
+ room:
+  total: "Összes szoba"
+  name: "&2Szoba"
+  free: "Ingyenes szobák"
+  breakDenied: "&4Nem lehet kitörni a táblát ebben a szobában, mert ez már bérelt!"
+ rentExpiredConsole: "%player% játékosnak a szoba bérleti díja %room% a %hotel% a szálloda lejárt"
+ vacant: "Üres"
+ rentExpiredPlayer: "&9A szoba bérleti díja %room% a %hotel% a szálloda lejárt"
+ permanent: "Állandó"
+ reception:
+  hotel: "&1%hotel% Hotel"
+  reception: "&aRecepció"
+ occupied: "Megszállt"
+ delete:
+  roomNonExistent: "Tábla fájl %filename% törölték, mivel a szoba nem létezik"
+  hotelName: "Tábla fájl %filename% nem egyezik a játékon belüli szállodában, és törölték"
+  roomNum: "Tábla fájl %filename% nem egyezik az játékban szoba számban és törölték"
+  location: "Tábla fájl %filename% nem egyezik a játék helyén, és törölték"
+  reception: "Fogadási fájl %filename% nem egyezik a játékban szereplő jellemzőkkel, és törölték"

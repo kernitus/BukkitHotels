@@ -16,6 +16,7 @@
 # Spanish (Español): es, esES
 # German (Deutsch): de, deDE
 # Polish (Polski): pl, plPL
+# Hungarian (Magyar): hu, huHU
 language: auto
 
 # Maximum amount of hotels a player can own

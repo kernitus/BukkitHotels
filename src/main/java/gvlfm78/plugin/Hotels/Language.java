@@ -19,11 +19,12 @@ public enum Language {
 	Russian (new String[] {"ruRU", "ru"}),
 	Spanish (new String[] {"esES", "es"}),
 	German (new String[] {"deDE", "de"}),
-	Polish (new String[] {"plPL", "pl"});
+	Polish (new String[] {"plPL", "pl"}),
+	Hungarian (new String[] {"huHU", "hu"});
 
 	private final String[] codes = new String[2];       
 
-	private Language(String[] codes) {
+	Language(String[] codes) {
 		for(int i = 0; i < codes.length; i++)
 			this.codes[i] = codes[i];
 	}
