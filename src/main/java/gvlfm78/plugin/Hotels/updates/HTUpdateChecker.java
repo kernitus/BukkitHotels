@@ -16,12 +16,13 @@ public class HTUpdateChecker {
 
 	private HotelsMain plugin;
 	private final File pluginFile;
-	private final SpigotUpdateChecker SUC;
+	private final SpigetUpdateChecker SUC = new SpigetUpdateChecker();
+	//private final SpigotUpdateChecker SUC;
 
 	public HTUpdateChecker(HotelsMain plugin, File pluginFile){
 		this.plugin = plugin;
 		this.pluginFile = pluginFile;
-		SUC = new SpigotUpdateChecker(plugin);
+		//SUC = new SpigotUpdateChecker(plugin);
 	}
 
 	private String[] getUpdateMessages(){
@@ -35,12 +36,15 @@ public class HTUpdateChecker {
 		
 		if(useSpigot){
 			Mes.debug("Using Spigot update checker");
-			//Get messages from Spigot update checker
-			if(SUC.getResult().name().equalsIgnoreCase("UPDATE_AVAILABLE")){
+			if(SUC.getNewUpdateAvailable()){
+                updateMessages[0] = Mes.getStringNoPrefix("main.updateAvailable").replaceAll("%version%", SUC.getLatestVersion());
+                updateMessages[1] = Mes.getStringNoPrefix("main.updateAvailableLink").replaceAll("%link%", SUC.getUpdateURL());
+            }
+			/*if(SUC.getResult().name().equalsIgnoreCase("UPDATE_AVAILABLE")){
 				//An update is available
 				updateMessages[0] = Mes.getStringNoPrefix("main.updateAvailable").replaceAll("%version%", SUC.getVersion());
 				updateMessages[1] = Mes.getStringNoPrefix("main.updateAvailableLink").replaceAll("%link%", "https://www.spigotmc.org/resources/hotels.2047/updates/");
-			}
+			}*/
 		}
 		else{//Get messages from bukkit update checker
 			Mes.debug("Using Bukkit update checker");
@@ -48,7 +52,7 @@ public class HTUpdateChecker {
 			if(updater.getResult().equals(UpdateResult.UPDATE_AVAILABLE)){
 				//Updater knows local and remote versions are different, but not if it's an update
 				String remoteVersion = updater.getLatestName().replaceAll("[A-Za-z\\s]", "");
-				if(shouldUpdate(plugin.getDescription().getVersion(), remoteVersion)){
+				if(shouldUpdate(remoteVersion)){
 					updateMessages[0] = Mes.getStringNoPrefix("main.updateAvailable").replaceAll("%version%", remoteVersion);
 					updateMessages[1] = Mes.getStringNoPrefix("main.updateAvailableLink").replaceAll("%link%", updater.getLatestFileLink());
 				}
@@ -79,10 +83,13 @@ public class HTUpdateChecker {
 			sendUpdateMessages(plugin.getLogger());
 		}
 	}
-	public boolean shouldUpdate(String localVersion, String remoteVersion) {
+	public static boolean shouldUpdate(String remoteVersion){
+		return shouldUpdate(HotelsMain.getPluginDescription().getVersion(), remoteVersion);
+	}
+	private static boolean shouldUpdate(String localVersion, String remoteVersion) {
 		return versionCompare(localVersion, remoteVersion) < 0;
 	}
-	public Integer versionCompare(String oldVer, String newVer){
+	private static Integer versionCompare(String oldVer, String newVer){
 		String[] vals1 = oldVer.split("\\.");
 		String[] vals2 = newVer.split("\\.");
 		int i = 0;
