@@ -68,7 +68,8 @@ public class RoomCommand implements CommandExecutor {
 		HTCreationMode.roomSetup(args[0], args[3], p);
 
 		try {
-			HTSignManager.createRoomSign(sign, p, args[0], args[3], args[1], args[2]);
+			if(HTSignManager.createRoomSign(sign, p, args[0], args[3], args[1], args[2]))
+				HTSignManager.setupSignLines(sign,args[0],args[3],args[1],args[2]);
 		} catch (RoomSignInRoomException e) {
 			Mes.mes(p, "sign.place.inRoomRegion");
 		}

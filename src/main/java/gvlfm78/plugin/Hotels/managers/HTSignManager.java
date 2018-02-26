@@ -110,8 +110,9 @@ public class HTSignManager {
 
 		String[] Line3parts = Line3.split(":");
 
-		if (createRoomSign(sign, p, Line2, Line3parts[0], Line4, Line3parts[1]))
-			Mes.mes(p, "chat.sign.place.success");
+		if (createRoomSign(sign, p, Line2, Line3parts[0], Line4, Line3parts[1])) {
+			setupSignLines(e,Line2,Line3parts[0],Line4,Line3parts[1]);
+		}
 		else {
 			sign.setLine(0, ChatColor.DARK_RED + "]Hotels[");
 			sign.update();
@@ -203,20 +204,38 @@ public class HTSignManager {
 			return false;
 		}
 
-		sign.setLine(0, ChatColor.DARK_BLUE + hotelName); //Hotel Name
-		sign.setLine(1, ChatColor.DARK_GREEN +
+		Mes.mes(p, "chat.sign.place.success");
+		return true; //(Supposedly) everything went fine
+	}
+
+	public static void setupSignLines(Sign e, String hotelName, String roomNum, String time, String price){
+		e.setLine(0, ChatColor.DARK_BLUE + hotelName); //Hotel Name
+		e.setLine(1, ChatColor.DARK_GREEN +
 				Mes.getStringNoPrefix("sign.room.name") + " " +
 				roomNum + " - " + price.toUpperCase() + "$"); //Room Number + Cost
 
-		if (time.matches("0")) sign.setLine(2, Mes.getStringNoPrefix("sign.permanent"));
-		else sign.setLine(2, TimeFormatter(timeInMins));
+		if (time.matches("0")) e.setLine(2, Mes.getStringNoPrefix("sign.permanent"));
+		else {
+			long timeInMins = TimeConverter(time);
+			e.setLine(2, TimeFormatter(timeInMins));
+		}
 
-		sign.setLine(3, ChatColor.GREEN + Mes.getStringNoPrefix("sign.vacant"));
-		sign.update();
+		e.setLine(3, ChatColor.GREEN + Mes.getStringNoPrefix("sign.vacant"));
+		e.update();
+	}
+	private static void setupSignLines(SignChangeEvent e, String hotelName, String roomNum, String time, String price){
+		e.setLine(0, ChatColor.DARK_BLUE + hotelName); //Hotel Name
+		e.setLine(1, ChatColor.DARK_GREEN +
+				Mes.getStringNoPrefix("sign.room.name") + " " +
+				roomNum + " - " + price.toUpperCase() + "$"); //Room Number + Cost
 
-		Mes.mes(p, "chat.sign.place.success");
+		if (time.matches("0")) e.setLine(2, Mes.getStringNoPrefix("sign.permanent"));
+		else {
+			long timeInMins = TimeConverter(time);
+			e.setLine(2, TimeFormatter(timeInMins));
+		}
 
-		return true; //(Supposedly) everything went fine
+		e.setLine(3, ChatColor.GREEN + Mes.getStringNoPrefix("sign.vacant"));
 	}
 
 	public static boolean isReceptionSign(Sign s) {
