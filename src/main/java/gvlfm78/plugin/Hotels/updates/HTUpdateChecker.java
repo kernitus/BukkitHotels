@@ -5,24 +5,19 @@ import kernitus.plugin.Hotels.managers.Mes;
 import net.gravitydevelopment.updater.Updater;
 import net.gravitydevelopment.updater.Updater.UpdateResult;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.logging.Logger;
 
 public class HTUpdateChecker {
 
 	private HotelsMain plugin;
 	private final File pluginFile;
 	private final SpigetUpdateChecker SUC = new SpigetUpdateChecker();
-	//private final SpigotUpdateChecker SUC;
 
 	public HTUpdateChecker(HotelsMain plugin, File pluginFile){
 		this.plugin = plugin;
 		this.pluginFile = pluginFile;
-		//SUC = new SpigotUpdateChecker(plugin);
 	}
 
 	private String[] getUpdateMessages(){
@@ -40,11 +35,6 @@ public class HTUpdateChecker {
                 updateMessages[0] = Mes.getStringNoPrefix("main.updateAvailable").replaceAll("%version%", SUC.getLatestVersion());
                 updateMessages[1] = Mes.getStringNoPrefix("main.updateAvailableLink").replaceAll("%link%", SUC.getUpdateURL());
             }
-			/*if(SUC.getResult().name().equalsIgnoreCase("UPDATE_AVAILABLE")){
-				//An update is available
-				updateMessages[0] = Mes.getStringNoPrefix("main.updateAvailable").replaceAll("%version%", SUC.getVersion());
-				updateMessages[1] = Mes.getStringNoPrefix("main.updateAvailableLink").replaceAll("%link%", "https://www.spigotmc.org/resources/hotels.2047/updates/");
-			}*/
 		}
 		else{//Get messages from bukkit update checker
 			Mes.debug("Using Bukkit update checker");
@@ -65,22 +55,6 @@ public class HTUpdateChecker {
 		for(String message : getUpdateMessages()){
 			if(message != null && !message.isEmpty())//If there was no update/check is disabled message will be null
 				p.sendMessage(message);
-		}
-	}
-	public void sendUpdateMessages(Logger l){//Sends messages to console
-		for(String message : getUpdateMessages()){
-			message = ChatColor.stripColor(message);
-			if(message != null && !message.isEmpty())//If there was no update/check is disabled message will be null
-				l.info(message);
-		}
-	}
-	public void sendUpdateMessages(CommandSender s){
-		if(s instanceof Player){
-			Player p = (Player) s;
-			sendUpdateMessages(p);
-		}
-		else{
-			sendUpdateMessages(plugin.getLogger());
 		}
 	}
 	public static boolean shouldUpdate(String remoteVersion){

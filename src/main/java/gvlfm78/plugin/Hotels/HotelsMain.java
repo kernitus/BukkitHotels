@@ -6,7 +6,6 @@ import kernitus.plugin.Hotels.handlers.HTConfigHandler;
 import kernitus.plugin.Hotels.handlers.RoomCommand;
 import kernitus.plugin.Hotels.managers.Mes;
 import kernitus.plugin.Hotels.tasks.RoomTask;
-import kernitus.plugin.Hotels.updates.HTUpdateChecker;
 import kernitus.plugin.Hotels.updates.HTUpdateListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
@@ -142,7 +141,6 @@ public class HotelsMain extends JavaPlugin{
 		Metrics metrics = new Metrics(this);
 
 		//Hotel amount
-
 		metrics.addCustomChart(new Metrics.SimpleBarChart("hotel_amount", () -> {
 			HashMap<String, Integer> values = new HashMap<>();
 			switch(hotelsCount) {
@@ -162,13 +160,6 @@ public class HotelsMain extends JavaPlugin{
 		//Checking for updates
 		if(getConfig().getBoolean("updates", true)){
 			getServer().getPluginManager().registerEvents((new HTUpdateListener(this, this.getFile())), this);
-
-			final HotelsMain plugin = this;
-
-			Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
-                HTUpdateChecker HUC = new HTUpdateChecker(plugin, plugin.getFile());
-                HUC.sendUpdateMessages(getLogger());
-            }, 20L);
 		}
 	}
 	@Override
