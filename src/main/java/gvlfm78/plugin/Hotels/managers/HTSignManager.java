@@ -453,7 +453,7 @@ public class HTSignManager {
 
 		if (!room.getSignLocation().equals(s.getLocation())) return false; //If sign and config location match
 
-		if (room.isFree() || Mes.hasPerm(p, "hotels.delete.rooms.admin")) {
+		if (Mes.hasPerm(p, "hotels.delete.rooms.admin") || (room.isFree() && hotel.isOwner(p.getUniqueId())) ) {
 			room.deleteSignFile();
 			room.deleteSchematic();
 			room.deleteRegion();
