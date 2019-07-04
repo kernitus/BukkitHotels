@@ -1,3 +1,5 @@
+# Project has been moved to [GitLab](https://gitlab.com/kernitus/hotels).
+
 <img alt="Hotels logo" height="150" width="150" src="https://media-elerium.cursecdn.com/avatars/89/605/636232548207698807.png">
 
 Bukkit Plugin for the management of hotels on your server
